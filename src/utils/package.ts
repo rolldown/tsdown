@@ -16,7 +16,7 @@ export async function readPackageJson(
   return JSON.parse(contents) as PackageJson
 }
 
-export type PackageType = 'module' | 'commonjs'
+export type PackageType = 'module' | 'commonjs' | undefined
 export function getPackageType(pkg: PackageJson | undefined): PackageType {
   if (pkg?.type) {
     if (!['module', 'commonjs'].includes(pkg.type)) {
@@ -24,7 +24,6 @@ export function getPackageType(pkg: PackageJson | undefined): PackageType {
     }
     return pkg.type
   }
-  return 'commonjs'
 }
 
 export function normalizeFormat(

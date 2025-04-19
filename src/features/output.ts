@@ -7,7 +7,7 @@ export interface OutExtensionContext {
   options: InputOptions
   format: NormalizedFormat
   /** "type" field in project's package.json */
-  pkgType: PackageType
+  pkgType?: PackageType
 }
 export interface OutExtensionObject {
   js?: string
