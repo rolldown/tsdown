@@ -2,7 +2,7 @@
   "name": "tsdown",
   "version": "0.9.0",
   "packageManager": "pnpm@10.8.1",
-  "description": "Smooth and fast library bundler powered by Rolldown.",
+  "description": "Zero config bundler for libraries",
   "type": "module",
   "license": "MIT",
   "homepage": "https://github.com/rolldown/tsdown#readme",
@@ -51,7 +51,11 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --cache --write .",
     "release": "bumpp && pnpm publish",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:generate": "./docs/.vitepress/scripts/docs-generate.sh"
   },
   "peerDependencies": {
     "publint": "^0.3.0",
@@ -93,10 +97,15 @@
     "publint": "^0.3.12",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
+    "typedoc": "^0.28.2",
+    "typedoc-plugin-markdown": "^4.6.2",
     "typescript": "~5.8.3",
     "unplugin-ast": "^0.14.6",
     "unplugin-unused": "^0.4.4",
     "vite": "^6.3.2",
+    "vitepress": "^1.6.3",
+    "vitepress-plugin-group-icons": "^1.5.2",
+    "vitepress-plugin-llms": "^1.1.0",
     "vitest": "^3.1.1"
   },
   "engines": {
