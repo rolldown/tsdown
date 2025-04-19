@@ -14,7 +14,8 @@
 ## Install
 
 ```bash
-npm i tsdown
+npm i -D tsdown # Project install
+npm i -g tsdown # or Global install
 ```
 
 ## Configuration
