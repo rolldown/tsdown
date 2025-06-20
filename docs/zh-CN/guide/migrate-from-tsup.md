@@ -37,6 +37,15 @@ npx tsdown migrate
 
 `tsdown` 尚未实现 `tsup` 中的某些功能。如果您发现缺少某些您需要的选项，请 [提交问题](https://github.com/rolldown/tsdown/issues) 告诉我们您的需求。
 
+### tsdown 的新功能
+
+`tsdown` 还引入了一些 `tsup` 中没有的新功能：
+
+- **`nodeProtocol`**：控制 Node.js 内置模块导入的处理方式：
+  - `true`：为内置模块添加 `node:` 前缀（例如，`fs` → `node:fs`）
+  - `'strip'`：从导入中移除 `node:` 前缀（例如，`node:fs` → `fs`）
+  - `false`：保持导入不变（默认）
+
 迁移后，请仔细检查您的配置以确保其符合您的预期。
 
 ## 致谢

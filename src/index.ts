@@ -211,6 +211,7 @@ async function getBuildOptions(
     report,
     env,
     removeNodeProtocol,
+    nodeProtocol,
     loader,
     name,
     unbundle,
@@ -218,8 +219,8 @@ async function getBuildOptions(
 
   const plugins: RolldownPluginOption = []
 
-  if (removeNodeProtocol) {
-    plugins.push(NodeProtocolPlugin())
+  if (removeNodeProtocol || nodeProtocol) {
+    plugins.push(NodeProtocolPlugin(config))
   }
 
   if (config.pkg || config.skipNodeModulesBundle) {

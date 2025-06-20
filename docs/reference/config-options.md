@@ -447,6 +447,37 @@ false
 
 ***
 
+### nodeProtocol?
+
+> `optional` **nodeProtocol**: `'strip'` \| `boolean`
+
+Defined in: [types.ts:336](https://github.com/rolldown/tsdown/blob/0978c68bd505c76d7e3097572cd652f81c23f97e/src/options/types.ts#L336)
+
+- If true, add `node:` prefix to built-in modules.
+- If 'strip', strips the `node:` protocol prefix from import source.
+- If false, does not modify the import source.
+
+#### Default
+
+```ts
+false
+```
+
+#### Example
+
+<!-- eslint-skip -->
+
+```ts
+// With nodeProtocol enabled:
+import('fs'); // becomes import('node:fs')
+// With nodeProtocol set to 'strip':
+import('node:fs'); // becomes import('fs')
+// With nodeProtocol set to false:
+import('node:fs'); // remains import('node:fs')
+```
+
+***
+
 ### removeNodeProtocol?
 
 > `optional` **removeNodeProtocol**: `boolean`
@@ -467,6 +498,10 @@ false
 // With removeNodeProtocol enabled:
 import('node:fs'); // becomes import('fs')
 ```
+
+#### Deprecated
+
+Use `nodeProtocol: 'strip'` instead.
 
 ***
 
