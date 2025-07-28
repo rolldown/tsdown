@@ -115,7 +115,7 @@ export async function buildSingle(
     if (first) {
       await clean()
     } else {
-      await cleanOutDir([config]);
+      await cleanOutDir([config])
     }
 
     let hasErrors = false
