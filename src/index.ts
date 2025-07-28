@@ -112,7 +112,11 @@ export async function buildSingle(
     await hooks.callHook('build:prepare', context)
     ab?.abort()
 
-    await clean()
+    if (first) {
+      await clean()
+    } else {
+      await cleanOutDir([config]);
+    }
 
     let hasErrors = false
     const isMultiFormat = formats.length > 1
