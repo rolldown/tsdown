@@ -85,7 +85,6 @@
   "dependencies": {
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
-    "chokidar": "catalog:prod",
     "debug": "catalog:prod",
     "diff": "catalog:prod",
     "empathic": "catalog:prod",

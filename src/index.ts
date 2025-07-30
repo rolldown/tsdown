@@ -1,12 +1,16 @@
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { green } from 'ansis'
+import { bold } from 'ansis'
 import {
   build as rolldownBuild,
+  watch as rolldownWatch,
   type BuildOptions,
+  type OutputAsset,
+  type OutputChunk,
   type OutputOptions,
   type RolldownPluginOption,
+  type RolldownWatcher,
 } from 'rolldown'
 import { exec } from 'tinyexec'
 import { attw } from './features/attw'
@@ -23,7 +27,7 @@ import { ReportPlugin } from './features/report'
 import { getShimsInject } from './features/shims'
 import { shortcuts } from './features/shortcuts'
 import { RuntimeHelperCheckPlugin } from './features/target'
-import { watchBuild } from './features/watch'
+import { WatchPlugin } from './features/watch'
 import {
   mergeUserOptions,
   resolveOptions,
@@ -33,7 +37,7 @@ import {
 } from './options'
 import { ShebangPlugin } from './plugins'
 import { lowestCommonAncestor } from './utils/fs'
-import { logger, prettyName, type Logger } from './utils/logger'
+import { logger, type Logger } from './utils/logger'
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 
 /**
@@ -52,29 +56,26 @@ export async function build(userOptions: Options = {}): Promise<void> {
     return (cleanPromise = cleanOutDir(configs))
   }
 
+  let restarting = false
+
   logger.info('Build start')
-  const rebuilds = await Promise.all(
-    configs.map((options) => buildSingle(options, clean)),
+  const task = Promise.all(
+    configs.map((options) => buildSingle(options, clean, configFiles, restart)),
   )
-  const cleanCbs: (() => Promise<void>)[] = []
-
-  for (const [i, config] of configs.entries()) {
-    const rebuild = rebuilds[i]
-    if (!rebuild) continue
-
-    const watcher = await watchBuild(config, configFiles, rebuild, restart)
-    cleanCbs.push(() => watcher.close())
-  }
-
-  if (cleanCbs.length) {
+  if ((await task).some((d) => !!d)) {
     shortcuts(restart)
   }
 
   async function restart() {
-    for (const clean of cleanCbs) {
-      await clean()
+    if (restarting) return
+
+    restarting = true
+    for (const dispose of await task) {
+      await dispose?.[Symbol.asyncDispose]?.()
     }
+    logger.info('Restarting build...\n')
     build(userOptions)
+    restarting = false
   }
 }
 
@@ -95,73 +96,145 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 export async function buildSingle(
   config: ResolvedOptions,
   clean: () => Promise<void>,
-): Promise<(() => Promise<void>) | undefined> {
+  configFiles: string[],
+  restart: () => void,
+): Promise<AsyncDisposable | undefined> {
   const { format: formats, dts, watch, onSuccess } = config
   let ab: AbortController | undefined
 
   const { hooks, context } = await createHooks(config)
 
-  await rebuild(true)
-  if (watch) {
-    return () => rebuild()
-  }
+  await hooks.callHook('build:prepare', context)
+  ab?.abort()
 
-  async function rebuild(first?: boolean) {
-    const startTime = performance.now()
+  await clean()
 
-    await hooks.callHook('build:prepare', context)
-    ab?.abort()
+  const isMultiFormat = formats.length > 1
+  const chunks: TsdownChunks = {}
+  const watchers: RolldownWatcher[] = []
 
-    await clean()
-
-    let hasErrors = false
-    const isMultiFormat = formats.length > 1
-    const chunks: TsdownChunks = {}
-    await Promise.all(
-      formats.map(async (format) => {
-        try {
-          const buildOptions = await getBuildOptions(
-            config,
-            format,
-            isMultiFormat,
-            false,
-          )
-          await hooks.callHook('build:before', {
-            ...context,
-            buildOptions,
-          })
-          const { output } = await rolldownBuild(buildOptions)
-          chunks[format] = output
-          if (format === 'cjs' && dts) {
-            const { output } = await rolldownBuild(
-              await getBuildOptions(config, format, isMultiFormat, true),
-            )
-            chunks[format].push(...output)
-          }
-        } catch (error) {
-          if (watch) {
-            logger.error(error)
-            hasErrors = true
-            return
-          }
-          throw error
-        }
-      }),
+  async function buildOptionsByFormat(format: NormalizedFormat) {
+    const buildOptions = await getBuildOptions(
+      config,
+      format,
+      configFiles,
+      restart,
+      (chunks[format] = []),
+      isMultiFormat,
+      false,
     )
+    await hooks.callHook('build:before', {
+      ...context,
+      buildOptions,
+    })
 
-    if (hasErrors) {
-      return
+    const buildOptionsList: [
+      format: NormalizedFormat,
+      buildOptions: BuildOptions,
+    ][] = [[format, buildOptions]]
+    if (format === 'cjs' && dts) {
+      buildOptionsList.push([
+        format,
+        await getBuildOptions(
+          config,
+          format,
+          configFiles,
+          restart,
+          chunks[format],
+          isMultiFormat,
+          true,
+        ),
+      ])
     }
 
+    return buildOptionsList
+  }
+  const buildOptionsList = (
+    await Promise.all(formats.map(buildOptionsByFormat))
+  ).flat()
+
+  if (watch) {
+    const watcher = rolldownWatch(buildOptionsList.map((item) => item[1]))
+    const changedFile: string[] = []
+    let hasError = false
+    watcher.on('change', (id, event) => {
+      if (event.event === 'update') {
+        changedFile.push(id)
+      }
+    })
+    watcher.on('event', async (event) => {
+      switch (event.code) {
+        case 'START': {
+          for (const format of formats) {
+            chunks[format]!.length = 0
+          }
+          hasError = false
+          break
+        }
+
+        case 'END': {
+          if (!hasError) {
+            await postBuild()
+          }
+          break
+        }
+
+        case 'BUNDLE_START': {
+          if (changedFile.length > 0) {
+            console.info('')
+            logger.info(
+              `Found ${bold(changedFile.join(', '))} changed, rebuilding...`,
+            )
+          }
+          changedFile.length = 0
+          break
+        }
+
+        case 'BUNDLE_END': {
+          await event.result.close()
+          logger.success(`Rebuilt in ${event.duration}ms.`)
+          break
+        }
+
+        case 'ERROR': {
+          await event.result.close()
+          logger.error(event.error)
+          hasError = true
+          break
+        }
+      }
+    })
+    watchers.push(watcher)
+  } else {
+    const outputs = (
+      await rolldownBuild(buildOptionsList.map((item) => item[1]))
+    ).map(({ output }) => output)
+    for (const [i, output] of outputs.entries()) {
+      const format = buildOptionsList[i][0]
+      chunks[format] ||= []
+      chunks[format].push(...output)
+    }
+  }
+
+  if (watch) {
+    return {
+      async [Symbol.asyncDispose]() {
+        ab?.abort()
+        for (const watcher of watchers) {
+          await watcher.close()
+        }
+      },
+    }
+  } else {
+    await postBuild()
+  }
+
+  async function postBuild() {
     await Promise.all([writeExports(config, chunks), copy(config)])
     await Promise.all([publint(config), attw(config)])
 
     await hooks.callHook('build:done', context)
 
-    logger.success(
-      prettyName(config.name),
-      `${first ? 'Build' : 'Rebuild'} complete in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
-    )
     ab = new AbortController()
     if (typeof onSuccess === 'string') {
       const p = exec(onSuccess, [], {
@@ -185,6 +258,9 @@ export async function buildSingle(
 async function getBuildOptions(
   config: ResolvedOptions,
   format: NormalizedFormat,
+  configFiles: string[],
+  restart: () => void,
+  chunks: Array<OutputChunk | OutputAsset>,
   isMultiFormat?: boolean,
   cjsDts?: boolean,
 ): Promise<BuildOptions> {
@@ -211,6 +287,7 @@ async function getBuildOptions(
     loader,
     name,
     unbundle,
+    watch,
     banner,
     footer,
   } = config
@@ -257,6 +334,10 @@ async function getBuildOptions(
 
   if (!cjsDts) {
     plugins.push(userPlugins)
+  }
+
+  if (watch) {
+    plugins.push(WatchPlugin(chunks!, config, configFiles, restart))
   }
 
   cjsDts = !!cjsDts

@@ -5,4 +5,6 @@ import { runCLI } from './cli'
 try {
   module.enableCompileCache?.()
 } catch {}
+// @ts-ignore
+Symbol.asyncDispose ??= Symbol('Symbol.asyncDispose')
 runCLI()

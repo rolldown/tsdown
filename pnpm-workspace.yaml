@@ -39,7 +39,6 @@ catalogs:
   prod:
     ansis: ^4.1.0
     cac: ^6.7.14
-    chokidar: ^4.0.3
     debug: ^4.4.1
     diff: ^8.0.2
     empathic: ^2.0.0

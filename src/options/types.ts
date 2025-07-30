@@ -242,8 +242,8 @@ export interface Options {
    */
   config?: boolean | string
   /** @default false */
-  watch?: boolean | string | string[]
-  ignoreWatch?: string | string[]
+  watch?: boolean | Arrayable<string>
+  ignoreWatch?: Arrayable<string | RegExp>
 
   /**
    * You can specify command to be executed after a successful build, specially useful for Watch mode
@@ -441,6 +441,7 @@ export type ResolvedOptions = Omit<
       pkg?: PackageJson
       exports: false | ExportsOptions
       nodeProtocol: 'strip' | boolean
+      ignoreWatch: (string | RegExp)[]
     }
   >,
   'config' | 'fromVite'
