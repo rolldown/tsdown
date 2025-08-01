@@ -47,6 +47,17 @@ export async function build(userOptions: Options = {}): Promise<void> {
 
   const { configs, files: configFiles } = await resolveOptions(userOptions)
 
+  // If one of the config includes the `cjs` format, warn the user about its deprecation.
+  if (configs.some((config) => config.format.includes('cjs'))) {
+    logger.warn(
+      'We recommend using the `es` format instead of `cjs`. ' +
+        '\n' +
+        '`es` format is compatible with every platform and runtime, and most libraries now ship only `es` modules.' +
+        '\n' +
+        'See more at https://nodejs.org/fr/learn/modules/publishing-a-package#how-did-we-get-here',
+    )
+  }
+
   let cleanPromise: Promise<void> | undefined
   const clean = () => {
     if (cleanPromise) return cleanPromise
