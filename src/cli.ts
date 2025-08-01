@@ -1,6 +1,8 @@
 import process from 'node:process'
+import { dim } from 'ansis'
 import { cac } from 'cac'
 import debug from 'debug'
+import { VERSION as rolldownVersion } from 'rolldown'
 import { version } from '../package.json'
 import { resolveComma, toArray } from './utils/general'
 import { logger } from './utils/logger'
@@ -59,6 +61,9 @@ cli
   )
   .action(async (input: string[], flags: Options) => {
     logger.setSilent(!!flags.silent)
+    logger.info(
+      `tsdown ${dim`v${version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
+    )
     const { build } = await import('./index')
     if (input.length > 0) flags.entry = input
     await build(flags)

@@ -1,10 +1,8 @@
 import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
-import { dim, underline } from 'ansis'
-import { VERSION as rolldownVersion } from 'rolldown'
+import { underline } from 'ansis'
 import { loadConfig } from 'unconfig'
-import { version } from '../../package.json'
 import { fsStat } from '../utils/fs'
 import { toArray } from '../utils/general'
 import { logger } from '../utils/logger'
@@ -124,10 +122,6 @@ export async function loadConfigFile(
   if (config.some((c) => c.silent)) {
     logger.setSilent(true)
   }
-
-  logger.info(
-    `tsdown ${dim`v${version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
-  )
 
   const file = sources[0]
   if (file) {
