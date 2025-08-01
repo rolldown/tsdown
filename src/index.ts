@@ -50,9 +50,9 @@ export async function build(userOptions: Options = {}): Promise<void> {
   // If one of the config includes the `cjs` format, warn the user about its deprecation.
   if (configs.some((config) => config.format.includes('cjs'))) {
     logger.warn(
-      'We recommend using the `es` format instead of `cjs`. ' +
+      'We recommend using the ESM format instead of CommonJS. ' +
         '\n' +
-        '`es` format is compatible with every platform and runtime, and most libraries now ship only `es` modules.' +
+        'ESM format is compatible with every platform and runtime, and most libraries now ship only ESM modules.' +
         '\n' +
         'See more at https://nodejs.org/fr/learn/modules/publishing-a-package#how-did-we-get-here',
     )
