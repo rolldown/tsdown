@@ -42,10 +42,6 @@ import type { Options as DtsOptions } from 'rolldown-plugin-dts'
  * Build with tsdown.
  */
 export async function build(userOptions: Options = {}): Promise<void> {
-  if (typeof userOptions.silent === 'boolean') {
-    logger.setSilent(userOptions.silent)
-  }
-
   const { configs, files: configFiles } = await resolveOptions(userOptions)
 
   // If one of the config includes the `cjs` format and one of its target is higher than node 23.0.0/22.12.0, warn the user about the deprecation of CommonJS.
