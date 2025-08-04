@@ -39,6 +39,7 @@ tsdown --tsconfig tsconfig.build.json
 - `esm`（ECMAScript 模块）
 - `cjs`（CommonJS）
 - `iife`（立即调用函数表达式）
+- `umd`（通用模块定义）
 
 另请参阅 [输出格式](../options/output-format.md)。
 

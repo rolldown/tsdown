@@ -216,7 +216,7 @@ test('resolve paths in tsconfig', async (context) => {
     context,
     files,
     options: {
-      dts: { isolatedDeclarations: true },
+      dts: { oxc: true },
       tsconfig: 'tsconfig.build.json',
     },
   })

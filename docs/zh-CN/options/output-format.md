@@ -11,6 +11,7 @@ tsdown --format esm # 默认
 - [`esm`](https://nodejs.org/api/esm.html)：ECMAScript 模块格式，适用于包括浏览器和 Node.js 在内的现代 JavaScript 环境。
 - [`cjs`](https://nodejs.org/api/modules.html)：CommonJS 格式，常用于 Node.js 项目。
 - [`iife`](https://developer.mozilla.org/zh-CN/docs/Glossary/IIFE)：立即调用函数表达式，适合嵌入 `<script>` 标签或独立的浏览器使用场景。
+- [`umd`](https://github.com/umdjs/umd)：通用模块定义（Universal Module Definition），一种兼容 AMD、CommonJS 以及全局变量的模块格式。
 
 ### 示例
 

@@ -2,7 +2,7 @@ import path from 'node:path'
 import { blue } from 'ansis'
 import { up as findUp } from 'empathic/find'
 import { fsStat } from '../utils/fs'
-import { generateColor, logger, prettyName } from '../utils/logger'
+import { generateColor, prettyName, type Logger } from '../utils/logger'
 import type { Options } from '../options'
 
 export function findTsconfig(
@@ -13,6 +13,7 @@ export function findTsconfig(
 }
 
 export async function resolveTsconfig(
+  logger: Logger,
   tsconfig: Options['tsconfig'],
   cwd: string,
   name?: string,

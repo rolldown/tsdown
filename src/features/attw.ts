@@ -7,7 +7,6 @@ import { promisify } from 'node:util'
 import { blue, dim } from 'ansis'
 import Debug from 'debug'
 import { fsRemove } from '../utils/fs'
-import { logger } from '../utils/logger'
 import type { ResolvedOptions } from '../options'
 import type { CheckPackageOptions, Problem } from '@arethetypeswrong/core'
 
@@ -112,7 +111,7 @@ function formatProblem(problem: Problem): string {
 export async function attw(options: ResolvedOptions): Promise<void> {
   if (!options.attw) return
   if (!options.pkg) {
-    logger.warn('attw is enabled but package.json is not found')
+    options.logger.warn('attw is enabled but package.json is not found')
     return
   }
   const {
@@ -130,7 +129,7 @@ export async function attw(options: ResolvedOptions): Promise<void> {
   try {
     attwCore = await import('@arethetypeswrong/core')
   } catch {
-    logger.error(
+    options.logger.error(
       `ATTW check requires ${blue`@arethetypeswrong/core`} to be installed.`,
     )
     return
@@ -168,16 +167,16 @@ export async function attw(options: ResolvedOptions): Promise<void> {
           throw new Error(problemMessage)
         }
 
-        logger.warn(problemMessage)
+        options.logger.warn(problemMessage)
       }
     } else {
-      logger.success(
+      options.logger.success(
         `No Are the types wrong problems found`,
         dim`(${Math.round(performance.now() - t)}ms)`,
       )
     }
   } catch (error) {
-    logger.error('ATTW check failed:', error)
+    options.logger.error('ATTW check failed:', error)
     debug('Found errors, setting exit code to 1')
     process.exitCode = 1
   } finally {

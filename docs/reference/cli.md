@@ -39,6 +39,7 @@ Define the bundle format. Supported formats include:
 - `esm` (ECMAScript Modules)
 - `cjs` (CommonJS)
 - `iife` (Immediately Invoked Function Expression)
+- `umd` (Universal Module Definition)
 
 See also [Output Format](../options/output-format.md).
 

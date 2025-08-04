@@ -3,7 +3,7 @@ import Debug from 'debug'
 import { glob } from 'tinyglobby'
 import { fsRemove } from '../utils/fs'
 import { slash } from '../utils/general'
-import { logger } from '../utils/logger'
+import { globalLogger } from '../utils/logger'
 import type { Options, ResolvedOptions } from '../options'
 
 const debug = Debug('tsdown:clean')
@@ -31,7 +31,7 @@ export async function cleanOutDir(configs: ResolvedOptions[]): Promise<void> {
   }
   if (!removes.size) return
 
-  logger.info(`Cleaning ${removes.size} files`)
+  globalLogger.info(`Cleaning ${removes.size} files`)
   await Promise.all(
     [...removes].map(async (file) => {
       debug('Removing', file)

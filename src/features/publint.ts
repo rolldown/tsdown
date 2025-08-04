@@ -1,7 +1,6 @@
 import process from 'node:process'
 import { dim } from 'ansis'
 import Debug from 'debug'
-import { logger } from '../utils/logger'
 import type { ResolvedOptions } from '../options'
 
 const debug = Debug('tsdown:publint')
@@ -9,7 +8,7 @@ const debug = Debug('tsdown:publint')
 export async function publint(options: ResolvedOptions): Promise<void> {
   if (!options.publint) return
   if (!options.pkg) {
-    logger.warn('publint is enabled but package.json is not found')
+    options.logger.warn('publint is enabled but package.json is not found')
     return
   }
 
@@ -23,7 +22,7 @@ export async function publint(options: ResolvedOptions): Promise<void> {
   debug('Found %d issues', messages.length)
 
   if (!messages.length) {
-    logger.success(
+    options.logger.success(
       `No publint issues found`,
       dim`(${Math.round(performance.now() - t)}ms)`,
     )
@@ -35,7 +34,7 @@ export async function publint(options: ResolvedOptions): Promise<void> {
     const logType = (
       { error: 'error', warning: 'warn', suggestion: 'info' } as const
     )[message.type]
-    logger[logType](formattedMessage)
+    options.logger[logType](formattedMessage)
   }
   if (hasError) {
     debug('Found errors, setting exit code to 1')

@@ -2,12 +2,13 @@ import { chmod } from 'node:fs/promises'
 import path from 'node:path'
 import { underline } from 'ansis'
 import { fsExists } from '../utils/fs'
-import { logger, prettyFormat, prettyName } from '../utils/logger'
+import { prettyFormat, prettyName, type Logger } from '../utils/logger'
 import type { Plugin } from 'rolldown'
 
 const RE_SHEBANG = /^#!.*/
 
 export function ShebangPlugin(
+  logger: Logger,
   cwd: string,
   name?: string,
   isMultiFormat?: boolean,

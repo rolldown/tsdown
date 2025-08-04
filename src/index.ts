@@ -35,7 +35,12 @@ import {
 } from './options'
 import { ShebangPlugin } from './plugins'
 import { lowestCommonAncestor } from './utils/fs'
-import { logger, prettyName, type Logger } from './utils/logger'
+import {
+  globalLogger,
+  LogLevels,
+  prettyName,
+  type Logger,
+} from './utils/logger'
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 
 /**
@@ -67,7 +72,7 @@ export async function build(userOptions: Options = {}): Promise<void> {
     return (cleanPromise = cleanOutDir(configs))
   }
 
-  logger.info('Build start')
+  globalLogger.info('Build start')
   const rebuilds = await Promise.all(
     configs.map((options) => buildSingle(options, clean)),
   )
@@ -111,7 +116,7 @@ export async function buildSingle(
   config: ResolvedOptions,
   clean: () => Promise<void>,
 ): Promise<(() => Promise<void>) | undefined> {
-  const { format: formats, dts, watch, onSuccess } = config
+  const { format: formats, dts, watch, onSuccess, logger } = config
   let ab: AbortController | undefined
 
   const { hooks, context } = await createHooks(config)
@@ -236,6 +241,7 @@ async function getBuildOptions(
     unbundle,
     banner,
     footer,
+    logger,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -265,17 +271,17 @@ async function getBuildOptions(
     }
     if (target) {
       plugins.push(
-        RuntimeHelperCheckPlugin(target),
+        RuntimeHelperCheckPlugin(logger, target),
         // Use Lightning CSS to handle CSS input. This is a temporary solution
         // until Rolldown supports CSS syntax lowering natively.
         await LightningCSSPlugin({ target }),
       )
     }
-    plugins.push(ShebangPlugin(cwd, name, isMultiFormat))
+    plugins.push(ShebangPlugin(logger, cwd, name, isMultiFormat))
   }
 
-  if (report && !logger.silent) {
-    plugins.push(ReportPlugin(report, cwd, cjsDts, name, isMultiFormat))
+  if (report && LogLevels[logger.level] >= 3 /* info */) {
+    plugins.push(ReportPlugin(report, logger, cwd, cjsDts, name, isMultiFormat))
   }
 
   if (!cjsDts) {
@@ -355,4 +361,4 @@ export type {
   UserConfigFn,
 } from './options'
 export * from './options/types'
-export { logger, type Logger }
+export { globalLogger, type Logger }

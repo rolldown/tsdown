@@ -7,7 +7,7 @@ import Debug from 'debug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { formatBytes } from '../utils/format'
 import { noop } from '../utils/general'
-import { logger, prettyFormat, prettyName } from '../utils/logger'
+import { prettyFormat, prettyName, type Logger } from '../utils/logger'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 const debug = Debug('tsdown:report')
@@ -44,6 +44,7 @@ export interface ReportOptions {
 
 export function ReportPlugin(
   options: ReportOptions,
+  logger: Logger,
   cwd: string,
   cjsDts?: boolean,
   name?: string,

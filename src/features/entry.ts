@@ -1,10 +1,11 @@
 import path from 'node:path'
 import { glob } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor } from '../utils/fs'
-import { generateColor, logger, prettyName } from '../utils/logger'
+import { generateColor, prettyName, type Logger } from '../utils/logger'
 import type { Options } from '../options'
 
 export async function resolveEntry(
+  logger: Logger,
   entry: Options['entry'],
   cwd: string,
   name?: string,

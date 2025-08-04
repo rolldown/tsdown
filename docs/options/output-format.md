@@ -11,6 +11,7 @@ tsdown --format esm # default
 - [`esm`](https://nodejs.org/api/esm.html): ECMAScript Module format, ideal for modern JavaScript environments, including browsers and Node.js.
 - [`cjs`](https://nodejs.org/api/modules.html): CommonJS format, commonly used in Node.js projects.
 - [`iife`](https://developer.mozilla.org/en-US/docs/Glossary/IIFE): Immediately Invoked Function Expression, suitable for embedding in `<script>` tags or standalone browser usage.
+- [`umd`](https://github.com/umdjs/umd): Universal Module Definition, a format that works on AMD, CommonJS, and global variables.
 
 ### Example
 

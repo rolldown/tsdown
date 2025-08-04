@@ -1,6 +1,6 @@
 {
   "name": "tsdown",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "packageManager": "pnpm@10.14.0",
   "description": "The Elegant Bundler for Libraries",
   "type": "module",

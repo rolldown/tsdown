@@ -1,11 +1,12 @@
 import { blue } from 'ansis'
 import minVersion from 'semver/ranges/min-version.js'
 import { resolveComma, toArray } from '../utils/general'
-import { generateColor, logger, prettyName } from '../utils/logger'
+import { generateColor, prettyName, type Logger } from '../utils/logger'
 import type { PackageJson } from 'pkg-types'
 import type { Plugin } from 'rolldown'
 
 export function resolveTarget(
+  logger: Logger,
   target: string | string[] | false | undefined,
   pkg?: PackageJson,
   name?: string,
@@ -39,7 +40,10 @@ export function resolvePackageTarget(pkg?: PackageJson): string | undefined {
 }
 
 let warned = false
-export function RuntimeHelperCheckPlugin(targets: string[]): Plugin {
+export function RuntimeHelperCheckPlugin(
+  logger: Logger,
+  targets: string[],
+): Plugin {
   return {
     name: 'tsdown:runtime-helper-check',
     resolveId: {

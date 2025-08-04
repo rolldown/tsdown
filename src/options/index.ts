@@ -7,8 +7,8 @@ import { resolveClean } from '../features/clean'
 import { resolveEntry } from '../features/entry'
 import { resolveTarget } from '../features/target'
 import { resolveTsconfig } from '../features/tsconfig'
-import { resolveRegex, slash } from '../utils/general'
-import { logger } from '../utils/logger'
+import { resolveRegex, slash, toArray } from '../utils/general'
+import { createLogger } from '../utils/logger'
 import { normalizeFormat, readPackageJson } from '../utils/package'
 import type { Awaitable } from '../utils/types'
 import { loadConfigFile, loadViteConfig } from './config'
@@ -172,6 +172,8 @@ async function resolveConfig(
     plugins = [],
     clean = true,
     silent = false,
+    logLevel = silent ? 'silent' : 'info',
+    customLogger,
     treeshake = true,
     platform = 'node',
     outDir = 'dist',
@@ -205,6 +207,8 @@ async function resolveConfig(
     nodeProtocol,
   } = userConfig
 
+  const logger = createLogger(logLevel, { customLogger })
+
   if (typeof bundle === 'boolean') {
     logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')
   }
@@ -223,12 +227,12 @@ async function resolveConfig(
   if (workspace) {
     name ||= pkg?.name
   }
-  entry = await resolveEntry(entry, cwd, name)
+  entry = await resolveEntry(logger, entry, cwd, name)
   if (dts == null) {
     dts = !!(pkg?.types || pkg?.typings)
   }
-  target = resolveTarget(target, pkg, name)
-  tsconfig = await resolveTsconfig(tsconfig, cwd, name)
+  target = resolveTarget(logger, target, pkg, name)
+  tsconfig = await resolveTsconfig(logger, tsconfig, cwd, name)
   if (typeof external === 'string') {
     external = resolveRegex(external)
   }
@@ -279,6 +283,14 @@ async function resolveConfig(
     }
   }
 
+  ignoreWatch = toArray(ignoreWatch).map((ignore) => {
+    ignore = resolveRegex(ignore)
+    if (typeof ignore === 'string') {
+      return path.resolve(cwd, ignore)
+    }
+    return ignore
+  })
+
   const config: ResolvedOptions = {
     ...userConfig,
     entry,
@@ -287,7 +299,7 @@ async function resolveConfig(
     target,
     outDir,
     clean,
-    silent,
+    logger,
     treeshake,
     platform,
     sourcemap,

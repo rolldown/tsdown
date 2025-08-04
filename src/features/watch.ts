@@ -1,6 +1,9 @@
 import { blue } from 'ansis'
+import {
+  globalContext,
+  invalidateContextFile,
+} from 'rolldown-plugin-dts/tsc-context'
 import { debounce, toArray } from '../utils/general'
-import { logger } from '../utils/logger'
 import type { ResolvedOptions } from '../options'
 import type { FSWatcher } from 'chokidar'
 
@@ -23,7 +26,7 @@ export async function watchBuild(
   const files = toArray(
     typeof options.watch === 'boolean' ? options.cwd : options.watch,
   )
-  logger.info(`Watching for changes in ${files.join(', ')}`)
+  options.logger.info(`Watching for changes in ${files.join(', ')}`)
   files.push(...configFiles)
 
   const { watch } = await import('chokidar')
@@ -36,18 +39,19 @@ export async function watchBuild(
       /[\\/]\.git[\\/]/,
       /[\\/]node_modules[\\/]/,
       options.outDir,
-      ...toArray(options.ignoreWatch),
+      ...options.ignoreWatch,
     ],
   })
 
   watcher.on('all', (type: string, file: string) => {
     if (configFiles.includes(file) || endsWithConfig.test(file)) {
-      logger.info(`Reload config: ${file}`)
+      options.logger.info(`Reload config: ${file}`)
       restart()
       return
     }
 
-    logger.info(`Change detected: ${type} ${file}`)
+    options.logger.info(`Change detected: ${type} ${file}`)
+    invalidateContextFile(globalContext, file)
     debouncedRebuild()
   })
 
