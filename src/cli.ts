@@ -27,6 +27,7 @@ cli
   .option('--debug [feat]', 'Show debug logs')
   .option('--target <target>', 'Bundle target, e.g "es2015", "esnext"')
   .option('-l, --logLevel <level>', 'Set log level: info, warn, error, silent')
+  .option('--fail-on-warn', 'Fail on warnings', { default: true })
   .option('-d, --out-dir <dir>', 'Output directory', { default: 'dist' })
   .option('--treeshake', 'Tree-shake bundle', { default: true })
   .option('--sourcemap', 'Generate source map', { default: false })

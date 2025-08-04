@@ -248,6 +248,11 @@ export interface Options {
    */
   logLevel?: LogLevel
   /**
+   * If true, fails the build on warnings.
+   * @default false
+   */
+  failOnWarn?: boolean
+  /**
    * Custom logger.
    */
   customLogger?: Logger
@@ -432,6 +437,7 @@ export type ResolvedOptions = Omit<
         | 'filter'
         | 'silent'
         | 'logLevel'
+        | 'failOnWarn'
         | 'customLogger'
       >,
       | 'globalName'

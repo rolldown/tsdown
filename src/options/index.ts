@@ -173,6 +173,7 @@ async function resolveConfig(
     clean = true,
     silent = false,
     logLevel = silent ? 'silent' : 'info',
+    failOnWarn = false,
     customLogger,
     treeshake = true,
     platform = 'node',
@@ -207,7 +208,7 @@ async function resolveConfig(
     nodeProtocol,
   } = userConfig
 
-  const logger = createLogger(logLevel, { customLogger })
+  const logger = createLogger(logLevel, failOnWarn, { customLogger })
 
   if (typeof bundle === 'boolean') {
     logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')

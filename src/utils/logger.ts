@@ -34,6 +34,7 @@ const warnedMessages = new Set<string>()
 
 export function createLogger(
   level: LogLevel = 'info',
+  failOnWarn: boolean = false,
   { customLogger, console = globalThis.console }: LoggerOptions = {},
 ): Logger {
   if (customLogger) {
@@ -56,6 +57,10 @@ export function createLogger(
     },
 
     warn(...msgs: any[]): void {
+      if (failOnWarn) {
+        throw new Error(msgs.join(' '))
+      }
+
       const message = format(msgs)
       warnedMessages.add(message)
       output('warn', `\n${bgYellow` WARN `} ${message}\n`)
@@ -65,6 +70,10 @@ export function createLogger(
       const message = format(msgs)
       if (warnedMessages.has(message)) {
         return
+      }
+
+      if (failOnWarn) {
+        throw new Error(msgs.join(' '))
       }
       warnedMessages.add(message)
 
