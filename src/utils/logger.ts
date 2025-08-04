@@ -30,6 +30,8 @@ function format(msgs: any[]) {
   return msgs.filter((arg) => arg !== undefined && arg !== false).join(' ')
 }
 
+const warnedMessages = new Set<string>()
+
 export function createLogger(
   level: LogLevel = 'info',
   { customLogger, console = globalThis.console }: LoggerOptions = {},
@@ -45,8 +47,6 @@ export function createLogger(
     const method = type === 'info' ? 'log' : type
     console[method](msg)
   }
-
-  const warnedMessages = new Set<string>()
 
   const logger: Logger = {
     level,
