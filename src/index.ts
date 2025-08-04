@@ -59,7 +59,7 @@ export async function build(userOptions: Options = {}): Promise<void> {
         : false,
     )
   ) {
-    logger.warn(
+    globalLogger.warn(
       'We recommend using the ESM format instead of CommonJS.\n' +
         'ESM format is compatible with every platform and runtime, and most libraries now ship only ESM modules.\n' +
         'See more at https://nodejs.org/en/learn/modules/publishing-a-package#how-did-we-get-here',
