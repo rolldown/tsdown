@@ -50,16 +50,16 @@ export async function build(userOptions: Options = {}): Promise<void> {
   const { configs, files: configFiles } = await resolveOptions(userOptions)
 
   // If one of the config includes the `cjs` format and one of its target is higher than node 23.0.0/22.12.0, warn the user about the deprecation of CommonJS.
-  if (
-    configs.some((config) =>
-      config.format.includes('cjs') && config.target
-        ? config.target.some((t) =>
-            satisfies(t.split('node')[1], '>=23.0.0 || >=22.12.0'),
-          )
-        : false,
-    )
-  ) {
-    globalLogger.warn(
+  const config = configs.find((config) =>
+    config.format.includes('cjs') && config.target
+      ? config.target.some((t) =>
+          satisfies(t.split('node')[1], '>=23.0.0 || >=22.12.0'),
+        )
+      : false,
+  )
+  if (config) {
+    // Use the logger associated with the config
+    config.logger.warn(
       'We recommend using the ESM format instead of CommonJS.\n' +
         'ESM format is compatible with every platform and runtime, and most libraries now ship only ESM modules.\n' +
         'See more at https://nodejs.org/en/learn/modules/publishing-a-package#how-did-we-get-here',
