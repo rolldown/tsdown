@@ -1,6 +1,6 @@
 <img src="./docs/public/og-image.svg" alt="tsdown" width="100%" /><br>
 
-# tsdown [![npm](https://img.shields.io/npm/v/tsdown.svg)](https://npmjs.com/package/tsdown) [![Unit Test](https://github.com/rolldown/tsdown/actions/workflows/tests.yml/badge.svg)](https://github.com/rolldown/tsdown/actions/workflows/tests.yml) [![JSR](https://jsr.io/badges/@sxzz/tsdown)](https://jsr.io/@sxzz/tsdown) [![tsdown-starter-stackblitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/github/rolldown/tsdown-starter-stackblitz)
+# tsdown [![npm](https://img.shields.io/npm/v/tsdown.svg)](https://npmjs.com/package/tsdown) [![Unit Test](https://github.com/rolldown/tsdown/actions/workflows/tests.yml/badge.svg)](https://github.com/rolldown/tsdown/actions/workflows/tests.yml) [![tsdown-starter-stackblitz](https://developer.stackblitz.com/img/open_in_stackblitz_small.svg)](https://stackblitz.com/github/rolldown/tsdown-starter-stackblitz)
 
 ✨ The elegant bundler for libraries powered by [Rolldown](https://github.com/rolldown/rolldown).
 
