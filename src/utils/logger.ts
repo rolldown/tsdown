@@ -8,6 +8,7 @@ export type LogLevel = LogType | 'silent'
 export interface LoggerOptions {
   customLogger?: Logger
   console?: Console
+  failOnWarn?: boolean
 }
 
 export const LogLevels: Record<LogLevel, number> = {
@@ -34,8 +35,11 @@ const warnedMessages = new Set<string>()
 
 export function createLogger(
   level: LogLevel = 'info',
-  failOnWarn: boolean = false,
-  { customLogger, console = globalThis.console }: LoggerOptions = {},
+  {
+    customLogger,
+    console = globalThis.console,
+    failOnWarn = false,
+  }: LoggerOptions = {},
 ): Logger {
   if (customLogger) {
     return customLogger
