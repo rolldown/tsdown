@@ -36,7 +36,7 @@ bun add -D tsdown
 
 :::
 
-Optionally, if you're not using [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations), you should also install TypeScript as a development dependency:
+可选地，如果您未启用 [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations)，还应将 TypeScript 作为开发依赖进行安装：
 
 ::: code-group
 
