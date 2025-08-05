@@ -18,7 +18,7 @@ Additionally, you can define your configuration directly in the `tsdown` field o
 The configuration file allows you to define and customize your build settings in a centralized and reusable way. Below is a simple example of a `tsdown` configuration file:
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: 'src/index.ts',
@@ -30,7 +30,7 @@ export default defineConfig({
 `tsdown` also supports returning an **array of configurations** from the config file. This allows you to build multiple outputs with different settings in a single run. For example:
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig([
   {

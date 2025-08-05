@@ -4,7 +4,11 @@
 
 ## Quick Start
 
-For the fastest way to get started, use the [vue-components-starter](https://github.com/sxzz/vue-components-starter) template. This starter project comes pre-configured for Vue library development, so you can focus on building components right away.
+For the fastest way to get started, use the Vue component starter template. This starter project comes pre-configured for React library development, so you can focus on building components right away.
+
+```bash
+npx create-tsdown@latest -t vue
+```
 
 ## Minimal Example
 

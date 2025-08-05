@@ -99,7 +99,10 @@ export function getLocaleConfig(lang: string) {
     {
       text: t('Recipes'),
       base: `${urlPrefix}/recipes`,
-      items: [{ text: t('Vue Support'), link: '/vue-support.md' }],
+      items: [
+        { text: t('Vue Support'), link: '/vue-support.md' },
+        { text: t('React Support'), link: '/react-support.md' },
+      ],
     },
     {
       text: t('Advanced'),

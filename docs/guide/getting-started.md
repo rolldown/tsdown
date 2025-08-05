@@ -36,6 +36,28 @@ bun add -D tsdown
 
 :::
 
+Optionally, if you're not using [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations), you should also install TypeScript as a development dependency:
+
+::: code-group
+
+```sh [npm]
+npm install -D typescript
+```
+
+```sh [pnpm]
+pnpm add -D typescript
+```
+
+```sh [yarn]
+yarn add -D typescript
+```
+
+```sh [bun]
+bun add -D typescript
+```
+
+:::
+
 :::tip Compatibility Note
 `tsdown` requires Node.js version 20.19 or higher. Please ensure your development environment meets this requirement before installing. While `tsdown` is primarily tested with Node.js, support for Deno and Bun is experimental and may not work as expected.
 :::

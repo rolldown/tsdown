@@ -18,7 +18,7 @@
 配置文件允许您以集中且可复用的方式定义和自定义构建设置。以下是一个简单的 `tsdown` 配置文件示例：
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: 'src/index.ts',
@@ -30,7 +30,7 @@ export default defineConfig({
 `tsdown` 还支持从配置文件返回一个**配置数组**。这允许您在一次运行中使用不同的设置构建多个输出。例如：
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig([
   {
