@@ -61,11 +61,10 @@ export function createLogger(
     },
 
     warn(...msgs: any[]): void {
-      if (failOnWarn) {
-        throw new Error(msgs.join(' '))
-      }
-
       const message = format(msgs)
+      if (failOnWarn) {
+        throw new Error(message)
+      }
       warnedMessages.add(message)
       output('warn', `\n${bgYellow` WARN `} ${message}\n`)
     },
@@ -77,7 +76,7 @@ export function createLogger(
       }
 
       if (failOnWarn) {
-        throw new Error(msgs.join(' '))
+        throw new Error(message)
       }
       warnedMessages.add(message)
 
