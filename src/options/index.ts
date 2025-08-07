@@ -73,7 +73,7 @@ async function resolveWorkspace(
   config: NormalizedUserConfig,
   options: Options,
 ): Promise<{ configs: NormalizedUserConfig[]; files?: string[] }> {
-  const normalized = { ...config, ...options }
+  const normalized = { ...config, ...options, dts: config.dts || options.dts }
   const rootCwd = normalized.cwd || process.cwd()
   let { workspace } = normalized
   if (!workspace) return { configs: [normalized], files: [] }
