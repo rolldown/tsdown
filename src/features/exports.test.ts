@@ -147,57 +147,91 @@ describe.concurrent('generateExports', () => {
     `)
   })
 
-  test('dts', async ({ expect }) => {
-    const results = generateExports(
+  test('dts with single entry', async ({ expect }) => {
+    const results = await generateExports(
+      FAKE_PACKAGE_JSON,
+      cwd,
+      {
+        es: [genChunk('foo.js'), genChunk('foo.d.ts')],
+      },
+      { types: true },
+    )
+    expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
+      "{
+        "main": "./foo.js",
+        "module": "./foo.js",
+        "types": "./foo.d.ts",
+        "exports": {
+          ".": "./foo.js",
+          "./package.json": "./package.json"
+        }
+      }"
+    `)
+  })
+
+  test('dts with multiple entries', async ({ expect }) => {
+    const results = await generateExports(
       FAKE_PACKAGE_JSON,
       cwd,
       {
         es: [genChunk('foo.js'), genChunk('foo.d.ts')],
         cjs: [genChunk('foo.cjs'), genChunk('foo.d.cts')],
       },
-      {},
+      { types: true },
     )
-    await expect(results).resolves.toMatchInlineSnapshot(`
-      {
-        "exports": {
-          ".": {
-            "import": "./foo.js",
-            "require": "./foo.cjs",
-          },
-          "./package.json": "./package.json",
-        },
+    // key order matters
+    expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
+      "{
         "main": "./foo.cjs",
         "module": "./foo.js",
-        "publishExports": undefined,
         "types": "./foo.d.cts",
-      }
+        "exports": {
+          ".": {
+            "import": {
+              "types": "./foo.d.ts",
+              "default": "./foo.js"
+            },
+            "require": {
+              "types": "./foo.d.cts",
+              "default": "./foo.cjs"
+            }
+          },
+          "./package.json": "./package.json"
+        }
+      }"
     `)
   })
 
   test('fixed extension', async ({ expect }) => {
-    const results = generateExports(
+    const results = await generateExports(
       FAKE_PACKAGE_JSON,
       cwd,
       {
         es: [genChunk('index.mjs'), genChunk('index.d.mts')],
         cjs: [genChunk('index.cjs'), genChunk('index.d.cts')],
       },
-      {},
+      { types: true },
     )
-    await expect(results).resolves.toMatchInlineSnapshot(`
-      {
-        "exports": {
-          ".": {
-            "import": "./index.mjs",
-            "require": "./index.cjs",
-          },
-          "./package.json": "./package.json",
-        },
+    // key order matters
+    expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
+      "{
         "main": "./index.cjs",
         "module": "./index.mjs",
-        "publishExports": undefined,
         "types": "./index.d.cts",
-      }
+        "exports": {
+          ".": {
+            "import": {
+              "types": "./index.d.mts",
+              "default": "./index.mjs"
+            },
+            "require": {
+              "types": "./index.d.cts",
+              "default": "./index.cjs"
+            }
+          },
+          "./package.json": "./package.json"
+        }
+      }"
     `)
   })
 
