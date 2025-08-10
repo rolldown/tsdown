@@ -91,8 +91,7 @@ async function resolveWorkspace(
   } = workspace
   if (packages === 'auto') {
     packages = (
-      await glob({
-        patterns: '**/package.json',
+      await glob('**/package.json', {
         ignore: exclude,
         cwd: rootCwd,
         expandDirectories: false,
@@ -102,8 +101,7 @@ async function resolveWorkspace(
       .map((file) => slash(path.resolve(rootCwd, file, '..')))
   } else {
     packages = (
-      await glob({
-        patterns: packages,
+      await glob(packages, {
         ignore: exclude,
         cwd: rootCwd,
         onlyDirectories: true,
