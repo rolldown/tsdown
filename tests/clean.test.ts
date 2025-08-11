@@ -227,6 +227,8 @@ describe('clean', () => {
 
     // Create test directories and files first
     const testDir = getTestDir(context.task)
+    await mkdir(testDir, { recursive: true })
+
     await writeFile(path.join(testDir, 'test.tmp'), 'temporary file')
     await writeFile(path.join(testDir, 'app.log'), 'log file')
     await writeFile(path.join(testDir, 'keep.js'), 'keep this file')
