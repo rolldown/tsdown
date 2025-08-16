@@ -510,3 +510,27 @@ test('dts not enabled when no types field and no exports.types', async (context)
   expect(outputFiles).not.toContain('index.d.mts')
   expect(outputFiles).toContain('index.mjs')
 })
+
+test('dts not enabled when exports["."] is string instead of object', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: exports["."] is a string, not an object
+      exports: {
+        '.': './dist/index.js'
+      }
+    })
+  }
+  
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+  
+  expect(outputFiles).not.toContain('index.d.mts')
+  expect(outputFiles).toContain('index.mjs')
+})

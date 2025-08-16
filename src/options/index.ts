@@ -25,8 +25,9 @@ function hasExportsTypes(pkg: PackageJson | undefined): boolean {
   // Check if exports.types exists
   if (pkg.exports.types) return true
   
-  // Check if exports['.'].types exists
-  if (pkg.exports['.'] && pkg.exports['.'].types) return true
+  // Check if exports['.'].types exists (with type safety)
+  const mainExport = pkg.exports['.']
+  if (mainExport && typeof mainExport === 'object' && mainExport.types) return true
   
   return false
 }
