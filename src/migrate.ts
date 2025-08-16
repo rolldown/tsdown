@@ -53,15 +53,6 @@ export async function migrate({
   }
 }
 
-export function detectIndentation(pkgRaw: string): number | string {
-  const match = pkgRaw.match(/(?:^|\r?\n)([ \t]+)\S/)
-  if (!match) {
-    return 2 // default to 2 spaces if no indentation is found
-  }
-  const indentation = match[1]
-  return indentation.includes('\t') ? '\t' : indentation.length
-}
-
 async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
   if (!existsSync('package.json')) {
     globalLogger.error('No package.json found')
@@ -120,8 +111,7 @@ async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
     return false
   }
 
-  const indentation = detectIndentation(pkgRaw)
-  const pkgStr = `${JSON.stringify(pkg, null, indentation)}\n`
+  const pkgStr = `${JSON.stringify(pkg, null, pkgRaw.includes('\t') ? '\t' : 2)}\n`
   if (dryRun) {
     const { createPatch } = await import('diff')
     globalLogger.info('[dry-run] package.json:')
