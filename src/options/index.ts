@@ -10,6 +10,7 @@ import { resolveTsconfig } from '../features/tsconfig'
 import { resolveRegex, slash, toArray } from '../utils/general'
 import { createLogger } from '../utils/logger'
 import { normalizeFormat, readPackageJson } from '../utils/package'
+import type { PackageJson } from 'pkg-types'
 import type { Awaitable } from '../utils/types'
 import { loadConfigFile, loadViteConfig } from './config'
 import type { NormalizedUserConfig, Options, ResolvedOptions } from './types'
@@ -17,6 +18,18 @@ import type { NormalizedUserConfig, Options, ResolvedOptions } from './types'
 export * from './types'
 
 const debug = Debug('tsdown:options')
+
+function hasExportsTypes(pkg: PackageJson | undefined): boolean {
+  if (!pkg?.exports) return false
+  
+  // Check if exports.types exists
+  if (pkg.exports.types) return true
+  
+  // Check if exports['.'].types exists
+  if (pkg.exports['.'] && pkg.exports['.'].types) return true
+  
+  return false
+}
 
 const DEFAULT_EXCLUDE_WORKSPACE = [
   '**/node_modules/**',
@@ -230,7 +243,7 @@ async function resolveConfig(
   }
   entry = await resolveEntry(logger, entry, cwd, name)
   if (dts == null) {
-    dts = !!(pkg?.types || pkg?.typings)
+    dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
   }
   target = resolveTarget(logger, target, pkg, name)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, name)
