@@ -445,11 +445,11 @@ test('dts enabled when exports.types exists', async (context) => {
       // Note: no "types" field, only exports.types
       exports: {
         types: './dist/index.d.ts',
-        import: './dist/index.js'
-      }
-    })
+        import: './dist/index.js',
+      },
+    }),
   }
-  
+
   const { outputFiles } = await testBuild({
     context,
     files,
@@ -457,7 +457,7 @@ test('dts enabled when exports.types exists', async (context) => {
       dts: undefined, // Allow auto-detection
     },
   })
-  
+
   expect(outputFiles).toContain('index.d.mts')
 })
 
@@ -470,12 +470,12 @@ test('dts enabled when exports["."].types exists', async (context) => {
       exports: {
         '.': {
           types: './dist/index.d.ts',
-          import: './dist/index.js'
-        }
-      }
-    })
+          import: './dist/index.js',
+        },
+      },
+    }),
   }
-  
+
   const { outputFiles } = await testBuild({
     context,
     files,
@@ -483,7 +483,7 @@ test('dts enabled when exports["."].types exists', async (context) => {
       dts: undefined, // Allow auto-detection
     },
   })
-  
+
   expect(outputFiles).toContain('index.d.mts')
 })
 
@@ -494,11 +494,11 @@ test('dts not enabled when no types field and no exports.types', async (context)
       name: 'test-pkg',
       // Note: no "types" field and no exports.types
       exports: {
-        import: './dist/index.js'
-      }
-    })
+        import: './dist/index.js',
+      },
+    }),
   }
-  
+
   const { outputFiles } = await testBuild({
     context,
     files,
@@ -506,7 +506,7 @@ test('dts not enabled when no types field and no exports.types', async (context)
       dts: undefined, // Allow auto-detection
     },
   })
-  
+
   expect(outputFiles).not.toContain('index.d.mts')
   expect(outputFiles).toContain('index.mjs')
 })
@@ -518,11 +518,11 @@ test('dts not enabled when exports["."] is string instead of object', async (con
       name: 'test-pkg',
       // Note: exports["."] is a string, not an object
       exports: {
-        '.': './dist/index.js'
-      }
-    })
+        '.': './dist/index.js',
+      },
+    }),
   }
-  
+
   const { outputFiles } = await testBuild({
     context,
     files,
@@ -530,7 +530,7 @@ test('dts not enabled when exports["."] is string instead of object', async (con
       dts: undefined, // Allow auto-detection
     },
   })
-  
+
   expect(outputFiles).not.toContain('index.d.mts')
   expect(outputFiles).toContain('index.mjs')
 })
