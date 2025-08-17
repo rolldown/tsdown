@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { VPButton, VPImage, type DefaultTheme } from 'vitepress/theme'
 // Based on https://github.com/vuejs/vitepress/blob/1ec84c15040bc3865461c61b651e487f72c3c271/src/client/theme-default/components/VPHero.vue
-import { inject, type Ref } from 'vue'
+
 import VideoModal from '../VideoModal.vue'
 
 export interface HeroAction {
@@ -20,12 +20,10 @@ defineProps<{
   image?: DefaultTheme.ThemeableImage
   actions?: HeroAction[]
 }>()
-
-const heroImageSlotExists = inject<Ref<boolean>>('hero-image-slot-exists')!
 </script>
 
 <template>
-  <div class="VPHero" :class="{ 'has-image': image || heroImageSlotExists }">
+  <div class="VPHero" :class="{ 'has-image': image }">
     <div class="container">
       <div class="main">
         <slot name="home-hero-info-before" />
@@ -50,13 +48,13 @@ const heroImageSlotExists = inject<Ref<boolean>>('hero-image-slot-exists')!
               :target="action.target"
               :rel="action.rel"
             />
-            <VideoModal v-else />
+            <VideoModal v-else v-bind="action" />
           </div>
         </div>
         <slot name="home-hero-actions-after" />
       </div>
 
-      <div v-if="image || heroImageSlotExists" class="image">
+      <div v-if="image" class="image">
         <div class="image-container">
           <div class="image-bg" />
           <slot name="home-hero-image">

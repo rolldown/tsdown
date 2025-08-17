@@ -34,7 +34,7 @@ export default function greet() {
 ```js
 // dist/index.cjs
 function hello() {
-  console.log('Hello!')
+  console.log('Hello, world!')
 }
 module.exports = hello
 ```

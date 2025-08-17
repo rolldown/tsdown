@@ -37,6 +37,8 @@
 
 准备好开始了吗？查阅 [快速上手](./getting-started.md) 指南，构建您的第一个 `tsdown` 项目。
 
+想要在脚本中使用 tsdown？请参阅[以编程方式使用](../advanced/programmatic-usage.md)。
+
 ## 致谢
 
 `tsdown` 的诞生离不开开源社区以及 JavaScript 和 TypeScript 生态中众多创新工具的支持。我们感谢所有为本项目奠定基础的贡献者和维护者。

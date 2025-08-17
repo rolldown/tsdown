@@ -111,7 +111,7 @@ async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
     return false
   }
 
-  const pkgStr = `${JSON.stringify(pkg, null, 2)}\n`
+  const pkgStr = `${JSON.stringify(pkg, null, pkgRaw.includes('\t') ? '\t' : 2)}\n`
   if (dryRun) {
     const { createPatch } = await import('diff')
     globalLogger.info('[dry-run] package.json:')

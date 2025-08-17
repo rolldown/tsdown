@@ -243,3 +243,33 @@ function exportMeta(exports: Record<string, any>, all?: boolean) {
     exports['./package.json'] = './package.json'
   }
 }
+
+export function hasExportsTypes(pkg?: PackageJson): boolean {
+  const exports = pkg?.exports
+  if (!exports) return false
+
+  if (
+    typeof exports === 'object' &&
+    exports !== null &&
+    !Array.isArray(exports)
+  ) {
+    // Check if exports.types exists
+    if ('types' in exports) {
+      return true
+    }
+
+    // Check if exports['.'].types exists
+    if ('.' in exports) {
+      const mainExport = exports['.']
+      if (
+        typeof mainExport === 'object' &&
+        mainExport !== null &&
+        'types' in mainExport
+      ) {
+        return true
+      }
+    }
+  }
+
+  return false
+}

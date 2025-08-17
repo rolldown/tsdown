@@ -53,10 +53,10 @@
     "format": "prettier --cache --write .",
     "release": "bumpp",
     "prepublishOnly": "pnpm run build",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "docs:generate": "tsx ./docs/.vitepress/scripts/docs-generate.ts"
+    "docs:dev": "pnpm -C docs run dev",
+    "docs:build": "pnpm -C docs run build",
+    "docs:preview": "pnpm -C docs run preview",
+    "docs:generate": "pnpm -C docs run generate"
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
@@ -111,24 +111,16 @@
     "bumpp": "catalog:dev",
     "eslint": "catalog:dev",
     "lightningcss": "catalog:dev",
-    "oxc-minify": "catalog:docs",
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:dev",
     "tsx": "catalog:dev",
-    "typedoc": "catalog:docs",
-    "typedoc-plugin-markdown": "catalog:docs",
-    "typedoc-vitepress-theme": "catalog:docs",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-lightningcss": "catalog:dev",
     "unplugin-unused": "catalog:dev",
     "vite": "catalog:docs",
-    "vitepress": "catalog:docs",
-    "vitepress-plugin-group-icons": "catalog:docs",
-    "vitepress-plugin-llms": "catalog:docs",
-    "vitest": "catalog:dev",
-    "vue": "catalog:docs"
+    "vitest": "catalog:dev"
   },
   "engines": {
     "node": ">=20.19.0"

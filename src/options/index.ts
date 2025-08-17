@@ -5,6 +5,7 @@ import Debug from 'debug'
 import { glob } from 'tinyglobby'
 import { resolveClean } from '../features/clean'
 import { resolveEntry } from '../features/entry'
+import { hasExportsTypes } from '../features/exports'
 import { resolveTarget } from '../features/target'
 import { resolveTsconfig } from '../features/tsconfig'
 import { resolveRegex, slash, toArray } from '../utils/general'
@@ -230,7 +231,7 @@ async function resolveConfig(
   }
   entry = await resolveEntry(logger, entry, cwd, name)
   if (dts == null) {
-    dts = !!(pkg?.types || pkg?.typings)
+    dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
   }
   target = resolveTarget(logger, target, pkg, name)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, name)

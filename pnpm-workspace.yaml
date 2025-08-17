@@ -1,3 +1,6 @@
+packages:
+  - docs
+
 overrides:
   rolldown: 'catalog:prod'
   vite: 'catalog:docs'
@@ -11,7 +14,7 @@ catalogs:
     '@types/debug': ^4.1.12
     '@types/node': ^24.2.1
     '@types/semver': ^7.7.0
-    bumpp: ^10.2.2
+    bumpp: ^10.2.3
     eslint: ^9.33.0
     lightningcss: ^1.30.1
     pkg-types: ^2.2.0
@@ -26,9 +29,9 @@ catalogs:
   docs:
     '@unocss/eslint-plugin': ^66.4.2
     '@vueuse/core': ^13.6.0
-    oxc-minify: ^0.81.0
+    oxc-minify: ^0.82.0
     typedoc: ^0.28.10
-    typedoc-plugin-markdown: ^4.8.0
+    typedoc-plugin-markdown: ^4.8.1
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.4.2
     vite: npm:rolldown-vite@latest
@@ -36,6 +39,7 @@ catalogs:
     vitepress-plugin-group-icons: ^1.6.2
     vitepress-plugin-llms: ^1.7.2
     vue: ^3.5.18
+    vue-tsc: ^3.0.5
 
   prod:
     ansis: ^4.1.0

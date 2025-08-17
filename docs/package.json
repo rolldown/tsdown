@@ -1,0 +1,27 @@
+{
+  "name": "tsdown-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview",
+    "generate": "node .vitepress/scripts/generate-reference.ts",
+    "typecheck": "vue-tsc"
+  },
+  "dependencies": {
+    "@vueuse/core": "catalog:docs",
+    "vue": "catalog:docs"
+  },
+  "devDependencies": {
+    "oxc-minify": "catalog:docs",
+    "typedoc": "catalog:docs",
+    "typedoc-plugin-markdown": "catalog:docs",
+    "typedoc-vitepress-theme": "catalog:docs",
+    "vite": "catalog:docs",
+    "vitepress": "catalog:docs",
+    "vitepress-plugin-group-icons": "catalog:docs",
+    "vitepress-plugin-llms": "catalog:docs",
+    "vue-tsc": "catalog:docs"
+  }
+}

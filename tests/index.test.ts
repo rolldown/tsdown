@@ -436,3 +436,101 @@ test('banner and footer option', async (context) => {
   expect(fileMap['index.d.ts']).toContain('// dts banner')
   expect(fileMap['index.d.ts']).toContain('// dts footer')
 })
+
+test('dts enabled when exports.types exists', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: no "types" field, only exports.types
+      exports: {
+        types: './dist/index.d.ts',
+        import: './dist/index.js',
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+})
+
+test('dts enabled when exports["."].types exists', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: no "types" field, only exports["."].types
+      exports: {
+        '.': {
+          types: './dist/index.d.ts',
+          import: './dist/index.js',
+        },
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+})
+
+test('dts not enabled when no types field and no exports.types', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: no "types" field and no exports.types
+      exports: {
+        import: './dist/index.js',
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).not.toContain('index.d.mts')
+  expect(outputFiles).toContain('index.mjs')
+})
+
+test('dts not enabled when exports["."] is string instead of object', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: exports["."] is a string, not an object
+      exports: {
+        '.': './dist/index.js',
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).not.toContain('index.d.mts')
+  expect(outputFiles).toContain('index.mjs')
+})

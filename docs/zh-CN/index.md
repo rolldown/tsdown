@@ -10,6 +10,8 @@ hero:
     src: /tsdown.svg
     alt: tsdown
   actions:
+    - text: 什么是 tsdown？
+      openVideoModal: true
     - theme: brand
       text: 开始使用
       link: /zh-CN/guide/

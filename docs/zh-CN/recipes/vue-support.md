@@ -4,7 +4,11 @@
 
 ## 快速上手
 
-最快的入门方式是使用 [vue-components-starter](https://github.com/sxzz/vue-components-starter) 模板。该起步项目已为 Vue 库开发预先配置好，让您可以立即专注于组件开发。
+最快的入门方式是使用 Vue 组件起步模板。该项目已为 Vue 库开发预先配置好，让您可以立即专注于组件开发。
+
+```bash
+npx create-tsdown@latest -t vue
+```
 
 ## 最简示例
 

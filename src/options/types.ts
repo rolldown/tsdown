@@ -181,6 +181,16 @@ export interface Options {
    * @default true
    */
   treeshake?: boolean
+
+  /**
+   * Sets how input files are processed.
+   * For example, use 'js' to treat files as JavaScript or 'base64' for images.
+   * Lets you import or require files like images or fonts.
+   * @example
+   * ```json
+   * { '.jpg': 'asset', '.png': 'base64' }
+   * ```
+   */
   loader?: ModuleTypes
 
   /**
@@ -214,15 +224,6 @@ export interface Options {
   nodeProtocol?: 'strip' | boolean
 
   plugins?: InputOptions['plugins']
-  /**
-   * Sets how input files are processed.
-   * For example, use 'js' to treat files as JavaScript or 'base64' for images.
-   * Lets you import or require files like images or fonts.
-   * @example
-   * ```json
-   * { '.jpg': 'asset', '.png': 'base64' }
-   * ```
-   */
 
   inputOptions?:
     | InputOptions
@@ -365,11 +366,11 @@ export interface Options {
   //#region Addons
 
   /**
-   * Emit TypeScript declaration files (.d.ts).
+   * Enables generation of TypeScript declaration files (`.d.ts`).
    *
-   * By default, this feature is auto-detected based on the presence of the `types` field in the `package.json` file.
-   * - If the `types` field is present in `package.json`, declaration file emission is enabled.
-   * - If the `types` field is absent, declaration file emission is disabled by default.
+   * By default, this option is auto-detected based on your project's `package.json`:
+   * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
+   * - Otherwise, declaration file generation is disabled by default.
    */
   dts?: boolean | DtsOptions
 
