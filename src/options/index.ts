@@ -22,15 +22,20 @@ const debug = Debug('tsdown:options')
 function hasExportsTypes(pkg: PackageJson | undefined): boolean {
   if (!pkg?.exports) return false
   
-  // Type-safe handling of exports object
-  const exports = pkg.exports as any
+  const exports = pkg.exports
   
   // Check if exports.types exists
-  if (exports.types) return true
+  if (typeof exports === 'object' && exports !== null && 'types' in exports) {
+    return true
+  }
   
-  // Check if exports['.'].types exists (with type safety)
-  const mainExport = exports['.']
-  if (mainExport && typeof mainExport === 'object' && mainExport.types) return true
+  // Check if exports['.'].types exists
+  if (typeof exports === 'object' && exports !== null && '.' in exports) {
+    const mainExport = (exports as Record<string, unknown>)['.']
+    if (typeof mainExport === 'object' && mainExport !== null && 'types' in mainExport) {
+      return true
+    }
+  }
   
   return false
 }
