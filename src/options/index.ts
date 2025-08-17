@@ -5,12 +5,12 @@ import Debug from 'debug'
 import { glob } from 'tinyglobby'
 import { resolveClean } from '../features/clean'
 import { resolveEntry } from '../features/entry'
+import { hasExportsTypes } from '../features/exports'
 import { resolveTarget } from '../features/target'
 import { resolveTsconfig } from '../features/tsconfig'
 import { resolveRegex, slash, toArray } from '../utils/general'
 import { createLogger } from '../utils/logger'
 import { normalizeFormat, readPackageJson } from '../utils/package'
-import type { PackageJson } from 'pkg-types'
 import type { Awaitable } from '../utils/types'
 import { loadConfigFile, loadViteConfig } from './config'
 import type { NormalizedUserConfig, Options, ResolvedOptions } from './types'
@@ -18,27 +18,6 @@ import type { NormalizedUserConfig, Options, ResolvedOptions } from './types'
 export * from './types'
 
 const debug = Debug('tsdown:options')
-
-function hasExportsTypes(pkg: PackageJson | undefined): boolean {
-  if (!pkg?.exports) return false
-  
-  const exports = pkg.exports
-  
-  // Check if exports.types exists
-  if (typeof exports === 'object' && exports !== null && 'types' in exports) {
-    return true
-  }
-  
-  // Check if exports['.'].types exists
-  if (typeof exports === 'object' && exports !== null && '.' in exports) {
-    const mainExport = (exports as Record<string, unknown>)['.']
-    if (typeof mainExport === 'object' && mainExport !== null && 'types' in mainExport) {
-      return true
-    }
-  }
-  
-  return false
-}
 
 const DEFAULT_EXCLUDE_WORKSPACE = [
   '**/node_modules/**',
