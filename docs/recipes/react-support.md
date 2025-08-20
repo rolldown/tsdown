@@ -43,7 +43,7 @@ export const MyButton: React.FC<MyButtonProps> = ({ type }) => {
 And import it in your entry file:
 
 ```ts [index.ts]
-import { MyButton } from './MyButton'
+export { MyButton } from './MyButton'
 ```
 
 ::: warning
