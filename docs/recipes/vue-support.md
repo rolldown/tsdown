@@ -28,9 +28,25 @@ export default defineConfig({
 
 Install the required dependencies:
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install -D unplugin-vue vue-tsc
 ```
+
+```sh [pnpm]
+pnpm add -D unplugin-vue vue-tsc
+```
+
+```sh [yarn]
+yarn add -D unplugin-vue vue-tsc
+```
+
+```sh [bun]
+bun add -D unplugin-vue vue-tsc
+```
+
+:::
 
 ## How It Works
 

@@ -57,15 +57,47 @@ When downleveling certain modern JavaScript features, `tsdown` may require runti
 
 If your target includes features that require these helpers, you may need to install the `@oxc-project/runtime` package in your project:
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install @oxc-project/runtime
 ```
 
+```sh [pnpm]
+pnpm add @oxc-project/runtime
+```
+
+```sh [yarn]
+yarn add @oxc-project/runtime
+```
+
+```sh [bun]
+bun add @oxc-project/runtime
+```
+
+:::
+
 If you want to **inline helper functions** instead of importing them from the runtime package, you can install `@oxc-project/runtime` as a development dependency:
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install -D @oxc-project/runtime
 ```
+
+```sh [pnpm]
+pnpm add -D @oxc-project/runtime
+```
+
+```sh [yarn]
+yarn add -D @oxc-project/runtime
+```
+
+```sh [bun]
+bun add -D @oxc-project/runtime
+```
+
+:::
 
 # CSS Targeting
 
@@ -73,9 +105,25 @@ npm install -D @oxc-project/runtime
 
 To enable CSS downleveling, you need to manually install [`unplugin-lightningcss`](https://github.com/unplugin/unplugin-lightningcss):
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install -D unplugin-lightningcss
 ```
+
+```sh [pnpm]
+pnpm add -D unplugin-lightningcss
+```
+
+```sh [yarn]
+yarn add -D unplugin-lightningcss
+```
+
+```sh [bun]
+bun add -D unplugin-lightningcss
+```
+
+:::
 
 Once installed, simply set your browser target (for example, `target: 'chrome100'`) in your configuration or CLI options, and CSS downleveling will be enabled automatically.
 
