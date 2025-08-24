@@ -53,6 +53,11 @@ export async function migrate({
   }
 }
 
+const DEP_FIELDS = {
+  dependencies: `^${version}`,
+  devDependencies: `^${version}`,
+  peerDependencies: '*',
+} as const
 async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
   if (!existsSync('package.json')) {
     globalLogger.error('No package.json found')
@@ -61,33 +66,16 @@ async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
 
   const pkgRaw = await readFile('package.json', 'utf-8')
   let pkg = JSON.parse(pkgRaw)
-  const semver = `^${version}`
   let found = false
-  if (pkg.dependencies?.tsup) {
-    globalLogger.info('Migrating `dependencies` to tsdown.')
-    found = true
-    pkg.dependencies = renameKey(pkg.dependencies, 'tsup', 'tsdown', semver)
+
+  for (const [field, semver] of Object.entries(DEP_FIELDS)) {
+    if (pkg[field]?.tsup) {
+      globalLogger.info(`Migrating \`${field}\` to tsdown.`)
+      found = true
+      pkg[field] = renameKey(pkg[field], 'tsup', 'tsdown', semver)
+    }
   }
-  if (pkg.devDependencies?.tsup) {
-    globalLogger.info('Migrating `devDependencies` to tsdown.')
-    found = true
-    pkg.devDependencies = renameKey(
-      pkg.devDependencies,
-      'tsup',
-      'tsdown',
-      semver,
-    )
-  }
-  if (pkg.peerDependencies?.tsup) {
-    globalLogger.info('Migrating `peerDependencies` to tsdown.')
-    found = true
-    pkg.peerDependencies = renameKey(
-      pkg.peerDependencies,
-      'tsup',
-      'tsdown',
-      '*',
-    )
-  }
+
   if (pkg.scripts) {
     for (const key of Object.keys(pkg.scripts)) {
       if (pkg.scripts[key].includes('tsup')) {
