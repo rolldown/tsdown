@@ -18,9 +18,9 @@ export { foo, foo$1 };
 ## index.js
 
 ```js
-import { foo as foo$1, foo$1 as foo } from "./foo.js";
+import { foo, foo$1 } from "./foo.js";
 
-export { foo$1 as foo, foo as utilsFoo };
+export { foo, foo$1 as utilsFoo };
 ```
 ## run.js
 

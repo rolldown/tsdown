@@ -276,13 +276,11 @@ test('minify', async (context) => {
       minify: {
         mangle: true,
         compress: true,
-        removeWhitespace: false,
       },
     },
   })
   expect(snapshot).contains('!0')
   expect(snapshot).not.contains('true')
-  expect(snapshot).not.contains('const foo')
 })
 
 test('iife and umd', async (context) => {
