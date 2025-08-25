@@ -143,8 +143,8 @@ export async function resolveInputOptions(
       external,
       resolve: {
         alias,
-        tsconfigFilename: tsconfig || undefined,
       },
+      tsconfig: tsconfig || undefined,
       treeshake,
       platform: cjsDts || format === 'cjs' ? 'node' : platform,
       define: {
