@@ -1,6 +1,6 @@
 # Solid Support
 
-`tsdown` provides first-class support for building Solid component libraries by seamlessly integrating with [`rolldown-plugin-solid`](https://github.com/g-mero/rollup-plugin-inline-import) or [`unplugin-solid`](https://github.com/unplugin/unplugin-solid). This setup enables you to bundle Solid components and generate type declarations with modern TypeScript tooling.
+`tsdown` provides first-class support for building Solid component libraries by seamlessly integrating with [`rolldown-plugin-solid`](https://github.com/g-mero/rolldown-plugin-solid) or [`unplugin-solid`](https://github.com/unplugin/unplugin-solid). This setup enables you to bundle Solid components and generate type declarations with modern TypeScript tooling.
 
 ## Quick Start
 
