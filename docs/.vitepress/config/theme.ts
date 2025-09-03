@@ -105,6 +105,7 @@ export function getLocaleConfig(lang: string) {
       items: [
         { text: t('Vue Support'), link: '/vue-support.md' },
         { text: t('React Support'), link: '/react-support.md' },
+        { text: t('Solid Support'), link: '/solid-support.md' },
       ],
     },
     {
