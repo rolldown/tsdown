@@ -142,8 +142,9 @@ export interface Options {
    *
    * Determines the JavaScript version or runtime(s) for which the code should be compiled.
    * If not set, defaults to the value of `engines.node` in your project's `package.json`.
+   * If no `engines.node` field exists, no syntax transformations are applied.
    *
-   * Accepts a single target (e.g., `'es2020'`, `'node18'`) or an array of targets.
+   * Accepts a single target (e.g., `'es2020'`, `'node18'`), an array of targets, or `false` to disable all transformations.
    *
    * @see {@link https://tsdown.dev/options/target#supported-targets} for a list of valid targets and more details.
    *
@@ -157,6 +158,12 @@ export interface Options {
    * ```jsonc
    * // Target multiple environments
    * { "target": ["node18", "es2020"] }
+   * ```
+   *
+   * @example
+   * ```jsonc
+   * // Disable all syntax transformations
+   * { "target": false }
    * ```
    */
   target?: string | string[] | false

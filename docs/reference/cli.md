@@ -67,6 +67,10 @@ Specify the JavaScript target version for the bundle. Examples include:
 
 - `es2015`
 - `esnext`
+- `chrome100`
+- `node18`
+
+You can also disable all syntax transformations by setting the target to `false` in your configuration file.
 
 See also [Target](../options/target.md).
 
