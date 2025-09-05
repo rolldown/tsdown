@@ -70,7 +70,7 @@ Specify the JavaScript target version for the bundle. Examples include:
 - `chrome100`
 - `node18`
 
-You can also disable all syntax transformations by setting the target to `false` in your configuration file.
+You can also disable all syntax transformations by using `--no-target` or by setting the target to `false` in your configuration file.
 
 See also [Target](../options/target.md).
 

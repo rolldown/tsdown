@@ -70,7 +70,7 @@ tsdown --tsconfig tsconfig.build.json
 - `chrome100`
 - `node18`
 
-您也可以在配置文件中将目标设置为 `false` 来禁用所有语法转换。
+您也可以使用 `--no-target` 或在配置文件中将目标设置为 `false` 来禁用所有语法转换。
 
 另请参阅 [构建目标](../options/target.md)。
 
