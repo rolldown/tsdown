@@ -132,7 +132,7 @@ Next, initialize the `tsdown` configuration file:
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['./src'],
+  entry: ['./src/index.ts'],
 })
 ```
 
