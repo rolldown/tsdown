@@ -198,4 +198,52 @@ describe('node protocol', () => {
     expect(snapshot).toMatch(/from ['"]node:fs\/promises['"]/)
     expect(snapshot).toMatch(/from ['"]node:url['"]/)
   })
+
+  test('should not double-prefix modules that already have node: prefix', async (context) => {
+    const files = {
+      'index.ts': `
+    import fs from 'fs'
+    import { join } from 'node:path'
+    import * as crypto from 'node:crypto'
+
+    export { fs, join, crypto }
+    `,
+    }
+    const { snapshot } = await testBuild({
+      context,
+      files,
+      options: {
+        nodeProtocol: true,
+      },
+    })
+    expect(snapshot).toMatch(/from ['"]node:fs['"]/)
+    expect(snapshot).toMatch(/from ['"]node:path['"]/)
+    expect(snapshot).toMatch(/from ['"]node:crypto['"]/)
+    // Should not have double prefixes
+    expect(snapshot).not.toMatch(/node:node:/)
+  })
+
+  test('should handle modules that require node: prefix', async (context) => {
+    // Simulate modules that only exist with node: prefix
+    const files = {
+      'index.ts': `
+    // These would be modules that only exist with node: prefix
+    // Simulating node:test, node:sqlite type modules
+    import test from 'node:test'
+    import sqlite from 'node:sqlite'
+
+    export { test, sqlite }
+    `,
+    }
+    const { snapshot } = await testBuild({
+      context,
+      files,
+      options: {
+        nodeProtocol: 'strip',
+      },
+    })
+    // For node:-only modules, the prefix should be preserved even in strip mode
+    expect(snapshot).toMatch(/from ['"]node:test['"]/)
+    expect(snapshot).toMatch(/from ['"]node:sqlite['"]/)
+  })
 })
