@@ -55,8 +55,8 @@ catalogs:
       specifier: ^0.4.2
       version: 0.4.2
     unplugin-unused:
-      specifier: ^0.5.2
-      version: 0.5.2
+      specifier: ^0.5.3
+      version: 0.5.3
     vitest:
       specifier: ^3.2.4
       version: 3.2.4
@@ -120,8 +120,8 @@ catalogs:
       specifier: ^5.5.3
       version: 5.5.3
     rolldown-plugin-dts:
-      specifier: ^0.16.1
-      version: 0.16.1
+      specifier: ^0.16.2
+      version: 0.16.2
     semver:
       specifier: ^7.7.2
       version: 7.7.2
@@ -172,7 +172,7 @@ importers:
         version: 1.0.0-beta.36
       rolldown-plugin-dts:
         specifier: catalog:prod
-        version: 0.16.1(rolldown@1.0.0-beta.36)(typescript@5.9.2)(vue-tsc@3.0.6(typescript@5.9.2))
+        version: 0.16.2(rolldown@1.0.0-beta.36)(typescript@5.9.2)(vue-tsc@3.0.6(typescript@5.9.2))
       semver:
         specifier: catalog:prod
         version: 7.7.2
@@ -248,7 +248,7 @@ importers:
         version: 0.4.2
       unplugin-unused:
         specifier: catalog:dev
-        version: 0.5.2
+        version: 0.5.3
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.8(@types/node@24.3.1)(esbuild@0.25.9)(jiti@2.5.1)(tsx@4.20.5)(yaml@2.8.1)
@@ -2960,8 +2960,8 @@ packages:
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
-  rolldown-plugin-dts@0.16.1:
-    resolution: {integrity: sha512-bEfJpvhHm+h2cldNUbj8dT5tF9BJrJawPquScFdodob/55DqYkBis7iar8nkn8wSNIFKxwd2jP9ly/Z7lRME2w==}
+  rolldown-plugin-dts@0.16.2:
+    resolution: {integrity: sha512-WV1J5OqhWL8O8Nd5VAVQghmNcjyQvcGI5w51VszjO9k73avbXpz9X86KLYcKTWXXH6L0f+93JzZxiiSrcYhDLw==}
     engines: {node: '>=20.18.0'}
     peerDependencies:
       '@typescript/native-preview': '>=7.0.0-dev.20250601.1'
@@ -3299,8 +3299,8 @@ packages:
     resolution: {integrity: sha512-KbE1EzyJmuUCSmSJQQ/TgtimRJ3T8pO0G64lt+zIh9s59Jbmo1R1BdqUj32EiJV/lG+62TGffQU2h1Vr7ZL5UQ==}
     engines: {node: '>=20.18.0'}
 
-  unplugin-unused@0.5.2:
-    resolution: {integrity: sha512-fn0DZrp96+NYo4U5UbLp1ZmZpBk/Z1RhjG2LvXfQxxw82dzciBxmx04ZgATxLZDD4HcGhdWlLIm2Gz1SVIBhDQ==}
+  unplugin-unused@0.5.3:
+    resolution: {integrity: sha512-YZ9xXe9UQDRwDg5X4nyptZgVQeHuT84GQBpf0tEap08XGwx5jCT29P1/LTuChqno/A9SFFG14LWE5Bg/YhKeBQ==}
     engines: {node: '>=20.18.0'}
 
   unplugin-utils@0.2.5:
@@ -3527,14 +3527,14 @@ snapshots:
   '@babel/template@7.27.2':
     dependencies:
       '@babel/code-frame': 7.27.1
-      '@babel/parser': 7.27.7
+      '@babel/parser': 7.28.4
       '@babel/types': 7.28.4
 
   '@babel/traverse@7.27.7':
     dependencies:
       '@babel/code-frame': 7.27.1
       '@babel/generator': 7.28.3
-      '@babel/parser': 7.27.7
+      '@babel/parser': 7.28.4
       '@babel/template': 7.27.2
       '@babel/types': 7.28.4
       debug: 4.4.1
@@ -6294,7 +6294,7 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rolldown-plugin-dts@0.16.1(rolldown@1.0.0-beta.36)(typescript@5.9.2)(vue-tsc@3.0.6(typescript@5.9.2)):
+  rolldown-plugin-dts@0.16.2(rolldown@1.0.0-beta.36)(typescript@5.9.2)(vue-tsc@3.0.6(typescript@5.9.2)):
     dependencies:
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.4
@@ -6663,7 +6663,7 @@ snapshots:
       magic-string: 0.30.19
       unplugin: 2.3.10
 
-  unplugin-unused@0.5.2:
+  unplugin-unused@0.5.3:
     dependencies:
       js-tokens: 9.0.1
       picocolors: 1.1.1
