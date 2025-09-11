@@ -352,6 +352,12 @@ export interface Options {
   config?: boolean | string
 
   /**
+   * Config loader to use. It can only be set via CLI or API.
+   * @default 'auto'
+   */
+  configLoader?: 'auto' | 'native' | 'unconfig'
+
+  /**
    * Reuse config from Vite or Vitest (experimental)
    * @default false
    */
@@ -454,7 +460,9 @@ export interface Options {
 /**
  * Options without specifying config file path.
  */
-export type UserConfig = Arrayable<Omit<Options, 'config' | 'filter'>>
+export type UserConfig = Arrayable<
+  Omit<Options, 'config' | 'filter' | 'configLoader'>
+>
 export type UserConfigFn = (cliOptions: Options) => Awaitable<UserConfig>
 export type NormalizedUserConfig = Exclude<UserConfig, any[]>
 
@@ -470,6 +478,7 @@ export type ResolvedOptions = Omit<
         | 'logLevel'
         | 'failOnWarn'
         | 'customLogger'
+        | 'configLoader'
       >,
       | 'globalName'
       | 'inputOptions'

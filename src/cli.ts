@@ -17,6 +17,11 @@ cli
     allowUnknownOptions: true,
   })
   .option('-c, --config <filename>', 'Use a custom config file')
+  .option(
+    '--config-loader <loader>',
+    'Config loader to use: auto, native, unconfig',
+    { default: 'auto' },
+  )
   .option('--no-config', 'Disable config file')
   .option('-f, --format <format>', 'Bundle format: esm, cjs, iife, umd', {
     default: 'esm',

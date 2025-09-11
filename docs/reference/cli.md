@@ -18,6 +18,12 @@ Specify a custom configuration file. Use this option to define the path to the c
 
 See also [Config File](../options/config-file.md).
 
+## `--config-loader <loader>`
+
+Specifies which config loader to use.
+
+See also [Config File](../options/config-file.md).
+
 ## `--no-config`
 
 Disable loading a configuration file. This is useful if you want to rely solely on command-line options or default settings.

@@ -18,6 +18,12 @@ tsdown src/index.ts src/util.ts
 
 另请参阅 [配置文件](../options/config-file.md)。
 
+## `--config-loader <loader>`
+
+指定要使用的配置加载器。
+
+另请参阅 [配置文件](../options/config-file.md)。
+
 ## `--no-config`
 
 禁用加载配置文件。如果您希望仅依赖命令行选项或默认设置，此选项非常有用。
