@@ -90,18 +90,29 @@ export interface ChunkAddonObject {
 }
 export type ChunkAddonFunction = (ctx: {
   format: Format
-}) => ChunkAddonObject | undefined
-export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction
+  fileName: string
+}) => ChunkAddonObject | string | undefined
+export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string
 
 export function resolveChunkAddon(
   chunkAddon: ChunkAddon | undefined,
   format: NormalizedFormat,
+  dts?: boolean,
 ): AddonFunction | undefined {
   if (!chunkAddon) return
 
   return (chunk: RenderedChunk) => {
+    if (!dts && RE_DTS.test(chunk.fileName)) return ''
+
     if (typeof chunkAddon === 'function') {
-      chunkAddon = chunkAddon({ format })
+      chunkAddon = chunkAddon({
+        format,
+        fileName: chunk.fileName,
+      })
+    }
+
+    if (typeof chunkAddon === 'string') {
+      return chunkAddon
     }
 
     switch (true) {

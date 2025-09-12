@@ -85,6 +85,8 @@ export async function resolveInputOptions(
     name,
     logger,
     cjsDefault,
+    banner,
+    footer,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -99,7 +101,12 @@ export async function resolveInputOptions(
 
   if (dts) {
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
-    const options: DtsOptions = { tsconfig, ...dts }
+    const options: DtsOptions = {
+      tsconfig,
+      banner: resolveChunkAddon(banner, format, true),
+      footer: resolveChunkAddon(footer, format, true),
+      ...dts,
+    }
 
     if (format === 'es') {
       plugins.push(dtsPlugin(options))
