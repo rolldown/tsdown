@@ -232,6 +232,9 @@ export interface Options {
 
   plugins?: InputOptions['plugins']
 
+  /**
+   * Use with caution; ensure you understand the implications.
+   */
   inputOptions?:
     | InputOptions
     | ((
@@ -301,6 +304,9 @@ export interface Options {
    */
   cjsDefault?: boolean
 
+  /**
+   * Use with caution; ensure you understand the implications.
+   */
   outputOptions?:
     | OutputOptions
     | ((
