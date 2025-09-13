@@ -12,11 +12,17 @@ import { copy } from './features/copy'
 import { writeExports, type TsdownChunks } from './features/exports'
 import { createHooks } from './features/hooks'
 import { publint } from './features/publint'
+import { generateReport } from './features/report'
 import { getBuildOptions } from './features/rolldown'
 import { shortcuts } from './features/shortcuts'
 import { watchBuild } from './features/watch'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
-import { globalLogger, prettyName, type Logger } from './utils/logger'
+import {
+  globalLogger,
+  LogLevels,
+  prettyName,
+  type Logger,
+} from './utils/logger'
 
 /**
  * Build with tsdown.
@@ -111,6 +117,7 @@ export async function buildSingle(
             format,
             isMultiFormat,
             false,
+            format === 'cjs' && !!dts, // Skip report for CJS when DTS is enabled
           )
           await hooks.callHook('build:before', {
             ...context,
@@ -123,6 +130,31 @@ export async function buildSingle(
               await getBuildOptions(config, format, isMultiFormat, true),
             )
             chunks[format].push(...output)
+
+            // Manually report CJS files after both builds are complete
+            if (config.report && LogLevels[logger.level] >= 3 /* info */) {
+              const buildOptions = await getBuildOptions(
+                config,
+                format,
+                isMultiFormat,
+                false,
+              )
+              const outputOptions = buildOptions.output
+              if (outputOptions) {
+                await generateReport(
+                  config.report,
+                  logger,
+                  config.cwd,
+                  outputOptions,
+                  Object.fromEntries(
+                    chunks[format].map((chunk) => [chunk.fileName, chunk]),
+                  ),
+                  false,
+                  config.name,
+                  isMultiFormat,
+                )
+              }
+            }
           }
         } catch (error) {
           if (watch) {
