@@ -87,6 +87,7 @@ export async function resolveInputOptions(
     cjsDefault,
     banner,
     footer,
+    globImport,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -133,10 +134,10 @@ export async function resolveInputOptions(
         await LightningCSSPlugin({ target }),
       )
     }
-    plugins.push(
-      ShebangPlugin(logger, cwd, name, isMultiFormat),
-      importGlobPlugin(),
-    )
+    plugins.push(ShebangPlugin(logger, cwd, name, isMultiFormat))
+    if (globImport) {
+      plugins.push(importGlobPlugin())
+    }
   }
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {

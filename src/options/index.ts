@@ -207,6 +207,7 @@ async function resolveConfig(
     removeNodeProtocol,
     nodeProtocol,
     cjsDefault = true,
+    globImport = true,
   } = userConfig
 
   const logger = createLogger(logLevel, { customLogger, failOnWarn })
@@ -334,6 +335,7 @@ async function resolveConfig(
     unbundle,
     nodeProtocol,
     cjsDefault,
+    globImport,
   }
 
   return config

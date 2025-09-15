@@ -423,6 +423,13 @@ export interface Options {
   report?: boolean | ReportOptions
 
   /**
+   * `import.meta.glob` support.
+   * @see https://vite.dev/guide/features.html#glob-import
+   * @default true
+   */
+  globImport?: boolean
+
+  /**
    * **[experimental]** Generate package exports for `package.json`.
    *
    * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
