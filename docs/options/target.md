@@ -36,12 +36,14 @@ You can disable all syntax transformations by setting the target to `false`. Thi
 ```
 
 When `target` is set to `false`:
+
 - No JavaScript syntax downleveling occurs (modern features like optional chaining `?.`, nullish coalescing `??`, etc. are preserved)
 - No CSS syntax transformations are applied (modern CSS features like nesting are preserved)
 - No runtime helper plugins are loaded
 - The output will use the exact syntax from your source code
 
 This is particularly useful when:
+
 - You're targeting modern environments that support the latest JavaScript/CSS features
 - You want to handle syntax transformations in a different build step
 - You're building a library that will be further processed by the consuming application
@@ -74,54 +76,6 @@ You can also pass an array of targets to ensure compatibility across multiple en
 ```bash
 tsdown --target chrome100 --target node20.18
 ```
-
-## Runtime Helpers
-
-When downleveling certain modern JavaScript features, `tsdown` may require runtime helpers provided by the `@oxc-project/runtime` package. For example, transforming `await` expressions into older syntax requires the helper `@oxc-project/runtime/helpers/asyncToGenerator`.
-
-If your target includes features that require these helpers, you may need to install the `@oxc-project/runtime` package in your project:
-
-::: code-group
-
-```sh [npm]
-npm install @oxc-project/runtime
-```
-
-```sh [pnpm]
-pnpm add @oxc-project/runtime
-```
-
-```sh [yarn]
-yarn add @oxc-project/runtime
-```
-
-```sh [bun]
-bun add @oxc-project/runtime
-```
-
-:::
-
-If you want to **inline helper functions** instead of importing them from the runtime package, you can install `@oxc-project/runtime` as a development dependency:
-
-::: code-group
-
-```sh [npm]
-npm install -D @oxc-project/runtime
-```
-
-```sh [pnpm]
-pnpm add -D @oxc-project/runtime
-```
-
-```sh [yarn]
-yarn add -D @oxc-project/runtime
-```
-
-```sh [bun]
-bun add -D @oxc-project/runtime
-```
-
-:::
 
 # CSS Targeting
 

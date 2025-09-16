@@ -15,7 +15,6 @@ import { resolveChunkAddon, resolveChunkFilename } from './output'
 import { ReportPlugin } from './report'
 import { ShebangPlugin } from './shebang'
 import { getShimsInject } from './shims'
-import { RuntimeHelperCheckPlugin } from './target'
 import type {
   BuildOptions,
   InputOptions,
@@ -128,7 +127,6 @@ export async function resolveInputOptions(
     }
     if (target) {
       plugins.push(
-        RuntimeHelperCheckPlugin(logger, target),
         // Use Lightning CSS to handle CSS input. This is a temporary solution
         // until Rolldown supports CSS syntax lowering natively.
         await LightningCSSPlugin({ target }),
