@@ -58,7 +58,7 @@ export function resolveChunkFilename(
     dtsExtension = dts
   }
 
-  jsExtension ||= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
+  jsExtension ??= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
 
   const suffix = format === 'iife' || format === 'umd' ? `.${format}` : ''
   return [
@@ -77,7 +77,7 @@ function createChunkFilename(
   jsExtension: string,
   dtsExtension?: string,
 ): ChunkFileName {
-  if (!dtsExtension) return `${basename}${jsExtension}`
+  if (dtsExtension === undefined) return `${basename}${jsExtension}`
   return (chunk: PreRenderedChunk) => {
     return `${basename}${chunk.name.endsWith('.d') ? dtsExtension : jsExtension}`
   }

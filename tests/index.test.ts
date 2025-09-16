@@ -124,6 +124,26 @@ test('custom extension', async (context) => {
   `)
 })
 
+test('custom extension with empty string', async (context) => {
+  const files = {
+    'index.ts': `export default 10`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: true,
+      outExtensions: () => ({ js: '', dts: '' }),
+    },
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "index",
+      "index.d",
+    ]
+  `)
+})
+
 test('noExternal', async (context) => {
   const files = {
     'index.ts': `export * from 'cac'`,
