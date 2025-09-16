@@ -7,6 +7,7 @@ const hello = "world";
 //#endregion
 export { hello };
 ```
+
 ## old-file.js
 
 ```js

@@ -7,6 +7,7 @@ const foo = 1;
 //#endregion
 export { foo };
 ```
+
 ## index.js
 
 ```js
@@ -15,6 +16,7 @@ import { bar } from "./utils/bar.js";
 
 export { bar, foo };
 ```
+
 ## utils/bar.js
 
 ```js

@@ -8,6 +8,7 @@ var fixed_extension_default = 10;
 //#endregion
 module.exports = fixed_extension_default;
 ```
+
 ## index.d.cts
 
 ```cts
@@ -15,6 +16,7 @@ module.exports = fixed_extension_default;
 declare const _default: number;
 export = _default;
 ```
+
 ## index.d.mts
 
 ```mts
@@ -23,6 +25,7 @@ declare const _default: number;
 //#endregion
 export { _default as default };
 ```
+
 ## index.mjs
 
 ```mjs

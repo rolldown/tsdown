@@ -6,6 +6,7 @@ declare const hello = "world";
 //#endregion
 export { hello };
 ```
+
 ## index.mjs
 
 ```mjs

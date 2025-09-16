@@ -4,6 +4,7 @@
 body { color: red }
 
 ```
+
 ## index.js
 
 ```js

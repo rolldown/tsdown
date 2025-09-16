@@ -20,6 +20,7 @@ type Options = {
 };
 export { type Options };
 ```
+
 ## index.js
 
 ```js

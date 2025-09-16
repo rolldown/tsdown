@@ -4,6 +4,7 @@
 .foo { & .bar { color: red } }
 
 ```
+
 ## index.js
 
 ```js

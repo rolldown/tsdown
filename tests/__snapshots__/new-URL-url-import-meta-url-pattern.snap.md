@@ -3,11 +3,13 @@
 ```ts
 export const foo = 42
 ```
+
 ## assets/text-gNTN1G_6.txt
 
 ```txt
 Just some text
 ```
+
 ## index.js
 
 ```js

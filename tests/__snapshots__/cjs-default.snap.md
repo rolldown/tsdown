@@ -10,6 +10,7 @@ function hello() {
 //#endregion
 module.exports = hello;
 ```
+
 ## index.d.cts
 
 ```cts
@@ -17,6 +18,7 @@ module.exports = hello;
 declare function hello(): void;
 export = hello;
 ```
+
 ## index.d.ts
 
 ```ts
@@ -25,6 +27,7 @@ declare function hello(): void;
 //#endregion
 export { hello as default };
 ```
+
 ## index.js
 
 ```js

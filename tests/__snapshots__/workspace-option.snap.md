@@ -7,6 +7,7 @@ var bar_default = 12;
 //#endregion
 export { bar_default as default };
 ```
+
 ## packages/foo/dist/index.mjs
 
 ```mjs

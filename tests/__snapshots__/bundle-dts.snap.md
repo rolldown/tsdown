@@ -9,6 +9,7 @@ declare let shared: number;
 //#endregion
 export { shared, str };
 ```
+
 ## index.js
 
 ```js

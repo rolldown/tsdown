@@ -15,6 +15,7 @@ const foo = (a) => {
 //#endregion
 export { foo, foo$1 };
 ```
+
 ## index.js
 
 ```js
@@ -22,6 +23,7 @@ import { foo, foo$1 } from "./foo.js";
 
 export { foo, foo$1 as utilsFoo };
 ```
+
 ## run.js
 
 ```js
