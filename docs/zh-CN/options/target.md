@@ -75,54 +75,6 @@ tsdown --target es2020
 tsdown --target chrome100 --target node20.18
 ```
 
-## 运行时辅助工具
-
-在降级某些现代 JavaScript 特性时，`tsdown` 可能需要由 `@oxc-project/runtime` 包提供的运行时辅助工具。例如，将 `await` 表达式转换为旧语法时，需要使用辅助工具 `@oxc-project/runtime/helpers/asyncToGenerator`。
-
-如果您的目标环境包含需要这些辅助工具的特性，您可能需要在项目中安装 `@oxc-project/runtime` 包：
-
-::: code-group
-
-```sh [npm]
-npm install @oxc-project/runtime
-```
-
-```sh [pnpm]
-pnpm add @oxc-project/runtime
-```
-
-```sh [yarn]
-yarn add @oxc-project/runtime
-```
-
-```sh [bun]
-bun add @oxc-project/runtime
-```
-
-:::
-
-如果您希望**内联辅助函数**，而不是从运行时包中导入它们，可以将 `@oxc-project/runtime` 作为开发依赖进行安装：
-
-::: code-group
-
-```sh [npm]
-npm install -D @oxc-project/runtime
-```
-
-```sh [pnpm]
-pnpm add -D @oxc-project/runtime
-```
-
-```sh [yarn]
-yarn add -D @oxc-project/runtime
-```
-
-```sh [bun]
-bun add -D @oxc-project/runtime
-```
-
-:::
-
 # CSS 目标
 
 `tsdown` 也可以将 CSS 特性降级以匹配您指定的浏览器目标。例如，如果目标是 `chrome108` 或更低版本，CSS 嵌套的 `&` 选择器将被展开为平铺结构。

@@ -75,54 +75,6 @@ You can also pass an array of targets to ensure compatibility across multiple en
 tsdown --target chrome100 --target node20.18
 ```
 
-## Runtime Helpers
-
-When downleveling certain modern JavaScript features, `tsdown` may require runtime helpers provided by the `@oxc-project/runtime` package. For example, transforming `await` expressions into older syntax requires the helper `@oxc-project/runtime/helpers/asyncToGenerator`.
-
-If your target includes features that require these helpers, you may need to install the `@oxc-project/runtime` package in your project:
-
-::: code-group
-
-```sh [npm]
-npm install @oxc-project/runtime
-```
-
-```sh [pnpm]
-pnpm add @oxc-project/runtime
-```
-
-```sh [yarn]
-yarn add @oxc-project/runtime
-```
-
-```sh [bun]
-bun add @oxc-project/runtime
-```
-
-:::
-
-If you want to **inline helper functions** instead of importing them from the runtime package, you can install `@oxc-project/runtime` as a development dependency:
-
-::: code-group
-
-```sh [npm]
-npm install -D @oxc-project/runtime
-```
-
-```sh [pnpm]
-pnpm add -D @oxc-project/runtime
-```
-
-```sh [yarn]
-yarn add -D @oxc-project/runtime
-```
-
-```sh [bun]
-bun add -D @oxc-project/runtime
-```
-
-:::
-
 # CSS Targeting
 
 `tsdown` can also downlevel CSS features to match your specified browser targets. For example, a CSS nesting `&` selector will be flattened if the target is `chrome108` or lower.
