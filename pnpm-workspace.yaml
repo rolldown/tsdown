@@ -10,9 +10,9 @@ catalogs:
     '@arethetypeswrong/core': ^0.18.2
     '@sxzz/eslint-config': ^7.1.4
     '@sxzz/prettier-config': ^2.2.4
-    '@sxzz/test-utils': ^0.5.10
+    '@sxzz/test-utils': ^0.5.11
     '@types/debug': ^4.1.12
-    '@types/node': ^24.3.1
+    '@types/node': ^24.5.0
     '@types/semver': ^7.7.1
     bumpp: ^10.2.3
     eslint: ^9.35.0
@@ -22,15 +22,15 @@ catalogs:
     publint: ^0.3.12
     tsx: ^4.20.5
     typescript: ~5.9.2
-    unplugin-lightningcss: ^0.4.2
+    unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.3
     vitest: ^3.2.4
 
   docs:
     '@unocss/eslint-plugin': ^66.5.1
     '@vueuse/core': ^13.9.0
-    oxc-minify: ^0.87.0
-    typedoc: ^0.28.12
+    oxc-minify: ^0.89.0
+    typedoc: ^0.28.13
     typedoc-plugin-markdown: ^4.8.1
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.5.1
@@ -45,7 +45,7 @@ catalogs:
     ansis: ^4.1.0
     cac: ^6.7.14
     chokidar: ^4.0.3
-    debug: ^4.4.1
+    debug: ^4.4.3
     diff: ^8.0.2
     empathic: ^2.0.0
     hookable: ^5.5.3
