@@ -271,23 +271,19 @@ async function resolveConfig(
       cwd,
     )
     if (viteUserConfig) {
-      // const alias = viteUserConfig.resolve?.alias
-      if ((Array.isArray as (arg: any) => arg is readonly any[])(alias)) {
+      const viteAlias = viteUserConfig.resolve?.alias
+
+      if ((Array.isArray as (arg: any) => arg is readonly any[])(viteAlias)) {
         throw new TypeError(
           'Unsupported resolve.alias in Vite config. Use object instead of array',
         )
       }
+      if (viteAlias) {
+        alias = viteAlias
+      }
 
       if (viteUserConfig.plugins) {
         plugins = [viteUserConfig.plugins as any, plugins]
-      }
-
-      const viteAlias = viteUserConfig.resolve?.alias
-      if (
-        viteAlias &&
-        !(Array.isArray as (arg: any) => arg is readonly any[])(viteAlias)
-      ) {
-        alias = viteAlias
       }
     }
   }
