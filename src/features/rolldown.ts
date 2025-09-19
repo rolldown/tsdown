@@ -29,12 +29,14 @@ export async function getBuildOptions(
   format: NormalizedFormat,
   isMultiFormat?: boolean,
   cjsDts: boolean = false,
+  skipReport: boolean = false,
 ): Promise<BuildOptions> {
   const inputOptions = await resolveInputOptions(
     config,
     format,
     cjsDts,
     isMultiFormat,
+    skipReport,
   )
 
   const outputOptions: OutputOptions = await resolveOutputOptions(
@@ -62,6 +64,7 @@ export async function resolveInputOptions(
   format: NormalizedFormat,
   cjsDts: boolean,
   isMultiFormat?: boolean,
+  skipReport: boolean = false,
 ): Promise<InputOptions> {
   const {
     entry,
@@ -138,7 +141,12 @@ export async function resolveInputOptions(
     }
   }
 
-  if (report && LogLevels[logger.level] >= 3 /* info */) {
+  if (
+    report &&
+    LogLevels[logger.level] >= 3 /* info */ &&
+    !cjsDts &&
+    !skipReport
+  ) {
     plugins.push(ReportPlugin(report, logger, cwd, cjsDts, name, isMultiFormat))
   }
 
