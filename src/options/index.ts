@@ -279,7 +279,7 @@ async function resolveConfig(
         )
       }
       if (viteAlias) {
-        alias = viteAlias
+        alias = { ...alias, ...viteAlias }
       }
 
       if (viteUserConfig.plugins) {
