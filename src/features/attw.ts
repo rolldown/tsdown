@@ -150,7 +150,7 @@ export async function attw(options: ResolvedOptions): Promise<void> {
     const pkg = attwCore.createPackageFromTarballData(tarball)
     const checkResult = await attwCore.checkPackage(pkg, attwOptions)
 
-    if (checkResult.types !== false && checkResult.problems) {
+    if (checkResult.types !== false && checkResult.problems.length) {
       const problems = checkResult.problems.filter((problem) => {
         // Only apply profile filter to problems that have resolutionKind
         if ('resolutionKind' in problem) {
