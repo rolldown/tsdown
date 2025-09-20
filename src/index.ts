@@ -36,7 +36,7 @@ export async function build(userOptions: Options = {}): Promise<void> {
   const rebuilds = await Promise.all(
     configs.map((options) => buildSingle(options, clean)),
   )
-  const disposeCbs: (() => Promise<void>)[] = []
+  const disposeCbs: (() => void | Promise<void>)[] = []
 
   for (const [i, config] of configs.entries()) {
     const rebuild = rebuilds[i]
@@ -46,8 +46,9 @@ export async function build(userOptions: Options = {}): Promise<void> {
     disposeCbs.push(() => watcher.close())
   }
 
+  // Watch mode with shortcuts
   if (disposeCbs.length) {
-    shortcuts(restart)
+    disposeCbs.push(shortcuts(restart))
   }
 
   async function restart() {
