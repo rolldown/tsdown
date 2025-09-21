@@ -557,22 +557,3 @@ test('dts not enabled when exports["."] is string instead of object', async (con
   expect(outputFiles).not.toContain('index.d.mts')
   expect(outputFiles).toContain('index.mjs')
 })
-
-test('new URL(url, import.meta.url) pattern', async (context) => {
-  const files = {
-    'index.ts': `
-    export const modUrl = new URL('./mod.ts', import.meta.url);
-    export const textUrl = new URL('./text.txt', import.meta.url);
-    `,
-    'mod.ts': 'export const foo = 42',
-    'text.txt': 'Just some text',
-  }
-
-  await testBuild({
-    context,
-    files,
-    options: {
-      minify: 'dce-only',
-    },
-  })
-})

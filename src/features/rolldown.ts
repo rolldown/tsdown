@@ -181,9 +181,6 @@ export async function resolveInputOptions(
             defaultHandler(level, log)
           }
         : undefined,
-      experimental: {
-        resolveNewUrlToAsset: true,
-      },
     },
     config.inputOptions,
     [format, { cjsDts }],
