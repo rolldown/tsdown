@@ -7,13 +7,14 @@ import { debounce, toArray } from '../utils/general'
 import type { ResolvedOptions } from '../options'
 import type { FSWatcher } from 'chokidar'
 
-const endsWithConfig = /[\\/](?:package\.json|tsdown\.config.*)$/
+const endsWithConfig =
+  /[\\/](?:(?:package|tsconfig)\.json|pnpm-(?:workspace|lock)\.yaml|tsdown\.config.*)$/
 
 export async function watchBuild(
   options: ResolvedOptions,
   configFiles: string[],
-  rebuild: () => void,
-  restart: () => void,
+  rebuild: () => Promise<void>,
+  restart: () => Promise<void>,
 ): Promise<FSWatcher> {
   if (typeof options.watch === 'boolean' && options.outDir === options.cwd) {
     throw new Error(
@@ -30,7 +31,7 @@ export async function watchBuild(
   files.push(...configFiles)
 
   const { watch } = await import('chokidar')
-  const debouncedRebuild = debounce(rebuild, 100)
+  const debouncedOnChange = debounce(onChange, 100)
 
   const watcher = watch(files, {
     ignoreInitial: true,
@@ -43,17 +44,38 @@ export async function watchBuild(
     ],
   })
 
-  watcher.on('all', (type: string, file: string) => {
-    if (configFiles.includes(file) || endsWithConfig.test(file)) {
-      options.logger.info(`Reload config: ${file}`)
-      restart()
-      return
-    }
-
-    options.logger.info(`Change detected: ${type} ${file}`)
-    invalidateContextFile(globalContext, file)
-    debouncedRebuild()
+  let pending: string[] = []
+  let pendingPromise: Promise<void> | undefined
+  watcher.on('all', (type, file) => {
+    pending.push(file)
+    debouncedOnChange()
   })
 
   return watcher
+
+  async function onChange() {
+    await pendingPromise
+
+    if (!pending.length) {
+      return
+    }
+
+    for (const file of pending) {
+      invalidateContextFile(globalContext, file)
+    }
+
+    const configRelated = pending.some(
+      (file) => configFiles.includes(file) || endsWithConfig.test(file),
+    )
+
+    if (configRelated) {
+      options.logger.info(`Restarting due to config change...`)
+      pendingPromise = restart()
+    } else {
+      options.logger.info(`Change detected: ${pending.join(', ')}`)
+      pendingPromise = rebuild()
+    }
+    pending = []
+    await pendingPromise
+  }
 }
