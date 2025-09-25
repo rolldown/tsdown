@@ -82,6 +82,8 @@ See also [Target](../options/target.md).
 
 ## `--silent`
 
+> **Deprecated**: Use `--log-level silent` instead.
+
 Suppress non-error logs during the build process. Only error messages will be displayed, making it easier to focus on critical issues.
 
 See also [Silent Mode](../options/silent-mode.md).

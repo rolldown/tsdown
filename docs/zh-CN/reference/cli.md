@@ -82,6 +82,8 @@ tsdown --tsconfig tsconfig.build.json
 
 ## `--silent`
 
+> **已废弃**：请使用 `--log-level silent` 替代。
+
 在构建过程中屏蔽非错误日志。仅显示错误消息，使您更专注于关键问题。
 
 另请参阅 [静默模式](../options/silent-mode.md)。
