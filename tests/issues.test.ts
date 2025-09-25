@@ -52,7 +52,7 @@ describe('issues', () => {
         })
       },
     })
-    expect(outputFiles.sort()).toEqual(['index.d.ts', 'index.js'])
+    expect(outputFiles.toSorted()).toEqual(['index.d.ts', 'index.js'])
   })
 
   test.fails('#216', async (context) => {
