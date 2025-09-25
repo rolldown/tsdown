@@ -1,9 +1,11 @@
+import { RequireCJS } from 'rolldown-plugin-require-cjs'
 import { defineConfig } from './src/config.ts'
 
 export default defineConfig({
   entry: ['./src/{index,run,plugins,config}.ts'],
   platform: 'node',
   dts: true,
+  fixedExtension: true,
   unused: {
     level: 'error',
     ignore: [
@@ -17,7 +19,7 @@ export default defineConfig({
       return exports
     },
   },
-  fixedExtension: true,
+  plugins: [RequireCJS()],
   onSuccess() {
     console.info('🙏 Build succeeded!')
   },

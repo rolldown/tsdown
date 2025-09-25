@@ -116,6 +116,7 @@
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:dev",
+    "rolldown-plugin-require-cjs": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",

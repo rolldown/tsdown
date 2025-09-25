@@ -45,6 +45,9 @@ catalogs:
     publint:
       specifier: ^0.3.13
       version: 0.3.13
+    rolldown-plugin-require-cjs:
+      specifier: ^0.1.5
+      version: 0.1.5
     tsx:
       specifier: ^4.20.5
       version: 4.20.5
@@ -234,6 +237,9 @@ importers:
       publint:
         specifier: catalog:dev
         version: 0.3.13
+      rolldown-plugin-require-cjs:
+        specifier: catalog:dev
+        version: 0.1.5(rolldown@1.0.0-beta.40)
       tsx:
         specifier: catalog:dev
         version: 4.20.5
@@ -1730,6 +1736,9 @@ packages:
   cjs-module-lexer@1.4.3:
     resolution: {integrity: sha512-9z8TZaGM1pfswYeXrUpzPrkx8UnWYdhJclsiYMm6x/w5+nN+8Tf/LnAgfLGQCm59qAOxU8WwHEq2vNwF6i4j+Q==}
 
+  cjs-module-lexer@2.1.0:
+    resolution: {integrity: sha512-UX0OwmYRYQQetfrLEZeewIFFI+wSTofC+pMBLNuH3RUuu/xzG1oz84UCEDOSoQlN3fZ4+AzmV50ZYvGqkMh9yA==}
+
   clean-regexp@1.0.0:
     resolution: {integrity: sha512-GfisEZEJvzKrmGWkvfhgzcz/BllN1USeqD2V6tg14OAOgaCD2Z/PUEuxnAZ/nPvmaHRG7a8y77p1T/IRQ4D1Hw==}
     engines: {node: '>=4'}
@@ -2501,6 +2510,10 @@ packages:
   lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
 
+  magic-string-ast@1.0.2:
+    resolution: {integrity: sha512-8ngQgLhcT0t3YBdn9CGkZqCYlvwW9pm7aWJwd7AxseVWf1RU8ZHCQvG1mt3N5vvUme+pXTcHB8G/7fE666U8Vw==}
+    engines: {node: '>=20.18.0'}
+
   magic-string@0.30.19:
     resolution: {integrity: sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==}
 
@@ -2961,6 +2974,12 @@ packages:
         optional: true
       vue-tsc:
         optional: true
+
+  rolldown-plugin-require-cjs@0.1.5:
+    resolution: {integrity: sha512-R4mcYkETVJ/OY9yoraZLszG+HlDhaoaZ5EptKNNJYGmLwn1D210yQmX/kwt7nCPBFPIZOoccimBkBKR4+ddeNw==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      rolldown: '*'
 
   rolldown-vite@7.1.13:
     resolution: {integrity: sha512-wYRnqlO+nKcvZitHjwXCnGy+xaFW8mBWL6zScZWJK/ZtEs9Be4ngabaDN05l7t+xFgSzZbPYbWdORBVTfWm7uA==}
@@ -4843,6 +4862,8 @@ snapshots:
 
   cjs-module-lexer@1.4.3: {}
 
+  cjs-module-lexer@2.1.0: {}
+
   clean-regexp@1.0.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -5591,6 +5612,10 @@ snapshots:
 
   lunr@2.3.9: {}
 
+  magic-string-ast@1.0.2:
+    dependencies:
+      magic-string: 0.30.19
+
   magic-string@0.30.19:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -6267,6 +6292,14 @@ snapshots:
     transitivePeerDependencies:
       - oxc-resolver
       - supports-color
+
+  rolldown-plugin-require-cjs@0.1.5(rolldown@1.0.0-beta.40):
+    dependencies:
+      cjs-module-lexer: 2.1.0
+      empathic: 2.0.0
+      magic-string-ast: 1.0.2
+      mlly: 1.8.0
+      rolldown: 1.0.0-beta.40
 
   rolldown-vite@7.1.13(@types/node@24.5.2)(esbuild@0.25.10)(jiti@2.6.0)(tsx@4.20.5)(yaml@2.8.1):
     dependencies:
