@@ -12,7 +12,7 @@ export interface LoggerOptions {
 }
 
 export const LogLevels: Record<LogLevel, number> = {
-  silent: 0,
+  silent: 1,
   error: 1,
   warn: 2,
   info: 3,
