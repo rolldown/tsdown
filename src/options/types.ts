@@ -33,6 +33,7 @@ import type {
   InternalModuleFormat,
   MinifyOptions,
   ModuleFormat,
+  ModuleTypes,
   OutputOptions,
 } from 'rolldown'
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
@@ -41,21 +42,6 @@ import type { Options as UnusedOptions } from 'unplugin-unused'
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
 export type NormalizedFormat = InternalModuleFormat
-export type ModuleTypes = Record<
-  string,
-  | 'js'
-  | 'jsx'
-  | 'ts'
-  | 'tsx'
-  | 'json'
-  | 'text'
-  | 'base64'
-  | 'dataurl'
-  | 'binary'
-  | 'empty'
-  | 'css'
-  | 'asset'
->
 export type {
   AttwOptions,
   BuildContext,
