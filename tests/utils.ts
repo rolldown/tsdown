@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { expectFilesSnapshot } from '@sxzz/test-utils'
 import { glob } from 'tinyglobby'
 import { build, type Options } from '../src/index'
+import { mergeUserOptions } from '../src/options'
 import type { RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
 
@@ -132,22 +133,33 @@ export async function testBuild({
   const workingDir = path.join(testDir, cwd || '.')
   const restoreCwd = chdir(workingDir)
   const warnings: RollupLog[] = []
+  const userOptions =
+    typeof options === 'function' ? options(workingDir) : options
   const resolvedOptions: Options = {
     entry: 'index.ts',
     config: false,
     outDir: 'dist',
     dts: false,
     silent: true,
-    inputOptions: {
-      onLog(level, log, defaultHandler) {
-        if (level === 'warn') {
-          warnings.push(log)
-          return
-        }
-        defaultHandler(level, log)
-      },
+    ...userOptions,
+    async inputOptions(options, ...args) {
+      options = await mergeUserOptions(
+        {
+          ...options,
+          onLog(level, log, defaultHandler) {
+            if (level === 'warn') {
+              warnings.push(log)
+              return
+            }
+            defaultHandler(level, log)
+          },
+          logLevel: 'info',
+        },
+        userOptions?.inputOptions,
+        args,
+      )
+      return options
     },
-    ...(typeof options === 'function' ? options(workingDir) : options),
   }
   await beforeBuild?.()
   await build(resolvedOptions)

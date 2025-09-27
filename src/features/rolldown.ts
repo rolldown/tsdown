@@ -174,6 +174,7 @@ export async function resolveInputOptions(
         ...(shims && !cjsDts && getShimsInject(format, platform)),
       },
       moduleTypes: loader,
+      logLevel: logger.level === 'error' ? 'silent' : logger.level,
       onLog: cjsDefault
         ? (level, log, defaultHandler) => {
             // suppress mixed export warnings if cjsDefault is enabled
