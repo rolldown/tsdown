@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { blue } from 'ansis'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import {
@@ -35,6 +36,7 @@ export async function watchBuild(
   const debouncedOnChange = debounce(onChange, 100)
 
   const watcher = watch(files, {
+    cwd: options.cwd,
     ignoreInitial: true,
     ignorePermissionErrors: true,
     ignored: [
@@ -48,7 +50,7 @@ export async function watchBuild(
   let pending: string[] = []
   let pendingPromise: Promise<void> | undefined
   watcher.on('all', (type, file) => {
-    pending.push(file)
+    pending.push(path.resolve(options.cwd, file))
     debouncedOnChange()
   })
 
