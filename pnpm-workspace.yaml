@@ -20,8 +20,8 @@ catalogs:
     pkg-types: ^2.3.0
     prettier: ^3.6.2
     publint: ^0.3.13
-    rolldown-plugin-require-cjs: ^0.1.5
-    tsx: ^4.20.5
+    rolldown-plugin-require-cjs: ^0.3.0
+    tsx: ^4.20.6
     typescript: ~5.9.2
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.3

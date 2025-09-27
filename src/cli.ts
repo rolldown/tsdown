@@ -66,7 +66,7 @@ cli
     'Generate export-related metadata for package.json (experimental)',
   )
   .action(async (input: string[], flags: Options) => {
-    globalLogger.level = flags.logLevel || (flags.silent ? 'silent' : 'info')
+    globalLogger.level = flags.logLevel || (flags.silent ? 'error' : 'info')
     globalLogger.info(
       `tsdown ${dim`v${version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
     )

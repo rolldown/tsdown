@@ -23,7 +23,7 @@ import { globalLogger, prettyName, type Logger } from './utils/logger'
  */
 export async function build(userOptions: Options = {}): Promise<void> {
   globalLogger.level =
-    userOptions.logLevel || (userOptions.silent ? 'silent' : 'info')
+    userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
   const { configs, files: configFiles } = await resolveOptions(userOptions)
 
   let cleanPromise: Promise<void> | undefined
