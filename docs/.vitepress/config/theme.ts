@@ -90,7 +90,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Tree-shaking'), link: '/tree-shaking.md' },
         { text: t('Source Maps'), link: '/sourcemap.md' },
         { text: t('Minification'), link: '/minification.md' },
-        { text: t('Silent Mode'), link: '/silent-mode.md' },
+        { text: t('Log Level'), link: '/log-level.md' },
         { text: t('Shims'), link: '/shims.md' },
         { text: t('Package Exports'), link: '/package-exports.md' },
         { text: t('Unbundle'), link: '/unbundle.md' },

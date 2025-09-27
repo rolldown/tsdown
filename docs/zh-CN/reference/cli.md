@@ -80,11 +80,17 @@ tsdown --tsconfig tsconfig.build.json
 
 另请参阅 [构建目标](../options/target.md)。
 
-## `--silent`
+## `--log-level <level>`
 
-在构建过程中屏蔽非错误日志。仅显示错误消息，使您更专注于关键问题。
+设置日志级别，以控制构建过程中日志的详细程度。
 
-另请参阅 [静默模式](../options/silent-mode.md)。
+另请参阅 [日志级别](../options/log-level.md)。
+
+### ~~`--silent`~~
+
+**已废弃：** 请使用 `--log-level error` 以获得更好的兼容性。
+
+在构建过程中屏蔽非错误日志，仅显示错误信息，便于专注于关键问题。
 
 ## `-d, --out-dir <dir>`
 

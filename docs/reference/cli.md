@@ -80,11 +80,17 @@ You can also disable all syntax transformations by using `--no-target` or by set
 
 See also [Target](../options/target.md).
 
-## `--silent`
+## `--log-level <level>`
+
+Set the log level to control the verbosity of logs during the build process.
+
+See also [Log Level](../options/log-level.md).
+
+### ~~`--silent`~~
+
+**Deprecated:** Please use `--log-level error` instead for better compatibility.
 
 Suppress non-error logs during the build process. Only error messages will be displayed, making it easier to focus on critical issues.
-
-See also [Silent Mode](../options/silent-mode.md).
 
 ## `-d, --out-dir <dir>`
 

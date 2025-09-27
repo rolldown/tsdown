@@ -13,3 +13,6 @@ docs/.vitepress/cache
 
 docs/reference/api
 docs/zh-CN/reference/api
+
+# Local Netlify folder
+.netlify
