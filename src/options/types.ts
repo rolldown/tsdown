@@ -84,6 +84,11 @@ export interface Workspace {
   config?: boolean | string
 }
 
+export type NoExternalFn = (
+  id: string,
+  importer: string | undefined,
+) => boolean | null | undefined | void
+
 /**
  * Options for tsdown.
  */
@@ -95,12 +100,13 @@ export interface Options {
   entry?: InputOption
 
   external?: ExternalOption
-  noExternal?:
-    | Arrayable<string | RegExp>
-    | ((
-        id: string,
-        importer: string | undefined,
-      ) => boolean | null | undefined | void)
+  noExternal?: Arrayable<string | RegExp> | NoExternalFn
+  /**
+   * Bundle only the dependencies listed here; throw an error if any others are missing.
+   *
+   * Note: Be sure to include all required sub-dependencies as well.
+   */
+  inlineOnly?: Arrayable<string | RegExp>
   /**
    * Skip bundling `node_modules`.
    * @default false
@@ -486,7 +492,6 @@ export type ResolvedOptions = Omit<
       | 'define'
       | 'alias'
       | 'external'
-      | 'noExternal'
       | 'onSuccess'
       | 'fixedExtension'
       | 'outExtensions'
@@ -511,6 +516,8 @@ export type ResolvedOptions = Omit<
       nodeProtocol: 'strip' | boolean
       logger: Logger
       ignoreWatch: Array<string | RegExp>
+      noExternal?: NoExternalFn
+      inlineOnly?: Array<string | RegExp>
     }
   >,
   'config' | 'fromVite'

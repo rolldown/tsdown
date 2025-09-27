@@ -1,4 +1,5 @@
 import { blue } from 'ansis'
+import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import {
   globalContext,
   invalidateContextFile,
@@ -38,7 +39,7 @@ export async function watchBuild(
     ignorePermissionErrors: true,
     ignored: [
       /[\\/]\.git[\\/]/,
-      /[\\/]node_modules[\\/]/,
+      RE_NODE_MODULES,
       options.outDir,
       ...options.ignoreWatch,
     ],

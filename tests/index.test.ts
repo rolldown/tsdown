@@ -1,13 +1,27 @@
 import path from 'node:path'
-import { beforeEach, expect, test, vi } from 'vitest'
+import { RE_NODE_MODULES } from 'rolldown-plugin-dts'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { resolveOptions, type Options } from '../src/options'
 import { fsRemove } from '../src/utils/fs'
+import { slash } from '../src/utils/general'
 import { chdir, getTestDir, testBuild, writeFixtures } from './utils'
+import type { Plugin } from 'rolldown'
 
 beforeEach(async (context) => {
   const dir = getTestDir(context.task)
   await fsRemove(dir)
 })
+
+const pluginMockDepCode: Plugin = {
+  name: 'mock-dep-code',
+  load: {
+    filter: { id: RE_NODE_MODULES },
+    handler(id) {
+      const name = slash(id).split('/node_modules/').at(-1)!.split('/')[0]
+      return `export const ${name} = 42`
+    },
+  },
+}
 
 test('basic', async (context) => {
   const content = `console.log("Hello, world!")`
@@ -164,6 +178,41 @@ test('noExternal', async (context) => {
         },
       ],
     },
+  })
+})
+
+describe('inlineOnly', () => {
+  test('work', async (context) => {
+    const files = {
+      'index.ts': `export * from 'cac'; export * from 'bumpp'`,
+    }
+    await testBuild({
+      context,
+      files,
+      options: {
+        noExternal: ['cac'],
+        inlineOnly: ['bumpp'],
+        plugins: [pluginMockDepCode],
+      },
+    })
+  })
+
+  test('throw error', async (context) => {
+    const files = {
+      'index.ts': `export * from 'bumpp'`,
+    }
+    await expect(() =>
+      testBuild({
+        context,
+        files,
+        options: {
+          inlineOnly: [],
+          plugins: [pluginMockDepCode],
+        },
+      }),
+    ).rejects.toThrow(
+      'declare it as a production or peer dependency in your package.json',
+    )
   })
 })
 

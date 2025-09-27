@@ -3,6 +3,7 @@ import { defineConfig } from './src/config.ts'
 
 export default defineConfig({
   entry: ['./src/{index,run,plugins,config}.ts'],
+  inlineOnly: [],
   platform: 'node',
   dts: true,
   fixedExtension: true,

@@ -8,7 +8,7 @@ import { resolveEntry } from '../features/entry'
 import { hasExportsTypes } from '../features/exports'
 import { resolveTarget } from '../features/target'
 import { resolveTsconfig } from '../features/tsconfig'
-import { resolveRegex, slash, toArray } from '../utils/general'
+import { matchPattern, resolveRegex, slash, toArray } from '../utils/general'
 import { createLogger } from '../utils/logger'
 import { normalizeFormat, readPackageJson } from '../utils/package'
 import type { Awaitable } from '../utils/types'
@@ -182,7 +182,7 @@ async function resolveConfig(
     dts,
     unused = false,
     watch = false,
-    ignoreWatch = [],
+    ignoreWatch,
     shims = false,
     skipNodeModulesBundle = false,
     publint = false,
@@ -208,6 +208,7 @@ async function resolveConfig(
     nodeProtocol,
     cjsDefault = true,
     globImport = true,
+    inlineOnly,
   } = userConfig
 
   const logger = createLogger(logLevel, { customLogger, failOnWarn })
@@ -296,6 +297,14 @@ async function resolveConfig(
     return ignore
   })
 
+  if (noExternal != null && typeof noExternal !== 'function') {
+    const noExternalPatterns = toArray(noExternal)
+    noExternal = (id) => matchPattern(id, noExternalPatterns)
+  }
+  if (inlineOnly != null) {
+    inlineOnly = toArray(inlineOnly)
+  }
+
   const config: ResolvedOptions = {
     ...userConfig,
     entry,
@@ -332,6 +341,7 @@ async function resolveConfig(
     nodeProtocol,
     cjsDefault,
     globImport,
+    inlineOnly,
   }
 
   return config
