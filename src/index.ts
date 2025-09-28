@@ -79,7 +79,7 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 export async function buildSingle(
   config: ResolvedOptions,
   clean: () => Promise<void>,
-): Promise<(() => Promise<void>) | undefined> {
+): Promise<{listener: (() => Promise<void>) | undefined, abortController: AbortController | undefined}> {
   const { format: formats, dts, watch, onSuccess, logger } = config
   let ab: AbortController | undefined
 
