@@ -42,10 +42,15 @@ export async function build(userOptions: Options = {}): Promise<void> {
     const rebuild = rebuilds[i]
     if (!rebuild) continue
 
-    const watcher = await watchBuild(config, configFiles, rebuild.listener, restart)
+    const watcher = await watchBuild(
+      config,
+      configFiles,
+      rebuild.listener,
+      restart,
+    )
     disposeCbs.push(() => {
-      rebuild.abortController.abort();
-      watcher.close();
+      rebuild.abortController.abort()
+      watcher.close()
     })
   }
 
@@ -79,7 +84,10 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 export async function buildSingle(
   config: ResolvedOptions,
   clean: () => Promise<void>,
-): Promise<{listener: (() => Promise<void>) | undefined, abortController: AbortController}> {
+): Promise<{
+  listener: (() => Promise<void>) | undefined
+  abortController: AbortController
+}> {
   const { format: formats, dts, watch, onSuccess, logger } = config
   let ab: AbortController | undefined
 
@@ -91,7 +99,7 @@ export async function buildSingle(
   if (watch) {
     return {
       listener: () => rebuild(),
-      abortController: ab
+      abortController: ab,
     }
   }
 
