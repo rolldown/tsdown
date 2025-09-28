@@ -287,7 +287,8 @@ export interface UserConfig {
    * Use a fixed extension for output files.
    * The extension will always be `.cjs` or `.mjs`.
    * Otherwise, it will depend on the package type.
-   * @default false
+   *
+   * Defaults to `true` if `platform` is set to `node`, `false` otherwise.
    */
   fixedExtension?: boolean
 
@@ -504,7 +505,6 @@ export type ResolvedConfig = Overwrite<
     | 'alias'
     | 'external'
     | 'onSuccess'
-    | 'fixedExtension'
     | 'outExtensions'
     | 'hooks'
     | 'copy'
