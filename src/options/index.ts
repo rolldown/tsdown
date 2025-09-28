@@ -209,6 +209,7 @@ async function resolveConfig(
     cjsDefault = true,
     globImport = true,
     inlineOnly,
+    fixedExtension = platform === 'node',
   } = userConfig
 
   const logger = createLogger(logLevel, { customLogger, failOnWarn })
@@ -342,6 +343,7 @@ async function resolveConfig(
     cjsDefault,
     globImport,
     inlineOnly,
+    fixedExtension,
   }
 
   return config
