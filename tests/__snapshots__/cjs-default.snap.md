@@ -19,18 +19,18 @@ declare function hello(): void;
 export = hello;
 ```
 
-## index.d.ts
+## index.d.mts
 
-```ts
+```mts
 //#region index.d.ts
 declare function hello(): void;
 //#endregion
 export { hello as default };
 ```
 
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region index.ts
 function hello() {
 	console.log("Hello!");

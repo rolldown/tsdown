@@ -10,7 +10,7 @@ describe('css', () => {
         'style.css': `body { color: red }`,
       },
     })
-    expect(outputFiles).toEqual(['index.css', 'index.js'])
+    expect(outputFiles).toEqual(['index.css', 'index.mjs'])
   })
 
   test.fails('unbundle', async (context) => {

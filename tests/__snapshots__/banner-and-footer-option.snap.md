@@ -1,14 +1,14 @@
-## index.d.ts
+## index.d.mts
 
-```ts
+```mts
 // dts banner
 export { };
 // dts footer
 ```
 
-## index.js
+## index.mjs
 
-```js
+```mjs
 // js banner
 //#region index.ts
 console.log("Hello, world!");

@@ -5,8 +5,8 @@ body { color: red }
 
 ```
 
-## style.js
+## style.mjs
 
-```js
+```mjs
 export {  };
 ```
