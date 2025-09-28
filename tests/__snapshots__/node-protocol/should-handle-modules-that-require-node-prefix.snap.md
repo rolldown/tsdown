@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 import test from "node:test";
 import sqlite from "node:sqlite";
 

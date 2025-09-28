@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 

@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 import fs from "fs";
 import { join } from "path";
 

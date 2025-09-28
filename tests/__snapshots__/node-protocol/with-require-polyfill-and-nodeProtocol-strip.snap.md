@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 import { createRequire } from "module";
 
 //#region rolldown:runtime

@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region index.ts
 async function loadBuiltins() {
 	return {
