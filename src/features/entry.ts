@@ -2,11 +2,11 @@ import path from 'node:path'
 import { glob } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor } from '../utils/fs'
 import { generateColor, prettyName, type Logger } from '../utils/logger'
-import type { Options } from '../options'
+import type { UserConfig } from '../config/index'
 
 export async function resolveEntry(
   logger: Logger,
-  entry: Options['entry'],
+  entry: UserConfig['entry'],
   cwd: string,
   name?: string,
 ): Promise<Record<string, string>> {

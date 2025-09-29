@@ -1,11 +1,11 @@
 import process from 'node:process'
 import { dim } from 'ansis'
 import Debug from 'debug'
-import type { ResolvedOptions } from '../options'
+import type { ResolvedConfig } from '../config/index'
 
 const debug = Debug('tsdown:publint')
 
-export async function publint(options: ResolvedOptions): Promise<void> {
+export async function publint(options: ResolvedConfig): Promise<void> {
   if (!options.publint) return
   if (!options.pkg) {
     options.logger.warn('publint is enabled but package.json is not found')
