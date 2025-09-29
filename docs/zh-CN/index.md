@@ -17,7 +17,7 @@ hero:
       link: /zh-CN/guide/
     - theme: alt
       text: API 参考
-      link: /zh-CN/reference/api/Interface.Options.md
+      link: /zh-CN/reference/api/Interface.UserConfig.md
 
 features:
   - icon: 🚀

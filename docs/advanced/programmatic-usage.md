@@ -16,4 +16,4 @@ await build({
 })
 ```
 
-All CLI options are available as properties in the options object. See [Config Options](../reference/api/Interface.Options.md) for the full list.
+All CLI options are available as properties in the options object. See [Config Options](../reference/api/Interface.UserConfig.md) for the full list.
