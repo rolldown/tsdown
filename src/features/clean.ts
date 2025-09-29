@@ -4,7 +4,7 @@ import { glob } from 'tinyglobby'
 import { fsRemove } from '../utils/fs'
 import { slash } from '../utils/general'
 import { globalLogger } from '../utils/logger'
-import type { UserConfig, ResolvedConfig } from '../config/index'
+import type { ResolvedConfig, UserConfig } from '../config/index'
 
 const debug = Debug('tsdown:clean')
 
