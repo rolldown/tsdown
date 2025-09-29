@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { resolveOptions, type Options } from '../src/options'
+import { resolveConfig, type UserConfig } from '../src/config/index'
 import { fsRemove } from '../src/utils/fs'
 import { slash } from '../src/utils/general'
 import { chdir, getTestDir, testBuild, writeFixtures } from './utils'
@@ -234,7 +234,7 @@ test('fromVite', async (context) => {
   }
   const { testDir } = await writeFixtures(context, files)
   const restoreCwd = chdir(testDir)
-  const options = await resolveOptions({
+  const options = await resolveConfig({
     config: testDir,
     logLevel: 'silent',
   })
@@ -469,7 +469,7 @@ test('workspace option', async (context) => {
       }
     `,
   }
-  const options: Options = {
+  const options: UserConfig = {
     workspace: true,
     entry: ['src/index.ts'],
   }

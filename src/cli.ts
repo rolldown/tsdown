@@ -6,7 +6,7 @@ import { VERSION as rolldownVersion } from 'rolldown'
 import { version } from '../package.json'
 import { resolveComma, toArray } from './utils/general'
 import { globalLogger } from './utils/logger'
-import type { Options } from './options'
+import type { UserConfig } from './config'
 
 const cli = cac('tsdown')
 cli.help().version(version)
@@ -65,7 +65,7 @@ cli
     '--exports',
     'Generate export-related metadata for package.json (experimental)',
   )
-  .action(async (input: string[], flags: Options) => {
+  .action(async (input: string[], flags: UserConfig) => {
     globalLogger.level = flags.logLevel || (flags.silent ? 'error' : 'info')
     globalLogger.info(
       `tsdown ${dim`v${version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,

@@ -6,14 +6,14 @@ import {
   invalidateContextFile,
 } from 'rolldown-plugin-dts/tsc-context'
 import { debounce, toArray } from '../utils/general'
-import type { ResolvedOptions } from '../options'
+import type { ResolvedConfig } from '../config/index'
 import type { FSWatcher } from 'chokidar'
 
 const endsWithConfig =
   /[\\/](?:(?:package|tsconfig)\.json|pnpm-(?:workspace|lock)\.yaml|tsdown\.config.*)$/
 
 export async function watchBuild(
-  options: ResolvedOptions,
+  options: ResolvedConfig,
   configFiles: string[],
   rebuild: () => Promise<void>,
   restart: () => Promise<void>,
