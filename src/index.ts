@@ -5,6 +5,11 @@ import { green } from 'ansis'
 import { build as rolldownBuild } from 'rolldown'
 import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
+import {
+  resolveConfig,
+  type InlineConfig,
+  type ResolvedConfig,
+} from './config/index'
 import { attw } from './features/attw'
 import { warnLegacyCJS } from './features/cjs'
 import { cleanOutDir } from './features/clean'
@@ -15,16 +20,15 @@ import { publint } from './features/publint'
 import { getBuildOptions } from './features/rolldown'
 import { shortcuts } from './features/shortcuts'
 import { watchBuild } from './features/watch'
-import { resolveOptions, type Options, type ResolvedOptions } from './options'
 import { globalLogger, prettyName, type Logger } from './utils/logger'
 
 /**
  * Build with tsdown.
  */
-export async function build(userOptions: Options = {}): Promise<void> {
+export async function build(userOptions: InlineConfig = {}): Promise<void> {
   globalLogger.level =
     userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
-  const { configs, files: configFiles } = await resolveOptions(userOptions)
+  const { configs, files: configFiles } = await resolveConfig(userOptions)
 
   let cleanPromise: Promise<void> | undefined
   const clean = () => {
@@ -74,7 +78,7 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
  * @param config Resolved options
  */
 export async function buildSingle(
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   clean: () => Promise<void>,
 ): Promise<(() => Promise<void>) | undefined> {
   const { format: formats, dts, watch, onSuccess, logger } = config
@@ -174,11 +178,5 @@ export async function buildSingle(
 }
 
 export { defineConfig } from './config'
-export type {
-  Options,
-  ResolvedOptions,
-  UserConfig,
-  UserConfigFn,
-} from './options'
-export * from './options/types'
+export * from './config/types'
 export { globalLogger, type Logger }

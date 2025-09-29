@@ -1,9 +1,9 @@
 import { shimFile } from '../index'
-import type { NormalizedFormat, ResolvedOptions } from '../options'
+import type { NormalizedFormat, ResolvedConfig } from '../config/index'
 
 export function getShimsInject(
   format: NormalizedFormat,
-  platform: ResolvedOptions['platform'],
+  platform: ResolvedConfig['platform'],
 ): Record<string, [string, string]> | undefined {
   if (format === 'es' && platform === 'node') {
     return {
