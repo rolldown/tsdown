@@ -482,13 +482,15 @@ export type ResolvedConfig = Overwrite<
   MarkPartial<
     Omit<
       UserConfig,
-      | 'publicDir'
-      | 'workspace'
-      | 'silent'
-      | 'logLevel'
-      | 'failOnWarn'
-      | 'customLogger'
-      | 'fromVite'
+      | 'workspace' // merged
+      | 'fromVite' // merged
+      | 'publicDir' // deprecated
+      | 'silent' // deprecated
+      | 'bundle' // deprecated
+      | 'removeNodeProtocol' // deprecated
+      | 'logLevel' // merge to `logger`
+      | 'failOnWarn' // merge to `logger`
+      | 'customLogger' // merge to `logger`
     >,
     | 'globalName'
     | 'inputOptions'
@@ -501,11 +503,9 @@ export type ResolvedConfig = Overwrite<
     | 'fixedExtension'
     | 'outExtensions'
     | 'hooks'
-    | 'removeNodeProtocol'
     | 'copy'
     | 'loader'
     | 'name'
-    | 'bundle'
     | 'banner'
     | 'footer'
   >,
@@ -515,7 +515,7 @@ export type ResolvedConfig = Overwrite<
     clean: string[]
     dts: false | DtsOptions
     report: false | ReportOptions
-    tsconfig: string | false
+    tsconfig: false | string
     pkg?: PackageJson
     exports: false | ExportsOptions
     nodeProtocol: 'strip' | boolean
