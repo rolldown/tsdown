@@ -3,8 +3,8 @@ import { getPackageType, type PackageType } from '../utils/package.ts'
 import type {
   Format,
   NormalizedFormat,
-  ResolvedOptions,
-} from '../options/index.ts'
+  ResolvedConfig,
+} from '../config/index.ts'
 import type {
   AddonFunction,
   InputOptions,
@@ -42,7 +42,7 @@ function resolveJsOutputExtension(
 }
 
 export function resolveChunkFilename(
-  { outExtensions, fixedExtension, pkg, hash }: ResolvedOptions,
+  { outExtensions, fixedExtension, pkg, hash }: ResolvedConfig,
   inputOptions: InputOptions,
   format: NormalizedFormat,
 ): [entry: ChunkFileName, chunk: ChunkFileName] {

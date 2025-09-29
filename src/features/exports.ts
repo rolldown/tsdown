@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { slash } from '../utils/general.ts'
-import type { NormalizedFormat, ResolvedOptions } from '../options/index.ts'
+import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
 import type { Awaitable } from '../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 import type { OutputAsset, OutputChunk } from 'rolldown'
@@ -36,7 +36,7 @@ export interface ExportsOptions {
 }
 
 export async function writeExports(
-  options: ResolvedOptions,
+  options: ResolvedConfig,
   chunks: TsdownChunks,
 ): Promise<void> {
   if (!options.exports) return

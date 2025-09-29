@@ -4,13 +4,13 @@ import { glob } from 'tinyglobby'
 import { fsRemove } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
-import type { Options, ResolvedOptions } from '../options/index.ts'
+import type { ResolvedConfig, UserConfig } from '../config/index.ts'
 
 const debug = Debug('tsdown:clean')
 
 const RE_LAST_SLASH = /[/\\]$/
 
-export async function cleanOutDir(configs: ResolvedOptions[]): Promise<void> {
+export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
   const removes = new Set<string>()
 
   for (const config of configs) {
@@ -42,7 +42,7 @@ export async function cleanOutDir(configs: ResolvedOptions[]): Promise<void> {
 }
 
 export function resolveClean(
-  clean: Options['clean'],
+  clean: UserConfig['clean'],
   outDir: string,
   cwd: string,
 ): string[] {

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fsCopy } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
-import type { ResolvedOptions } from '../options/index.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { Arrayable, Awaitable } from '../utils/types.ts'
 
 export interface CopyEntry {
@@ -9,9 +9,9 @@ export interface CopyEntry {
   to: string
 }
 export type CopyOptions = Arrayable<string | CopyEntry>
-export type CopyOptionsFn = (options: ResolvedOptions) => Awaitable<CopyOptions>
+export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
 
-export async function copy(options: ResolvedOptions): Promise<void> {
+export async function copy(options: ResolvedConfig): Promise<void> {
   if (!options.copy) return
 
   const copy: CopyOptions =

@@ -4,8 +4,8 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { expectFilesSnapshot } from '@sxzz/test-utils'
 import { glob } from 'tinyglobby'
-import { build, type Options } from '../src/index.ts'
-import { mergeUserOptions } from '../src/options/index.ts'
+import { mergeUserOptions, type InlineConfig } from '../src/config/index.ts'
+import { build, type UserConfig } from '../src/index.ts'
 import type { RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
 
@@ -91,7 +91,7 @@ export interface TestBuildOptions {
   /**
    * The options for the build.
    */
-  options?: Options | ((cwd: string) => Options)
+  options?: UserConfig | ((cwd: string) => UserConfig)
 
   /**
    * The working directory of the test. It's a relative path to the test directory.
@@ -135,7 +135,7 @@ export async function testBuild({
   const warnings: RollupLog[] = []
   const userOptions =
     typeof options === 'function' ? options(workingDir) : options
-  const resolvedOptions: Options = {
+  const resolvedOptions: InlineConfig = {
     entry: 'index.ts',
     config: false,
     outDir: 'dist',
