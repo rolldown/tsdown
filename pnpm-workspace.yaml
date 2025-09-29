@@ -28,6 +28,7 @@ catalogs:
     vitest: ^3.2.4
 
   docs:
+    '@shikijs/vitepress-twoslash': ^3.13.0
     '@unocss/eslint-plugin': ^66.5.2
     '@vueuse/core': ^13.9.0
     oxc-minify: ^0.92.0

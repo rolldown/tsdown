@@ -4,7 +4,7 @@
 
 ## 示例
 
-```ts
+```ts twoslash
 import { build } from 'tsdown'
 
 await build({
