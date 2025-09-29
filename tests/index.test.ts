@@ -1,16 +1,10 @@
 import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { resolveOptions, type Options } from '../src/options'
-import { fsRemove } from '../src/utils/fs'
 import { slash } from '../src/utils/general'
-import { chdir, getTestDir, testBuild, writeFixtures } from './utils'
+import { chdir, testBuild, writeFixtures } from './utils'
 import type { Plugin } from 'rolldown'
-
-beforeEach(async (context) => {
-  const dir = getTestDir(context.task)
-  await fsRemove(dir)
-})
 
 const pluginMockDepCode: Plugin = {
   name: 'mock-dep-code',

@@ -1,14 +1,8 @@
 import { exec } from 'tinyexec'
-import { beforeEach, describe, expect, test } from 'vitest'
-import { fsRemove } from '../src/utils/fs'
-import { getTestDir, testBuild } from './utils'
+import { describe, expect, test } from 'vitest'
+import { testBuild } from './utils'
 
 describe('issues', () => {
-  beforeEach(async (context) => {
-    const dir = getTestDir(context.task)
-    await fsRemove(dir)
-  })
-
   test('#61', async (context) => {
     await testBuild({
       context,
