@@ -4,7 +4,7 @@ You can use `tsdown` directly from your JavaScript or TypeScript code. This is u
 
 ## Example
 
-```ts
+```ts twoslash
 import { build } from 'tsdown'
 
 await build({

@@ -4,3 +4,13 @@ publish = "docs/.vitepress/dist"
 
 [build.environment]
 NODE_VERSION = "lts/*"
+
+[[redirects]]
+from = "/options/silent-mode"
+to = "/options/log-level"
+force = true
+
+[[redirects]]
+from = ":lang/options/silent-mode"
+to = ":lang/options/log-level"
+force = true

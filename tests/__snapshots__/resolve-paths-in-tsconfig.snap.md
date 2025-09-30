@@ -6,6 +6,7 @@ declare const mod = 42;
 //#endregion
 export { mod };
 ```
+
 ## index.js
 
 ```js

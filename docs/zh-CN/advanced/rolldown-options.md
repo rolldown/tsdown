@@ -4,6 +4,9 @@
 
 有关可用 Rolldown 选项的完整列表，请参阅 [Rolldown 配置选项](https://rolldown.rs/reference/config-options) 文档。
 
+> [!WARNING]
+> 您应当熟悉您所覆盖的 Rolldown 选项的行为，并确保已阅读 Rolldown 的相关文档。
+
 ## 覆盖 `inputOptions`
 
 您可以覆盖 `tsdown` 生成的 `inputOptions`，以自定义 Rolldown 如何处理输入文件。有两种方式可以实现：

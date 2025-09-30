@@ -18,7 +18,7 @@ export const zhCN = {
   'Output Directory': '输出目录',
   'Output Format': '输出格式',
   Platform: '运行平台（Platform）',
-  'Silent Mode': '静默模式',
+  'Log Level': '日志级别',
   'Source Maps': '源映射（Source Maps）',
   Target: '构建目标（Target）',
   'Tree-shaking': '除屑优化（Tree-shaking）',

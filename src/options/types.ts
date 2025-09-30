@@ -33,6 +33,7 @@ import type {
   InternalModuleFormat,
   MinifyOptions,
   ModuleFormat,
+  ModuleTypes,
   OutputOptions,
 } from 'rolldown'
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
@@ -41,21 +42,6 @@ import type { Options as UnusedOptions } from 'unplugin-unused'
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
 export type NormalizedFormat = InternalModuleFormat
-export type ModuleTypes = Record<
-  string,
-  | 'js'
-  | 'jsx'
-  | 'ts'
-  | 'tsx'
-  | 'json'
-  | 'text'
-  | 'base64'
-  | 'dataurl'
-  | 'binary'
-  | 'empty'
-  | 'css'
-  | 'asset'
->
 export type {
   AttwOptions,
   BuildContext,
@@ -98,6 +84,11 @@ export interface Workspace {
   config?: boolean | string
 }
 
+export type NoExternalFn = (
+  id: string,
+  importer: string | undefined,
+) => boolean | null | undefined | void
+
 /**
  * Options for tsdown.
  */
@@ -109,12 +100,13 @@ export interface Options {
   entry?: InputOption
 
   external?: ExternalOption
-  noExternal?:
-    | Arrayable<string | RegExp>
-    | ((
-        id: string,
-        importer: string | undefined,
-      ) => boolean | null | undefined | void)
+  noExternal?: Arrayable<string | RegExp> | NoExternalFn
+  /**
+   * Bundle only the dependencies listed here; throw an error if any others are missing.
+   *
+   * Note: Be sure to include all required sub-dependencies as well.
+   */
+  inlineOnly?: Arrayable<string | RegExp>
   /**
    * Skip bundling `node_modules`.
    * @default false
@@ -142,8 +134,9 @@ export interface Options {
    *
    * Determines the JavaScript version or runtime(s) for which the code should be compiled.
    * If not set, defaults to the value of `engines.node` in your project's `package.json`.
+   * If no `engines.node` field exists, no syntax transformations are applied.
    *
-   * Accepts a single target (e.g., `'es2020'`, `'node18'`) or an array of targets.
+   * Accepts a single target (e.g., `'es2020'`, `'node18'`), an array of targets, or `false` to disable all transformations.
    *
    * @see {@link https://tsdown.dev/options/target#supported-targets} for a list of valid targets and more details.
    *
@@ -157,6 +150,12 @@ export interface Options {
    * ```jsonc
    * // Target multiple environments
    * { "target": ["node18", "es2020"] }
+   * ```
+   *
+   * @example
+   * ```jsonc
+   * // Disable all syntax transformations
+   * { "target": false }
    * ```
    */
   target?: string | string[] | false
@@ -206,9 +205,9 @@ export interface Options {
   removeNodeProtocol?: boolean
 
   /**
-   * - If true, add `node:` prefix to built-in modules.
-   * - If 'strip', strips the `node:` protocol prefix from import source.
-   * - If false, does not modify the import source.
+   * - If `true`, add `node:` prefix to built-in modules.
+   * - If `'strip'`, strips the `node:` protocol prefix from import source.
+   * - If `false`, does not modify the import source.
    *
    * @default false
    *
@@ -225,6 +224,9 @@ export interface Options {
 
   plugins?: InputOptions['plugins']
 
+  /**
+   * Use with caution; ensure you understand the implications.
+   */
   inputOptions?:
     | InputOptions
     | ((
@@ -294,6 +296,9 @@ export interface Options {
    */
   cjsDefault?: boolean
 
+  /**
+   * Use with caution; ensure you understand the implications.
+   */
   outputOptions?:
     | OutputOptions
     | ((
@@ -343,6 +348,12 @@ export interface Options {
    * Config file path
    */
   config?: boolean | string
+
+  /**
+   * Config loader to use. It can only be set via CLI or API.
+   * @default 'auto'
+   */
+  configLoader?: 'auto' | 'native' | 'unconfig'
 
   /**
    * Reuse config from Vite or Vitest (experimental)
@@ -404,6 +415,13 @@ export interface Options {
   report?: boolean | ReportOptions
 
   /**
+   * `import.meta.glob` support.
+   * @see https://vite.dev/guide/features.html#glob-import
+   * @default true
+   */
+  globImport?: boolean
+
+  /**
    * **[experimental]** Generate package exports for `package.json`.
    *
    * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
@@ -447,7 +465,9 @@ export interface Options {
 /**
  * Options without specifying config file path.
  */
-export type UserConfig = Arrayable<Omit<Options, 'config' | 'filter'>>
+export type UserConfig = Arrayable<
+  Omit<Options, 'config' | 'filter' | 'configLoader'>
+>
 export type UserConfigFn = (cliOptions: Options) => Awaitable<UserConfig>
 export type NormalizedUserConfig = Exclude<UserConfig, any[]>
 
@@ -463,6 +483,7 @@ export type ResolvedOptions = Omit<
         | 'logLevel'
         | 'failOnWarn'
         | 'customLogger'
+        | 'configLoader'
       >,
       | 'globalName'
       | 'inputOptions'
@@ -471,7 +492,6 @@ export type ResolvedOptions = Omit<
       | 'define'
       | 'alias'
       | 'external'
-      | 'noExternal'
       | 'onSuccess'
       | 'fixedExtension'
       | 'outExtensions'
@@ -496,6 +516,8 @@ export type ResolvedOptions = Omit<
       nodeProtocol: 'strip' | boolean
       logger: Logger
       ignoreWatch: Array<string | RegExp>
+      noExternal?: NoExternalFn
+      inlineOnly?: Array<string | RegExp>
     }
   >,
   'config' | 'fromVite'

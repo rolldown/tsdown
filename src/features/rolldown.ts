@@ -1,4 +1,5 @@
 import Debug from 'debug'
+import { importGlobPlugin } from 'rolldown/experimental'
 import {
   mergeUserOptions,
   type DtsOptions,
@@ -14,7 +15,6 @@ import { resolveChunkAddon, resolveChunkFilename } from './output'
 import { ReportPlugin } from './report'
 import { ShebangPlugin } from './shebang'
 import { getShimsInject } from './shims'
-import { RuntimeHelperCheckPlugin } from './target'
 import type {
   BuildOptions,
   InputOptions,
@@ -84,6 +84,9 @@ export async function resolveInputOptions(
     name,
     logger,
     cjsDefault,
+    banner,
+    footer,
+    globImport,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -98,7 +101,12 @@ export async function resolveInputOptions(
 
   if (dts) {
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
-    const options: DtsOptions = { tsconfig, ...dts }
+    const options: DtsOptions = {
+      tsconfig,
+      banner: resolveChunkAddon(banner, format, true),
+      footer: resolveChunkAddon(footer, format, true),
+      ...dts,
+    }
 
     if (format === 'es') {
       plugins.push(dtsPlugin(options))
@@ -119,13 +127,15 @@ export async function resolveInputOptions(
     }
     if (target) {
       plugins.push(
-        RuntimeHelperCheckPlugin(logger, target),
         // Use Lightning CSS to handle CSS input. This is a temporary solution
         // until Rolldown supports CSS syntax lowering natively.
         await LightningCSSPlugin({ target }),
       )
     }
     plugins.push(ShebangPlugin(logger, cwd, name, isMultiFormat))
+    if (globImport) {
+      plugins.push(importGlobPlugin())
+    }
   }
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
@@ -164,6 +174,7 @@ export async function resolveInputOptions(
         ...(shims && !cjsDts && getShimsInject(format, platform)),
       },
       moduleTypes: loader,
+      logLevel: logger.level === 'error' ? 'silent' : logger.level,
       onLog: cjsDefault
         ? (level, log, defaultHandler) => {
             // suppress mixed export warnings if cjsDefault is enabled

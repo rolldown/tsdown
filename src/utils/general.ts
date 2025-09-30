@@ -47,3 +47,16 @@ export function slash(string: string): string {
 }
 
 export const noop = <T>(v: T): T => v
+
+export function matchPattern(
+  id: string,
+  patterns: (string | RegExp)[],
+): boolean {
+  return patterns.some((pattern) => {
+    if (pattern instanceof RegExp) {
+      pattern.lastIndex = 0
+      return pattern.test(id)
+    }
+    return id === pattern
+  })
+}

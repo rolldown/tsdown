@@ -6,6 +6,7 @@ declare const _default: number;
 //#endregion
 export { _default as default };
 ```
+
 ## index.some.mjs
 
 ```mjs

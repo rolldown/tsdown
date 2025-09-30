@@ -161,7 +161,7 @@ export async function generateExports(
     }
   }
 
-  const sorttedExportsMap = Array.from(exportsMap.entries()).sort(
+  const sortedExportsMap = Array.from(exportsMap.entries()).toSorted(
     ([a], [b]) => {
       if (a === 'index') return -1
       return a.localeCompare(b)
@@ -169,7 +169,7 @@ export async function generateExports(
   )
 
   let exports: Record<string, any> = Object.fromEntries(
-    sorttedExportsMap.map(([name, subExport]) => [
+    sortedExportsMap.map(([name, subExport]) => [
       name,
       genSubExport(devExports, subExport),
     ]),
@@ -187,7 +187,7 @@ export async function generateExports(
   let publishExports: Record<string, any> | undefined
   if (devExports) {
     publishExports = Object.fromEntries(
-      sorttedExportsMap.map(([name, subExport]) => [
+      sortedExportsMap.map(([name, subExport]) => [
         name,
         genSubExport(false, subExport),
       ]),

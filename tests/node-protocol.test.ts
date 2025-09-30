@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest'
+import { resolveOptions } from '../src/options'
 import { testBuild } from './utils'
 
 describe('node protocol', () => {
@@ -103,22 +104,15 @@ describe('node protocol', () => {
     expect(snapshot).not.contains('node:')
   })
 
-  test('nodeProtocol option takes precedence over removeNodeProtocol', async (context) => {
-    const files = {
-      'index.ts': `
-    import fs from 'fs'
-    export { fs }
-    `,
-    }
-    const { snapshot } = await testBuild({
-      context,
-      files,
-      options: {
+  test('nodeProtocol option takes precedence over removeNodeProtocol', async () => {
+    await expect(() =>
+      resolveOptions({
         nodeProtocol: true,
         removeNodeProtocol: true,
-      },
-    })
-    expect(snapshot).toMatch(/from ['"]node:fs['"]/)
+      }),
+    ).rejects.toThrowError(
+      `\`removeNodeProtocol\` is deprecated. Please only use \`nodeProtocol\` instead.`,
+    )
   })
 
   test('mixed imports with nodeProtocol: true', async (context) => {
@@ -197,5 +191,50 @@ describe('node protocol', () => {
     })
     expect(snapshot).toMatch(/from ['"]node:fs\/promises['"]/)
     expect(snapshot).toMatch(/from ['"]node:url['"]/)
+  })
+
+  test('should not double-prefix modules that already have node: prefix', async (context) => {
+    const files = {
+      'index.ts': `
+    import fs from 'fs'
+    import { join } from 'node:path'
+    import * as crypto from 'node:crypto'
+    import * as nodeSqlite from 'node:sqlite'
+    import * as sqlite from 'sqlite'
+    export { fs, join, crypto, nodeSqlite, sqlite }
+    `,
+    }
+    const { snapshot } = await testBuild({
+      context,
+      files,
+      options: {
+        nodeProtocol: true,
+      },
+    })
+
+    expect(snapshot).toMatch(/nodeSqlite from ['"]node:sqlite['"]/)
+    expect(snapshot).toMatch(/sqlite from ['"]sqlite['"]/)
+    expect(snapshot).not.includes('node:node:')
+  })
+
+  test('should handle modules that require node: prefix', async (context) => {
+    // Simulate modules that only exist with node: prefix
+    const files = {
+      'index.ts': `
+    import test from 'node:test'
+    import sqlite from 'node:sqlite'
+    export { test, sqlite }
+    `,
+    }
+    const { snapshot } = await testBuild({
+      context,
+      files,
+      options: {
+        nodeProtocol: 'strip',
+      },
+    })
+    // For node:-only modules, the prefix should be preserved even in strip mode
+    expect(snapshot).toMatch(/from ['"]node:test['"]/)
+    expect(snapshot).toMatch(/from ['"]node:sqlite['"]/)
   })
 })

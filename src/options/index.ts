@@ -8,7 +8,7 @@ import { resolveEntry } from '../features/entry'
 import { hasExportsTypes } from '../features/exports'
 import { resolveTarget } from '../features/target'
 import { resolveTsconfig } from '../features/tsconfig'
-import { resolveRegex, slash, toArray } from '../utils/general'
+import { matchPattern, resolveRegex, slash, toArray } from '../utils/general'
 import { createLogger } from '../utils/logger'
 import { normalizeFormat, readPackageJson } from '../utils/package'
 import type { Awaitable } from '../utils/types'
@@ -182,7 +182,7 @@ async function resolveConfig(
     dts,
     unused = false,
     watch = false,
-    ignoreWatch = [],
+    ignoreWatch,
     shims = false,
     skipNodeModulesBundle = false,
     publint = false,
@@ -207,12 +207,20 @@ async function resolveConfig(
     removeNodeProtocol,
     nodeProtocol,
     cjsDefault = true,
+    globImport = true,
+    inlineOnly,
   } = userConfig
 
   const logger = createLogger(logLevel, { customLogger, failOnWarn })
 
   if (typeof bundle === 'boolean') {
     logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')
+  }
+
+  if (removeNodeProtocol && nodeProtocol) {
+    throw new TypeError(
+      '`removeNodeProtocol` is deprecated. Please only use `nodeProtocol` instead.',
+    )
   }
 
   // Resolve nodeProtocol option with backward compatibility for removeNodeProtocol
@@ -264,23 +272,19 @@ async function resolveConfig(
       cwd,
     )
     if (viteUserConfig) {
-      // const alias = viteUserConfig.resolve?.alias
-      if ((Array.isArray as (arg: any) => arg is readonly any[])(alias)) {
+      const viteAlias = viteUserConfig.resolve?.alias
+
+      if ((Array.isArray as (arg: any) => arg is readonly any[])(viteAlias)) {
         throw new TypeError(
           'Unsupported resolve.alias in Vite config. Use object instead of array',
         )
       }
+      if (viteAlias) {
+        alias = { ...alias, ...viteAlias }
+      }
 
       if (viteUserConfig.plugins) {
         plugins = [viteUserConfig.plugins as any, plugins]
-      }
-
-      const viteAlias = viteUserConfig.resolve?.alias
-      if (
-        viteAlias &&
-        !(Array.isArray as (arg: any) => arg is readonly any[])(viteAlias)
-      ) {
-        alias = viteAlias
       }
     }
   }
@@ -292,6 +296,14 @@ async function resolveConfig(
     }
     return ignore
   })
+
+  if (noExternal != null && typeof noExternal !== 'function') {
+    const noExternalPatterns = toArray(noExternal)
+    noExternal = (id) => matchPattern(id, noExternalPatterns)
+  }
+  if (inlineOnly != null) {
+    inlineOnly = toArray(inlineOnly)
+  }
 
   const config: ResolvedOptions = {
     ...userConfig,
@@ -328,6 +340,8 @@ async function resolveConfig(
     unbundle,
     nodeProtocol,
     cjsDefault,
+    globImport,
+    inlineOnly,
   }
 
   return config

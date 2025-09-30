@@ -77,8 +77,18 @@ export async function loadConfigFile(
     }
   }
 
-  const nativeTS =
-    process.features.typescript || process.versions.bun || process.versions.deno
+  let isNative = false
+  if (!loaded) {
+    if (!options.configLoader || options.configLoader === 'auto') {
+      isNative = !!(
+        process.features.typescript ||
+        process.versions.bun ||
+        process.versions.deno
+      )
+    } else if (options.configLoader === 'native') {
+      isNative = true
+    }
+  }
 
   let { config, sources } = await loadConfig
     .async<UserConfig | UserConfigFn>({
@@ -88,14 +98,7 @@ export async function loadConfigFile(
             {
               files: 'tsdown.config',
               extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
-              parser:
-                loaded || !nativeTS
-                  ? 'auto'
-                  : async (filepath) => {
-                      const mod = await import(pathToFileURL(filepath).href)
-                      const config = mod.default || mod
-                      return config
-                    },
+              parser: isNative ? nativeImport : 'auto',
             },
             {
               files: 'package.json',
@@ -125,4 +128,21 @@ export async function loadConfigFile(
     configs: config,
     file,
   }
+}
+
+async function nativeImport(id: string) {
+  const mod = await import(pathToFileURL(id).href).catch((error) => {
+    const cannotFindModule = error?.message?.includes?.('Cannot find module')
+    if (cannotFindModule) {
+      const configError = new Error(
+        `Failed to load the config file. Try setting the --config-loader CLI flag to \`unconfig\`.\n\n${error.message}`,
+      )
+      configError.cause = error
+      throw configError
+    } else {
+      throw error
+    }
+  })
+  const config = mod.default || mod
+  return config
 }

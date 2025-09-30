@@ -18,6 +18,12 @@ tsdown src/index.ts src/util.ts
 
 另请参阅 [配置文件](../options/config-file.md)。
 
+## `--config-loader <loader>`
+
+指定要使用的配置加载器。
+
+另请参阅 [配置文件](../options/config-file.md)。
+
 ## `--no-config`
 
 禁用加载配置文件。如果您希望仅依赖命令行选项或默认设置，此选项非常有用。
@@ -67,14 +73,24 @@ tsdown --tsconfig tsconfig.build.json
 
 - `es2015`
 - `esnext`
+- `chrome100`
+- `node18`
+
+您也可以使用 `--no-target` 或在配置文件中将目标设置为 `false` 来禁用所有语法转换。
 
 另请参阅 [构建目标](../options/target.md)。
 
-## `--silent`
+## `--log-level <level>`
 
-在构建过程中屏蔽非错误日志。仅显示错误消息，使您更专注于关键问题。
+设置日志级别，以控制构建过程中日志的详细程度。
 
-另请参阅 [静默模式](../options/silent-mode.md)。
+另请参阅 [日志级别](../options/log-level.md)。
+
+### ~~`--silent`~~
+
+**已废弃：** 请使用 `--log-level error` 以获得更好的兼容性。
+
+在构建过程中屏蔽非错误日志，仅显示错误信息，便于专注于关键问题。
 
 ## `-d, --out-dir <dir>`
 

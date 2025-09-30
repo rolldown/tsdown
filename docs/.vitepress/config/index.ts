@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url'
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { defineConfig } from 'vitepress'
 import { groupIconMdPlugin } from 'vitepress-plugin-group-icons'
 import { getLocaleConfig } from './theme'
@@ -47,6 +48,17 @@ export default defineConfig({
     config(md) {
       md.use(groupIconMdPlugin)
     },
+    codeTransformers: [
+      transformerTwoslash({
+        twoslashOptions: {
+          compilerOptions: {
+            paths: {
+              tsdown: ['../src/index.ts'],
+            },
+          },
+        },
+      }),
+    ],
   },
 
   vite: {

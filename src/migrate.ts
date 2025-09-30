@@ -64,7 +64,7 @@ async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
     return false
   }
 
-  const pkgRaw = await readFile('package.json', 'utf-8')
+  const pkgRaw = await readFile('package.json', 'utf8')
   let pkg = JSON.parse(pkgRaw)
   let found = false
 
@@ -128,7 +128,7 @@ async function migrateTsupConfig(dryRun?: boolean): Promise<boolean> {
     globalLogger.info(`Found \`${file}\``)
     found = true
 
-    const tsupConfigRaw = await readFile(file, 'utf-8')
+    const tsupConfigRaw = await readFile(file, 'utf8')
     const tsupConfig = tsupConfigRaw
       .replaceAll(/\btsup\b/g, 'tsdown')
       .replaceAll(/\bTSUP\b/g, 'TSDOWN')

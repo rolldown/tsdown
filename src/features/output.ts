@@ -58,7 +58,7 @@ export function resolveChunkFilename(
     dtsExtension = dts
   }
 
-  jsExtension ||= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
+  jsExtension ??= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
 
   const suffix = format === 'iife' || format === 'umd' ? `.${format}` : ''
   return [
@@ -77,7 +77,7 @@ function createChunkFilename(
   jsExtension: string,
   dtsExtension?: string,
 ): ChunkFileName {
-  if (!dtsExtension) return `${basename}${jsExtension}`
+  if (dtsExtension === undefined) return `${basename}${jsExtension}`
   return (chunk: PreRenderedChunk) => {
     return `${basename}${chunk.name.endsWith('.d') ? dtsExtension : jsExtension}`
   }
@@ -90,18 +90,29 @@ export interface ChunkAddonObject {
 }
 export type ChunkAddonFunction = (ctx: {
   format: Format
-}) => ChunkAddonObject | undefined
-export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction
+  fileName: string
+}) => ChunkAddonObject | string | undefined
+export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string
 
 export function resolveChunkAddon(
   chunkAddon: ChunkAddon | undefined,
   format: NormalizedFormat,
+  dts?: boolean,
 ): AddonFunction | undefined {
   if (!chunkAddon) return
 
   return (chunk: RenderedChunk) => {
+    if (!dts && RE_DTS.test(chunk.fileName)) return ''
+
     if (typeof chunkAddon === 'function') {
-      chunkAddon = chunkAddon({ format })
+      chunkAddon = chunkAddon({
+        format,
+        fileName: chunk.fileName,
+      })
+    }
+
+    if (typeof chunkAddon === 'string') {
+      return chunkAddon
     }
 
     switch (true) {

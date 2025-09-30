@@ -2,9 +2,10 @@
 
 ```ts
 // dts banner
-export {};
+export { };
 // dts footer
 ```
+
 ## index.js
 
 ```js

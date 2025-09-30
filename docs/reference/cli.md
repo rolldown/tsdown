@@ -18,6 +18,12 @@ Specify a custom configuration file. Use this option to define the path to the c
 
 See also [Config File](../options/config-file.md).
 
+## `--config-loader <loader>`
+
+Specifies which config loader to use.
+
+See also [Config File](../options/config-file.md).
+
 ## `--no-config`
 
 Disable loading a configuration file. This is useful if you want to rely solely on command-line options or default settings.
@@ -67,14 +73,24 @@ Specify the JavaScript target version for the bundle. Examples include:
 
 - `es2015`
 - `esnext`
+- `chrome100`
+- `node18`
+
+You can also disable all syntax transformations by using `--no-target` or by setting the target to `false` in your configuration file.
 
 See also [Target](../options/target.md).
 
-## `--silent`
+## `--log-level <level>`
+
+Set the log level to control the verbosity of logs during the build process.
+
+See also [Log Level](../options/log-level.md).
+
+### ~~`--silent`~~
+
+**Deprecated:** Please use `--log-level error` instead for better compatibility.
 
 Suppress non-error logs during the build process. Only error messages will be displayed, making it easier to focus on critical issues.
-
-See also [Silent Mode](../options/silent-mode.md).
 
 ## `-d, --out-dir <dir>`
 

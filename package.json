@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
-  "version": "0.14.2",
-  "packageManager": "pnpm@10.15.0",
+  "version": "0.15.5",
+  "packageManager": "pnpm@10.17.1",
   "description": "The Elegant Bundler for Libraries",
   "type": "module",
   "license": "MIT",
@@ -13,9 +13,10 @@
     "type": "git",
     "url": "git+https://github.com/rolldown/tsdown.git"
   },
-  "author": "三咲智子 Kevin Deng <sxzz@sxzz.moe>",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
   "funding": "https://github.com/sponsors/sxzz",
   "files": [
+    "client.d.ts",
     "dist",
     "esm-shims.js"
   ],
@@ -27,7 +28,8 @@
     "./config": "./dist/config.mjs",
     "./plugins": "./dist/plugins.mjs",
     "./run": "./dist/run.mjs",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./client": "./client.d.ts"
   },
   "typesVersions": {
     "*": {
@@ -114,6 +116,7 @@
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:dev",
+    "rolldown-plugin-require-cjs": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",

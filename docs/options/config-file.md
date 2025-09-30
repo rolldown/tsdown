@@ -62,6 +62,17 @@ tsdown --no-config
 
 This is useful if you want to rely solely on command-line options or default settings.
 
+## Config Loaders
+
+`tsdown` supports multiple config loaders to accommodate various file formats. You can select a config loader using the `--config-loader` option. The available loaders are:
+
+- `auto` (default): Utilizes native runtime loading for TypeScript if supported; otherwise, defaults to `unconfig`.
+- `native`: Loads TypeScript configuration files using native runtime support. Requires a compatible environment, such as the latest Node.js, Deno, or Bun.
+- `unconfig`: Loads configuration files with the `unconfig` library, ensuring broad compatibility across different runtimes.
+
+> [!TIP]
+> Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider using the `unconfig` loader for seamless compatibility.
+
 ## Extending Vite or Vitest Config (Experimental)
 
 `tsdown` provides an **experimental** feature to extend your existing Vite or Vitest configuration files. This allows you to reuse specific configuration options, such as `resolve` and `plugins`, while ignoring others that are not relevant to `tsdown`.
