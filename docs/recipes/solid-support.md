@@ -58,19 +58,19 @@ Install the required dependencies:
 ::: code-group
 
 ```sh [npm]
-npm install -D roldown-plugin-solid
+npm install -D rolldown-plugin-solid
 ```
 
 ```sh [pnpm]
-pnpm add -D roldown-plugin-solid
+pnpm add -D rolldown-plugin-solid
 ```
 
 ```sh [yarn]
-yarn add -D roldown-plugin-solid
+yarn add -D rolldown-plugin-solid
 ```
 
 ```sh [bun]
-bun add -D roldown-plugin-solid
+bun add -D rolldown-plugin-solid
 ```
 
 :::
