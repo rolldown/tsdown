@@ -15,8 +15,8 @@ npx create-tsdown@latest -t solid
 To configure `tsdown` for a Solid library, use the following setup in your `tsdown.config.ts`:
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
 import solid from 'rolldown-plugin-solid' // or use 'unplugin-solid/rolldown'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig([
   {
