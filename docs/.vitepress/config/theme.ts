@@ -158,11 +158,21 @@ export function getLocaleConfig(lang: string) {
         label: '页面导航',
         level: 'deep',
       },
-      lastUpdatedText: '最后更新于',
+      lastUpdated: {
+        text: '最后更新于',
+        formatOptions: {
+          forceLocale: true,
+          dateStyle: 'short',
+          timeStyle: 'short',
+        },
+      },
       darkModeSwitchLabel: '外观',
+      lightModeSwitchTitle: '切换到浅色模式',
+      darkModeSwitchTitle: '切换到深色模式',
       sidebarMenuLabel: '目录',
       returnToTopLabel: '返回顶部',
-      langMenuLabel: '选择语言',
+      langMenuLabel: '切换语言',
+      skipToContentLabel: '跳到正文',
       docFooter: {
         prev: '上一页',
         next: '下一页',
