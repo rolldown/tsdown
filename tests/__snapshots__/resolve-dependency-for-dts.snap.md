@@ -1,6 +1,6 @@
-## index.d.ts
+## index.d.mts
 
-```ts
+```mts
 export * from "unconfig";
 type Options = {
   /**
@@ -21,8 +21,8 @@ type Options = {
 export { type Options };
 ```
 
-## index.js
+## index.mjs
 
-```js
+```mjs
 export {  };
 ```
