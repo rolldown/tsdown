@@ -1,4 +1,4 @@
-import { builtinModules } from 'node:module'
+import { isBuiltin } from 'node:module'
 import path from 'node:path'
 import { blue, underline } from 'ansis'
 import Debug from 'debug'
@@ -30,8 +30,7 @@ export function ExternalPlugin({
         importer,
         extraOptions,
       )
-      const nodeBuiltinModule =
-        id.startsWith('node:') || builtinModules.includes(id)
+      const nodeBuiltinModule = isBuiltin(id)
 
       debug('shouldExternal: %s = %s', id, shouldExternal)
 
