@@ -242,7 +242,15 @@ export interface Options {
   globalName?: string
   /** @default 'dist' */
   outDir?: string
-  /** @default false */
+  /**
+   * Whether to generate source map files.
+   *
+   * Note that this option will always be `true` if you have
+   * [`declarationMap`](https://www.typescriptlang.org/tsconfig/#declarationMap)
+   * option enabled in your `tsconfig.json`.
+   *
+   * @default false
+   */
   sourcemap?: Sourcemap
   /**
    * Clean directories before build.
