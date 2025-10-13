@@ -4,8 +4,8 @@ import {
   mergeUserOptions,
   type DtsOptions,
   type NormalizedFormat,
-  type ResolvedOptions,
-} from '../options'
+  type ResolvedConfig,
+} from '../config/index'
 import { lowestCommonAncestor } from '../utils/fs'
 import { LogLevels } from '../utils/logger'
 import { ExternalPlugin } from './external'
@@ -25,7 +25,7 @@ import type {
 const debug = Debug('tsdown:rolldown')
 
 export async function getBuildOptions(
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   format: NormalizedFormat,
   isMultiFormat?: boolean,
   cjsDts: boolean = false,
@@ -58,7 +58,7 @@ export async function getBuildOptions(
 }
 
 export async function resolveInputOptions(
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   format: NormalizedFormat,
   cjsDts: boolean,
   isMultiFormat?: boolean,
@@ -192,7 +192,7 @@ export async function resolveInputOptions(
 
 export async function resolveOutputOptions(
   inputOptions: InputOptions,
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   format: NormalizedFormat,
   cjsDts: boolean,
 ): Promise<OutputOptions> {

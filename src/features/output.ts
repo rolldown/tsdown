@@ -1,6 +1,6 @@
 import { RE_CSS, RE_DTS, RE_JS } from 'rolldown-plugin-dts/filename'
 import { getPackageType, type PackageType } from '../utils/package'
-import type { Format, NormalizedFormat, ResolvedOptions } from '../options'
+import type { Format, NormalizedFormat, ResolvedConfig } from '../config/index'
 import type {
   AddonFunction,
   InputOptions,
@@ -38,7 +38,7 @@ function resolveJsOutputExtension(
 }
 
 export function resolveChunkFilename(
-  { outExtensions, fixedExtension, pkg, hash }: ResolvedOptions,
+  { outExtensions, fixedExtension, pkg, hash }: ResolvedConfig,
   inputOptions: InputOptions,
   format: NormalizedFormat,
 ): [entry: ChunkFileName, chunk: ChunkFileName] {

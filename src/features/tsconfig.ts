@@ -3,7 +3,7 @@ import { blue } from 'ansis'
 import { up as findUp } from 'empathic/find'
 import { fsStat } from '../utils/fs'
 import { generateColor, prettyName, type Logger } from '../utils/logger'
-import type { Options } from '../options'
+import type { UserConfig } from '../config/index'
 
 export function findTsconfig(
   cwd?: string,
@@ -14,7 +14,7 @@ export function findTsconfig(
 
 export async function resolveTsconfig(
   logger: Logger,
-  tsconfig: Options['tsconfig'],
+  tsconfig: UserConfig['tsconfig'],
   cwd: string,
   name?: string,
 ): Promise<string | false> {

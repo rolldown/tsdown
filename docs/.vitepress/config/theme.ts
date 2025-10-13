@@ -57,7 +57,7 @@ export function getLocaleConfig(lang: string) {
     { text: t('Guide'), link: `${urlPrefix}/guide/` },
     {
       text: t('API Reference'),
-      link: `${urlPrefix}/reference/api/Interface.Options.md`,
+      link: `${urlPrefix}/reference/api/Interface.UserConfig.md`,
     },
     { text: t('FAQ'), link: `${urlPrefix}/guide/faq.md` },
   ]
@@ -123,7 +123,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Command Line Interface'), link: '/cli.md' },
         {
           text: t('Config Options'),
-          link: '/api/Interface.Options.md',
+          link: '/api/Interface.UserConfig.md',
         },
         {
           text: t('Type Definitions'),
