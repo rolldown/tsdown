@@ -1,3 +1,4 @@
+import path from 'node:path'
 import process from 'node:process'
 import { dim } from 'ansis'
 import Debug from 'debug'
@@ -16,9 +17,10 @@ export async function publint(options: ResolvedOptions): Promise<void> {
   debug('Running publint')
   const { publint } = await import('publint')
   const { formatMessage } = await import('publint/utils')
-  const { messages } = await publint(
-    options.publint === true ? {} : options.publint,
-  )
+  const { messages } = await publint({
+    ...(options.publint === true ? {} : options.publint),
+    pkgDir: path.dirname(options.pkg.packageJsonPath),
+  })
   debug('Found %d issues', messages.length)
 
   if (!messages.length) {
