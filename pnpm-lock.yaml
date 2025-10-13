@@ -104,6 +104,9 @@ catalogs:
       specifier: ^3.1.1
       version: 3.1.1
   prod:
+    '@clack/prompts':
+      specifier: ^0.11.0
+      version: 0.11.0
     ansis:
       specifier: ^4.2.0
       version: 4.2.0
@@ -122,9 +125,15 @@ catalogs:
     empathic:
       specifier: ^2.0.0
       version: 2.0.0
+    giget:
+      specifier: ^2.0.0
+      version: 2.0.0
     hookable:
       specifier: ^5.5.3
       version: 5.5.3
+    package-manager-detector:
+      specifier: ^1.4.0
+      version: 1.4.0
     rolldown-plugin-dts:
       specifier: ^0.16.11
       version: 0.16.11
@@ -305,6 +314,21 @@ importers:
         specifier: catalog:docs
         version: 3.1.1(typescript@5.9.3)
 
+  packages/create-tsdown:
+    dependencies:
+      '@clack/prompts':
+        specifier: catalog:prod
+        version: 0.11.0
+      cac:
+        specifier: catalog:prod
+        version: 6.7.14
+      giget:
+        specifier: catalog:prod
+        version: 2.0.0
+      package-manager-detector:
+        specifier: catalog:prod
+        version: 1.4.0
+
 packages:
 
   '@andrewbranch/untar.js@1.0.3':
@@ -360,6 +384,12 @@ packages:
 
   '@braidai/lang@1.1.2':
     resolution: {integrity: sha512-qBcknbBufNHlui137Hft8xauQMTZDKdophmLFv05r2eNmdIv/MlPuP4TdUknHG68UdWLgVZwgxVe735HzJNIwA==}
+
+  '@clack/core@0.5.0':
+    resolution: {integrity: sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow==}
+
+  '@clack/prompts@0.11.0':
+    resolution: {integrity: sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw==}
 
   '@docsearch/css@4.2.0':
     resolution: {integrity: sha512-65KU9Fw5fGsPPPlgIghonMcndyx1bszzrDQYLfierN+Ha29yotMHzVS94bPkZS6On9LS8dE4qmW4P/fGjtCf/g==}
@@ -3114,6 +3144,9 @@ packages:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
     engines: {node: '>=18'}
 
+  sisteransi@1.0.5:
+    resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -3612,6 +3645,17 @@ snapshots:
       '@babel/helper-validator-identifier': 7.27.1
 
   '@braidai/lang@1.1.2': {}
+
+  '@clack/core@0.5.0':
+    dependencies:
+      picocolors: 1.1.1
+      sisteransi: 1.0.5
+
+  '@clack/prompts@0.11.0':
+    dependencies:
+      '@clack/core': 0.5.0
+      picocolors: 1.1.1
+      sisteransi: 1.0.5
 
   '@docsearch/css@4.2.0': {}
 
@@ -6534,6 +6578,8 @@ snapshots:
       '@polka/url': 1.0.0-next.29
       mrmime: 2.0.1
       totalist: 3.0.1
+
+  sisteransi@1.0.5: {}
 
   source-map-js@1.2.1: {}
 

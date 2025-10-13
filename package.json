@@ -53,7 +53,7 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --cache --write .",
-    "release": "bumpp",
+    "release": "bumpp -r",
     "prepublishOnly": "pnpm run build",
     "docs:dev": "pnpm -C docs run dev",
     "docs:build": "pnpm -C docs run build",
