@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region index.ts
 var test_default = 10;
 

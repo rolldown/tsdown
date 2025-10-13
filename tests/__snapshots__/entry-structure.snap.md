@@ -1,11 +1,11 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 export {  };
 ```
 
-## utils/index.js
+## utils/index.mjs
 
-```js
+```mjs
 export {  };
 ```

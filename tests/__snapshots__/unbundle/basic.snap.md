@@ -1,6 +1,6 @@
-## foo.js
+## foo.mjs
 
-```js
+```mjs
 //#region src/foo.ts
 const foo = 1;
 
@@ -8,18 +8,18 @@ const foo = 1;
 export { foo };
 ```
 
-## index.js
+## index.mjs
 
-```js
-import { foo } from "./foo.js";
-import { bar } from "./utils/bar.js";
+```mjs
+import { foo } from "./foo.mjs";
+import { bar } from "./utils/bar.mjs";
 
 export { bar, foo };
 ```
 
-## utils/bar.js
+## utils/bar.mjs
 
-```js
+```mjs
 //#region src/utils/bar.ts
 const bar = 2;
 

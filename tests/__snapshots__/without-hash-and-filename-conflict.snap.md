@@ -1,6 +1,6 @@
-## foo.js
+## foo.mjs
 
-```js
+```mjs
 //#region utils/foo.ts
 const foo$1 = (a) => {
 	console.log("utils/foo:" + a);
@@ -16,18 +16,18 @@ const foo = (a) => {
 export { foo, foo$1 };
 ```
 
-## index.js
+## index.mjs
 
-```js
-import { foo, foo$1 } from "./foo.js";
+```mjs
+import { foo, foo$1 } from "./foo.mjs";
 
 export { foo, foo$1 as utilsFoo };
 ```
 
-## run.js
+## run.mjs
 
-```js
-import { foo, foo$1 } from "./foo.js";
+```mjs
+import { foo, foo$1 } from "./foo.mjs";
 
 //#region run.ts
 foo("hello world");

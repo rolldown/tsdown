@@ -1,7 +1,7 @@
-## index.js
+## index.mjs
 
-```js
-import "./style.js";
+```mjs
+import "./style.mjs";
 
 export {  };
 ```
@@ -13,8 +13,8 @@ body { color: red }
 
 ```
 
-## style.js
+## style.mjs
 
-```js
+```mjs
 export {  };
 ```

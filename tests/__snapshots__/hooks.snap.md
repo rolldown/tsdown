@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region index.ts
 var hooks_default = 10;
 
