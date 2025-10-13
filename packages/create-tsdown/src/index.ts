@@ -33,14 +33,7 @@ export async function create(
   const s = spinner()
   s.start('Cloning the template...')
 
-  let repo: string
-  if (resolved.template === 'default' || resolved.template === 'minimal') {
-    repo = 'rolldown/create-tsdown/templates'
-  } else {
-    repo = `sxzz/tsdown-templates`
-  }
-
-  await downloadTemplate(`gh:${repo}/${resolved.template}`, {
+  await downloadTemplate(`gh:sxzz/tsdown-templates/${resolved.template}`, {
     dir: resolved.path,
   })
 
