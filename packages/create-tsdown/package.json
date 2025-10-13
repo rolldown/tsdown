@@ -35,7 +35,7 @@
     }
   },
   "bin": {
-    "create-tsdown": "./dist/run.js"
+    "create-tsdown": "./dist/run.mjs"
   },
   "publishConfig": {
     "access": "public"
