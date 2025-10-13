@@ -4,7 +4,7 @@ export default sxzz({
   pnpm: true,
 })
   .append({
-    files: ['examples/**'],
+    files: ['templates/**'],
     rules: {
       'pnpm/json-enforce-catalog': 'off',
     },

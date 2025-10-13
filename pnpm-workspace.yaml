@@ -1,5 +1,6 @@
 packages:
   - docs
+  - packages/*
 
 overrides:
   rolldown: 'catalog:prod'
@@ -44,13 +45,16 @@ catalogs:
     vue-tsc: ^3.1.1
 
   prod:
+    '@clack/prompts': ^0.11.0
     ansis: ^4.2.0
     cac: ^6.7.14
     chokidar: ^4.0.3
     debug: ^4.4.3
     diff: ^8.0.2
     empathic: ^2.0.0
+    giget: ^2.0.0
     hookable: ^5.5.3
+    package-manager-detector: ^1.4.0
     rolldown: latest
     rolldown-plugin-dts: ^0.16.11
     semver: ^7.7.3

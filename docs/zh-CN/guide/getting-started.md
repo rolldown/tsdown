@@ -64,7 +64,7 @@ bun add -D typescript
 
 ### 起步模板 {#starter-templates}
 
-为了更快速地开始，您可以使用 [create-tsdown](https://github.com/gugustinette/create-tsdown) CLI，它提供了一系列起步模板，适用于构建纯 TypeScript 库以及如 React、Vue 等前端库。
+为了更快速地开始，您可以使用 [create-tsdown](https://github.com/rolldown/tsdown/tree/main/packages/create-tsdown) CLI，它提供了一系列起步模板，适用于构建纯 TypeScript 库以及如 React、Vue 等前端库。
 
 ::: code-group
 

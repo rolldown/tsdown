@@ -64,7 +64,7 @@ bun add -D typescript
 
 ### Starter Templates {#starter-templates}
 
-To get started even faster, you can use the [create-tsdown](https://github.com/gugustinette/create-tsdown) CLI, which provides a set of starter templates for building pure TypeScript libraries, as well as frontend libraries like React and Vue.
+To get started even faster, you can use the [create-tsdown](https://github.com/rolldown/tsdown/tree/main/packages/create-tsdown) CLI, which provides a set of starter templates for building pure TypeScript libraries, as well as frontend libraries like React and Vue.
 
 ::: code-group
 

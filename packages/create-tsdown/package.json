@@ -1,0 +1,53 @@
+{
+  "name": "create-tsdown",
+  "version": "0.0.3",
+  "description": "Create a new tsdown project",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/rolldown/tsdown/tree/main/packages/create#readme",
+  "bugs": {
+    "url": "https://github.com/rolldown/tsdown/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolldown/tsdown.git",
+    "directory": "packages/create-tsdown"
+  },
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
+  "funding": "https://github.com/sponsors/sxzz",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./run": "./dist/run.mjs",
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./*"
+      ]
+    }
+  },
+  "bin": {
+    "create-tsdown": "./dist/run.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@clack/prompts": "catalog:prod",
+    "cac": "catalog:prod",
+    "giget": "catalog:prod",
+    "package-manager-detector": "catalog:prod"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  }
+}
