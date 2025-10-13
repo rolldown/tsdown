@@ -60,10 +60,12 @@ export async function resolveOptions(
   let path: Options['path'] | symbol = options.path
 
   if (!path) {
-    path = await text({
-      message: 'What is the name of your package?',
-      placeholder: './my-tsdown-package',
-    })
+    const defaultPath = './my-tsdown-package'
+    path =
+      (await text({
+        message: 'What is the name of your package?',
+        placeholder: defaultPath,
+      })) || defaultPath
     if (isCancel(path)) {
       cancel('Operation cancelled.')
       process.exit(1)
