@@ -18,6 +18,10 @@ export function resolveTarget(
       return
     }
   }
+
+  if (typeof target === 'number') {
+    throw new TypeError(`Invalid target: ${target}`)
+  }
   const targets = resolveComma(toArray(target))
   if (targets.length)
     logger.info(
