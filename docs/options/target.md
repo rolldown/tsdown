@@ -2,7 +2,7 @@
 
 The `target` setting determines which JavaScript and CSS features are downleveled (transformed to older syntax) and which are left intact in the output. This allows you to control the compatibility of your bundled code with specific environments or JavaScript versions.
 
-For example, an arrow function `() => this` will be transformed into an equivalent `function` expression if the target is `es5` or lower.
+For example, a logical assignment `a ||= b` will be transformed into an equivalent `a || (a = b)` expression if the target is `es2015`.
 
 > [!WARNING] Syntax Downgrade Only
 > The `target` option only affects syntax transformations. It does not include runtime polyfills or shims for APIs that may not exist in the target environment. For example, if your code uses `Promise`, it will not be polyfilled for environments that lack native `Promise` support.
@@ -61,7 +61,7 @@ tsdown --target <target>
 
 ### Supported Targets
 
-- ECMAScript versions: `es5`, `es2015`, `es2020`, `esnext`, etc.
+- ECMAScript versions: `es2015`, `es2020`, `esnext`, etc.
 - Browser versions: `chrome100`, `safari18`, `firefox110`, etc.
 - Node.js versions: `node20.18`, `node16`, etc.
 

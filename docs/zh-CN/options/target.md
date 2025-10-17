@@ -2,7 +2,7 @@
 
 `target` 设置决定了哪些 JavaScript 和 CSS 特性会被降级（转换为旧语法），哪些会在输出中保持原样。这使您可以控制打包代码与特定环境或 JavaScript 版本的兼容性。
 
-例如，如果目标是 `es5` 或更低版本，箭头函数 `() => this` 将被转换为等效的 `function` 表达式。
+例如，如果目标为 `es2015`，逻辑赋值表达式 `a ||= b` 会被转换为等效的 `a || (a = b)` 表达式。
 
 > [!WARNING] 仅限语法降级
 > `target` 选项仅影响语法转换。它不会为目标环境中可能不存在的 API 提供运行时 polyfill 或 shim。例如，如果您的代码使用了 `Promise`，但目标环境不支持原生 `Promise`，则不会自动添加 polyfill。
@@ -61,7 +61,7 @@ tsdown --target <target>
 
 ### 支持的目标
 
-- ECMAScript 版本：`es5`、`es2015`、`es2020`、`esnext` 等
+- ECMAScript 版本：`es2015`、`es2020`、`esnext` 等
 - 浏览器版本：`chrome100`、`safari18`、`firefox110` 等
 - Node.js 版本：`node20.18`、`node16` 等
 
