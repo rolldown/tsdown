@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
   "version": "0.15.7",
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.18.3",
   "description": "The Elegant Bundler for Libraries",
   "type": "module",
   "license": "MIT",

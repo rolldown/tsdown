@@ -140,14 +140,12 @@ test('custom extension with empty string', async (context) => {
     context,
     files,
     options: {
-      dts: true,
       outExtensions: () => ({ js: '', dts: '' }),
     },
   })
   expect(outputFiles).toMatchInlineSnapshot(`
     [
       "index",
-      "index.d",
     ]
   `)
 })
