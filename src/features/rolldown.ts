@@ -1,5 +1,17 @@
+import { mkdtemp, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import util, { type InspectOptionsStylized } from 'node:util'
 import Debug from 'debug'
+import {
+  VERSION as rolldownVersion,
+  type BuildOptions,
+  type InputOptions,
+  type OutputOptions,
+  type RolldownPluginOption,
+} from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
+import { version } from '../../package.json'
 import {
   mergeUserOptions,
   type DtsOptions,
@@ -15,12 +27,6 @@ import { resolveChunkAddon, resolveChunkFilename } from './output'
 import { ReportPlugin } from './report'
 import { ShebangPlugin } from './shebang'
 import { getShimsInject } from './shims'
-import type {
-  BuildOptions,
-  InputOptions,
-  OutputOptions,
-  RolldownPluginOption,
-} from 'rolldown'
 
 const debug = Debug('tsdown:rolldown')
 
@@ -233,4 +239,70 @@ export async function resolveOutputOptions(
     [format, { cjsDts }],
   )
   return outputOptions
+}
+
+export async function getDebugRolldownDir(): Promise<string | undefined> {
+  if (!debug.enabled) return
+  return await mkdtemp(join(tmpdir(), 'tsdown-config-'))
+}
+
+export async function debugBuildOptions(
+  dir: string,
+  name: string | undefined,
+  format: NormalizedFormat,
+  buildOptions: BuildOptions,
+): Promise<void> {
+  const outFile = join(dir, `tsdown.config.${format}.js`)
+
+  handlePluginInspect(buildOptions.plugins)
+  const serialized = util.formatWithOptions(
+    {
+      depth: null,
+      maxArrayLength: null,
+      maxStringLength: null,
+    },
+    buildOptions,
+  )
+  const code = `/*
+Auto-generated rolldown config for tsdown debug purposes
+tsdown v${version}, rolldown v${rolldownVersion}
+Generated on ${new Date().toISOString()}
+Package name: ${name || 'not specified'}
+*/
+
+export default ${serialized}\n`
+  await writeFile(outFile, code)
+  debug(
+    'Wrote debug rolldown config for "%s" (%s) -> %s',
+    name || 'default name',
+    format,
+    outFile,
+  )
+}
+
+function handlePluginInspect(plugins: RolldownPluginOption) {
+  if (Array.isArray(plugins)) {
+    for (const plugin of plugins) {
+      handlePluginInspect(plugin)
+    }
+  } else if (
+    typeof plugins === 'object' &&
+    plugins !== null &&
+    'name' in plugins
+  ) {
+    ;(plugins as any)[util.inspect.custom] = function (
+      depth: number,
+      options: InspectOptionsStylized,
+      inspect: typeof util.inspect,
+    ) {
+      if ('_options' in plugins) {
+        return inspect(
+          { name: plugins.name, options: (plugins as any)._options },
+          options,
+        )
+      } else {
+        return `"rolldown plugin: ${plugins.name}"`
+      }
+    }
+  }
 }

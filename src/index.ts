@@ -12,7 +12,11 @@ import { copy } from './features/copy'
 import { writeExports, type TsdownChunks } from './features/exports'
 import { createHooks } from './features/hooks'
 import { publint } from './features/publint'
-import { getBuildOptions } from './features/rolldown'
+import {
+  debugBuildOptions,
+  getBuildOptions,
+  getDebugRolldownDir,
+} from './features/rolldown'
 import { shortcuts } from './features/shortcuts'
 import { watchBuild } from './features/watch'
 import { resolveOptions, type Options, type ResolvedOptions } from './options'
@@ -104,6 +108,8 @@ export async function buildSingle(
     let hasErrors = false
     const isMultiFormat = formats.length > 1
     const chunks: TsdownChunks = {}
+    const debugRolldownDir = await getDebugRolldownDir()
+
     await Promise.all(
       formats.map(async (format) => {
         try {
@@ -117,6 +123,14 @@ export async function buildSingle(
             ...context,
             buildOptions,
           })
+          if (debugRolldownDir) {
+            await debugBuildOptions(
+              debugRolldownDir,
+              config.name,
+              format,
+              buildOptions,
+            )
+          }
           const { output } = await rolldownBuild(buildOptions)
           chunks[format] = output
           if (format === 'cjs' && dts) {
