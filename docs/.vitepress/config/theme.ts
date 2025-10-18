@@ -1,9 +1,12 @@
 import { existsSync } from 'node:fs'
+import module from 'node:module'
 import path from 'node:path'
 import { createTranslate } from '../i18n/utils'
 import type { DefaultTheme, HeadConfig, LocaleConfig } from 'vitepress'
 
-async function getTypedocSidebar() {
+const require = module.createRequire(import.meta.url)
+
+function getTypedocSidebar() {
   const filepath = path.resolve(
     import.meta.dirname,
     '../../reference/api/typedoc-sidebar.json',
@@ -11,15 +14,14 @@ async function getTypedocSidebar() {
   if (!existsSync(filepath)) return []
 
   try {
-    return (await import(filepath, { with: { type: 'json' } }))
-      .default as DefaultTheme.SidebarItem[]
+    return require(filepath) as DefaultTheme.SidebarItem[]
   } catch (error) {
     console.error('Failed to load typedoc sidebar:', error)
     return []
   }
 }
 
-const typedocSidebar = await getTypedocSidebar()
+const typedocSidebar = getTypedocSidebar()
 
 export function getLocaleConfig(lang: string) {
   const t = createTranslate(lang)
