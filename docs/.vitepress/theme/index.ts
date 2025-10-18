@@ -9,7 +9,7 @@ import '@shikijs/vitepress-twoslash/style.css'
 import 'uno.css'
 
 export default {
-  ...DefaultTheme,
+  extends: DefaultTheme,
   Layout,
   enhanceApp({ app }) {
     app.use(TwoslashFloatingVue)
