@@ -1,6 +1,6 @@
 {
   "name": "create-tsdown",
-  "version": "0.15.7",
+  "version": "0.15.8",
   "description": "Create a new tsdown project",
   "type": "module",
   "license": "MIT",
