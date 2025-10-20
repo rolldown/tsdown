@@ -13,13 +13,13 @@ const foo = (a) => {
 };
 
 //#endregion
-export { foo, foo$1 };
+export { foo$1 as n, foo as t };
 ```
 
 ## index.js
 
 ```js
-import { foo, foo$1 } from "./foo.js";
+import { n as foo$1, t as foo } from "./foo.js";
 
 export { foo, foo$1 as utilsFoo };
 ```
@@ -27,7 +27,7 @@ export { foo, foo$1 as utilsFoo };
 ## run.js
 
 ```js
-import { foo, foo$1 } from "./foo.js";
+import { n as foo$1, t as foo } from "./foo.js";
 
 //#region run.ts
 foo("hello world");
