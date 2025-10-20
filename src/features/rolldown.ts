@@ -163,22 +163,22 @@ export async function resolveInputOptions(
       tsconfig: tsconfig || undefined,
       treeshake,
       platform: cjsDts || format === 'cjs' ? 'node' : platform,
-      define: {
-        ...define,
-        ...Object.keys(env).reduce((acc, key) => {
-          const value = JSON.stringify(env[key])
-          acc[`process.env.${key}`] = value
-          acc[`import.meta.env.${key}`] = value
-          return acc
-        }, Object.create(null)),
-      },
       transform: {
         target,
+        define: {
+          ...define,
+          ...Object.keys(env).reduce((acc, key) => {
+            const value = JSON.stringify(env[key])
+            acc[`process.env.${key}`] = value
+            acc[`import.meta.env.${key}`] = value
+            return acc
+          }, Object.create(null)),
+        },
+        inject: {
+          ...(shims && !cjsDts && getShimsInject(format, platform)),
+        },
       },
       plugins,
-      inject: {
-        ...(shims && !cjsDts && getShimsInject(format, platform)),
-      },
       moduleTypes: loader,
       logLevel: logger.level === 'error' ? 'silent' : logger.level,
       onLog: cjsDefault
