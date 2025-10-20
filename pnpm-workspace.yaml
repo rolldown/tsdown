@@ -20,7 +20,7 @@ catalogs:
     lightningcss: ^1.30.2
     pkg-types: ^2.3.0
     prettier: ^3.6.2
-    publint: ^0.3.14
+    publint: ^0.3.15
     rolldown-plugin-require-cjs: ^0.3.1
     tsx: ^4.20.6
     typescript: ~5.9.3
@@ -54,7 +54,7 @@ catalogs:
     empathic: ^2.0.0
     giget: ^2.0.0
     hookable: ^5.5.3
-    package-manager-detector: ^1.4.1
+    package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.44
     rolldown-plugin-dts: ^0.16.12
     semver: ^7.7.3
