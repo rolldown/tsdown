@@ -154,7 +154,7 @@ catalogs:
       version: 7.3.3
 
 overrides:
-  rolldown: latest
+  rolldown: 1.0.0-beta.44
   vite: npm:rolldown-vite@latest
 
 importers:
@@ -183,7 +183,7 @@ importers:
         specifier: catalog:prod
         version: 5.5.3
       rolldown:
-        specifier: latest
+        specifier: 1.0.0-beta.44
         version: 1.0.0-beta.44
       rolldown-plugin-dts:
         specifier: catalog:prod
@@ -1170,7 +1170,7 @@ packages:
       '@ts-macro/language-plugin': '*'
       '@volar/typescript': '*'
       esbuild: '>=0.20.0'
-      rolldown: '*'
+      rolldown: 1.0.0-beta.44
       rollup: ^4.1.0
       typescript: ^5.8.0
       vitest: ^2.0.0 || ^3.0.0-0
@@ -3037,7 +3037,7 @@ packages:
     peerDependencies:
       '@ts-macro/tsc': ^0.3.6
       '@typescript/native-preview': '>=7.0.0-dev.20250601.1'
-      rolldown: ^1.0.0-beta.9
+      rolldown: 1.0.0-beta.44
       typescript: ^5.0.0
       vue-tsc: ~3.1.0
     peerDependenciesMeta:
@@ -3054,7 +3054,7 @@ packages:
     resolution: {integrity: sha512-VfF4o0iDiT4v27cpRtj6cAKgF9ftIfbM9ntzb7GuuBtb/tUHp1gGeF8OchrwV4lckC6iKuLvsPP8FEk/stSNlQ==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
-      rolldown: '*'
+      rolldown: 1.0.0-beta.44
 
   rolldown-vite@7.1.19:
     resolution: {integrity: sha512-4TRFlbv0F8zE0EbaSAuzHEGlBRRTSaMd3QP8Qz0VTeSb6Z+kpCXSAw2k2QimTuDCJSxdYItcjZjWXtn0j6ksTg==}
