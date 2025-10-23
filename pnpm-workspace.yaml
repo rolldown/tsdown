@@ -13,7 +13,7 @@ catalogs:
     '@sxzz/prettier-config': ^2.2.4
     '@sxzz/test-utils': ^0.5.11
     '@types/debug': ^4.1.12
-    '@types/node': ^24.8.1
+    '@types/node': ^24.9.1
     '@types/semver': ^7.7.1
     bumpp: ^10.3.1
     eslint: ^9.38.0
@@ -26,12 +26,12 @@ catalogs:
     typescript: ~5.9.3
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.4
-    vitest: ^3.2.4
+    vitest: ^4.0.1
 
   docs:
     '@shikijs/vitepress-twoslash': ^3.13.0
     '@unocss/eslint-plugin': ^66.5.4
-    '@vueuse/core': ^13.9.0
+    '@vueuse/core': ^14.0.0
     oxc-minify: ^0.95.0
     typedoc: ^0.28.14
     typedoc-plugin-markdown: ^4.9.0
@@ -56,7 +56,7 @@ catalogs:
     hookable: ^5.5.3
     package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.44
-    rolldown-plugin-dts: ^0.16.12
+    rolldown-plugin-dts: ^0.17.0
     semver: ^7.7.3
     tinyexec: ^1.0.1
     tinyglobby: ^0.2.15
