@@ -1,21 +1,21 @@
-# Solid Support
+# Solid 支持
 
-`tsdown` streamlines the development of Solid component libraries by integrating with [`rolldown-plugin-solid`](https://github.com/g-mero/rolldown-plugin-solid) or [`unplugin-solid`](https://github.com/unplugin/unplugin-solid). This integration allows you to bundle Solid components and automatically generate type declarations using modern TypeScript tools.
+`tsdown` 通过集成 [`rolldown-plugin-solid`](https://github.com/g-mero/rolldown-plugin-solid) 或 [`unplugin-solid`](https://github.com/unplugin/unplugin-solid)，简化了 Solid 组件库的开发流程。该集成让您能够打包 Solid 组件，并使用现代 TypeScript 工具自动生成类型声明。
 
-## Quick Start
+## 快速上手
 
-For the fastest way to get started, use the Solid component starter template. This starter project comes pre-configured for Solid library development, so you can focus on building components right away.
+最快的入门方式是使用 Solid 组件起步模板。该项目已为 Solid 库开发预先配置好，让您可以立即专注于组件开发。
 
 ```bash
 npx create-tsdown@latest -t solid
 ```
 
-## Minimal Example
+## 最小示例
 
-To configure `tsdown` for a Solid library, use the following setup in your `tsdown.config.ts`:
+要为 Solid 组件库配置 `tsdown`，可在 `tsdown.config.ts` 中使用如下设置：
 
 ```ts [tsdown.config.ts]
-import solid from 'rolldown-plugin-solid' // or use 'unplugin-solid/rolldown'
+import solid from 'rolldown-plugin-solid' // 或使用 'unplugin-solid/rolldown'
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
@@ -26,7 +26,7 @@ export default defineConfig({
 })
 ```
 
-Create your typical Solid component:
+创建一个典型的 Solid 组件：
 
 ```tsx [MyButton.tsx]
 import type { Component } from 'solid-js'
@@ -45,13 +45,13 @@ export const MyButton: Component<MyButtonProps> = ({ type }) => {
 }
 ```
 
-And export it in your entry file:
+并在入口文件中导出它：
 
 ```ts [index.ts]
 export { MyButton } from './MyButton'
 ```
 
-Install the required dependencies:
+安装所需依赖：
 
 ::: code-group
 
@@ -73,7 +73,7 @@ bun add -D rolldown-plugin-solid
 
 :::
 
-or, if you prefer to use `unplugin-solid`:
+或者，如果您更喜欢使用 `unplugin-solid`：
 
 ::: code-group
 
