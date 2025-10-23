@@ -79,7 +79,6 @@ export async function resolveInputOptions(
     dts,
     unused,
     target,
-    define,
     shims,
     tsconfig,
     cwd,
@@ -152,6 +151,17 @@ export async function resolveInputOptions(
     plugins.push(userPlugins)
   }
 
+  const define = {
+    ...config.define,
+    ...Object.keys(env).reduce((acc, key) => {
+      const value = JSON.stringify(env[key])
+      acc[`process.env.${key}`] = value
+      acc[`import.meta.env.${key}`] = value
+      return acc
+    }, Object.create(null)),
+  }
+  const inject = shims && !cjsDts ? getShimsInject(format, platform) : undefined
+
   const inputOptions = await mergeUserOptions(
     {
       input: entry,
@@ -165,18 +175,8 @@ export async function resolveInputOptions(
       platform: cjsDts || format === 'cjs' ? 'node' : platform,
       transform: {
         target,
-        define: {
-          ...define,
-          ...Object.keys(env).reduce((acc, key) => {
-            const value = JSON.stringify(env[key])
-            acc[`process.env.${key}`] = value
-            acc[`import.meta.env.${key}`] = value
-            return acc
-          }, Object.create(null)),
-        },
-        inject: {
-          ...(shims && !cjsDts && getShimsInject(format, platform)),
-        },
+        define,
+        inject,
       },
       plugins,
       moduleTypes: loader,
