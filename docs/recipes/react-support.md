@@ -17,13 +17,11 @@ To configure `tsdown` for a React library, you can just use a standard `tsdown.c
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
-export default defineConfig([
-  {
-    entry: ['./src/index.ts'],
-    platform: 'neutral',
-    dts: true,
-  },
-])
+export default defineConfig({
+  entry: ['./src/index.ts'],
+  platform: 'neutral',
+  dts: true,
+})
 ```
 
 Create your typical React component:
