@@ -111,20 +111,21 @@ export async function generateExports(
         (chunk) =>
           chunk.type === 'chunk' &&
           chunk.isEntry &&
-          !RE_DTS.test(chunk.fileName),
+          !RE_DTS.test(slash(chunk.fileName)),
       ).length === 1
     for (const chunk of chunksByFormat) {
       if (chunk.type !== 'chunk' || !chunk.isEntry) continue
 
-      const ext = path.extname(chunk.fileName)
-      let name = chunk.fileName.slice(0, -ext.length)
+      const normalizedName = slash(chunk.fileName)
+      const ext = path.extname(normalizedName)
+      let name = normalizedName.slice(0, -ext.length)
 
       const isDts = name.endsWith('.d')
       if (isDts) {
         name = name.slice(0, -2)
       }
       const isIndex = onlyOneEntry || name === 'index'
-      const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${chunk.fileName}`
+      const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${normalizedName}`
 
       if (isIndex) {
         name = '.'
@@ -141,9 +142,10 @@ export async function generateExports(
             module = distFile
           }
         }
+      } else if (name.endsWith('/index')) {
+        name = `./${name.slice(0, -6)}`
       } else {
-        const isDirIndex = name.endsWith('/index')
-        name = isDirIndex ? `./${name.slice(0, -6)}` : `./${name}`
+        name = `./${name}`
       }
 
       let subExport = exportsMap.get(name)

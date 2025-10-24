@@ -317,6 +317,87 @@ describe.concurrent('generateExports', () => {
       }
     `)
   })
+
+  test('windows-like paths for subpackages', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      cwd,
+      {
+        es: [
+          genChunk('index.js'),
+          genChunk('index.d.ts'),
+          genChunk('foo\\index.js'),
+          genChunk('foo\\index.d.ts'),
+          genChunk('bar\\baz.js'),
+          genChunk('bar\\baz.d.ts'),
+        ],
+      },
+      {},
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./bar/baz": "./bar/baz.js",
+          "./foo": "./foo/index.js",
+          "./package.json": "./package.json",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('windows-like paths for subpackages with dual format', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      cwd,
+      {
+        es: [
+          genChunk('index.js'),
+          genChunk('index.d.ts'),
+          genChunk('foo\\index.js'),
+          genChunk('foo\\index.d.ts'),
+          genChunk('bar\\baz.js'),
+          genChunk('bar\\baz.d.ts'),
+        ],
+        cjs: [
+          genChunk('index.cjs'),
+          genChunk('index.d.cts'),
+          genChunk('foo\\index.cjs'),
+          genChunk('foo\\index.d.cts'),
+          genChunk('bar\\baz.cjs'),
+          genChunk('bar\\baz.d.cts'),
+        ],
+      },
+      {},
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": {
+            "import": "./index.js",
+            "require": "./index.cjs",
+          },
+          "./bar/baz": {
+            "import": "./bar/baz.js",
+            "require": "./bar/baz.cjs",
+          },
+          "./foo": {
+            "import": "./foo/index.js",
+            "require": "./foo/index.cjs",
+          },
+          "./package.json": "./package.json",
+        },
+        "main": "./index.cjs",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": "./index.d.cts",
+      }
+    `)
+  })
 })
 
 function genChunk(fileName: string) {
