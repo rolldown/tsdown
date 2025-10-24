@@ -326,10 +326,10 @@ describe.concurrent('generateExports', () => {
         es: [
           genChunk('index.js'),
           genChunk('index.d.ts'),
-          genChunk('foo\\index.js'),
-          genChunk('foo\\index.d.ts'),
-          genChunk('bar\\baz.js'),
-          genChunk('bar\\baz.d.ts'),
+          genChunk(String.raw`foo\index.js`),
+          genChunk(String.raw`foo\index.d.ts`),
+          genChunk(String.raw`bar\baz.js`),
+          genChunk(String.raw`bar\baz.d.ts`),
         ],
       },
       {},
@@ -350,7 +350,9 @@ describe.concurrent('generateExports', () => {
     `)
   })
 
-  test('windows-like paths for subpackages with dual format', async ({ expect }) => {
+  test('windows-like paths for subpackages with dual format', async ({
+    expect,
+  }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       cwd,
@@ -358,18 +360,18 @@ describe.concurrent('generateExports', () => {
         es: [
           genChunk('index.js'),
           genChunk('index.d.ts'),
-          genChunk('foo\\index.js'),
-          genChunk('foo\\index.d.ts'),
-          genChunk('bar\\baz.js'),
-          genChunk('bar\\baz.d.ts'),
+          genChunk(String.raw`foo\index.js`),
+          genChunk(String.raw`foo\index.d.ts`),
+          genChunk(String.raw`bar\baz.js`),
+          genChunk(String.raw`bar\baz.d.ts`),
         ],
         cjs: [
           genChunk('index.cjs'),
           genChunk('index.d.cts'),
-          genChunk('foo\\index.cjs'),
-          genChunk('foo\\index.d.cts'),
-          genChunk('bar\\baz.cjs'),
-          genChunk('bar\\baz.d.cts'),
+          genChunk(String.raw`foo\index.cjs`),
+          genChunk(String.raw`foo\index.d.cts`),
+          genChunk(String.raw`bar\baz.cjs`),
+          genChunk(String.raw`bar\baz.d.cts`),
         ],
       },
       {},
