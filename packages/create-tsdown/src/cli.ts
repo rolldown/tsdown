@@ -2,7 +2,7 @@ import process from 'node:process'
 import { log } from '@clack/prompts'
 import { cac } from 'cac'
 import { version } from '../package.json'
-import { create, type Options } from './index'
+import { create, templateOptions, type Options } from './index'
 
 const cli = cac('create-tsdown')
 cli.help().version(version)
@@ -14,7 +14,7 @@ cli
   })
   .option(
     '-t, --template <template>',
-    'Available templates: default, minimal, vue, react, solid',
+    `Available templates: ${templateOptions.map((option) => option.value).join(', ')}`,
     { default: 'default' },
   )
   .action((path: string | undefined, options: Options) => create(path, options))
