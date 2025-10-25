@@ -111,13 +111,13 @@ export async function generateExports(
         (chunk) =>
           chunk.type === 'chunk' &&
           chunk.isEntry &&
-          !RE_DTS.test(slash(chunk.fileName)),
+          !RE_DTS.test(chunk.fileName),
       ).length === 1
     for (const chunk of chunksByFormat) {
       if (chunk.type !== 'chunk' || !chunk.isEntry) continue
 
       const normalizedName = slash(chunk.fileName)
-      const ext = path.extname(normalizedName)
+      const ext = path.extname(chunk.fileName)
       let name = normalizedName.slice(0, -ext.length)
 
       const isDts = name.endsWith('.d')
