@@ -12,8 +12,18 @@ import {
 import { downloadTemplate } from 'giget'
 import { getUserAgent } from 'package-manager-detector'
 
+export const templateOptions = [
+  { value: 'default', label: 'Default' },
+  { value: 'minimal', label: 'Minimal' },
+  { value: 'vue', label: 'Vue' },
+  { value: 'react', label: 'React' },
+  { value: 'solid', label: 'Solid' },
+] as const
+
+type TemplateOption = (typeof templateOptions)[number]['value']
+
 export interface Options {
-  template?: 'default' | 'minimal' | 'vue' | 'react' | 'solid'
+  template?: TemplateOption
   path?: string
 }
 
@@ -74,21 +84,16 @@ export async function resolveOptions(
 
   let template: Options['template'] | symbol = options.template
   if (template) {
-    if (!['default', 'minimal', 'vue', 'react', 'solid'].includes(template)) {
+    const templateOptionsValues = templateOptions.map((option) => option.value)
+    if (!templateOptionsValues.includes(template)) {
       throw new Error(
-        `Invalid template "${template}". Available templates: default, vue, react, solid`,
+        `Invalid template "${template}". Available templates: ${templateOptionsValues.join(', ')}`,
       )
     }
   } else {
     template = await select({
       message: 'Which template do you want to use?',
-      options: [
-        { value: 'default', label: 'Default' },
-        { value: 'minimal', label: 'Minimal' },
-        { value: 'vue', label: 'Vue' },
-        { value: 'react', label: 'React' },
-        { value: 'solid', label: 'Solid' },
-      ],
+      options: [...templateOptions],
       initialValue: 'default',
     })
 
