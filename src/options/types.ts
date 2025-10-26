@@ -361,7 +361,7 @@ export interface Options {
    * Config loader to use. It can only be set via CLI or API.
    * @default 'auto'
    */
-  configLoader?: 'auto' | 'native' | 'unconfig'
+  configLoader?: 'auto' | 'native' | 'unconfig' | 'unrun'
 
   /**
    * Reuse config from Vite or Vitest (experimental)
