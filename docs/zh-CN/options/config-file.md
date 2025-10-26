@@ -72,7 +72,7 @@ tsdown --no-config
 - `unrun` _(experimental)_: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library, which provides similar compatibility as `unconfig` but with more performances.
 
 > [!TIP]
-> Node.js 原生不支持在不指定文件扩展名的情况下导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unconfig` or `unrun` 加载器以获得更好的兼容性。
+> Node.js 原生不支持在不指定文件扩展名的情况下导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unconfig` 或 `unrun` 加载器以获得更好的兼容性。
 
 ## 扩展 Vite 或 Vitest 配置（实验性功能）{#extending-vite-or-vitest-config-experimental}
 
