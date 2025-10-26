@@ -48,9 +48,6 @@ catalogs:
     rolldown-plugin-require-cjs:
       specifier: ^0.3.1
       version: 0.3.1
-    tsx:
-      specifier: ^4.20.6
-      version: 4.20.6
     typescript:
       specifier: ~5.9.3
       version: 5.9.3
@@ -258,9 +255,6 @@ importers:
       rolldown-plugin-require-cjs:
         specifier: catalog:dev
         version: 0.3.1(rolldown@1.0.0-beta.44)
-      tsx:
-        specifier: catalog:dev
-        version: 4.20.6
       typescript:
         specifier: catalog:dev
         version: 5.9.3
@@ -5153,6 +5147,7 @@ snapshots:
       '@esbuild/win32-arm64': 0.25.11
       '@esbuild/win32-ia32': 0.25.11
       '@esbuild/win32-x64': 0.25.11
+    optional: true
 
   escalade@3.2.0: {}
 
@@ -6685,6 +6680,7 @@ snapshots:
       get-tsconfig: 4.13.0
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   twoslash-protocol@0.3.4: {}
 

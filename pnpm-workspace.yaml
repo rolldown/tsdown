@@ -22,7 +22,6 @@ catalogs:
     prettier: ^3.6.2
     publint: ^0.3.15
     rolldown-plugin-require-cjs: ^0.3.1
-    tsx: ^4.20.6
     typescript: ~5.9.3
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.4
