@@ -160,7 +160,7 @@ async function unrunImport(id: string) {
     const cannotFindModule = error?.message?.includes?.('Cannot find module')
     if (cannotFindModule) {
       const configError = new Error(
-        `Failed to load the config file. Try setting the --config-loader CLI flag to \`unconfig\`.\n\n${error.message}`,
+        `Failed to load the config file. \`unrun\` is experimental; try setting the --config-loader CLI flag to \`unconfig\` instead.\n\n${error.message}`,
       )
       configError.cause = error
       throw configError
