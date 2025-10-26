@@ -93,7 +93,7 @@ export async function resolveOptions(
   } else {
     template = await select({
       message: 'Which template do you want to use?',
-      options: templateOptions.slice(),
+      options: [...templateOptions],
       initialValue: 'default',
     })
 
