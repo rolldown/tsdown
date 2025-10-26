@@ -69,9 +69,10 @@ This is useful if you want to rely solely on command-line options or default set
 - `auto` (default): Utilizes native runtime loading for TypeScript if supported; otherwise, defaults to `unconfig`.
 - `native`: Loads TypeScript configuration files using native runtime support. Requires a compatible environment, such as the latest Node.js, Deno, or Bun.
 - `unconfig`: Loads configuration files with the `unconfig` library, ensuring broad compatibility across different runtimes.
+- `unrun` _(experimental)_: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library, which provides similar compatibility as `unconfig` but with more performances.
 
 > [!TIP]
-> Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider using the `unconfig` loader for seamless compatibility.
+> Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider using the `unconfig` or `unrun` loader for seamless compatibility.
 
 ## Extending Vite or Vitest Config (Experimental)
 

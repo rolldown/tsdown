@@ -3,6 +3,7 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
 import { loadConfig } from 'unconfig'
+import { unrun } from 'unrun'
 import { fsStat } from '../utils/fs'
 import { toArray } from '../utils/general'
 import { globalLogger } from '../utils/logger'
@@ -98,7 +99,12 @@ export async function loadConfigFile(
             {
               files: 'tsdown.config',
               extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
-              parser: isNative ? nativeImport : 'auto',
+              parser:
+                options.configLoader === 'unrun'
+                  ? unrunImport
+                  : isNative
+                    ? nativeImport
+                    : 'auto',
             },
             {
               files: 'package.json',
@@ -145,4 +151,22 @@ async function nativeImport(id: string) {
   })
   const config = mod.default || mod
   return config
+}
+
+async function unrunImport(id: string) {
+  const { module } = await unrun({
+    path: pathToFileURL(id).href,
+  }).catch((error) => {
+    const cannotFindModule = error?.message?.includes?.('Cannot find module')
+    if (cannotFindModule) {
+      const configError = new Error(
+        `Failed to load the config file. \`unrun\` is experimental; try setting the --config-loader CLI flag to \`unconfig\` instead.\n\n${error.message}`,
+      )
+      configError.cause = error
+      throw configError
+    } else {
+      throw error
+    }
+  })
+  return module
 }

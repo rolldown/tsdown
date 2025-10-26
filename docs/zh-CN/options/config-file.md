@@ -69,9 +69,10 @@ tsdown --no-config
 - `auto`（默认）：如果运行时支持，则使用原生方式加载 TypeScript，否则回退到 `unconfig`。
 - `native`：通过原生运行时支持加载 TypeScript 配置文件。需要兼容的环境，如最新版 Node.js、Deno 或 Bun。
 - `unconfig`：使用 `unconfig` 库加载配置文件，确保在不同运行时下具有广泛兼容性。
+- `unrun` _(experimental)_: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library, which provides similar compatibility as `unconfig` but with more performances.
 
 > [!TIP]
-> Node.js 原生不支持在不指定文件扩展名的情况下导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unconfig` 加载器以获得更好的兼容性。
+> Node.js 原生不支持在不指定文件扩展名的情况下导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unconfig` 或 `unrun` 加载器以获得更好的兼容性。
 
 ## 扩展 Vite 或 Vitest 配置（实验性功能）{#extending-vite-or-vitest-config-experimental}
 

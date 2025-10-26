@@ -48,8 +48,8 @@
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
     "lint:fix": "pnpm run lint --fix",
-    "build": "tsx ./src/run.ts",
-    "dev": "tsx ./src/run.ts",
+    "build": "unrun ./src/run.ts",
+    "dev": "unrun ./src/run.ts",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --cache --write .",
@@ -98,7 +98,8 @@
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
     "tree-kill": "catalog:prod",
-    "unconfig": "catalog:prod"
+    "unconfig": "catalog:prod",
+    "unrun": "catalog:prod"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:dev",
@@ -117,7 +118,6 @@
     "prettier": "catalog:dev",
     "publint": "catalog:dev",
     "rolldown-plugin-require-cjs": "catalog:dev",
-    "tsx": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-lightningcss": "catalog:dev",

@@ -48,9 +48,6 @@ catalogs:
     rolldown-plugin-require-cjs:
       specifier: ^0.3.1
       version: 0.3.1
-    tsx:
-      specifier: ^4.20.6
-      version: 4.20.6
     typescript:
       specifier: ~5.9.3
       version: 5.9.3
@@ -152,6 +149,9 @@ catalogs:
     unconfig:
       specifier: ^7.3.3
       version: 7.3.3
+    unrun:
+      specifier: ^0.2.0
+      version: 0.2.0
 
 overrides:
   rolldown: 1.0.0-beta.44
@@ -203,6 +203,9 @@ importers:
       unconfig:
         specifier: catalog:prod
         version: 7.3.3
+      unrun:
+        specifier: catalog:prod
+        version: 0.2.0
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:dev
@@ -252,9 +255,6 @@ importers:
       rolldown-plugin-require-cjs:
         specifier: catalog:dev
         version: 0.3.1(rolldown@1.0.0-beta.44)
-      tsx:
-        specifier: catalog:dev
-        version: 4.20.6
       typescript:
         specifier: catalog:dev
         version: 5.9.3
@@ -3400,6 +3400,11 @@ packages:
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
+  unrun@0.2.0:
+    resolution: {integrity: sha512-iaCxWG/6kmjP3wUTBheowjFm6LuI8fd/A3Uz7DbMoz8HvQsJThh7tWZKWJfVltOSK3LuIJFzepr7g6fbuhUasw==}
+    engines: {node: '>=20.19.0'}
+    hasBin: true
+
   update-browserslist-db@1.1.4:
     resolution: {integrity: sha512-q0SPT4xyU84saUX+tomz1WLkxUbuaJnR1xWt17M7fJtEJigJeWUNGUqrauFXsHnqev9y9JTRGwk13tFBuKby4A==}
     hasBin: true
@@ -5142,6 +5147,7 @@ snapshots:
       '@esbuild/win32-arm64': 0.25.11
       '@esbuild/win32-ia32': 0.25.11
       '@esbuild/win32-x64': 0.25.11
+    optional: true
 
   escalade@3.2.0: {}
 
@@ -6674,6 +6680,7 @@ snapshots:
       get-tsconfig: 4.13.0
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   twoslash-protocol@0.3.4: {}
 
@@ -6858,6 +6865,12 @@ snapshots:
       '@unrs/resolver-binding-win32-arm64-msvc': 1.11.1
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
+
+  unrun@0.2.0:
+    dependencies:
+      '@oxc-project/runtime': 0.95.0
+      rolldown: 1.0.0-beta.44
+      synckit: 0.11.11
 
   update-browserslist-db@1.1.4(browserslist@4.27.0):
     dependencies:
