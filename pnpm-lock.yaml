@@ -58,7 +58,7 @@ catalogs:
       specifier: ^0.5.4
       version: 0.5.4
     unrun:
-      specifier: ^0.2.0
+      specifier: ^0.2.1
       version: 0.2.1
     vitest:
       specifier: ^4.0.3

@@ -25,7 +25,7 @@ catalogs:
     typescript: ~5.9.3
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.4
-    unrun: ^0.2.0
+    unrun: ^0.2.1
     vitest: ^4.0.3
 
   docs:
