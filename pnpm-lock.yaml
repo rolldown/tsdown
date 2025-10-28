@@ -57,6 +57,9 @@ catalogs:
     unplugin-unused:
       specifier: ^0.5.4
       version: 0.5.4
+    unrun:
+      specifier: ^0.2.0
+      version: 0.2.1
     vitest:
       specifier: ^4.0.3
       version: 4.0.3
@@ -200,9 +203,6 @@ importers:
       unconfig:
         specifier: catalog:prod
         version: 7.3.3
-      unrun:
-        specifier: ^0.2.1
-        version: 0.2.1
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:dev
@@ -264,6 +264,9 @@ importers:
       unplugin-unused:
         specifier: catalog:dev
         version: 0.5.4
+      unrun:
+        specifier: catalog:dev
+        version: 0.2.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.19(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)

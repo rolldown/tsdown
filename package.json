@@ -83,6 +83,9 @@
     },
     "unplugin-unused": {
       "optional": true
+    },
+    "unrun": {
+      "optional": true
     }
   },
   "dependencies": {
@@ -122,6 +125,7 @@
     "unocss": "catalog:docs",
     "unplugin-lightningcss": "catalog:dev",
     "unplugin-unused": "catalog:dev",
+    "unrun": "catalog:dev",
     "vite": "catalog:docs",
     "vitest": "catalog:dev"
   },
