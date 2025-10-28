@@ -25,6 +25,7 @@ catalogs:
     typescript: ~5.9.3
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.4
+    unrun: ^0.2.0
     vitest: ^4.0.3
 
   docs:
@@ -61,7 +62,6 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig: ^7.3.3
-    unrun: ^0.2.0
 
 ignoredBuiltDependencies:
   - rolldown

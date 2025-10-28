@@ -3,7 +3,6 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
 import { loadConfig } from 'unconfig'
-import { unrun } from 'unrun'
 import { fsStat } from '../utils/fs'
 import { toArray } from '../utils/general'
 import { globalLogger } from '../utils/logger'
@@ -154,6 +153,7 @@ async function nativeImport(id: string) {
 }
 
 async function unrunImport(id: string) {
+  const { unrun } = await import('unrun')
   const { module } = await unrun({
     path: pathToFileURL(id).href,
   }).catch((error) => {
