@@ -77,6 +77,12 @@ You can also pass an array of targets to ensure compatibility across multiple en
 tsdown --target chrome100 --target node20.18
 ```
 
+# Typescript feature compatibility
+
+`tsdown` will resolve your typescript config and respect it's settings, for example for [emitting declaration files](/options/dts). However, you have to ensure that your typescript config matches your expected feature set. For example, to support [typescript decorators](https://github.com/tc39/proposal-decorators), you need to enable [`experimentalDecorators`](https://www.typescriptlang.org/tsconfig/#experimentalDecorators) in your tsconfig.
+
+To customize if and how to load the tsconfig, see the [reference](https://tsdown.dev/reference/api/Interface.Options#tsconfig).
+
 # CSS Targeting
 
 `tsdown` can also downlevel CSS features to match your specified browser targets. For example, a CSS nesting `&` selector will be flattened if the target is `chrome108` or lower.
