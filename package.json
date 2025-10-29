@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
   "version": "0.15.11",
-  "packageManager": "pnpm@10.19.0",
+  "packageManager": "pnpm@10.20.0",
   "description": "The Elegant Bundler for Libraries",
   "type": "module",
   "license": "MIT",
@@ -105,7 +105,7 @@
     "unconfig": "catalog:prod"
   },
   "devDependencies": {
-    "@arethetypeswrong/core": "catalog:dev",
+    "@arethetypeswrong/core": "catalog:peer",
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",
@@ -119,13 +119,13 @@
     "lightningcss": "catalog:dev",
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
-    "publint": "catalog:dev",
+    "publint": "catalog:peer",
     "rolldown-plugin-require-cjs": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
-    "unplugin-lightningcss": "catalog:dev",
-    "unplugin-unused": "catalog:dev",
-    "unrun": "catalog:dev",
+    "unplugin-lightningcss": "catalog:peer",
+    "unplugin-unused": "catalog:peer",
+    "unrun": "catalog:peer",
     "vite": "catalog:docs",
     "vitest": "catalog:dev"
   },

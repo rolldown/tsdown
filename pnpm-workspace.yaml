@@ -8,25 +8,20 @@ overrides:
 
 catalogs:
   dev:
-    '@arethetypeswrong/core': ^0.18.2
     '@sxzz/eslint-config': ^7.2.7
     '@sxzz/prettier-config': ^2.2.4
     '@sxzz/test-utils': ^0.5.12
     '@types/debug': ^4.1.12
-    '@types/node': ^24.9.1
+    '@types/node': ^24.9.2
     '@types/semver': ^7.7.1
     bumpp: ^10.3.1
     eslint: ^9.38.0
     lightningcss: ^1.30.2
     pkg-types: ^2.3.0
     prettier: ^3.6.2
-    publint: ^0.3.15
     rolldown-plugin-require-cjs: ^0.3.1
     typescript: ~5.9.3
-    unplugin-lightningcss: ^0.4.3
-    unplugin-unused: ^0.5.4
-    unrun: ^0.2.1
-    vitest: ^4.0.3
+    vitest: ^4.0.4
 
   docs:
     '@shikijs/vitepress-twoslash': ^3.14.0
@@ -44,6 +39,13 @@ catalogs:
     vue: ^3.5.22
     vue-tsc: ^3.1.2
 
+  peer:
+    '@arethetypeswrong/core': ^0.18.2
+    publint: ^0.3.15
+    unplugin-lightningcss: ^0.4.3
+    unplugin-unused: ^0.5.4
+    unrun: ^0.2.1
+
   prod:
     '@clack/prompts': ^0.11.0
     ansis: ^4.2.0
@@ -56,7 +58,7 @@ catalogs:
     hookable: ^5.5.3
     package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.45
-    rolldown-plugin-dts: ^0.17.1
+    rolldown-plugin-dts: ^0.17.2
     semver: ^7.7.3
     tinyexec: ^1.0.1
     tinyglobby: ^0.2.15
