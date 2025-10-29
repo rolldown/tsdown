@@ -57,6 +57,9 @@ catalogs:
     unplugin-unused:
       specifier: ^0.5.4
       version: 0.5.4
+    unrun:
+      specifier: ^0.2.1
+      version: 0.2.1
     vitest:
       specifier: ^4.0.3
       version: 4.0.3
@@ -149,9 +152,6 @@ catalogs:
     unconfig:
       specifier: ^7.3.3
       version: 7.3.3
-    unrun:
-      specifier: ^0.2.0
-      version: 0.2.0
 
 overrides:
   rolldown: 1.0.0-beta.45
@@ -203,9 +203,6 @@ importers:
       unconfig:
         specifier: catalog:prod
         version: 7.3.3
-      unrun:
-        specifier: catalog:prod
-        version: 0.2.0
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:dev
@@ -267,6 +264,9 @@ importers:
       unplugin-unused:
         specifier: catalog:dev
         version: 0.5.4
+      unrun:
+        specifier: catalog:dev
+        version: 0.2.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.19(@types/node@24.9.1)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)
@@ -3400,8 +3400,8 @@ packages:
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
-  unrun@0.2.0:
-    resolution: {integrity: sha512-iaCxWG/6kmjP3wUTBheowjFm6LuI8fd/A3Uz7DbMoz8HvQsJThh7tWZKWJfVltOSK3LuIJFzepr7g6fbuhUasw==}
+  unrun@0.2.1:
+    resolution: {integrity: sha512-1HpwmlCKrAOP3jPxFisPR0sYpPuiNtyYKJbmKu9iugIdvCte3DH1uJ1p1DBxUWkxW2pjvkUguJoK9aduK8ak3Q==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -6868,7 +6868,7 @@ snapshots:
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
 
-  unrun@0.2.0:
+  unrun@0.2.1:
     dependencies:
       '@oxc-project/runtime': 0.95.0
       rolldown: 1.0.0-beta.45
