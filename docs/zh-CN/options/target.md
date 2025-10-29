@@ -77,6 +77,28 @@ tsdown --target es2020
 tsdown --target chrome100 --target node20.18
 ```
 
+### 装饰器支持
+
+目前在 JavaScript 生态中有两种主要的装饰器实现：
+
+- **Stage 2（旧版）装饰器**：较早的实验性实现，通常被称为「legacy decorators」。
+- **Stage 3 装饰器**：最新的官方提案，与旧版实现有显著区别。
+
+如果您使用的是**Stage 2（旧版）装饰器**，请确保在 `tsconfig.json` 中启用 `experimentalDecorators` 选项：
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true
+  }
+}
+```
+
+如果您需要使用**最新的 TC39 Stage 3 装饰器**，请注意 `tsdown`（及其底层引擎 Rolldown/Oxc）**目前尚不支持此功能**。关于 Stage 3 装饰器支持的更多信息和最新进展，请参阅 [此 GitHub issue](https://github.com/oxc-project/oxc/issues/9170#issuecomment-3354571325)。
+
+> **注意：**
+> 两种装饰器实现差异很大，请确保您使用了正确的配置和语法以匹配所选的装饰器版本。
+
 # CSS 目标
 
 `tsdown` 也可以将 CSS 特性降级以匹配您指定的浏览器目标。例如，如果目标是 `chrome108` 或更低版本，CSS 嵌套的 `&` 选择器将被展开为平铺结构。

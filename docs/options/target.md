@@ -77,6 +77,28 @@ You can also pass an array of targets to ensure compatibility across multiple en
 tsdown --target chrome100 --target node20.18
 ```
 
+### Decorator Support
+
+There are currently two major implementations of decorators in the JavaScript ecosystem:
+
+- **Stage 2 (Legacy) Decorators**: The older, experimental implementation, often referred to as "legacy decorators."
+- **Stage 3 Decorators**: The latest official proposal, which is significantly different from the legacy version.
+
+If you are using **stage 2 (legacy) decorators**, make sure to enable the `experimentalDecorators` option in your `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "experimentalDecorators": true
+  }
+}
+```
+
+If you need to use the **latest TC39 Stage 3 decorators**, please note that `tsdown` (and its underlying engines, Rolldown/Oxc) **do not currently support this feature**. For more information and updates on Stage 3 decorator support, see [this GitHub issue](https://github.com/oxc-project/oxc/issues/9170#issuecomment-3354571325).
+
+> **Note:**
+> The two decorator implementations are very different. Make sure you are using the correct configuration and syntax for your chosen decorator version.
+
 # CSS Targeting
 
 `tsdown` can also downlevel CSS features to match your specified browser targets. For example, a CSS nesting `&` selector will be flattened if the target is `chrome108` or lower.
