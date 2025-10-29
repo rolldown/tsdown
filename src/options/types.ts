@@ -35,6 +35,7 @@ import type {
   ModuleFormat,
   ModuleTypes,
   OutputOptions,
+  TreeshakingOptions,
 } from 'rolldown'
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 import type { Options as UnusedOptions } from 'unplugin-unused'
@@ -60,6 +61,7 @@ export type {
   PublintOptions,
   ReportOptions,
   RolldownContext,
+  TreeshakingOptions,
   TsdownChunks,
   TsdownHooks,
   UnusedOptions,
@@ -177,9 +179,11 @@ export interface Options {
   shims?: boolean
 
   /**
+   * Configure tree shaking options.
+   * @see {@link https://rolldown.rs/options/treeshake} for more details.
    * @default true
    */
-  treeshake?: boolean
+  treeshake?: boolean | TreeshakingOptions
 
   /**
    * Sets how input files are processed.
