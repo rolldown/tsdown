@@ -1,8 +1,14 @@
 {
-  "editor.formatOnSave": true,
   "cSpell.words": ["rolldown", "tsdown"],
   "files.readonlyInclude": {
     "docs/**/reference/api/**": true
   },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // Formatter
+  "editor.formatOnSave": true,
+  "oxc.fmt.experimental": true,
+  "[javascript][javascriptreact][typescript][typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }

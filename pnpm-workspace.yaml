@@ -17,6 +17,7 @@ catalogs:
     bumpp: ^10.3.2
     eslint: ^9.39.1
     lightningcss: ^1.30.2
+    oxfmt: ^0.15.0
     pkg-types: ^2.3.0
     prettier: ^3.7.1
     rolldown-plugin-require-cjs: ^0.3.2
@@ -65,6 +66,8 @@ catalogs:
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
     unrun: ^0.2.14
+
+ignoreWorkspaceRootCheck: true
 
 ignoredBuiltDependencies:
   - rolldown
