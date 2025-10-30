@@ -24,6 +24,11 @@ export interface ExportsOptions {
    */
   all?: boolean
 
+  /**
+   * Explicit type fields for exports.
+   */
+  types?: boolean
+
   customExports?: (
     exports: Record<string, any>,
     context: {
@@ -76,13 +81,15 @@ export async function writeExports(
   }
 }
 
-type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
+type SubExport = Partial<
+  Record<'cjs' | 'es' | 'src' | 'cjsTypes' | 'esmTypes', string>
+>
 
 export async function generateExports(
   pkg: PackageJson,
   outDir: string,
   chunks: TsdownChunks,
-  { devExports, all, customExports }: ExportsOptions,
+  { devExports, all, customExports, types }: ExportsOptions,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -159,6 +166,8 @@ export async function generateExports(
         if (chunk.facadeModuleId && !subExport.src) {
           subExport.src = `./${slash(path.relative(pkgRoot, chunk.facadeModuleId))}`
         }
+      } else if (format === 'cjs' || format === 'es') {
+        subExport[format === 'cjs' ? 'cjsTypes' : 'esmTypes'] = distFile
       }
     }
   }
@@ -173,7 +182,7 @@ export async function generateExports(
   let exports: Record<string, any> = Object.fromEntries(
     sortedExportsMap.map(([name, subExport]) => [
       name,
-      genSubExport(devExports, subExport),
+      genSubExport(devExports, subExport, types),
     ]),
   )
   exportMeta(exports, all)
@@ -191,7 +200,7 @@ export async function generateExports(
     publishExports = Object.fromEntries(
       sortedExportsMap.map(([name, subExport]) => [
         name,
-        genSubExport(false, subExport),
+        genSubExport(false, subExport, types),
       ]),
     )
     exportMeta(publishExports, all)
@@ -208,7 +217,7 @@ export async function generateExports(
   return {
     main: main || module || pkg.main,
     module: module || pkg.module,
-    types: cjsTypes || esmTypes || pkg.types,
+    types: types ? cjsTypes || esmTypes || pkg.types : undefined,
     exports,
     publishExports,
   }
@@ -216,7 +225,8 @@ export async function generateExports(
 
 function genSubExport(
   devExports: string | boolean | undefined,
-  { src, es, cjs }: SubExport,
+  { src, es, cjs, cjsTypes, esmTypes }: SubExport,
+  types?: boolean,
 ) {
   if (devExports === true) {
     return src!
@@ -231,8 +241,22 @@ function genSubExport(
     if (typeof devExports === 'string') {
       value[devExports] = src
     }
-    if (es) value[dualFormat ? 'import' : 'default'] = es
-    if (cjs) value[dualFormat ? 'require' : 'default'] = cjs
+    if (es) {
+      if (!dualFormat && !esmTypes) {
+        value.default = es
+      } else {
+        value.import = types && esmTypes ? { types: esmTypes, default: es } : es
+      }
+    }
+
+    if (cjs) {
+      if (!dualFormat && !cjsTypes) {
+        value.default = cjs
+      } else {
+        value.require =
+          types && cjsTypes ? { types: cjsTypes, default: cjs } : cjs
+      }
+    }
   }
 
   return value
