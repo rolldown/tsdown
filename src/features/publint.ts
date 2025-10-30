@@ -3,11 +3,11 @@ import process from 'node:process'
 import { dim } from 'ansis'
 import Debug from 'debug'
 import { prettyName } from '../utils/logger.ts'
-import type { ResolvedOptions } from '../options/index.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 
 const debug = Debug('tsdown:publint')
 
-export async function publint(options: ResolvedOptions): Promise<void> {
+export async function publint(options: ResolvedConfig): Promise<void> {
   if (!options.publint) return
   if (!options.pkg) {
     options.logger.warn(

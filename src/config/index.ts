@@ -13,7 +13,7 @@ import { createLogger } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadConfigFile, loadViteConfig } from './config.ts'
-import type { NormalizedUserConfig, Options, ResolvedOptions } from './types.ts'
+import type { InlineConfig, ResolvedConfig, UserConfig } from './types.ts'
 
 export * from './types.ts'
 
@@ -26,42 +26,43 @@ const DEFAULT_EXCLUDE_WORKSPACE = [
   '**/t?(e)mp/**',
 ]
 
-// Options (cli)
-//  -> Options + UserConfig (maybe array, maybe promise)
-//  -> Options + NormalizedUserConfig[] (Options without config)
-//  -> Options + NormalizedUserConfig[] (Options without config and workspace)
-//  -> ResolvedOptions
+// InlineConfig (CLI)
+//  -> loadConfigFile: InlineConfig + UserConfig[]
+//  -> resolveWorkspace: InlineConfig + UserConfig[]
+//  -> UserConfig[]
+//  -> ResolvedConfig[]
+//  -> build
 
-// resolved options count = 1 (options) * root config count * workspace count * sub config count (1 minimum)
+// resolved configs count = 1 (inline config) * root config count * workspace count * sub config count
 
-export async function resolveOptions(options: Options): Promise<{
-  configs: ResolvedOptions[]
+export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
+  configs: ResolvedConfig[]
   files: string[]
 }> {
-  debug('options %O', options)
+  debug('inline config %O', inlineConfig)
 
-  const { configs: rootConfigs, file } = await loadConfigFile(options)
+  const { configs: rootConfigs, file } = await loadConfigFile(inlineConfig)
   const files: string[] = []
   if (file) {
     files.push(file)
-    debug('loaded root config file %s', file)
-    debug('root configs %O', rootConfigs)
+    debug('loaded root user config file %s', file)
+    debug('root user configs %O', rootConfigs)
   } else {
-    debug('no root config file found')
+    debug('no root user config file found')
   }
 
-  const configs = (
+  const configs: ResolvedConfig[] = (
     await Promise.all(
-      rootConfigs.map(async (rootConfig) => {
+      rootConfigs.map(async (rootConfig): Promise<ResolvedConfig[]> => {
         const { configs: workspaceConfigs, files: workspaceFiles } =
-          await resolveWorkspace(rootConfig, options)
+          await resolveWorkspace(rootConfig, inlineConfig)
         if (workspaceFiles) {
           files.push(...workspaceFiles)
         }
         return Promise.all(
           workspaceConfigs
             .filter((config) => !config.workspace || config.entry)
-            .map((config) => resolveConfig(config)),
+            .map((config) => resolveUserConfig(config)),
         )
       }),
     )
@@ -71,10 +72,10 @@ export async function resolveOptions(options: Options): Promise<{
 }
 
 async function resolveWorkspace(
-  config: NormalizedUserConfig,
-  options: Options,
-): Promise<{ configs: NormalizedUserConfig[]; files?: string[] }> {
-  const normalized = { ...config, ...options }
+  config: UserConfig,
+  inlineConfig: InlineConfig,
+): Promise<{ configs: UserConfig[]; files?: string[] }> {
+  const normalized = { ...config, ...inlineConfig }
   const rootCwd = normalized.cwd || process.cwd()
   let { workspace } = normalized
   if (!workspace) return { configs: [normalized], files: [] }
@@ -116,14 +117,14 @@ async function resolveWorkspace(
     throw new Error('No workspace packages found, please check your config')
   }
 
-  if (options.filter) {
-    options.filter = resolveRegex(options.filter)
+  if (inlineConfig.filter) {
+    inlineConfig.filter = resolveRegex(inlineConfig.filter)
     packages = packages.filter((path) => {
-      return typeof options.filter === 'string'
-        ? path.includes(options.filter)
-        : Array.isArray(options.filter)
-          ? options.filter.some((filter) => path.includes(filter))
-          : options.filter!.test(path)
+      return typeof inlineConfig.filter === 'string'
+        ? path.includes(inlineConfig.filter)
+        : Array.isArray(inlineConfig.filter)
+          ? inlineConfig.filter.some((filter) => path.includes(filter))
+          : inlineConfig.filter!.test(path)
     })
     if (packages.length === 0) {
       throw new Error('No packages matched the filters')
@@ -137,7 +138,7 @@ async function resolveWorkspace(
         debug('loading workspace config %s', cwd)
         const { configs, file } = await loadConfigFile(
           {
-            ...options,
+            ...inlineConfig,
             config: workspaceConfig,
             cwd,
           },
@@ -150,7 +151,7 @@ async function resolveWorkspace(
           debug('no workspace config file found in %s', cwd)
         }
         return configs.map(
-          (config): NormalizedUserConfig => ({
+          (config): UserConfig => ({
             ...normalized,
             cwd,
             ...config,
@@ -163,9 +164,9 @@ async function resolveWorkspace(
   return { configs, files }
 }
 
-async function resolveConfig(
-  userConfig: NormalizedUserConfig,
-): Promise<ResolvedOptions> {
+async function resolveUserConfig(
+  userConfig: UserConfig,
+): Promise<ResolvedConfig> {
   let {
     entry,
     format = ['es'],
@@ -305,7 +306,7 @@ async function resolveConfig(
     inlineOnly = toArray(inlineOnly)
   }
 
-  const config: ResolvedOptions = {
+  const config: ResolvedConfig = {
     ...userConfig,
     entry,
     plugins,

@@ -93,4 +93,4 @@ tsdown --from-vite vitest # 加载 vitest.config.*
 
 ## 参考
 
-有关可用配置选项的完整列表，请参阅 [配置选项参考](../reference/api/Interface.Options.md)。其中包括所有支持字段及其用法的详细说明。
+有关可用配置选项的完整列表，请参阅 [配置选项参考](../reference/api/Interface.UserConfig.md)。其中包括所有支持字段及其用法的详细说明。

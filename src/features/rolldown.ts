@@ -16,8 +16,8 @@ import {
   mergeUserOptions,
   type DtsOptions,
   type NormalizedFormat,
-  type ResolvedOptions,
-} from '../options/index.ts'
+  type ResolvedConfig,
+} from '../config/index.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { ExternalPlugin } from './external.ts'
@@ -31,7 +31,7 @@ import { getShimsInject } from './shims.ts'
 const debug = Debug('tsdown:rolldown')
 
 export async function getBuildOptions(
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   format: NormalizedFormat,
   isMultiFormat?: boolean,
   cjsDts: boolean = false,
@@ -64,7 +64,7 @@ export async function getBuildOptions(
 }
 
 export async function resolveInputOptions(
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   format: NormalizedFormat,
   cjsDts: boolean,
   isMultiFormat?: boolean,
@@ -198,7 +198,7 @@ export async function resolveInputOptions(
 
 export async function resolveOutputOptions(
   inputOptions: InputOptions,
-  config: ResolvedOptions,
+  config: ResolvedConfig,
   format: NormalizedFormat,
   cjsDts: boolean,
 ): Promise<OutputOptions> {

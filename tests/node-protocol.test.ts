@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { resolveOptions } from '../src/options/index.ts'
+import { resolveConfig } from '../src/config/index.ts'
 import { testBuild } from './utils.ts'
 
 describe('node protocol', () => {
@@ -106,7 +106,7 @@ describe('node protocol', () => {
 
   test('nodeProtocol option takes precedence over removeNodeProtocol', async () => {
     await expect(() =>
-      resolveOptions({
+      resolveConfig({
         nodeProtocol: true,
         removeNodeProtocol: true,
       }),

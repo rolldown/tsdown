@@ -5,7 +5,7 @@ import Debug from 'debug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { shimFile } from '../index.ts'
 import { matchPattern } from '../utils/general.ts'
-import type { ResolvedOptions } from '../options/index.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { PackageJson } from 'pkg-types'
 import type { Plugin, PluginContext, ResolveIdExtraOptions } from 'rolldown'
 
@@ -16,7 +16,7 @@ export function ExternalPlugin({
   noExternal,
   inlineOnly,
   skipNodeModulesBundle,
-}: ResolvedOptions): Plugin {
+}: ResolvedConfig): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
 
   return {

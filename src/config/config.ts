@@ -6,12 +6,7 @@ import { loadConfig } from 'unconfig'
 import { fsStat } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
-import type {
-  NormalizedUserConfig,
-  Options,
-  UserConfig,
-  UserConfigFn,
-} from './types.ts'
+import type { InlineConfig, UserConfig, UserConfigExport } from './types.ts'
 import type {
   ConfigEnv,
   UserConfig as ViteUserConfig,
@@ -51,16 +46,16 @@ export async function loadViteConfig(
 let loaded = false
 
 export async function loadConfigFile(
-  options: Options,
+  inlineConfig: InlineConfig,
   workspace?: string,
 ): Promise<{
-  configs: NormalizedUserConfig[]
+  configs: UserConfig[]
   file?: string
 }> {
-  let cwd = options.cwd || process.cwd()
+  let cwd = inlineConfig.cwd || process.cwd()
   let overrideConfig = false
 
-  let { config: filePath } = options
+  let { config: filePath } = inlineConfig
   if (filePath === false) return { configs: [{}] }
 
   if (typeof filePath === 'string') {
@@ -79,19 +74,19 @@ export async function loadConfigFile(
 
   let isNative = false
   if (!loaded) {
-    if (!options.configLoader || options.configLoader === 'auto') {
+    if (!inlineConfig.configLoader || inlineConfig.configLoader === 'auto') {
       isNative = !!(
         process.features.typescript ||
         process.versions.bun ||
         process.versions.deno
       )
-    } else if (options.configLoader === 'native') {
+    } else if (inlineConfig.configLoader === 'native') {
       isNative = true
     }
   }
 
   let { config, sources } = await loadConfig
-    .async<UserConfig | UserConfigFn>({
+    .async<UserConfigExport>({
       sources: overrideConfig
         ? [{ files: filePath as string, extensions: [] }]
         : [
@@ -99,7 +94,7 @@ export async function loadConfigFile(
               files: 'tsdown.config',
               extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
               parser:
-                options.configLoader === 'unrun'
+                inlineConfig.configLoader === 'unrun'
                   ? unrunImport
                   : isNative
                     ? nativeImport
@@ -117,8 +112,9 @@ export async function loadConfigFile(
     })
     .finally(() => (loaded = true))
 
+  config = await config
   if (typeof config === 'function') {
-    config = await config(options)
+    config = await config(inlineConfig)
   }
   config = toArray(config)
   if (config.length === 0) {

@@ -1,9 +1,9 @@
 import { createHooks as create, type Hookable } from 'hookable'
-import type { ResolvedOptions } from '../options/index.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { BuildOptions } from 'rolldown'
 
 export interface BuildContext {
-  options: ResolvedOptions
+  options: ResolvedConfig
   hooks: Hookable<TsdownHooks>
 }
 
@@ -33,7 +33,7 @@ export interface TsdownHooks {
   'build:done': (ctx: BuildContext) => void | Promise<void>
 }
 
-export async function createHooks(options: ResolvedOptions): Promise<{
+export async function createHooks(options: ResolvedConfig): Promise<{
   hooks: Hookable<TsdownHooks>
   context: BuildContext
 }> {

@@ -7,7 +7,7 @@ import { promisify } from 'node:util'
 import { blue, dim } from 'ansis'
 import Debug from 'debug'
 import { fsRemove } from '../utils/fs.ts'
-import type { ResolvedOptions } from '../options/index.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { CheckPackageOptions, Problem } from '@arethetypeswrong/core'
 
 const debug = Debug('tsdown:attw')
@@ -108,7 +108,7 @@ function formatProblem(problem: Problem): string {
   }
 }
 
-export async function attw(options: ResolvedOptions): Promise<void> {
+export async function attw(options: ResolvedConfig): Promise<void> {
   if (!options.attw) return
   if (!options.pkg) {
     options.logger.warn('attw is enabled but package.json is not found')

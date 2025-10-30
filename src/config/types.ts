@@ -94,7 +94,7 @@ export type NoExternalFn = (
 /**
  * Options for tsdown.
  */
-export interface Options {
+export interface UserConfig {
   // #region Input Options
   /**
    * Defaults to `'src/index.ts'` if it exists.
@@ -357,17 +357,6 @@ export interface Options {
   customLogger?: Logger
 
   /**
-   * Config file path
-   */
-  config?: boolean | string
-
-  /**
-   * Config loader to use. It can only be set via CLI or API.
-   * @default 'auto'
-   */
-  configLoader?: 'auto' | 'native' | 'unconfig' | 'unrun'
-
-  /**
    * Reuse config from Vite or Vitest (experimental)
    * @default false
    */
@@ -384,7 +373,7 @@ export interface Options {
    */
   onSuccess?:
     | string
-    | ((config: ResolvedOptions, signal: AbortSignal) => void | Promise<void>)
+    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
   //#region Addons
 
@@ -467,6 +456,19 @@ export interface Options {
    * This allows you to build multiple packages in a monorepo.
    */
   workspace?: Workspace | Arrayable<string> | true
+}
+
+export interface InlineConfig extends UserConfig {
+  /**
+   * Config file path
+   */
+  config?: boolean | string
+
+  /**
+   * Config loader to use. It can only be set via CLI or API.
+   * @default 'auto'
+   */
+  configLoader?: 'auto' | 'native' | 'unconfig' | 'unrun'
 
   /**
    * Filter workspace packages. This option is only available in workspace mode.
@@ -474,63 +476,56 @@ export interface Options {
   filter?: RegExp | string | string[]
 }
 
-/**
- * Options without specifying config file path.
- */
-export type UserConfig = Arrayable<
-  Omit<Options, 'config' | 'filter' | 'configLoader'>
->
-export type UserConfigFn = (cliOptions: Options) => Awaitable<UserConfig>
-export type NormalizedUserConfig = Exclude<UserConfig, any[]>
+export type UserConfigFn = (
+  inlineConfig: InlineConfig,
+) => Awaitable<Arrayable<UserConfig>>
 
-export type ResolvedOptions = Omit<
-  Overwrite<
-    MarkPartial<
-      Omit<
-        Options,
-        | 'publicDir'
-        | 'workspace'
-        | 'filter'
-        | 'silent'
-        | 'logLevel'
-        | 'failOnWarn'
-        | 'customLogger'
-        | 'configLoader'
-      >,
-      | 'globalName'
-      | 'inputOptions'
-      | 'outputOptions'
-      | 'minify'
-      | 'define'
-      | 'alias'
-      | 'external'
-      | 'onSuccess'
-      | 'fixedExtension'
-      | 'outExtensions'
-      | 'hooks'
-      | 'removeNodeProtocol'
-      | 'copy'
-      | 'loader'
-      | 'name'
-      | 'bundle'
-      | 'banner'
-      | 'footer'
+export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>
+
+export type ResolvedConfig = Overwrite<
+  MarkPartial<
+    Omit<
+      UserConfig,
+      | 'workspace' // merged
+      | 'fromVite' // merged
+      | 'publicDir' // deprecated
+      | 'silent' // deprecated
+      | 'bundle' // deprecated
+      | 'removeNodeProtocol' // deprecated
+      | 'logLevel' // merge to `logger`
+      | 'failOnWarn' // merge to `logger`
+      | 'customLogger' // merge to `logger`
     >,
-    {
-      format: NormalizedFormat[]
-      target?: string[]
-      clean: string[]
-      dts: false | DtsOptions
-      report: false | ReportOptions
-      tsconfig: string | false
-      pkg?: PackageJson
-      exports: false | ExportsOptions
-      nodeProtocol: 'strip' | boolean
-      logger: Logger
-      ignoreWatch: Array<string | RegExp>
-      noExternal?: NoExternalFn
-      inlineOnly?: Array<string | RegExp>
-    }
+    | 'globalName'
+    | 'inputOptions'
+    | 'outputOptions'
+    | 'minify'
+    | 'define'
+    | 'alias'
+    | 'external'
+    | 'onSuccess'
+    | 'fixedExtension'
+    | 'outExtensions'
+    | 'hooks'
+    | 'copy'
+    | 'loader'
+    | 'name'
+    | 'banner'
+    | 'footer'
   >,
-  'config' | 'fromVite'
+  {
+    format: NormalizedFormat[]
+    target?: string[]
+    clean: string[]
+    dts: false | DtsOptions
+    report: false | ReportOptions
+    tsconfig: false | string
+    pkg?: PackageJson
+    exports: false | ExportsOptions
+    nodeProtocol: 'strip' | boolean
+    logger: Logger
+    ignoreWatch: Array<string | RegExp>
+    noExternal?: NoExternalFn
+    inlineOnly?: Array<string | RegExp>
+  }
 >
