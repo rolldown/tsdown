@@ -402,9 +402,9 @@ test('without hash and filename conflict', async (context) => {
   })
   expect(outputFiles).toMatchInlineSnapshot(`
     [
-      "foo.js",
-      "index.js",
-      "run.js",
+      "foo.mjs",
+      "index.mjs",
+      "run.mjs",
     ]
   `)
 })
@@ -494,11 +494,11 @@ test('banner and footer option', async (context) => {
     },
   })
 
-  expect(fileMap['index.js']).toContain('// js banner')
-  expect(fileMap['index.js']).toContain('// js footer')
+  expect(fileMap['index.mjs']).toContain('// js banner')
+  expect(fileMap['index.mjs']).toContain('// js footer')
 
-  expect(fileMap['index.d.ts']).toContain('// dts banner')
-  expect(fileMap['index.d.ts']).toContain('// dts footer')
+  expect(fileMap['index.d.mts']).toContain('// dts banner')
+  expect(fileMap['index.d.mts']).toContain('// dts footer')
 })
 
 test('dts enabled when exports.types exists', async (context) => {

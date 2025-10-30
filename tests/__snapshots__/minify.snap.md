@@ -1,5 +1,5 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 const foo=!0;export{foo};
 ```

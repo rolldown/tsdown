@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region ../../../../node_modules/.pnpm/cac@6.7.14/node_modules/cac/dist/index.mjs
 const cac = 42;
 

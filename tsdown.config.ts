@@ -7,8 +7,6 @@ export default defineConfig([
     name: 'tsdown',
     inlineOnly: [],
     platform: 'node',
-    dts: true,
-    fixedExtension: true,
     unused: {
       level: 'error',
       ignore: [
@@ -31,8 +29,6 @@ export default defineConfig([
     workspace: {
       include: ['packages/*'],
     },
-    dts: true,
-    fixedExtension: true,
     inlineOnly: [],
     publint: true,
     exports: true,
