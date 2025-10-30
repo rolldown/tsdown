@@ -5,22 +5,26 @@ import { green } from 'ansis'
 import { build as rolldownBuild } from 'rolldown'
 import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
-import { attw } from './features/attw'
-import { warnLegacyCJS } from './features/cjs'
-import { cleanOutDir } from './features/clean'
-import { copy } from './features/copy'
-import { writeExports, type TsdownChunks } from './features/exports'
-import { createHooks } from './features/hooks'
-import { publint } from './features/publint'
+import { attw } from './features/attw.ts'
+import { warnLegacyCJS } from './features/cjs.ts'
+import { cleanOutDir } from './features/clean.ts'
+import { copy } from './features/copy.ts'
+import { writeExports, type TsdownChunks } from './features/exports.ts'
+import { createHooks } from './features/hooks.ts'
+import { publint } from './features/publint.ts'
 import {
   debugBuildOptions,
   getBuildOptions,
   getDebugRolldownDir,
-} from './features/rolldown'
-import { shortcuts } from './features/shortcuts'
-import { watchBuild } from './features/watch'
-import { resolveOptions, type Options, type ResolvedOptions } from './options'
-import { globalLogger, prettyName, type Logger } from './utils/logger'
+} from './features/rolldown.ts'
+import { shortcuts } from './features/shortcuts.ts'
+import { watchBuild } from './features/watch.ts'
+import {
+  resolveOptions,
+  type Options,
+  type ResolvedOptions,
+} from './options/index.ts'
+import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
 
 /**
  * Build with tsdown.
@@ -187,12 +191,12 @@ export async function buildSingle(
   }
 }
 
-export { defineConfig } from './config'
+export { defineConfig } from './config.ts'
 export type {
   Options,
   ResolvedOptions,
   UserConfig,
   UserConfigFn,
-} from './options'
-export * from './options/types'
+} from './options/index.ts'
+export * from './options/types.ts'
 export { globalLogger, type Logger }

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
-import { generateExports } from './exports'
+import { generateExports } from './exports.ts'
 import type { OutputChunk } from 'rolldown'
 
 const cwd = process.cwd()

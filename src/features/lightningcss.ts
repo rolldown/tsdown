@@ -1,5 +1,5 @@
-import { esbuildTargetToLightningCSS } from '../utils/lightningcss'
-import type { ResolvedOptions } from '../options'
+import { esbuildTargetToLightningCSS } from '../utils/lightningcss.ts'
+import type { ResolvedOptions } from '../options/index.ts'
 import type { Plugin } from 'rolldown'
 
 export async function LightningCSSPlugin(

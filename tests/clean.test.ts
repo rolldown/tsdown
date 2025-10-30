@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { describe, expect, test } from 'vitest'
-import { fsExists } from '../src/utils/fs'
-import { getTestDir, testBuild } from './utils'
+import { fsExists } from '../src/utils/fs.ts'
+import { getTestDir, testBuild } from './utils.ts'
 
 describe('clean', () => {
   test('should clean dist directory by default', async (context) => {

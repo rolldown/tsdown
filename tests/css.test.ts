@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { testBuild } from './utils'
+import { testBuild } from './utils.ts'
 
 describe('css', () => {
   test('basic', async (context) => {

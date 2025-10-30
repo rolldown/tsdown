@@ -2,8 +2,8 @@ import path from 'node:path'
 import process from 'node:process'
 import { dim } from 'ansis'
 import Debug from 'debug'
-import { prettyName } from '../utils/logger'
-import type { ResolvedOptions } from '../options'
+import { prettyName } from '../utils/logger.ts'
+import type { ResolvedOptions } from '../options/index.ts'
 
 const debug = Debug('tsdown:publint')
 

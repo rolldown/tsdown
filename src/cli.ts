@@ -3,13 +3,13 @@ import { dim } from 'ansis'
 import { cac } from 'cac'
 import debug from 'debug'
 import { VERSION as rolldownVersion } from 'rolldown'
-import { version } from '../package.json'
-import { resolveComma, toArray } from './utils/general'
-import { globalLogger } from './utils/logger'
-import type { Options } from './options'
+import pkg from '../package.json' with { type: 'json' }
+import { resolveComma, toArray } from './utils/general.ts'
+import { globalLogger } from './utils/logger.ts'
+import type { Options } from './options/index.ts'
 
 const cli = cac('tsdown')
-cli.help().version(version)
+cli.help().version(pkg.version)
 
 cli
   .command('[...files]', 'Bundle files', {
@@ -68,9 +68,9 @@ cli
   .action(async (input: string[], flags: Options) => {
     globalLogger.level = flags.logLevel || (flags.silent ? 'error' : 'info')
     globalLogger.info(
-      `tsdown ${dim`v${version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
+      `tsdown ${dim`v${pkg.version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
     )
-    const { build } = await import('./index')
+    const { build } = await import('./index.ts')
     if (input.length > 0) flags.entry = input
     await build(flags)
   })
@@ -80,7 +80,7 @@ cli
   .option('-c, --cwd <dir>', 'Working directory')
   .option('-d, --dry-run', 'Dry run')
   .action(async (args) => {
-    const { migrate } = await import('./migrate')
+    const { migrate } = await import('./migrate.ts')
     await migrate(args)
   })
 

@@ -1,4 +1,4 @@
-import type { UserConfig, UserConfigFn } from './options'
+import type { UserConfig, UserConfigFn } from './options/index.ts'
 
 /**
  * Defines the configuration for tsdown.

@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import { runCLI } from './cli'
+import { runCLI } from './cli.ts'
 
 runCLI()

@@ -1,9 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
-import { slash } from '../utils/general'
-import type { NormalizedFormat, ResolvedOptions } from '../options'
-import type { Awaitable } from '../utils/types'
+import { slash } from '../utils/general.ts'
+import type { NormalizedFormat, ResolvedOptions } from '../options/index.ts'
+import type { Awaitable } from '../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 import type { OutputAsset, OutputChunk } from 'rolldown'
 

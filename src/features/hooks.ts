@@ -1,5 +1,5 @@
 import { createHooks as create, type Hookable } from 'hookable'
-import type { ResolvedOptions } from '../options'
+import type { ResolvedOptions } from '../options/index.ts'
 import type { BuildOptions } from 'rolldown'
 
 export interface BuildContext {

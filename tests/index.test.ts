@@ -1,9 +1,9 @@
 import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts'
 import { describe, expect, test, vi } from 'vitest'
-import { resolveOptions, type Options } from '../src/options'
-import { slash } from '../src/utils/general'
-import { chdir, testBuild, writeFixtures } from './utils'
+import { resolveOptions, type Options } from '../src/options/index.ts'
+import { slash } from '../src/utils/general.ts'
+import { chdir, testBuild, writeFixtures } from './utils.ts'
 import type { Plugin } from 'rolldown'
 
 const pluginMockDepCode: Plugin = {

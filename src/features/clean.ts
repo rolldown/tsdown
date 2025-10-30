@@ -1,10 +1,10 @@
 import path from 'node:path'
 import Debug from 'debug'
 import { glob } from 'tinyglobby'
-import { fsRemove } from '../utils/fs'
-import { slash } from '../utils/general'
-import { globalLogger } from '../utils/logger'
-import type { Options, ResolvedOptions } from '../options'
+import { fsRemove } from '../utils/fs.ts'
+import { slash } from '../utils/general.ts'
+import { globalLogger } from '../utils/logger.ts'
+import type { Options, ResolvedOptions } from '../options/index.ts'
 
 const debug = Debug('tsdown:clean')
 

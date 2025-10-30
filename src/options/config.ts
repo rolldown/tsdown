@@ -3,15 +3,15 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
 import { loadConfig } from 'unconfig'
-import { fsStat } from '../utils/fs'
-import { toArray } from '../utils/general'
-import { globalLogger } from '../utils/logger'
+import { fsStat } from '../utils/fs.ts'
+import { toArray } from '../utils/general.ts'
+import { globalLogger } from '../utils/logger.ts'
 import type {
   NormalizedUserConfig,
   Options,
   UserConfig,
   UserConfigFn,
-} from './types'
+} from './types.ts'
 import type {
   ConfigEnv,
   UserConfig as ViteUserConfig,

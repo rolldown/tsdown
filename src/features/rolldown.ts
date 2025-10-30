@@ -11,22 +11,22 @@ import {
   type RolldownPluginOption,
 } from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
-import { version } from '../../package.json'
+import pkg from '../../package.json' with { type: 'json' }
 import {
   mergeUserOptions,
   type DtsOptions,
   type NormalizedFormat,
   type ResolvedOptions,
-} from '../options'
-import { lowestCommonAncestor } from '../utils/fs'
-import { LogLevels } from '../utils/logger'
-import { ExternalPlugin } from './external'
-import { LightningCSSPlugin } from './lightningcss'
-import { NodeProtocolPlugin } from './node-protocol'
-import { resolveChunkAddon, resolveChunkFilename } from './output'
-import { ReportPlugin } from './report'
-import { ShebangPlugin } from './shebang'
-import { getShimsInject } from './shims'
+} from '../options/index.ts'
+import { lowestCommonAncestor } from '../utils/fs.ts'
+import { LogLevels } from '../utils/logger.ts'
+import { ExternalPlugin } from './external.ts'
+import { LightningCSSPlugin } from './lightningcss.ts'
+import { NodeProtocolPlugin } from './node-protocol.ts'
+import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
+import { ReportPlugin } from './report.ts'
+import { ShebangPlugin } from './shebang.ts'
+import { getShimsInject } from './shims.ts'
 
 const debug = Debug('tsdown:rolldown')
 
@@ -265,7 +265,7 @@ export async function debugBuildOptions(
   )
   const code = `/*
 Auto-generated rolldown config for tsdown debug purposes
-tsdown v${version}, rolldown v${rolldownVersion}
+tsdown v${pkg.version}, rolldown v${rolldownVersion}
 Generated on ${new Date().toISOString()}
 Package name: ${name || 'not specified'}
 */

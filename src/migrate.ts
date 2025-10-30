@@ -3,8 +3,8 @@ import { readFile, unlink, writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { createInterface } from 'node:readline/promises'
 import { bold, green, underline } from 'ansis'
-import { version } from '../package.json'
-import { globalLogger } from './utils/logger'
+import pkg from '../package.json' with { type: 'json' }
+import { globalLogger } from './utils/logger.ts'
 
 export async function migrate({
   cwd,
@@ -54,8 +54,8 @@ export async function migrate({
 }
 
 const DEP_FIELDS = {
-  dependencies: `^${version}`,
-  devDependencies: `^${version}`,
+  dependencies: `^${pkg.version}`,
+  devDependencies: `^${pkg.version}`,
   peerDependencies: '*',
 } as const
 async function migratePackageJson(dryRun?: boolean): Promise<boolean> {

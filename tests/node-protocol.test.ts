@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
-import { resolveOptions } from '../src/options'
-import { testBuild } from './utils'
+import { resolveOptions } from '../src/options/index.ts'
+import { testBuild } from './utils.ts'
 
 describe('node protocol', () => {
   test('nodeProtocol: strip (same as removeNodeProtocol: true)', async (context) => {

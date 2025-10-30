@@ -1,8 +1,8 @@
 import path from 'node:path'
-import { fsCopy } from '../utils/fs'
-import { toArray } from '../utils/general'
-import type { ResolvedOptions } from '../options'
-import type { Arrayable, Awaitable } from '../utils/types'
+import { fsCopy } from '../utils/fs.ts'
+import { toArray } from '../utils/general.ts'
+import type { ResolvedOptions } from '../options/index.ts'
+import type { Arrayable, Awaitable } from '../utils/types.ts'
 
 export interface CopyEntry {
   from: string

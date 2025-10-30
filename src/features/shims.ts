@@ -1,5 +1,5 @@
-import { shimFile } from '../index'
-import type { NormalizedFormat, ResolvedOptions } from '../options'
+import { shimFile } from '../index.ts'
+import type { NormalizedFormat, ResolvedOptions } from '../options/index.ts'
 
 export function getShimsInject(
   format: NormalizedFormat,

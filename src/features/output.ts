@@ -1,6 +1,10 @@
 import { RE_CSS, RE_DTS, RE_JS } from 'rolldown-plugin-dts/filename'
-import { getPackageType, type PackageType } from '../utils/package'
-import type { Format, NormalizedFormat, ResolvedOptions } from '../options'
+import { getPackageType, type PackageType } from '../utils/package.ts'
+import type {
+  Format,
+  NormalizedFormat,
+  ResolvedOptions,
+} from '../options/index.ts'
 import type {
   AddonFunction,
   InputOptions,

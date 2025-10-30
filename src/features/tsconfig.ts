@@ -1,9 +1,9 @@
 import path from 'node:path'
 import { blue } from 'ansis'
 import { up as findUp } from 'empathic/find'
-import { fsStat } from '../utils/fs'
-import { generateColor, prettyName, type Logger } from '../utils/logger'
-import type { Options } from '../options'
+import { fsStat } from '../utils/fs.ts'
+import { generateColor, prettyName, type Logger } from '../utils/logger.ts'
+import type { Options } from '../options/index.ts'
 
 export function findTsconfig(
   cwd?: string,

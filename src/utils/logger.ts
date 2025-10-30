@@ -1,5 +1,5 @@
 import { bgRed, bgYellow, blue, green, rgb, yellow, type Ansis } from 'ansis'
-import { noop } from './general'
+import { noop } from './general.ts'
 import type { InternalModuleFormat } from 'rolldown'
 
 export type LogType = 'error' | 'warn' | 'info'

@@ -1,11 +1,11 @@
-import type { AttwOptions } from '../features/attw'
-import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy'
-import type { ExportsOptions, TsdownChunks } from '../features/exports'
+import type { AttwOptions } from '../features/attw.ts'
+import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
+import type { ExportsOptions, TsdownChunks } from '../features/exports.ts'
 import type {
   BuildContext,
   RolldownContext,
   TsdownHooks,
-} from '../features/hooks'
+} from '../features/hooks.ts'
 import type {
   ChunkAddon,
   ChunkAddonFunction,
@@ -13,16 +13,16 @@ import type {
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
-} from '../features/output'
-import type { ReportOptions } from '../features/report'
-import type { Logger, LogLevel } from '../utils/logger'
-import type { PackageType } from '../utils/package'
+} from '../features/output.ts'
+import type { ReportOptions } from '../features/report.ts'
+import type { Logger, LogLevel } from '../utils/logger.ts'
+import type { PackageType } from '../utils/package.ts'
 import type {
   Arrayable,
   Awaitable,
   MarkPartial,
   Overwrite,
-} from '../utils/types'
+} from '../utils/types.ts'
 import type { Hookable } from 'hookable'
 import type { PackageJson } from 'pkg-types'
 import type { Options as PublintOptions } from 'publint'

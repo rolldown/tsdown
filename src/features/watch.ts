@@ -5,8 +5,8 @@ import {
   globalContext,
   invalidateContextFile,
 } from 'rolldown-plugin-dts/tsc-context'
-import { debounce, toArray } from '../utils/general'
-import type { ResolvedOptions } from '../options'
+import { debounce, toArray } from '../utils/general.ts'
+import type { ResolvedOptions } from '../options/index.ts'
 import type { FSWatcher } from 'chokidar'
 
 const endsWithConfig =

@@ -1,8 +1,8 @@
 import { chmod } from 'node:fs/promises'
 import path from 'node:path'
 import { underline } from 'ansis'
-import { fsExists } from '../utils/fs'
-import { prettyFormat, prettyName, type Logger } from '../utils/logger'
+import { fsExists } from '../utils/fs.ts'
+import { prettyFormat, prettyName, type Logger } from '../utils/logger.ts'
 import type { Plugin } from 'rolldown'
 
 const RE_SHEBANG = /^#!.*/

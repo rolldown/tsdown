@@ -1,7 +1,7 @@
 import process from 'node:process'
 import readline from 'node:readline'
 import { bold, dim } from 'ansis'
-import { globalLogger } from '../utils/logger'
+import { globalLogger } from '../utils/logger.ts'
 
 // Copied from https://github.com/vitejs/vite/blob/main/packages/vite/src/node/shortcuts.ts - MIT License
 

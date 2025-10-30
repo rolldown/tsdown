@@ -40,7 +40,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "scripts": {},
+  "scripts": {
+    "dev": "node ./src/run.ts"
+  },
   "dependencies": {
     "@clack/prompts": "catalog:prod",
     "cac": "catalog:prod",

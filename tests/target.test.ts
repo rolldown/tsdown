@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { testBuild } from './utils'
+import { testBuild } from './utils.ts'
 
 describe('target', () => {
   test('js syntax lowering', async (context) => {

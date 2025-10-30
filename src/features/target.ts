@@ -1,6 +1,6 @@
 import minVersion from 'semver/ranges/min-version.js'
-import { resolveComma, toArray } from '../utils/general'
-import { generateColor, prettyName, type Logger } from '../utils/logger'
+import { resolveComma, toArray } from '../utils/general.ts'
+import { generateColor, prettyName, type Logger } from '../utils/logger.ts'
 import type { PackageJson } from 'pkg-types'
 
 export function resolveTarget(

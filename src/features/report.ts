@@ -5,9 +5,9 @@ import { brotliCompress, gzip } from 'node:zlib'
 import { bold, dim, green } from 'ansis'
 import Debug from 'debug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
-import { formatBytes } from '../utils/format'
-import { noop } from '../utils/general'
-import { prettyFormat, prettyName, type Logger } from '../utils/logger'
+import { formatBytes } from '../utils/format.ts'
+import { noop } from '../utils/general.ts'
+import { prettyFormat, prettyName, type Logger } from '../utils/logger.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 const debug = Debug('tsdown:report')

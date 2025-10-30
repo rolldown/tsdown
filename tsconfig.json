@@ -3,19 +3,27 @@
     "target": "esnext",
     "lib": ["es2023"],
     "moduleDetection": "force",
-    "module": "preserve",
-    "moduleResolution": "bundler",
+    "module": "nodenext",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "types": ["node"],
+    "allowImportingTsExtensions": true,
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,
     "isolatedDeclarations": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true
   },
-  "include": ["src", "tests", "client.d.ts"],
+  "include": [
+    "src",
+    "packages/*/src",
+    "tests",
+    "packages/*/tests",
+    "client.d.ts"
+  ],
   "exclude": ["**/temp", "**/fixtures"]
 }

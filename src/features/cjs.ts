@@ -1,6 +1,6 @@
 import coerce from 'semver/functions/coerce.js'
 import satisfies from 'semver/functions/satisfies.js'
-import type { ResolvedOptions } from '../options'
+import type { ResolvedOptions } from '../options/index.ts'
 
 /**
  * If the config includes the `cjs` format and

@@ -1,11 +1,11 @@
 import process from 'node:process'
 import { log } from '@clack/prompts'
 import { cac } from 'cac'
-import { version } from '../package.json'
-import { create, templateOptions, type Options } from './index'
+import pkg from '../package.json' with { type: 'json' }
+import { create, templateOptions, type Options } from './index.ts'
 
 const cli = cac('create-tsdown')
-cli.help().version(version)
+cli.help().version(pkg.version)
 
 cli
   .command('[path]', 'Create a tsdown project', {

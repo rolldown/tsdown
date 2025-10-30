@@ -1,6 +1,6 @@
 import { exec } from 'tinyexec'
 import { describe, expect, test } from 'vitest'
-import { testBuild } from './utils'
+import { testBuild } from './utils.ts'
 
 describe('issues', () => {
   test('#61', async (context) => {

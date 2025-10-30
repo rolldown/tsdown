@@ -1,5 +1,5 @@
 import { describe, test } from 'vitest'
-import { testBuild } from './utils'
+import { testBuild } from './utils.ts'
 
 describe('unbundle', () => {
   test('basic', async (context) => {
