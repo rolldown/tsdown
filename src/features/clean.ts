@@ -14,6 +14,10 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
   const removes = new Set<string>()
 
   for (const config of configs) {
+    if (config.debug && (config.debug.clean ?? true)) {
+      config.clean.push('.rolldown')
+    }
+
     if (!config.clean.length) continue
     const files = await glob(config.clean, {
       cwd: config.cwd,

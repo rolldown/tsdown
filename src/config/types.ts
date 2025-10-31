@@ -1,5 +1,6 @@
 import type { AttwOptions } from '../features/attw.ts'
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
+import type { DebugOptions } from '../features/debug.ts'
 import type { ExportsOptions, TsdownChunks } from '../features/exports.ts'
 import type {
   BuildContext,
@@ -52,6 +53,7 @@ export type {
   CopyEntry,
   CopyOptions,
   CopyOptionsFn,
+  DebugOptions,
   DtsOptions,
   ExportsOptions,
   OutExtensionContext,
@@ -376,6 +378,13 @@ export interface UserConfig {
     | string
     | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
+  /**
+   * **[experimental]** Enable debug mode.
+   * This may output a large amount of logs and slow down the build process.
+   * @default false
+   */
+  debug?: boolean | DebugOptions
+
   //#region Addons
 
   /**
@@ -527,5 +536,6 @@ export type ResolvedConfig = Overwrite<
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
+    debug: false | DebugOptions
   }
 >
