@@ -24,6 +24,7 @@ import {
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
 import { watchBuild } from './features/watch.ts'
+import { fsRemove } from './utils/fs.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
 
 /**
@@ -52,6 +53,21 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
 
     const watcher = await watchBuild(config, configFiles, rebuild, restart)
     disposeCbs.push(() => watcher.close())
+  }
+
+  let debugMode = configs.some((config) => config.debug)
+  if (disposeCbs.length && debugMode) {
+    globalLogger.warn(
+      'Debug mode is not supported in watch mode. Disabling debug mode.',
+    )
+    debugMode = false
+  }
+  if (debugMode) {
+    const devtools = require.resolve('@vitejs/devtools/cli')
+    await fsRemove(path.resolve(process.cwd(), '.rolldown/unknown-session'))
+    await exec(process.execPath, [devtools], {
+      nodeOptions: { stdio: 'inherit' },
+    })
   }
 
   // Watch mode with shortcuts
