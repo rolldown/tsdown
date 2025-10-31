@@ -1,5 +1,6 @@
 import Debug from 'debug'
 import { resolveComma, toArray } from '../utils/general.ts'
+import type { StartOptions } from '@vitejs/devtools/cli-commands'
 import type { InputOptions } from 'rolldown'
 
 const debug = Debug('tsdown:debug')
@@ -10,7 +11,14 @@ export interface DebugOptions extends NonNullable<InputOptions['debug']> {
    *
    * Defaults to true, if `@vitejs/devtools` is installed.
    */
-  devtools?: boolean
+  devtools?: boolean | Partial<StartOptions>
+
+  /**
+   * Clean devtools stale sessions.
+   *
+   * @default true
+   */
+  clean?: boolean
 }
 
 export function enableDebugLog(cliOptions: Record<string, any>): void {

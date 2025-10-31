@@ -7,6 +7,7 @@ import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
 import {
   resolveConfig,
+  type DebugOptions,
   type InlineConfig,
   type ResolvedConfig,
 } from './config/index.ts'
@@ -25,6 +26,7 @@ import {
 import { shortcuts } from './features/shortcuts.ts'
 import { watchBuild } from './features/watch.ts'
 import { fsRemove } from './utils/fs.ts'
+import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
 
 /**
@@ -55,24 +57,26 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     disposeCbs.push(() => watcher.close())
   }
 
-  let devtools = configs.some((config) => config.debug && config.debug.devtools)
-  if (disposeCbs.length && devtools) {
+  let firstDevtoolsConfig = configs.find(
+    (config) => config.debug && config.debug.devtools,
+  )
+  if (disposeCbs.length && firstDevtoolsConfig) {
     globalLogger.warn('Devtools is not supported in watch mode, disabling it.')
-    devtools = false
+    firstDevtoolsConfig = undefined
   }
-  if (devtools) {
-    let devtoolsPath: string
-    try {
-      devtoolsPath = require.resolve('@vitejs/devtools/cli')
-    } catch {
-      throw new Error(
-        'Devtools is enabled, but `@vitejs/devtools` is not installed. Please install it to use this feature.',
-      )
-    }
+  if (firstDevtoolsConfig) {
     // FIXME: remove me
     await fsRemove(path.resolve(process.cwd(), '.rolldown/unknown-session'))
-    await exec(process.execPath, [devtoolsPath], {
-      nodeOptions: { stdio: 'inherit' },
+
+    const { start } = await importWithError<
+      typeof import('@vitejs/devtools/cli-commands')
+    >('@vitejs/devtools/cli-commands')
+
+    const devtoolsOptions = (firstDevtoolsConfig.debug as DebugOptions).devtools
+    await start({
+      host: '127.0.0.1',
+      open: true,
+      ...(typeof devtoolsOptions === 'object' ? devtoolsOptions : {}),
     })
   }
 
