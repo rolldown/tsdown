@@ -4,6 +4,7 @@ dist
 temp
 .idea
 .netlify
+.rolldown
 
 *.log
 .DS_Store

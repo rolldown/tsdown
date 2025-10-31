@@ -376,6 +376,8 @@ export interface UserConfig {
     | string
     | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
+  debug?: boolean
+
   //#region Addons
 
   /**
@@ -512,6 +514,7 @@ export type ResolvedConfig = Overwrite<
     | 'name'
     | 'banner'
     | 'footer'
+    | 'debug'
   >,
   {
     format: NormalizedFormat[]

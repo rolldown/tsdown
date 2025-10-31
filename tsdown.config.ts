@@ -11,7 +11,6 @@ export default defineConfig([
       level: 'error',
       ignore: [
         'typescript', // Yarn PnP
-        '@vitejs/devtools', // TODO
       ],
     },
     publint: true,
@@ -25,9 +24,7 @@ export default defineConfig([
     onSuccess() {
       console.info('🙏 Build succeeded!')
     },
-    inputOptions: {
-      debug: {},
-    },
+    debug: true,
   },
   {
     workspace: {
