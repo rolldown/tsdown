@@ -61,10 +61,17 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     devtools = false
   }
   if (devtools) {
-    const devtools = require.resolve('@vitejs/devtools/cli')
+    let devtoolsPath: string
+    try {
+      devtoolsPath = require.resolve('@vitejs/devtools/cli')
+    } catch {
+      throw new Error(
+        'Devtools is enabled, but `@vitejs/devtools` is not installed. Please install it to use this feature.',
+      )
+    }
     // FIXME: remove me
     await fsRemove(path.resolve(process.cwd(), '.rolldown/unknown-session'))
-    await exec(process.execPath, [devtools], {
+    await exec(process.execPath, [devtoolsPath], {
       nodeOptions: { stdio: 'inherit' },
     })
   }
