@@ -57,13 +57,12 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
 
   let devtools = configs.some((config) => config.debug && config.debug.devtools)
   if (disposeCbs.length && devtools) {
-    globalLogger.warn(
-      'Debug mode and devtools are not supported in watch mode.',
-    )
+    globalLogger.warn('Devtools is not supported in watch mode, disabling it.')
     devtools = false
   }
   if (devtools) {
     const devtools = require.resolve('@vitejs/devtools/cli')
+    // FIXME: remove me
     await fsRemove(path.resolve(process.cwd(), '.rolldown/unknown-session'))
     await exec(process.execPath, [devtools], {
       nodeOptions: { stdio: 'inherit' },

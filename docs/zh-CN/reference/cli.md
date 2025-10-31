@@ -170,7 +170,7 @@ tsdown --env.NODE_ENV=production
 
 注意，通过 `--env.VAR_NAME` 定义的环境变量只能通过 `import.meta.env.VAR_NAME` 或 `process.env.VAR_NAME` 访问。
 
-## `--debug [feat]`
+## `--debug-log [feat]`
 
 显示调试日志。
 
