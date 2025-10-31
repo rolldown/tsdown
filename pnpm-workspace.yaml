@@ -71,3 +71,5 @@ ignoredBuiltDependencies:
 
 onlyBuiltDependencies:
   - esbuild
+catalog:
+  '@vitejs/devtools': 0.0.0-alpha.7
