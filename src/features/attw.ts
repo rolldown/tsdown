@@ -7,6 +7,7 @@ import { promisify } from 'node:util'
 import { blue, dim } from 'ansis'
 import Debug from 'debug'
 import { fsRemove } from '../utils/fs.ts'
+import { importWithError } from '../utils/general.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { CheckPackageOptions, Problem } from '@arethetypeswrong/core'
 
@@ -127,7 +128,9 @@ export async function attw(options: ResolvedConfig): Promise<void> {
 
   let attwCore: typeof import('@arethetypeswrong/core')
   try {
-    attwCore = await import('@arethetypeswrong/core')
+    attwCore = await importWithError<typeof import('@arethetypeswrong/core')>(
+      '@arethetypeswrong/core',
+    )
   } catch {
     options.logger.error(
       `ATTW check requires ${blue`@arethetypeswrong/core`} to be installed.`,
