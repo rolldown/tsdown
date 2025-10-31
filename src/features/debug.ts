@@ -14,15 +14,15 @@ export interface DebugOptions extends NonNullable<InputOptions['debug']> {
 }
 
 export function enableDebugLog(cliOptions: Record<string, any>): void {
-  const { debugLog } = cliOptions
-  if (!debugLog) return
+  const { debugLogs } = cliOptions
+  if (!debugLogs) return
 
   let namespace: string
-  if (debugLog === true) {
+  if (debugLogs === true) {
     namespace = 'tsdown:*'
   } else {
     // support debugging multiple flags with comma-separated list
-    namespace = resolveComma(toArray(debugLog))
+    namespace = resolveComma(toArray(debugLogs))
       .map((v) => `tsdown:${v}`)
       .join(',')
   }

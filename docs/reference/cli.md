@@ -170,7 +170,7 @@ tsdown --env.NODE_ENV=production
 
 Note that environment variables defined with `--env.VAR_NAME` can only be accessed as `import.meta.env.VAR_NAME` or `process.env.VAR_NAME`.
 
-## `--debug-log [feat]`
+## `--debug-logs [feat]`
 
 Show debug logs.
 
