@@ -29,7 +29,7 @@ cli
   .option('--external <module>', 'Mark dependencies as external')
   .option('--minify', 'Minify output')
   .option('--debug', 'Enable debug mode')
-  .option('--debug-log [feat]', 'Show debug logs')
+  .option('--debug-logs [feat]', 'Show debug logs')
   .option('--target <target>', 'Bundle target, e.g "es2015", "esnext"')
   .option('-l, --logLevel <level>', 'Set log level: info, warn, error, silent')
   .option('--fail-on-warn', 'Fail on warnings', { default: true })
