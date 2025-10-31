@@ -6,7 +6,7 @@ const debug = Debug('tsdown:debug')
 
 export interface DebugOptions extends NonNullable<InputOptions['debug']> {
   /**
-   * Enable devtools integration. `@vitejs/devtools` must be installed as a dependency.
+   * **[experimental]** Enable devtools integration. `@vitejs/devtools` must be installed as a dependency.
    *
    * Defaults to true, if `@vitejs/devtools` is installed.
    */
