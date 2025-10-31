@@ -62,6 +62,7 @@
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
+    "@vitejs/devtools": "catalog:peer",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
     "unplugin-lightningcss": "^0.4.0",
@@ -70,6 +71,9 @@
   },
   "peerDependenciesMeta": {
     "@arethetypeswrong/core": {
+      "optional": true
+    },
+    "@vitejs/devtools": {
       "optional": true
     },
     "publint": {
@@ -113,7 +117,7 @@
     "@types/node": "catalog:dev",
     "@types/semver": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
-    "@vitejs/devtools": "0.0.0-alpha.7",
+    "@vitejs/devtools": "catalog:peer",
     "@vueuse/core": "catalog:docs",
     "bumpp": "catalog:dev",
     "eslint": "catalog:dev",
