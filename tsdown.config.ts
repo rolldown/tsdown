@@ -11,6 +11,7 @@ export default defineConfig([
       level: 'error',
       ignore: [
         'typescript', // Yarn PnP
+        '@vitejs/devtools', // TODO
       ],
     },
     publint: true,
