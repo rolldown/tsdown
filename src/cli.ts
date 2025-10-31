@@ -1,10 +1,9 @@
 import process from 'node:process'
 import { dim } from 'ansis'
 import { cac } from 'cac'
-import debug from 'debug'
 import { VERSION as rolldownVersion } from 'rolldown'
 import pkg from '../package.json' with { type: 'json' }
-import { resolveComma, toArray } from './utils/general.ts'
+import { enableDebugLog } from './features/debug.ts'
 import { globalLogger } from './utils/logger.ts'
 import type { UserConfig } from './config.ts'
 
@@ -29,7 +28,8 @@ cli
   .option('--clean', 'Clean output directory, --no-clean to disable')
   .option('--external <module>', 'Mark dependencies as external')
   .option('--minify', 'Minify output')
-  .option('--debug [feat]', 'Show debug logs')
+  .option('--debug', 'Enable debug mode')
+  .option('--debug-log [feat]', 'Show debug logs')
   .option('--target <target>', 'Bundle target, e.g "es2015", "esnext"')
   .option('-l, --logLevel <level>', 'Set log level: info, warn, error, silent')
   .option('--fail-on-warn', 'Fail on warnings', { default: true })
@@ -87,23 +87,7 @@ cli
 export async function runCLI(): Promise<void> {
   cli.parse(process.argv, { run: false })
 
-  if (cli.options.debug) {
-    let namespace: string
-    if (cli.options.debug === true) {
-      namespace = 'tsdown:*'
-    } else {
-      // support debugging multiple flags with comma-separated list
-      namespace = resolveComma(toArray(cli.options.debug))
-        .map((v) => `tsdown:${v}`)
-        .join(',')
-    }
-
-    const enabled = debug.disable()
-    if (enabled) namespace += `,${enabled}`
-
-    debug.enable(namespace)
-    debug('tsdown:debug')('Debugging enabled', namespace)
-  }
+  enableDebugLog(cli.options)
 
   try {
     await cli.runMatchedCommand()
