@@ -189,7 +189,7 @@ export async function resolveInputOptions(
             defaultHandler(level, log)
           }
         : undefined,
-      debug: debug ? {} : undefined,
+      debug: debug || undefined,
     },
     config.inputOptions,
     [format, { cjsDts }],

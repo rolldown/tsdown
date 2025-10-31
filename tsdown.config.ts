@@ -24,7 +24,6 @@ export default defineConfig([
     onSuccess() {
       console.info('🙏 Build succeeded!')
     },
-    debug: true,
   },
   {
     workspace: {

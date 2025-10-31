@@ -55,14 +55,14 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     disposeCbs.push(() => watcher.close())
   }
 
-  let debugMode = configs.some((config) => config.debug)
-  if (disposeCbs.length && debugMode) {
+  let devtools = configs.some((config) => config.debug && config.debug.devtools)
+  if (disposeCbs.length && devtools) {
     globalLogger.warn(
-      'Debug mode is not supported in watch mode. Disabling debug mode.',
+      'Debug mode and devtools are not supported in watch mode.',
     )
-    debugMode = false
+    devtools = false
   }
-  if (debugMode) {
+  if (devtools) {
     const devtools = require.resolve('@vitejs/devtools/cli')
     await fsRemove(path.resolve(process.cwd(), '.rolldown/unknown-session'))
     await exec(process.execPath, [devtools], {
