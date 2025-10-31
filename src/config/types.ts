@@ -378,6 +378,11 @@ export interface UserConfig {
     | string
     | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
+  /**
+   * **[experimental]** Enable debug mode.
+   * This may output a large amount of logs and slow down the build process.
+   * @default false
+   */
   debug?: boolean | DebugOptions
 
   //#region Addons
