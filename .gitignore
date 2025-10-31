@@ -2,18 +2,16 @@ node_modules
 dist
 .temp
 temp
+.idea
+.netlify
 
 *.log
 .DS_Store
 .eslintcache
 tsdown-*.tgz
-.idea
 
 docs/.vitepress/dist
 docs/.vitepress/cache
 
 docs/reference/api
 docs/zh-CN/reference/api
-
-# Local Netlify folder
-.netlify

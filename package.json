@@ -113,6 +113,7 @@
     "@types/node": "catalog:dev",
     "@types/semver": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
+    "@vitejs/devtools": "0.0.0-alpha.7",
     "@vueuse/core": "catalog:docs",
     "bumpp": "catalog:dev",
     "eslint": "catalog:dev",
