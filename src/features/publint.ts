@@ -2,6 +2,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { dim } from 'ansis'
 import Debug from 'debug'
+import { importWithError } from '../utils/general.ts'
 import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 
@@ -19,7 +20,7 @@ export async function publint(options: ResolvedConfig): Promise<void> {
 
   const t = performance.now()
   debug('Running publint')
-  const { publint } = await import('publint')
+  const { publint } = await importWithError<typeof import('publint')>('publint')
   const { formatMessage } = await import('publint/utils')
   const { messages } = await publint({
     ...(options.publint === true ? {} : options.publint),
