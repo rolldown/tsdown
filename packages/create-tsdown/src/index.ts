@@ -18,6 +18,7 @@ export const templateOptions = [
   { value: 'vue', label: 'Vue' },
   { value: 'react', label: 'React' },
   { value: 'solid', label: 'Solid' },
+  { value: 'svelte', label: 'Svelte' },
 ] as const
 
 type TemplateOption = (typeof templateOptions)[number]['value']
