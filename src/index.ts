@@ -25,7 +25,6 @@ import {
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
 import { watchBuild } from './features/watch.ts'
-import { fsRemove } from './utils/fs.ts'
 import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
 
