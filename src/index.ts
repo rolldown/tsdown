@@ -65,9 +65,6 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     firstDevtoolsConfig = undefined
   }
   if (firstDevtoolsConfig) {
-    // FIXME: remove me
-    await fsRemove(path.resolve(process.cwd(), '.rolldown/unknown-session'))
-
     const { start } = await importWithError<
       typeof import('@vitejs/devtools/cli-commands')
     >('@vitejs/devtools/cli-commands')

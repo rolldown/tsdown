@@ -58,7 +58,7 @@ catalogs:
     giget: ^2.0.0
     hookable: ^5.5.3
     package-manager-detector: ^1.5.0
-    rolldown: 1.0.0-beta.45
+    rolldown: https://pkg.pr.new/rolldown@f18d64d
     rolldown-plugin-dts: ^0.17.2
     semver: ^7.7.3
     tinyexec: ^1.0.1
