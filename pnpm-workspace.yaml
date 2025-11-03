@@ -41,7 +41,7 @@ catalogs:
 
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': https://pkg.pr.new/@vitejs/devtools@c6546b5
+    '@vitejs/devtools': https://pkg.pr.new/@vitejs/devtools@30ad870
     publint: ^0.3.15
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.4
@@ -58,7 +58,7 @@ catalogs:
     giget: ^2.0.0
     hookable: ^5.5.3
     package-manager-detector: ^1.5.0
-    rolldown: https://pkg.pr.new/rolldown@f18d64d
+    rolldown: 1.0.0-beta.46
     rolldown-plugin-dts: ^0.17.2
     semver: ^7.7.3
     tinyexec: ^1.0.1
