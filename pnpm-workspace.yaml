@@ -41,7 +41,7 @@ catalogs:
 
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': https://pkg.pr.new/@vitejs/devtools@30ad870
+    '@vitejs/devtools': ^0.0.0-alpha.10
     publint: ^0.3.15
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.4

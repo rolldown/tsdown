@@ -93,8 +93,8 @@ catalogs:
       specifier: ^0.18.2
       version: 0.18.2
     '@vitejs/devtools':
-      specifier: https://pkg.pr.new/@vitejs/devtools@30ad870
-      version: 0.0.0-alpha.8
+      specifier: ^0.0.0-alpha.10
+      version: 0.0.0-alpha.10
     publint:
       specifier: ^0.3.15
       version: 0.3.15
@@ -234,7 +234,7 @@ importers:
         version: 66.5.4(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       '@vitejs/devtools':
         specifier: catalog:peer
-        version: https://pkg.pr.new/@vitejs/devtools@30ad870(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
+        version: 0.0.0-alpha.10(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
       '@vueuse/core':
         specifier: catalog:docs
         version: 14.0.0(vue@3.5.22(typescript@5.9.3))
@@ -1542,28 +1542,24 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@vitejs/devtools-kit@https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-kit@30ad870':
-    resolution: {tarball: https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-kit@30ad870}
-    version: 0.0.0-alpha.8
+  '@vitejs/devtools-kit@0.0.0-alpha.10':
+    resolution: {integrity: sha512-aKfLXAdAt00nZApFE7QLK+xif83+QxAHJs+yquHDZ5HQWAQvyNgvLSx6Qs3tfD3LxMf9sJn6HV9fHjSrcmIFsA==}
     peerDependencies:
       vite: npm:rolldown-vite@^7.1.20
 
-  '@vitejs/devtools-rpc@https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-rpc@30ad870':
-    resolution: {tarball: https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-rpc@30ad870}
-    version: 0.0.0-alpha.8
+  '@vitejs/devtools-rpc@0.0.0-alpha.10':
+    resolution: {integrity: sha512-ztsdO9OyPcgmCHi9qMMJGqB1F5nQ6lncpDJ90cvOmpnFGsHC5HdLL/ytwPXVaxux2sLEA609kxduxKycQsIXZQ==}
     peerDependencies:
       ws: '*'
     peerDependenciesMeta:
       ws:
         optional: true
 
-  '@vitejs/devtools-vite@https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-vite@30ad870':
-    resolution: {tarball: https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-vite@30ad870}
-    version: 0.0.0-alpha.8
+  '@vitejs/devtools-vite@0.0.0-alpha.10':
+    resolution: {integrity: sha512-8Osrk+DrhL28XF7kA8E7VxfAHqf4v6hq7ZHpPxSeU9OATxfGmX6FxjYmevpwQciRXen7LHW3ngRAurd55VchkQ==}
 
-  '@vitejs/devtools@https://pkg.pr.new/@vitejs/devtools@30ad870':
-    resolution: {tarball: https://pkg.pr.new/@vitejs/devtools@30ad870}
-    version: 0.0.0-alpha.8
+  '@vitejs/devtools@0.0.0-alpha.10':
+    resolution: {integrity: sha512-sC9o+IqSDQAmZKxmU3YTCLUeMO1nc4W03WJyAIBKJzhveZ19mv/b2ZJ9GOoJqb+FTEXXSSUaoytIfUXypYxjxg==}
     hasBin: true
     peerDependencies:
       vite: npm:rolldown-vite@^7.1.20
@@ -5059,28 +5055,28 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
 
-  '@vitejs/devtools-kit@https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-kit@30ad870(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(ws@8.18.3)':
+  '@vitejs/devtools-kit@0.0.0-alpha.10(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(ws@8.18.3)':
     dependencies:
-      '@vitejs/devtools-rpc': https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-rpc@30ad870(ws@8.18.3)
+      '@vitejs/devtools-rpc': 0.0.0-alpha.10(ws@8.18.3)
       birpc: 2.6.1
       vite: rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)
     transitivePeerDependencies:
       - ws
 
-  '@vitejs/devtools-rpc@https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-rpc@30ad870(ws@8.18.3)':
+  '@vitejs/devtools-rpc@0.0.0-alpha.10(ws@8.18.3)':
     dependencies:
       birpc: 2.6.1
       structured-clone-es: 1.0.0
     optionalDependencies:
       ws: 8.18.3
 
-  '@vitejs/devtools-vite@https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-vite@30ad870(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))':
+  '@vitejs/devtools-vite@0.0.0-alpha.10(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))':
     dependencies:
       '@floating-ui/dom': 1.7.4
       '@pnpm/read-project-manifest': 1001.1.4(@pnpm/logger@1001.0.1)
       '@rolldown/debug': 1.0.0-beta.45
-      '@vitejs/devtools-kit': https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-kit@30ad870(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(ws@8.18.3)
-      '@vitejs/devtools-rpc': https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-rpc@30ad870(ws@8.18.3)
+      '@vitejs/devtools-kit': 0.0.0-alpha.10(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(ws@8.18.3)
+      '@vitejs/devtools-rpc': 0.0.0-alpha.10(ws@8.18.3)
       ansis: 4.2.0
       birpc: 2.6.1
       cac: 6.7.14
@@ -5128,11 +5124,11 @@ snapshots:
       - vite
       - vue
 
-  '@vitejs/devtools@https://pkg.pr.new/@vitejs/devtools@30ad870(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))':
+  '@vitejs/devtools@0.0.0-alpha.10(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))':
     dependencies:
-      '@vitejs/devtools-kit': https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-kit@30ad870(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(ws@8.18.3)
-      '@vitejs/devtools-rpc': https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-rpc@30ad870(ws@8.18.3)
-      '@vitejs/devtools-vite': https://pkg.pr.new/vitejs/devtools/@vitejs/devtools-vite@30ad870(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
+      '@vitejs/devtools-kit': 0.0.0-alpha.10(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(ws@8.18.3)
+      '@vitejs/devtools-rpc': 0.0.0-alpha.10(ws@8.18.3)
+      '@vitejs/devtools-vite': 0.0.0-alpha.10(@pnpm/logger@1001.0.1)(rolldown-vite@7.1.20(@types/node@24.9.2)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1))(vue@3.5.22(typescript@5.9.3))
       cac: 6.7.14
       debug: 4.4.3
       launch-editor: 2.12.0
