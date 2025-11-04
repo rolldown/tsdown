@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs'
 import module from 'node:module'
 import path from 'node:path'
-import { createTranslate } from '../i18n/utils'
+import { createTranslate } from '../i18n/utils.ts'
 import type { DefaultTheme, HeadConfig, LocaleConfig } from 'vitepress'
 
 const require = module.createRequire(import.meta.url)

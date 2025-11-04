@@ -92,6 +92,7 @@ export async function resolveInputOptions(
     banner,
     footer,
     globImport,
+    debug,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -188,6 +189,7 @@ export async function resolveInputOptions(
             defaultHandler(level, log)
           }
         : undefined,
+      debug: debug || undefined,
     },
     config.inputOptions,
     [format, { cjsDts }],

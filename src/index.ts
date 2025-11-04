@@ -7,6 +7,7 @@ import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
 import {
   resolveConfig,
+  type DebugOptions,
   type InlineConfig,
   type ResolvedConfig,
 } from './config/index.ts'
@@ -24,6 +25,7 @@ import {
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
 import { watchBuild } from './features/watch.ts'
+import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
 
 /**
@@ -52,6 +54,26 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
 
     const watcher = await watchBuild(config, configFiles, rebuild, restart)
     disposeCbs.push(() => watcher.close())
+  }
+
+  let firstDevtoolsConfig = configs.find(
+    (config) => config.debug && config.debug.devtools,
+  )
+  if (disposeCbs.length && firstDevtoolsConfig) {
+    globalLogger.warn('Devtools is not supported in watch mode, disabling it.')
+    firstDevtoolsConfig = undefined
+  }
+  if (firstDevtoolsConfig) {
+    const { start } = await importWithError<
+      typeof import('@vitejs/devtools/cli-commands')
+    >('@vitejs/devtools/cli-commands')
+
+    const devtoolsOptions = (firstDevtoolsConfig.debug as DebugOptions).devtools
+    await start({
+      host: '127.0.0.1',
+      open: true,
+      ...(typeof devtoolsOptions === 'object' ? devtoolsOptions : {}),
+    })
   }
 
   // Watch mode with shortcuts
