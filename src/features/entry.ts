@@ -33,8 +33,8 @@ export async function inferEntryExtension(
 
   // Try to infer extension by checking each valid extension
   for (const extension of DEFAULT_EXTENSIONS) {
-    const pathWithExt = entryPath + extension
-    if (await fsExists(path.resolve(cwd, pathWithExt))) return pathWithExt
+    const inferred = entryPath + extension
+    if (await fsExists(path.resolve(cwd, inferred))) return inferred
   }
 
   return null
@@ -91,7 +91,7 @@ export async function toObjectEntry(
     return result
   }
 
-  const entriesWithInferredExt = await Promise.all(
+  const entries = await Promise.all(
     entry.map(async (entryPath) => {
       if (isGlobPattern(entryPath)) return entryPath
 
@@ -101,7 +101,7 @@ export async function toObjectEntry(
   )
 
   const resolvedEntry = (
-    await glob(entriesWithInferredExt, { cwd, expandDirectories: false })
+    await glob(entries, { cwd, expandDirectories: false })
   ).map((file) => path.resolve(cwd, file))
   const base = lowestCommonAncestor(...resolvedEntry)
   return Object.fromEntries(

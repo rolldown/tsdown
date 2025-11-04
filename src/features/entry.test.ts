@@ -13,6 +13,18 @@ async function createTempDir(): Promise<string> {
   return dir
 }
 
+// Helper to normalize entry keys for cross-platform testing
+function normalizeEntryKeys(
+  entry: Record<string, string>,
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(entry).map(([key, value]) => [
+      key.replaceAll('\\', '/'),
+      value,
+    ]),
+  )
+}
+
 describe('toObjectEntry', () => {
   beforeAll(async () => {
     // Clean up test root directory before running tests
@@ -144,7 +156,7 @@ describe('toObjectEntry', () => {
       ['src/index.ts', 'src/utils/helper.ts'],
       tempDir,
     )
-    expect(result).toEqual({
+    expect(normalizeEntryKeys(result)).toEqual({
       index: path.join(tempDir, 'src', 'index.ts'),
       'utils/helper': path.join(tempDir, 'src', 'utils', 'helper.ts'),
     })
@@ -158,7 +170,7 @@ describe('toObjectEntry', () => {
     await writeFile(path.join(tempDir, 'index.ts'), '')
 
     const result = await toObjectEntry(['index.ts', 'src/*.ts'], tempDir)
-    expect(result).toEqual({
+    expect(normalizeEntryKeys(result)).toEqual({
       index: path.join(tempDir, 'index.ts'),
       'src/foo': path.join(tempDir, 'src', 'foo.ts'),
       'src/bar': path.join(tempDir, 'src', 'bar.ts'),
