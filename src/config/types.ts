@@ -380,7 +380,11 @@ export interface UserConfig {
 
   /**
    * **[experimental]** Enable debug mode.
-   * This may output a large amount of logs and slow down the build process.
+   *
+   * Both debug mode and Vite DevTools are still under development, and this is for early testers only.
+   *
+   * This may slow down the build process significantly.
+   *
    * @default false
    */
   debug?: boolean | DebugOptions
