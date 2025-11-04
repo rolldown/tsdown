@@ -1,4 +1,4 @@
-import { translateMap } from './translate-map'
+import { translateMap } from './translate-map.ts'
 
 export function t(key: string, lang: string) {
   return translateMap[lang]?.[key] || key

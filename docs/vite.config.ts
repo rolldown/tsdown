@@ -5,7 +5,7 @@ import {
   localIconLoader,
 } from 'vitepress-plugin-group-icons'
 import llmstxt from 'vitepress-plugin-llms'
-import { description } from '../package.json'
+import pkg from '../package.json' with { type: 'json' }
 
 export default defineConfig({
   plugins: [
@@ -18,7 +18,7 @@ export default defineConfig({
     }),
     llmstxt({
       ignoreFiles: ['index.md', 'README.md', 'zh-CN/**/*'],
-      description,
+      description: pkg.description,
       details: '',
     }),
   ],

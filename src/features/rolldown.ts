@@ -19,6 +19,7 @@ import {
   type ResolvedConfig,
 } from '../config/index.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
+import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
@@ -92,6 +93,7 @@ export async function resolveInputOptions(
     banner,
     footer,
     globImport,
+    debug,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -127,7 +129,10 @@ export async function resolveInputOptions(
   }
   if (!cjsDts) {
     if (unused) {
-      const { Unused } = await import('unplugin-unused')
+      const { Unused } =
+        await importWithError<typeof import('unplugin-unused')>(
+          'unplugin-unused',
+        )
       plugins.push(Unused.rolldown(unused === true ? {} : unused))
     }
     if (target) {
@@ -188,6 +193,7 @@ export async function resolveInputOptions(
             defaultHandler(level, log)
           }
         : undefined,
+      debug: debug || undefined,
     },
     config.inputOptions,
     [format, { cjsDts }],

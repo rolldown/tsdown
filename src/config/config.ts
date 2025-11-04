@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
 import { loadConfig } from 'unconfig'
 import { fsStat } from '../utils/fs.ts'
-import { toArray } from '../utils/general.ts'
+import { importWithError, toArray } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import type { InlineConfig, UserConfig, UserConfigExport } from './types.ts'
 import type {
@@ -149,7 +149,7 @@ async function nativeImport(id: string) {
 }
 
 async function unrunImport(id: string) {
-  const { unrun } = await import('unrun')
+  const { unrun } = await importWithError<typeof import('unrun')>('unrun')
   const { module } = await unrun({
     path: pathToFileURL(id).href,
   }).catch((error) => {

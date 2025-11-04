@@ -8,7 +8,13 @@ import { resolveEntry } from '../features/entry.ts'
 import { hasExportsTypes } from '../features/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
-import { matchPattern, resolveRegex, slash, toArray } from '../utils/general.ts'
+import {
+  matchPattern,
+  pkgExists,
+  resolveRegex,
+  slash,
+  toArray,
+} from '../utils/general.ts'
 import { createLogger } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
@@ -211,6 +217,7 @@ async function resolveUserConfig(
     globImport = true,
     inlineOnly,
     fixedExtension = platform === 'node',
+    debug = false,
   } = userConfig
 
   const logger = createLogger(logLevel, { customLogger, failOnWarn })
@@ -307,6 +314,11 @@ async function resolveUserConfig(
     inlineOnly = toArray(inlineOnly)
   }
 
+  if (debug) {
+    if (debug === true) debug = {}
+    debug.devtools ??= !!pkgExists('@vitejs/devtools/cli')
+  }
+
   const config: ResolvedConfig = {
     ...userConfig,
     entry,
@@ -345,6 +357,7 @@ async function resolveUserConfig(
     globImport,
     inlineOnly,
     fixedExtension,
+    debug,
   }
 
   return config
