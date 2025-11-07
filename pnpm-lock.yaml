@@ -151,11 +151,11 @@ catalogs:
       specifier: ^1.2.2
       version: 1.2.2
     unconfig-core:
-      specifier: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d
-      version: 7.3.3
+      specifier: ^7.4.0
+      version: 7.4.0
     unrun:
-      specifier: ^0.2.4
-      version: 0.2.4
+      specifier: ^0.2.5
+      version: 0.2.5
 
 overrides:
   rolldown: 1.0.0-beta.46
@@ -206,10 +206,10 @@ importers:
         version: 1.2.2
       unconfig-core:
         specifier: catalog:prod
-        version: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d
+        version: 7.4.0
       unrun:
         specifier: catalog:prod
-        version: 0.2.4
+        version: 0.2.5(synckit@0.11.11)
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -3562,9 +3562,8 @@ packages:
   ufo@1.6.1:
     resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
 
-  unconfig-core@https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d:
-    resolution: {tarball: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d}
-    version: 7.3.3
+  unconfig-core@7.4.0:
+    resolution: {integrity: sha512-3ew7rvES5x2LCZ/QRKV3nQQpq7eFYuszQuvZrhTHxDPKc34QFjRXI17XGiZI+WQTVIXKYeBti4v3LS39NWmhmg==}
 
   unconfig@7.3.3:
     resolution: {integrity: sha512-QCkQoOnJF8L107gxfHL0uavn7WD9b3dpBcFX6HtfQYmjw2YzWxGuFQ0N0J6tE9oguCBJn9KOvfqYDCMPHIZrBA==}
@@ -3627,10 +3626,15 @@ packages:
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
-  unrun@0.2.4:
-    resolution: {integrity: sha512-xELrHyOQ9DCDDTr8kWdPURle9NbCAahMN2teRPH6VXIcAQ2eZ7VZ23S1f6nARiwJddH/XbRyyZvz5/B4TulFfA==}
+  unrun@0.2.5:
+    resolution: {integrity: sha512-TyoYrrJogg7uOGykJGK9+J28zJbVZNB7U7bMr4zs+7LfT4w7/L1GiAhDl/3pJE7QoC21//tH2y3D8kTENeqLPw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
+    peerDependencies:
+      synckit: ^0.11.11
+    peerDependenciesMeta:
+      synckit:
+        optional: true
 
   unstorage@1.17.2:
     resolution: {integrity: sha512-cKEsD6iBWJgOMJ6vW1ID/SYuqNf8oN4yqRk8OYqaVQ3nnkJXOT1PSpaMh2QfzLs78UN5kSNRD2c/mgjT8tX7+w==}
@@ -7363,10 +7367,9 @@ snapshots:
 
   ufo@1.6.1: {}
 
-  unconfig-core@https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d:
+  unconfig-core@7.4.0:
     dependencies:
       '@quansync/fs': 0.1.5
-      jiti: 2.6.1
       quansync: 0.2.11
 
   unconfig@7.3.3:
@@ -7495,10 +7498,11 @@ snapshots:
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
 
-  unrun@0.2.4:
+  unrun@0.2.5(synckit@0.11.11):
     dependencies:
       '@oxc-project/runtime': 0.96.0
       rolldown: 1.0.0-beta.46
+    optionalDependencies:
       synckit: 0.11.11
 
   unstorage@1.17.2:
