@@ -34,7 +34,9 @@ export async function publint(options: ResolvedConfig): Promise<void> {
       `No publint issues found`,
       dim`(${Math.round(performance.now() - t)}ms)`,
     )
+    return
   }
+
   let hasError = false
   for (const message of messages) {
     hasError ||= message.type === 'error'
