@@ -68,7 +68,7 @@ tsdown --no-config
 
 - `auto`（默认）：如果运行时支持，则使用原生方式加载 TypeScript，否则回退到 `unrun`。
 - `native`：通过原生运行时支持加载 TypeScript 配置文件。需要兼容的环境，如最新版 Node.js、Deno 或 Bun。
-- `unrun` _(实验性)_: 使用 [`unrun`](https://gugustinette.github.io/unrun/) 库加载配置文件。要使用此加载器，请先安装 `unrun` 包。
+- `unrun`: 使用 [`unrun`](https://gugustinette.github.io/unrun/) 库加载配置文件。要使用此加载器，请先安装 `unrun` 包。
 
 > [!TIP]
 > Node.js 原生不支持在不指定文件扩展名的情况下导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unrun` 加载器以获得更好的兼容性。
