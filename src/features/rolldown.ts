@@ -133,7 +133,12 @@ export async function resolveInputOptions(
         await importWithError<typeof import('unplugin-unused')>(
           'unplugin-unused',
         )
-      plugins.push(Unused.rolldown(unused === true ? {} : unused))
+      plugins.push(
+        Unused.rolldown({
+          root: cwd,
+          ...(unused === true ? {} : unused),
+        }),
+      )
     }
     if (target) {
       plugins.push(
