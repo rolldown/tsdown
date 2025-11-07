@@ -64,7 +64,7 @@ catalogs:
     tinyexec: ^1.0.1
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
-    unconfig: ^7.3.3
+    unconfig-core: 'https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d'
 
 ignoredBuiltDependencies:
   - rolldown

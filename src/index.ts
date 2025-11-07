@@ -5,6 +5,7 @@ import { green } from 'ansis'
 import { build as rolldownBuild } from 'rolldown'
 import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
+import { setWatch } from './config/config.ts'
 import {
   resolveConfig,
   type DebugOptions,
@@ -51,6 +52,8 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
   for (const [i, config] of configs.entries()) {
     const rebuild = rebuilds[i]
     if (!rebuild) continue
+
+    setWatch()
 
     const watcher = await watchBuild(config, configFiles, rebuild, restart)
     disposeCbs.push(() => watcher.close())

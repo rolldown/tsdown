@@ -18,7 +18,7 @@ cli
   .option('-c, --config <filename>', 'Use a custom config file')
   .option(
     '--config-loader <loader>',
-    'Config loader to use: auto, native, unconfig',
+    'Config loader to use: auto, native, unrun',
     { default: 'auto' },
   )
   .option('--no-config', 'Disable config file')

@@ -153,8 +153,8 @@ catalogs:
     tree-kill:
       specifier: ^1.2.2
       version: 1.2.2
-    unconfig:
-      specifier: ^7.3.3
+    unconfig-core:
+      specifier: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d
       version: 7.3.3
 
 overrides:
@@ -204,9 +204,9 @@ importers:
       tree-kill:
         specifier: catalog:prod
         version: 1.2.2
-      unconfig:
+      unconfig-core:
         specifier: catalog:prod
-        version: 7.3.3
+        version: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -3557,6 +3557,10 @@ packages:
 
   ufo@1.6.1:
     resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
+
+  unconfig-core@https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d:
+    resolution: {tarball: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d}
+    version: 7.3.3
 
   unconfig@7.3.3:
     resolution: {integrity: sha512-QCkQoOnJF8L107gxfHL0uavn7WD9b3dpBcFX6HtfQYmjw2YzWxGuFQ0N0J6tE9oguCBJn9KOvfqYDCMPHIZrBA==}
@@ -7352,6 +7356,12 @@ snapshots:
   uc.micro@2.1.0: {}
 
   ufo@1.6.1: {}
+
+  unconfig-core@https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d:
+    dependencies:
+      '@quansync/fs': 0.1.5
+      jiti: 2.6.1
+      quansync: 0.2.11
 
   unconfig@7.3.3:
     dependencies:

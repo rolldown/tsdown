@@ -106,7 +106,7 @@
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
     "tree-kill": "catalog:prod",
-    "unconfig": "catalog:prod"
+    "unconfig-core": "catalog:prod"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
