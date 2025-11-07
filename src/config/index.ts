@@ -68,7 +68,7 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
         return Promise.all(
           workspaceConfigs
             .filter((config) => !config.workspace || config.entry)
-            .map((config) => resolveUserConfig(config)),
+            .map((config) => resolveUserConfig(config, inlineConfig)),
         )
       }),
     )
@@ -172,6 +172,7 @@ async function resolveWorkspace(
 
 async function resolveUserConfig(
   userConfig: UserConfig,
+  inlineConfig: InlineConfig,
 ): Promise<ResolvedConfig> {
   let {
     entry,
@@ -279,6 +280,7 @@ async function resolveUserConfig(
     const viteUserConfig = await loadViteConfig(
       fromVite === true ? 'vite' : fromVite,
       cwd,
+      inlineConfig.configLoader,
     )
     if (viteUserConfig) {
       const viteAlias = viteUserConfig.resolve?.alias

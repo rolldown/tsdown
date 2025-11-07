@@ -104,9 +104,6 @@ catalogs:
     unplugin-unused:
       specifier: ^0.5.5
       version: 0.5.5
-    unrun:
-      specifier: ^0.2.2
-      version: 0.2.2
   prod:
     '@clack/prompts':
       specifier: ^0.11.0
@@ -153,9 +150,12 @@ catalogs:
     tree-kill:
       specifier: ^1.2.2
       version: 1.2.2
-    unconfig:
-      specifier: ^7.3.3
-      version: 7.3.3
+    unconfig-core:
+      specifier: ^7.4.0
+      version: 7.4.0
+    unrun:
+      specifier: ^0.2.5
+      version: 0.2.5
 
 overrides:
   rolldown: 1.0.0-beta.46
@@ -204,9 +204,12 @@ importers:
       tree-kill:
         specifier: catalog:prod
         version: 1.2.2
-      unconfig:
+      unconfig-core:
         specifier: catalog:prod
-        version: 7.3.3
+        version: 7.4.0
+      unrun:
+        specifier: catalog:prod
+        version: 0.2.5(synckit@0.11.11)
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -271,9 +274,6 @@ importers:
       unplugin-unused:
         specifier: catalog:peer
         version: 0.5.5
-      unrun:
-        specifier: catalog:peer
-        version: 0.2.2
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.20(@types/node@24.10.0)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)
@@ -917,6 +917,10 @@ packages:
 
   '@oxc-project/runtime@0.95.0':
     resolution: {integrity: sha512-qJS5pNepwMGnafO9ayKGz7rfPQgUBuunHpnP1//9Qa0zK3oT3t1EhT+I+pV9MUA+ZKez//OFqxCxf1vijCKb2Q==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+
+  '@oxc-project/runtime@0.96.0':
+    resolution: {integrity: sha512-34lh4o9CcSw09Hx6fKihPu85+m+4pmDlkXwJrLvN5nMq5JrcGhhihVM415zDqT8j8IixO1PYYdQZRN4SwQCncg==}
     engines: {node: ^20.19.0 || >=22.12.0}
 
   '@oxc-project/types@0.74.0':
@@ -3558,6 +3562,9 @@ packages:
   ufo@1.6.1:
     resolution: {integrity: sha512-9a4/uxlTWJ4+a5i0ooc1rU7C7YOw3wT+UGqdeNNHWnOF9qcMBgLRS+4IYUqbczewFx4mLEig6gawh7X6mFlEkA==}
 
+  unconfig-core@7.4.0:
+    resolution: {integrity: sha512-3ew7rvES5x2LCZ/QRKV3nQQpq7eFYuszQuvZrhTHxDPKc34QFjRXI17XGiZI+WQTVIXKYeBti4v3LS39NWmhmg==}
+
   unconfig@7.3.3:
     resolution: {integrity: sha512-QCkQoOnJF8L107gxfHL0uavn7WD9b3dpBcFX6HtfQYmjw2YzWxGuFQ0N0J6tE9oguCBJn9KOvfqYDCMPHIZrBA==}
 
@@ -3619,10 +3626,15 @@ packages:
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
-  unrun@0.2.2:
-    resolution: {integrity: sha512-15M8zHNpKNje4S1SiFfX3KK7dBSU+IMUAARG9vAmJItp/4l181LGxEwa95VuirEjMBrs2WHk0hxxjjvcgrunNg==}
+  unrun@0.2.5:
+    resolution: {integrity: sha512-TyoYrrJogg7uOGykJGK9+J28zJbVZNB7U7bMr4zs+7LfT4w7/L1GiAhDl/3pJE7QoC21//tH2y3D8kTENeqLPw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
+    peerDependencies:
+      synckit: ^0.11.11
+    peerDependenciesMeta:
+      synckit:
+        optional: true
 
   unstorage@1.17.2:
     resolution: {integrity: sha512-cKEsD6iBWJgOMJ6vW1ID/SYuqNf8oN4yqRk8OYqaVQ3nnkJXOT1PSpaMh2QfzLs78UN5kSNRD2c/mgjT8tX7+w==}
@@ -4379,6 +4391,8 @@ snapshots:
     optional: true
 
   '@oxc-project/runtime@0.95.0': {}
+
+  '@oxc-project/runtime@0.96.0': {}
 
   '@oxc-project/types@0.74.0': {}
 
@@ -7353,6 +7367,11 @@ snapshots:
 
   ufo@1.6.1: {}
 
+  unconfig-core@7.4.0:
+    dependencies:
+      '@quansync/fs': 0.1.5
+      quansync: 0.2.11
+
   unconfig@7.3.3:
     dependencies:
       '@quansync/fs': 0.1.5
@@ -7479,10 +7498,11 @@ snapshots:
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
 
-  unrun@0.2.2:
+  unrun@0.2.5(synckit@0.11.11):
     dependencies:
-      '@oxc-project/runtime': 0.95.0
+      '@oxc-project/runtime': 0.96.0
       rolldown: 1.0.0-beta.46
+    optionalDependencies:
       synckit: 0.11.11
 
   unstorage@1.17.2:

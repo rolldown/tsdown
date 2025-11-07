@@ -252,7 +252,7 @@ test('fromVite', async (context) => {
 test('resolve dependency for dts', async (context) => {
   const files = {
     'index.ts': `export type { Options } from 'empathic/walk'
-    export type * from 'unconfig'`,
+    export type * from 'unconfig-core'`,
   }
   const { snapshot } = await testBuild({
     context,
@@ -266,7 +266,7 @@ test('resolve dependency for dts', async (context) => {
       },
     },
   })
-  expect(snapshot).contain(`export * from "unconfig"`)
+  expect(snapshot).contain(`export * from "unconfig-core"`)
 })
 
 test('resolve paths in tsconfig', async (context) => {

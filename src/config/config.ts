@@ -1,10 +1,12 @@
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
-import { loadConfig } from 'unconfig'
+import Debug from 'debug'
+import { createConfigCoreLoader } from 'unconfig-core'
 import { fsStat } from '../utils/fs.ts'
-import { importWithError, toArray } from '../utils/general.ts'
+import { toArray } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import type { InlineConfig, UserConfig, UserConfigExport } from './types.ts'
 import type {
@@ -13,24 +15,29 @@ import type {
   UserConfigExport as ViteUserConfigExport,
 } from 'vite'
 
+const debug = Debug('tsdown:config')
+
 export async function loadViteConfig(
   prefix: string,
   cwd: string,
+  configLoader: InlineConfig['configLoader'],
 ): Promise<ViteUserConfig | undefined> {
-  const {
-    config,
-    sources: [source],
-  } = await loadConfig<ViteUserConfigExport>({
+  const loader = resolveConfigLoader(configLoader)
+  debug('Loading Vite config via loader: ', loader)
+  const parser = createParser(loader)
+  const [result] = await createConfigCoreLoader<ViteUserConfigExport>({
     sources: [
       {
-        files: `${prefix}.config`,
+        files: [`${prefix}.config`],
         extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+        parser,
       },
     ],
     cwd,
-    defaults: {},
-  })
-  if (!source) return
+  }).load()
+  if (!result) return
+
+  const { config, source } = result
   globalLogger.info(`Using Vite config: ${underline(source)}`)
 
   const resolved = await config
@@ -43,7 +50,12 @@ export async function loadViteConfig(
   return resolved
 }
 
-let loaded = false
+const configPrefix = 'tsdown.config'
+let isWatch = false
+
+export function setWatch(): void {
+  isWatch = true
+}
 
 export async function loadConfigFile(
   inlineConfig: InlineConfig,
@@ -72,62 +84,95 @@ export async function loadConfigFile(
     }
   }
 
-  let isNative = false
-  if (!loaded) {
-    if (!inlineConfig.configLoader || inlineConfig.configLoader === 'auto') {
-      isNative = !!(
-        process.features.typescript ||
-        process.versions.bun ||
-        process.versions.deno
-      )
-    } else if (inlineConfig.configLoader === 'native') {
-      isNative = true
+  const loader = resolveConfigLoader(inlineConfig.configLoader)
+  debug('Using config loader:', loader)
+
+  const parser = createParser(loader)
+  const sources = overrideConfig
+    ? [
+        {
+          files: [filePath as string],
+          extensions: [],
+          parser,
+        },
+      ]
+    : [
+        {
+          files: [configPrefix],
+          extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+          parser,
+        },
+        { files: ['package.json'], parser },
+      ]
+
+  const [result] = await createConfigCoreLoader<UserConfigExport>({
+    sources,
+    cwd,
+    stopAt: workspace && path.dirname(workspace),
+  }).load(isWatch)
+
+  let exported: UserConfigExport = []
+  let file: string | undefined
+  if (result) {
+    ;({ config: exported, source: file } = result)
+    globalLogger.info(`Using tsdown config: ${underline(file)}`)
+
+    exported = await exported
+    if (typeof exported === 'function') {
+      exported = await exported(inlineConfig)
     }
   }
 
-  let { config, sources } = await loadConfig
-    .async<UserConfigExport>({
-      sources: overrideConfig
-        ? [{ files: filePath as string, extensions: [] }]
-        : [
-            {
-              files: 'tsdown.config',
-              extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
-              parser:
-                inlineConfig.configLoader === 'unrun'
-                  ? unrunImport
-                  : isNative
-                    ? nativeImport
-                    : 'auto',
-            },
-            {
-              files: 'package.json',
-              extensions: [],
-              rewrite: (config: any) => config?.tsdown,
-            },
-          ],
-      cwd,
-      stopAt: workspace && path.dirname(workspace),
-      defaults: {},
-    })
-    .finally(() => (loaded = true))
-
-  config = await config
-  if (typeof config === 'function') {
-    config = await config(inlineConfig)
-  }
-  config = toArray(config)
-  if (config.length === 0) {
-    config.push({})
+  exported = toArray(exported)
+  if (exported.length === 0) {
+    exported.push({})
   }
 
-  const file = sources[0]
-  if (file) {
-    globalLogger.info(`Using tsdown config: ${underline(file)}`)
-  }
   return {
-    configs: config,
+    configs: exported,
     file,
+  }
+}
+
+type Parser = 'native' | 'unrun'
+
+function resolveConfigLoader(
+  configLoader: InlineConfig['configLoader'] = 'auto',
+): Parser {
+  if (isWatch) {
+    return 'unrun'
+  } else if (configLoader === 'auto') {
+    const nativeTS = !!(
+      process.features.typescript ||
+      process.versions.bun ||
+      process.versions.deno
+    )
+    return nativeTS ? 'native' : 'unrun'
+  } else {
+    return configLoader === 'native' ? 'native' : 'unrun'
+  }
+}
+
+function createParser(loader: Parser) {
+  return async (filepath: string) => {
+    const basename = path.basename(filepath)
+    const isPkgJson = basename === 'package.json'
+    const isJSON =
+      basename === configPrefix || isPkgJson || basename.endsWith('.json')
+    if (isJSON) {
+      const contents = await readFile(filepath, 'utf8')
+      const parsed = JSON.parse(contents)
+      if (isPkgJson) {
+        return parsed?.tsdown
+      }
+      return parsed
+    }
+
+    if (loader === 'native') {
+      return nativeImport(filepath)
+    }
+
+    return unrunImport(filepath)
   }
 }
 
@@ -136,9 +181,9 @@ async function nativeImport(id: string) {
     const cannotFindModule = error?.message?.includes?.('Cannot find module')
     if (cannotFindModule) {
       const configError = new Error(
-        `Failed to load the config file. Try setting the --config-loader CLI flag to \`unconfig\`.\n\n${error.message}`,
+        `Failed to load the config file. Try setting the --config-loader CLI flag to \`unrun\`.\n\n${error.message}`,
+        { cause: error },
       )
-      configError.cause = error
       throw configError
     } else {
       throw error
@@ -149,20 +194,9 @@ async function nativeImport(id: string) {
 }
 
 async function unrunImport(id: string) {
-  const { unrun } = await importWithError<typeof import('unrun')>('unrun')
+  const { unrun } = await import('unrun')
   const { module } = await unrun({
     path: pathToFileURL(id).href,
-  }).catch((error) => {
-    const cannotFindModule = error?.message?.includes?.('Cannot find module')
-    if (cannotFindModule) {
-      const configError = new Error(
-        `Failed to load the config file. \`unrun\` is experimental; try setting the --config-loader CLI flag to \`unconfig\` instead.\n\n${error.message}`,
-      )
-      configError.cause = error
-      throw configError
-    } else {
-      throw error
-    }
   })
   return module
 }

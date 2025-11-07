@@ -1,7 +1,7 @@
 ## index.d.mts
 
 ```mts
-export * from "unconfig";
+export * from "unconfig-core";
 type Options = {
   /**
   * The CWD for the operation.

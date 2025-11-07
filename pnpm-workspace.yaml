@@ -45,7 +45,6 @@ catalogs:
     publint: ^0.3.15
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.5
-    unrun: ^0.2.2
 
   prod:
     '@clack/prompts': ^0.11.0
@@ -64,7 +63,8 @@ catalogs:
     tinyexec: ^1.0.1
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
-    unconfig: ^7.3.3
+    unconfig-core: ^7.4.0
+    unrun: ^0.2.5
 
 ignoredBuiltDependencies:
   - rolldown
