@@ -66,8 +66,7 @@
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
     "unplugin-lightningcss": "^0.4.0",
-    "unplugin-unused": "^0.5.0",
-    "unrun": "^0.2.1"
+    "unplugin-unused": "^0.5.0"
   },
   "peerDependenciesMeta": {
     "@arethetypeswrong/core": {
@@ -87,9 +86,6 @@
     },
     "unplugin-unused": {
       "optional": true
-    },
-    "unrun": {
-      "optional": true
     }
   },
   "dependencies": {
@@ -106,7 +102,8 @@
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
     "tree-kill": "catalog:prod",
-    "unconfig-core": "catalog:prod"
+    "unconfig-core": "catalog:prod",
+    "unrun": "catalog:prod"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
@@ -130,7 +127,6 @@
     "unocss": "catalog:docs",
     "unplugin-lightningcss": "catalog:peer",
     "unplugin-unused": "catalog:peer",
-    "unrun": "catalog:peer",
     "vite": "catalog:docs",
     "vitest": "catalog:dev"
   },

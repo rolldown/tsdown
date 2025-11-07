@@ -104,9 +104,6 @@ catalogs:
     unplugin-unused:
       specifier: ^0.5.5
       version: 0.5.5
-    unrun:
-      specifier: ^0.2.4
-      version: 0.2.4
   prod:
     '@clack/prompts':
       specifier: ^0.11.0
@@ -156,6 +153,9 @@ catalogs:
     unconfig-core:
       specifier: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d
       version: 7.3.3
+    unrun:
+      specifier: ^0.2.4
+      version: 0.2.4
 
 overrides:
   rolldown: 1.0.0-beta.46
@@ -207,6 +207,9 @@ importers:
       unconfig-core:
         specifier: catalog:prod
         version: https://pkg.pr.new/antfu-collective/unconfig/unconfig-core@39b3b0d
+      unrun:
+        specifier: catalog:prod
+        version: 0.2.4
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -271,9 +274,6 @@ importers:
       unplugin-unused:
         specifier: catalog:peer
         version: 0.5.5
-      unrun:
-        specifier: catalog:peer
-        version: 0.2.4
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.20(@types/node@24.10.0)(esbuild@0.25.11)(jiti@2.6.1)(tsx@4.20.6)(yaml@2.8.1)
