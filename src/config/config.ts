@@ -184,8 +184,8 @@ async function nativeImport(id: string) {
     if (cannotFindModule) {
       const configError = new Error(
         `Failed to load the config file. Try setting the --config-loader CLI flag to \`unrun\`.\n\n${error.message}`,
+        { cause: error },
       )
-      configError.cause = error
       throw configError
     } else {
       throw error
