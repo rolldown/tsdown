@@ -148,10 +148,8 @@ function resolveConfigLoader(
       process.versions.deno
     )
     return nativeTS ? 'native' : 'unrun'
-  } else if (configLoader === 'native') {
-    return 'native'
   } else {
-    return 'unrun'
+    return configLoader === 'native' ? 'native' : 'unrun'
   }
 }
 
