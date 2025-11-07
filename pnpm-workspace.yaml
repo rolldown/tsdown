@@ -45,7 +45,7 @@ catalogs:
     publint: ^0.3.15
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.5
-    unrun: ^0.2.2
+    unrun: ^0.2.4
 
   prod:
     '@clack/prompts': ^0.11.0
