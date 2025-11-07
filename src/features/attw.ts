@@ -1,18 +1,17 @@
-import child_process from 'node:child_process'
 import { mkdtemp, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
-import { promisify } from 'node:util'
-import { blue, dim } from 'ansis'
+import { dim } from 'ansis'
 import Debug from 'debug'
+import { exec } from 'tinyexec'
 import { fsRemove } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
+import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { CheckPackageOptions, Problem } from '@arethetypeswrong/core'
 
 const debug = Debug('tsdown:attw')
-const exec = promisify(child_process.exec)
 
 export interface AttwOptions extends CheckPackageOptions {
   /**
@@ -126,22 +125,14 @@ export async function attw(options: ResolvedConfig): Promise<void> {
 
   const tempDir = await mkdtemp(path.join(tmpdir(), 'tsdown-attw-'))
 
-  let attwCore: typeof import('@arethetypeswrong/core')
-  try {
-    attwCore = await importWithError<typeof import('@arethetypeswrong/core')>(
-      '@arethetypeswrong/core',
-    )
-  } catch {
-    options.logger.error(
-      `ATTW check requires ${blue`@arethetypeswrong/core`} to be installed.`,
-    )
-    return
-  }
-
+  const attwCore = await importWithError<
+    typeof import('@arethetypeswrong/core')
+  >('@arethetypeswrong/core')
   try {
     const { stdout: tarballInfo } = await exec(
-      `npm pack --json ----pack-destination ${tempDir}`,
-      { encoding: 'utf8', cwd: options.cwd },
+      'npm',
+      ['pack', '--json', '--pack-destination', tempDir],
+      { nodeOptions: { cwd: options.cwd } },
     )
     const parsed = JSON.parse(tarballInfo)
     if (!Array.isArray(parsed) || !parsed[0]?.filename) {
@@ -170,10 +161,11 @@ export async function attw(options: ResolvedConfig): Promise<void> {
           throw new Error(problemMessage)
         }
 
-        options.logger.warn(problemMessage)
+        options.logger.warn(prettyName(options.name), problemMessage)
       }
     } else {
       options.logger.success(
+        prettyName(options.name),
         `No Are the types wrong problems found`,
         dim`(${Math.round(performance.now() - t)}ms)`,
       )
