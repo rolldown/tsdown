@@ -52,8 +52,16 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     const rebuild = rebuilds[i]
     if (!rebuild) continue
 
-    const watcher = await watchBuild(config, configFiles, rebuild, restart)
-    disposeCbs.push(() => watcher.close())
+    const watcher = await watchBuild(
+      config,
+      configFiles,
+      rebuild.listener,
+      restart,
+    )
+    disposeCbs.push(() => {
+      rebuild.abortController.abort()
+      watcher.close()
+    })
   }
 
   let firstDevtoolsConfig = configs.find(
@@ -106,7 +114,10 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 export async function buildSingle(
   config: ResolvedConfig,
   clean: () => Promise<void>,
-): Promise<(() => Promise<void>) | undefined> {
+): Promise<{
+  listener: (() => Promise<void>) | undefined
+  abortController: AbortController
+}> {
   const { format: formats, dts, watch, onSuccess, logger } = config
   let ab: AbortController | undefined
 
@@ -116,7 +127,10 @@ export async function buildSingle(
 
   await rebuild(true)
   if (watch) {
-    return () => rebuild()
+    return {
+      listener: () => rebuild(),
+      abortController: ab,
+    }
   }
 
   async function rebuild(first?: boolean) {
