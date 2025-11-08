@@ -59,13 +59,13 @@ catalogs:
     hookable: ^5.5.3
     package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.47
-    rolldown-plugin-dts: ^0.17.3
+    rolldown-plugin-dts: ^0.17.4
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.0
-    unrun: ^0.2.5
+    unrun: ^0.2.6
 
 ignoredBuiltDependencies:
   - rolldown
