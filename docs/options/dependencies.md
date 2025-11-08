@@ -70,6 +70,36 @@ export default defineConfig({
 
 In this example, type definitions for `lodash` and all packages under the `@types` namespace will be bundled into the `.d.ts` files.
 
+### Resolver Option
+
+When bundling complex third-party types, you may encounter cases where the default resolver (Oxc) cannot handle certain scenarios. For example, the types for `@babel/generator` are located in the `@types/babel__generator` package, which may not be resolved correctly by Oxc.
+
+To address this, you can set the `resolver` option to `tsc` in your configuration. This uses the native TypeScript resolver, which is slower but much more compatible with complex type setups:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    resolve: ['@babel/generator'],
+    resolver: 'tsc',
+  },
+})
+```
+
+If you want to bundle **all** types, you can set `resolve: true`. However, it is strongly recommended to also set `resolver: 'tsc'` to minimize unexpected issues:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    resolve: true,
+    resolver: 'tsc',
+  },
+})
+```
+
 ## Summary
 
 - **Default Behavior**:
@@ -81,5 +111,6 @@ In this example, type definitions for `lodash` and all packages under the `@type
 - **Declaration Files**:
   - Dependencies are not bundled by default.
   - Use `dts.resolve` to include specific dependency types in `.d.ts` files.
+  - Use `resolver: 'tsc'` for better compatibility with complex third-party types.
 
 By understanding and customizing dependency handling, you can ensure your library is optimized for both size and usability.

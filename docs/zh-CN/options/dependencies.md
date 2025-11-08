@@ -70,6 +70,36 @@ export default defineConfig({
 
 在此示例中，`lodash` 及所有 `@types` 命名空间下的包的类型定义会被打包进 `.d.ts` 文件。
 
+### 解析器选项
+
+在打包复杂的第三方类型时，您可能会遇到默认解析器（Oxc）无法处理某些场景。例如，`@babel/generator` 的类型定义实际位于 `@types/babel__generator` 包中，Oxc 可能无法正确解析。
+
+为了解决此问题，您可以在配置中将 `resolver` 选项设置为 `tsc`，这样会使用原生 TypeScript 解析器，虽然速度较慢，但对复杂类型兼容性更好：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    resolve: ['@babel/generator'],
+    resolver: 'tsc',
+  },
+})
+```
+
+如果您希望打包**所有**类型，可以将 `resolve: true`，但强烈建议同时设置 `resolver: 'tsc'` 以减少意外问题：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    resolve: true,
+    resolver: 'tsc',
+  },
+})
+```
+
 ## 总结
 
 - **默认行为**：
@@ -81,5 +111,6 @@ export default defineConfig({
 - **声明文件**：
   - 默认不打包依赖。
   - 使用 `dts.resolve` 将特定依赖的类型包含进 `.d.ts` 文件。
+  - 使用 `resolver: 'tsc'` 可提升复杂第三方类型的兼容性。
 
 通过理解和自定义依赖处理，您可以确保您的库在体积和可用性方面都得到优化。
