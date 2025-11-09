@@ -1,6 +1,7 @@
 import path from 'node:path'
-import { glob } from 'tinyglobby'
+import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor } from '../utils/fs.ts'
+import { slash } from '../utils/general.ts'
 import { generateColor, prettyName, type Logger } from '../utils/logger.ts'
 import type { UserConfig } from '../config/index.ts'
 
@@ -46,15 +47,28 @@ export async function toObjectEntry(
     return entry
   }
 
-  const resolvedEntry = (
-    await glob(entry, { cwd, expandDirectories: false })
-  ).map((file) => path.resolve(cwd, file))
+  const isGlob = entry.some((e) => isDynamicPattern(e))
+  let resolvedEntry: string[]
+  if (isGlob) {
+    resolvedEntry = (
+      await glob(entry, {
+        cwd,
+        expandDirectories: false,
+        absolute: true,
+      })
+    ).map((file) => path.resolve(file))
+  } else {
+    resolvedEntry = entry
+  }
+
   const base = lowestCommonAncestor(...resolvedEntry)
   return Object.fromEntries(
     resolvedEntry.map((file) => {
       const relative = path.relative(base, file)
       return [
-        relative.slice(0, relative.length - path.extname(relative).length),
+        slash(
+          relative.slice(0, relative.length - path.extname(relative).length),
+        ),
         file,
       ]
     }),
