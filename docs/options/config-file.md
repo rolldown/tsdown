@@ -68,7 +68,7 @@ This is useful if you want to rely solely on command-line options or default set
 
 - `auto` (default): Utilizes native runtime loading for TypeScript if supported; otherwise, defaults to `unrun`.
 - `native`: Loads TypeScript configuration files using native runtime support. Requires a compatible environment, such as the latest Node.js, Deno, or Bun.
-- `unrun`: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library. Install the `unrun` package to use this loader.
+- `unrun`: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library. It provides more powerful and flexible loading capabilities.
 
 > [!TIP]
 > Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider using the `unrun` loader for seamless compatibility.
