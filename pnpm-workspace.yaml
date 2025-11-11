@@ -3,8 +3,7 @@ packages:
   - packages/*
 
 overrides:
-  '@unocss/eslint-plugin': 66.5.4
-  oxc-parser: ^0.96.0
+  oxc-parser: ^0.97.0
   rolldown: catalog:prod
   vite: catalog:docs
 
@@ -26,14 +25,14 @@ catalogs:
 
   docs:
     '@shikijs/vitepress-twoslash': ^3.15.0
-    '@unocss/eslint-plugin': ^66.5.5
+    '@unocss/eslint-plugin': 66.5.4
     '@vueuse/core': ^14.0.0
-    oxc-minify: ^0.96.0
+    oxc-minify: ^0.97.0
     typedoc: ^0.28.14
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
-    unocss: ^66.5.5
-    vite: npm:rolldown-vite@^7.2.3
+    unocss: ^66.5.6
+    vite: npm:rolldown-vite@^7.2.4
     vitepress: ^2.0.0-alpha.12
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.9.1
@@ -56,16 +55,16 @@ catalogs:
     empathic: ^2.0.0
     giget: ^2.0.0
     hookable: ^5.5.3
-    obug: ^0.1.0
+    obug: ^0.1.1
     package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.49
-    rolldown-plugin-dts: ^0.17.5
+    rolldown-plugin-dts: ^0.17.6
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
-    unrun: ^0.2.7
+    unrun: ^0.2.8
 
 ignoredBuiltDependencies:
   - rolldown
