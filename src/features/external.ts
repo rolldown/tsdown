@@ -1,7 +1,7 @@
 import { isBuiltin } from 'node:module'
 import path from 'node:path'
 import { blue, underline } from 'ansis'
-import Debug from 'debug'
+import Debug from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { shimFile } from '../index.ts'
 import { matchPattern } from '../utils/general.ts'

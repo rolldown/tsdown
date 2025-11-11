@@ -1,7 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { blue } from 'ansis'
-import Debug from 'debug'
+import Debug from 'obug'
 import { glob } from 'tinyglobby'
 import { resolveClean } from '../features/clean.ts'
 import { resolveEntry } from '../features/entry.ts'

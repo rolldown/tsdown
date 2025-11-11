@@ -1,4 +1,4 @@
-import Debug from 'debug'
+import Debug from 'obug'
 import { resolveComma, toArray } from '../utils/general.ts'
 import type { StartOptions } from '@vitejs/devtools/cli-commands'
 import type { InputOptions } from 'rolldown'

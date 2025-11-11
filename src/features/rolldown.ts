@@ -2,7 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import util, { type InspectOptionsStylized } from 'node:util'
-import Debug from 'debug'
+import Debug from 'obug'
 import {
   VERSION as rolldownVersion,
   type BuildOptions,

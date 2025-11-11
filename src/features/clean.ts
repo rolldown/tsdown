@@ -1,5 +1,5 @@
 import path from 'node:path'
-import Debug from 'debug'
+import Debug from 'obug'
 import { glob } from 'tinyglobby'
 import { fsRemove } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
-import Debug from 'debug'
 import { up as findPackage } from 'empathic/package'
+import Debug from 'obug'
 import type { Format, NormalizedFormat } from '../config/index.ts'
 import { resolveComma, toArray } from './general.ts'
 import type { PackageJson } from 'pkg-types'

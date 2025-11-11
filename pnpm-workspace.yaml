@@ -13,7 +13,6 @@ catalogs:
     '@sxzz/eslint-config': ^7.2.10
     '@sxzz/prettier-config': ^2.2.4
     '@sxzz/test-utils': ^0.5.12
-    '@types/debug': ^4.1.12
     '@types/node': ^24.10.0
     '@types/semver': ^7.7.1
     bumpp: ^10.3.1
@@ -53,11 +52,11 @@ catalogs:
     ansis: ^4.2.0
     cac: ^6.7.14
     chokidar: ^4.0.3
-    debug: ^4.4.3
     diff: ^8.0.2
     empathic: ^2.0.0
     giget: ^2.0.0
     hookable: ^5.5.3
+    obug: ^0.1.0
     package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.49
     rolldown-plugin-dts: ^0.17.5

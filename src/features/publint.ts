@@ -1,7 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { dim } from 'ansis'
-import Debug from 'debug'
+import Debug from 'obug'
 import { importWithError } from '../utils/general.ts'
 import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
