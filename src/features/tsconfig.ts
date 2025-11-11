@@ -5,7 +5,7 @@ import { fsStat } from '../utils/fs.ts'
 import { generateColor, prettyName, type Logger } from '../utils/logger.ts'
 import type { UserConfig } from '../config/index.ts'
 
-export function findTsconfig(
+function findTsconfig(
   cwd?: string,
   name: string = 'tsconfig.json',
 ): string | false {

@@ -104,7 +104,7 @@ Imported by ${underline(importer)}`,
 /*
  * Production deps should be excluded from the bundle
  */
-export function getProductionDeps(pkg: PackageJson): Set<string> {
+function getProductionDeps(pkg: PackageJson): Set<string> {
   return new Set([
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),

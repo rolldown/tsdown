@@ -1,4 +1,4 @@
-export const zhCN = {
+const zhCN = {
   // nav
   Home: '首页',
   Guide: '指南',

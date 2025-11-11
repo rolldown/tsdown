@@ -64,7 +64,7 @@ export async function getBuildOptions(
   return rolldownConfig
 }
 
-export async function resolveInputOptions(
+async function resolveInputOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
   cjsDts: boolean,
@@ -207,7 +207,7 @@ export async function resolveInputOptions(
   return inputOptions
 }
 
-export async function resolveOutputOptions(
+async function resolveOutputOptions(
   inputOptions: InputOptions,
   config: ResolvedConfig,
   format: NormalizedFormat,

@@ -3,14 +3,14 @@ packages:
   - packages/*
 
 overrides:
-  rolldown: 'catalog:prod'
-  vite: 'catalog:docs'
   '@unocss/eslint-plugin': 66.5.4
   oxc-parser: ^0.96.0
+  rolldown: catalog:prod
+  vite: catalog:docs
 
 catalogs:
   dev:
-    '@sxzz/eslint-config': ^7.2.9
+    '@sxzz/eslint-config': ^7.2.10
     '@sxzz/prettier-config': ^2.2.4
     '@sxzz/test-utils': ^0.5.12
     '@types/debug': ^4.1.12
