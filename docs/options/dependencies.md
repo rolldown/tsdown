@@ -18,6 +18,20 @@ By default, `tsdown` **does not bundle dependencies** listed in your `package.js
 
 In other words, only the `devDependencies` and phantom dependencies that are actually referenced in your project will be included in the bundle.
 
+## Skipping Node Modules Bundling
+
+If you want to **skip resolving and bundling all dependencies from `node_modules`**, you can enable the `skipNodeModulesBundle` option in your configuration:
+
+```ts
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  skipNodeModulesBundle: true,
+})
+```
+
+This will prevent `tsdown` from parsing and bundling any dependencies from `node_modules`, regardless of how they are referenced in your code.
+
 ## Customizing Dependency Handling
 
 `tsdown` provides two options to override the default behavior:
@@ -108,6 +122,7 @@ export default defineConfig({
 - **Customization**:
   - Use `external` to mark specific dependencies as external.
   - Use `noExternal` to force specific dependencies to be bundled.
+  - Use `skipNodeModulesBundle` to skip resolving and bundling all dependencies from `node_modules`.
 - **Declaration Files**:
   - Dependencies are not bundled by default.
   - Use `dts.resolve` to include specific dependency types in `.d.ts` files.

@@ -18,6 +18,20 @@
 
 换句话说，只有项目中实际引用的 `devDependencies` 和幻影依赖才会被包含进打包文件。
 
+## 跳过 `node_modules` 打包
+
+如果您希望**跳过解析和打包所有来自 `node_modules` 的依赖**，可以在配置中启用 `skipNodeModulesBundle` 选项：
+
+```ts
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  skipNodeModulesBundle: true,
+})
+```
+
+这样，无论您的代码如何引用，`tsdown` 都不会解析或打包任何来自 `node_modules` 的依赖。
+
 ## 自定义依赖处理
 
 `tsdown` 提供了两个选项来覆盖默认行为：
@@ -108,6 +122,7 @@ export default defineConfig({
 - **自定义**：
   - 使用 `external` 将特定依赖标记为外部依赖。
   - 使用 `noExternal` 强制将特定依赖打包。
+  - 使用 `skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。
 - **声明文件**：
   - 默认不打包依赖。
   - 使用 `dts.resolve` 将特定依赖的类型包含进 `.d.ts` 文件。
