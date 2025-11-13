@@ -2,7 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import util, { type InspectOptionsStylized } from 'node:util'
-import Debug from 'obug'
+import { createDebug } from 'obug'
 import {
   VERSION as rolldownVersion,
   type BuildOptions,
@@ -29,7 +29,7 @@ import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
 
-const debug = Debug('tsdown:rolldown')
+const debug = createDebug('tsdown:rolldown')
 
 export async function getBuildOptions(
   config: ResolvedConfig,

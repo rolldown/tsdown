@@ -1,12 +1,12 @@
 import path from 'node:path'
-import Debug from 'obug'
+import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
 import { fsRemove } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import type { ResolvedConfig, UserConfig } from '../config/index.ts'
 
-const debug = Debug('tsdown:clean')
+const debug = createDebug('tsdown:clean')
 
 const RE_LAST_SLASH = /[/\\]$/
 

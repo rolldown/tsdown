@@ -3,7 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
-import Debug from 'obug'
+import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
 import { fsStat } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
@@ -15,7 +15,7 @@ import type {
   UserConfigExport as ViteUserConfigExport,
 } from 'vite'
 
-const debug = Debug('tsdown:config')
+const debug = createDebug('tsdown:config')
 
 export async function loadViteConfig(
   prefix: string,

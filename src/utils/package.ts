@@ -1,11 +1,11 @@
 import { readFile } from 'node:fs/promises'
 import { up as findPackage } from 'empathic/package'
-import Debug from 'obug'
+import { createDebug } from 'obug'
 import type { Format, NormalizedFormat } from '../config/index.ts'
 import { resolveComma, toArray } from './general.ts'
 import type { PackageJson } from 'pkg-types'
 
-const debug = Debug('tsdown:package')
+const debug = createDebug('tsdown:package')
 
 export async function readPackageJson(
   dir: string,

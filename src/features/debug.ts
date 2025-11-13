@@ -1,9 +1,9 @@
-import Debug from 'obug'
+import { createDebug, enable, namespaces } from 'obug'
 import { resolveComma, toArray } from '../utils/general.ts'
 import type { StartOptions } from '@vitejs/devtools/cli-commands'
 import type { InputOptions } from 'rolldown'
 
-const debug = Debug('tsdown:debug')
+const debug = createDebug('tsdown:debug')
 
 export interface DebugOptions extends NonNullable<InputOptions['debug']> {
   /**
@@ -35,9 +35,9 @@ export function enableDebugLog(cliOptions: Record<string, any>): void {
       .join(',')
   }
 
-  const enabled = Debug.disable()
-  if (enabled) namespace += `,${enabled}`
+  const ns = namespaces()
+  if (ns) namespace += `,${ns}`
 
-  Debug.enable(namespace)
+  enable(namespace)
   debug('Debugging enabled', namespace)
 }

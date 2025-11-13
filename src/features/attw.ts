@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { dim } from 'ansis'
-import Debug from 'obug'
+import { createDebug } from 'obug'
 import { exec } from 'tinyexec'
 import { fsRemove } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
@@ -11,7 +11,7 @@ import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { CheckPackageOptions, Problem } from '@arethetypeswrong/core'
 
-const debug = Debug('tsdown:attw')
+const debug = createDebug('tsdown:attw')
 
 export interface AttwOptions extends CheckPackageOptions {
   /**

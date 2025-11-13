@@ -3,14 +3,14 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import { brotliCompress, gzip } from 'node:zlib'
 import { bold, dim, green } from 'ansis'
-import Debug from 'obug'
+import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { formatBytes } from '../utils/format.ts'
 import { noop } from '../utils/general.ts'
 import { prettyFormat, prettyName, type Logger } from '../utils/logger.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
-const debug = Debug('tsdown:report')
+const debug = createDebug('tsdown:report')
 const brotliCompressAsync = promisify(brotliCompress)
 const gzipAsync = promisify(gzip)
 
