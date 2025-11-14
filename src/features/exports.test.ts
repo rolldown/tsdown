@@ -1,7 +1,8 @@
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
-import { generateExports } from './exports.ts'
+import { generateExports, getIntendation } from './exports.ts'
 import type { OutputChunk } from 'rolldown'
 
 const cwd = process.cwd()
@@ -401,6 +402,30 @@ describe.concurrent('generateExports', () => {
     `)
   })
 })
+
+describe.concurrent('getIntendation', () => {
+  test('two spaces', async ({ expect }) => {
+    const contents = await indentJson(FAKE_PACKAGE_JSON.packageJsonPath, 2)
+    expect(getIntendation(contents)).toBe(2)
+  })
+  test('four spaces', async ({ expect }) => {
+    const contents = await indentJson(FAKE_PACKAGE_JSON.packageJsonPath, 4)
+    expect(getIntendation(contents)).toBe(4)
+  })
+  test('tab', async ({ expect }) => {
+    const contents = await indentJson(FAKE_PACKAGE_JSON.packageJsonPath, '\t')
+    expect(getIntendation(contents)).toBe('\t')
+  })
+})
+
+async function indentJson(
+  pathToJson: string,
+  indentation: string | number,
+): Promise<string> {
+  const original = await readFile(pathToJson, 'utf8')
+  const contents = JSON.stringify(JSON.parse(original), null, indentation)
+  return contents
+}
 
 function genChunk(fileName: string) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
