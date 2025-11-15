@@ -65,14 +65,14 @@ export async function writeExports(
   }
 
   const original = await readFile(pkg.packageJsonPath, 'utf8')
-  let contents = JSON.stringify(updatedPkg, null, detectIndentation(original))
+  let contents = JSON.stringify(updatedPkg, null, detectIndent(original))
   if (original.endsWith('\n')) contents += '\n'
   if (contents !== original) {
     await writeFile(pkg.packageJsonPath, contents, 'utf8')
   }
 }
 
-export function detectIndentation(jsonText: string): string | number {
+export function detectIndent(jsonText: string): string | number {
   const lines = jsonText.split(/\r?\n/)
 
   for (const line of lines) {

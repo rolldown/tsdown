@@ -1,7 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
-import { detectIndentation, generateExports } from './exports.ts'
+import { detectIndent, generateExports } from './exports.ts'
 import type { OutputChunk } from 'rolldown'
 
 const cwd = process.cwd()
@@ -402,21 +402,21 @@ describe.concurrent('generateExports', () => {
   })
 })
 
-describe('detectIndentation', () => {
+describe('detectIndent', () => {
   test('two spaces', ({ expect }) => {
-    expect(detectIndentation(stringifyJson(2))).toBe(2)
+    expect(detectIndent(stringifyJson(2))).toBe(2)
   })
   test('four spaces', ({ expect }) => {
-    expect(detectIndentation(stringifyJson(4))).toBe(4)
+    expect(detectIndent(stringifyJson(4))).toBe(4)
   })
   test('tab', ({ expect }) => {
-    expect(detectIndentation(stringifyJson('\t'))).toBe('\t')
+    expect(detectIndent(stringifyJson('\t'))).toBe('\t')
   })
   test('empty', ({ expect }) => {
-    expect(detectIndentation('')).toBe(2)
+    expect(detectIndent('')).toBe(2)
   })
   test('empty line', ({ expect }) => {
-    expect(detectIndentation('{\n\n  "foo": 42 }')).toBe(2)
+    expect(detectIndent('{\n\n  "foo": 42 }')).toBe(2)
   })
 })
 
