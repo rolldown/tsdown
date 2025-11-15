@@ -65,15 +65,27 @@ export async function writeExports(
   }
 
   const original = await readFile(pkg.packageJsonPath, 'utf8')
-  let contents = JSON.stringify(
-    updatedPkg,
-    null,
-    original.includes('\t') ? '\t' : 2,
-  )
+  let contents = JSON.stringify(updatedPkg, null, detectIndent(original))
   if (original.endsWith('\n')) contents += '\n'
   if (contents !== original) {
     await writeFile(pkg.packageJsonPath, contents, 'utf8')
   }
+}
+
+export function detectIndent(jsonText: string): string | number {
+  const lines = jsonText.split(/\r?\n/)
+
+  for (const line of lines) {
+    const match = line.match(/^(\s+)\S/)
+    if (!match) continue
+
+    if (match[1].includes('\t')) {
+      return '\t'
+    }
+    return match[1].length
+  }
+
+  return 2
 }
 
 type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
