@@ -35,7 +35,7 @@ catalogs:
     vite: npm:rolldown-vite@^7.2.5
     vitepress: ^2.0.0-alpha.13
     vitepress-plugin-group-icons: ^1.6.5
-    vitepress-plugin-llms: ^1.9.1
+    vitepress-plugin-llms: ^1.9.2
     vue: ^3.5.24
     vue-tsc: ^3.1.4
 
@@ -64,7 +64,7 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
-    unrun: ^0.2.9
+    unrun: ^0.2.10
 
 ignoredBuiltDependencies:
   - rolldown
