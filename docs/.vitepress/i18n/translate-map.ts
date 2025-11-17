@@ -33,6 +33,7 @@ const zhCN = {
   'Vue Support': 'Vue 支持',
   'React Support': 'React 支持',
   'Solid Support': 'Solid 支持',
+  'Svelte Support': 'Svelte 支持',
 
   Advanced: '高级功能',
   'Rolldown Options': 'Rolldown 选项',
