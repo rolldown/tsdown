@@ -10,7 +10,7 @@ For the fastest way to get started, use the React component starter template. Th
 npx create-tsdown@latest -t react
 ```
 
-If you plan to use React Compiler, you can directly scaffold the dedicated template:
+To use React Compiler, you can quickly set up a project with the dedicated template:
 
 ```bash
 npx create-tsdown@latest -t react-compiler
@@ -71,11 +71,11 @@ export default defineConfig({
 
 :::
 
-## Enable React Compiler
+## Enabling React Compiler
 
-React Compiler is a new build-time tool that automatically optimizes your React application. React recommends library authors use React Compiler to precompile their code.
+React Compiler is an innovative build-time tool that automatically optimizes your React applications. React recommends that library authors use React Compiler to precompile their code for improved performance.
 
-React Compiler is currently available only as a Babel plugin. If you plan to use React Compiler, you can scaffold the `react-compiler` template above, or integrate manually:
+Currently, React Compiler is available only as a Babel plugin. To get started, you can either scaffold the `react-compiler` template as shown above, or integrate it manually:
 
 ```bash
 pnpm add -D @rollup/plugin-babel babel-plugin-react-compiler
