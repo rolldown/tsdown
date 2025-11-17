@@ -82,8 +82,8 @@ pnpm add -D @rollup/plugin-babel babel-plugin-react-compiler
 ```
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
 import pluginBabel from '@rollup/plugin-babel'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   plugins: [
