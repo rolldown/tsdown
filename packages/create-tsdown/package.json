@@ -4,7 +4,7 @@
   "description": "Create a new tsdown project",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/rolldown/tsdown/tree/main/packages/create#readme",
+  "homepage": "http://tsdown.dev/",
   "bugs": {
     "url": "https://github.com/rolldown/tsdown/issues"
   },
