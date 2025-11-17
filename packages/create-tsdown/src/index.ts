@@ -17,6 +17,7 @@ export const templateOptions = [
   { value: 'minimal', label: 'Minimal' },
   { value: 'vue', label: 'Vue' },
   { value: 'react', label: 'React' },
+  { value: 'react-compiler', label: 'React with React Compiler' },
   { value: 'solid', label: 'Solid' },
   { value: 'svelte', label: 'Svelte' },
 ] as const
