@@ -10,6 +10,12 @@
 npx create-tsdown@latest -t react
 ```
 
+如果你计划使用 React Compiler，可以直接使用对应模板：
+
+```bash
+npx create-tsdown@latest -t react-compiler
+```
+
 ## 最小示例
 
 要为 React 库配置 `tsdown`，你只需使用标准的 `tsdown.config.ts`：
@@ -64,3 +70,32 @@ export default defineConfig({
 ```
 
 :::
+
+## 启用 React Compiler
+
+React Compiler 是一个新的构建时工具，它可以自动优化你的 React 应用。React 官方建议库作者启用 React Compiler，在发布前预编译代码。
+
+React Compiler 目前仅以 Babel 插件的形式提供。如果你计划使用 React Compiler，可以直接使用上面的 `react-compiler` 模板；或按需手动集成：
+
+```bash
+pnpm add -D @rollup/plugin-babel babel-plugin-react-compiler
+```
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+import pluginBabel from '@rollup/plugin-babel'
+
+export default defineConfig({
+  plugins: [
+    pluginBabel({
+      babelHelpers: 'bundled',
+      parserOpts: {
+        sourceType: 'module',
+        plugins: ['jsx', 'typescript'],
+      },
+      plugins: ['babel-plugin-react-compiler'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    }),
+  ],
+})
+```
