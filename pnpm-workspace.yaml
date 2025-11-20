@@ -3,14 +3,13 @@ packages:
   - packages/*
 
 overrides:
-  oxc-parser: ^0.97.0
   rolldown: catalog:prod
   vite: catalog:docs
 
 catalogs:
   dev:
-    '@sxzz/eslint-config': ^7.2.10
-    '@sxzz/prettier-config': ^2.2.4
+    '@sxzz/eslint-config': ^7.3.0
+    '@sxzz/prettier-config': ^2.2.5
     '@sxzz/test-utils': ^0.5.12
     '@types/node': ^24.10.1
     '@types/semver': ^7.7.1
@@ -21,21 +20,21 @@ catalogs:
     prettier: ^3.6.2
     rolldown-plugin-require-cjs: ^0.3.1
     typescript: ~5.9.3
-    vitest: ^4.0.9
+    vitest: ^4.0.10
 
   docs:
     '@shikijs/vitepress-twoslash': ^3.15.0
     '@unocss/eslint-plugin': 66.5.4
     '@vueuse/core': ^14.0.0
-    oxc-minify: ^0.97.0
+    oxc-minify: ^0.98.0
     typedoc: ^0.28.14
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
-    unocss: ^66.5.6
-    vite: npm:rolldown-vite@^7.2.5
+    unocss: ^66.5.7
+    vite: npm:rolldown-vite@^7.2.6
     vitepress: ^2.0.0-alpha.13
     vitepress-plugin-group-icons: ^1.6.5
-    vitepress-plugin-llms: ^1.9.2
+    vitepress-plugin-llms: ^1.9.3
     vue: ^3.5.24
     vue-tsc: ^3.1.4
 
@@ -55,16 +54,16 @@ catalogs:
     empathic: ^2.0.0
     giget: ^2.0.0
     hookable: ^5.5.3
-    obug: ^2.0.0
+    obug: ^2.1.0
     package-manager-detector: ^1.5.0
-    rolldown: 1.0.0-beta.50
-    rolldown-plugin-dts: ^0.17.7
+    rolldown: 1.0.0-beta.51
+    rolldown-plugin-dts: ^0.18.0
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
-    unrun: ^0.2.10
+    unrun: ^0.2.11
 
 ignoredBuiltDependencies:
   - rolldown
