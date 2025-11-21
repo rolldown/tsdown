@@ -598,3 +598,21 @@ test('dts not enabled when exports["."] is string instead of object', async (con
   expect(outputFiles).not.toContain('index.d.mts')
   expect(outputFiles).toContain('index.mjs')
 })
+
+test('incorrect config', async (context) => {
+  const files = {
+    'tsdown.config.ts': `export default [() => ({})]`,
+  }
+  const { testDir } = await writeFixtures(context, files)
+  const restoreCwd = chdir(testDir)
+  await expect(
+    resolveConfig({
+      config: testDir,
+      logLevel: 'silent',
+    }),
+  ).rejects.toMatchInlineSnapshot(`
+    [Error: Function should not be nested within multiple tsdown configurations. It must be at the top level.
+    Example: export default defineConfig(() => [...])]
+  `)
+  restoreCwd()
+})

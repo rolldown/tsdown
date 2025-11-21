@@ -128,6 +128,12 @@ export async function loadConfigFile(
     exported.push({})
   }
 
+  if (exported.some((config) => typeof config === 'function')) {
+    throw new Error(
+      'Function should not be nested within multiple tsdown configurations. It must be at the top level.\nExample: export default defineConfig(() => [...])',
+    )
+  }
+
   return {
     configs: exported,
     file,
