@@ -53,8 +53,8 @@ bun add -D rollup-plugin-svelte svelte svelte-preprocess
 - **`rollup-plugin-svelte`** 会编译 `.svelte` 单文件组件。
 - **`tsdown`** 会将编译后的产物与您的 TypeScript 源码一同打包。
 
-::: warning
+:::info
 
-为 Svelte 组件生成 `.d.ts` 通常需要集成 `svelte2tsx`。推荐使用 Svelte 专用模板，其中包含基于 `svelte2tsx` 的声明文件生成步骤，在打包后输出声明文件。
+为 Svelte 组件生成 `.d.ts` 通常需要集成 [`svelte2tsx`](https://www.npmjs.com/package/svelte2tsx)。推荐使用 Svelte 专用模板，其中包含基于 `svelte2tsx` 的声明文件生成步骤，在打包后输出声明文件。
 
 :::

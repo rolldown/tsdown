@@ -53,8 +53,8 @@ bun add -D rollup-plugin-svelte svelte svelte-preprocess
 - **`rollup-plugin-svelte`** compiles `.svelte` single-file components.
 - **`tsdown`** bundles the compiled output with your TypeScript sources.
 
-::: warning
+:::info
 
-Generating `.d.ts` for Svelte components typically requires integrating `svelte2tsx`. We recommend using the dedicated Svelte template, which includes an emission step based on `svelte2tsx` to generate declarations after bundling.
+Generating `.d.ts` for Svelte components typically requires integrating [`svelte2tsx`](https://www.npmjs.com/package/svelte2tsx). We recommend using the dedicated Svelte template, which includes an emission step based on `svelte2tsx` to generate declarations after bundling.
 
 :::
