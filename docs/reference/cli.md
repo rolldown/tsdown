@@ -1,6 +1,17 @@
 # Command Line Interface
 
-All CLI flags can also be set in the configuration file for better reusability and maintainability in complex projects. Refer to the [Config File](../options/config-file.md) documentation for more details.
+All CLI flags can also be set in the configuration file, which improves reusability and maintainability for complex projects. Conversely, any option can be overridden by CLI flags, even if not explicitly listed on this page. For more details, see the [Config File](../options/config-file.md) documentation.
+
+## CLI Flag Patterns
+
+The mapping between CLI flags and configuration options follows these rules:
+
+- `--foo` sets `foo: true`
+- `--no-foo` sets `foo: false`
+- `--foo.bar` sets `foo: { bar: true }`
+- `--format esm --format cjs` sets `format: ['esm', 'cjs']`
+
+This flexible pattern allows you to easily control and override configuration options directly from the command line.
 
 ## `[...files]`
 
