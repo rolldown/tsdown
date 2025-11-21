@@ -24,13 +24,13 @@ catalogs:
 
   docs:
     '@shikijs/vitepress-twoslash': ^3.15.0
-    '@unocss/eslint-plugin': 66.5.4
+    '@unocss/eslint-plugin': ^66.5.9
     '@vueuse/core': ^14.0.0
     oxc-minify: ^0.98.0
     typedoc: ^0.28.14
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
-    unocss: ^66.5.7
+    unocss: ^66.5.9
     vite: npm:rolldown-vite@^7.2.6
     vitepress: ^2.0.0-alpha.13
     vitepress-plugin-group-icons: ^1.6.5
