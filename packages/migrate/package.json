@@ -1,7 +1,7 @@
 {
-  "name": "create-tsdown",
-  "version": "0.17.0-beta.1",
-  "description": "Create a new tsdown project",
+  "name": "tsdown-migrate",
+  "version": "0.16.7",
+  "description": "A CLI tool to help migrate your project to tsdown.",
   "type": "module",
   "license": "MIT",
   "homepage": "http://tsdown.dev/",
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rolldown/tsdown.git",
-    "directory": "packages/create-tsdown"
+    "directory": "packages/migrate"
   },
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "funding": "https://github.com/sponsors/sxzz",
@@ -35,7 +35,7 @@
     }
   },
   "bin": {
-    "create-tsdown": "./dist/run.mjs"
+    "tsdown-migrate": "./dist/run.mjs"
   },
   "publishConfig": {
     "access": "public"
@@ -44,10 +44,11 @@
     "dev": "node ./src/run.ts"
   },
   "dependencies": {
-    "@clack/prompts": "catalog:create",
+    "@antfu/ni": "catalog:migrate",
+    "ansis": "catalog:prod",
     "cac": "catalog:prod",
-    "giget": "catalog:create",
-    "package-manager-detector": "catalog:prod"
+    "consola": "catalog:migrate",
+    "diff": "catalog:migrate"
   },
   "engines": {
     "node": ">=20.19.0"

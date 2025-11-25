@@ -4,18 +4,15 @@ import { cac } from 'cac'
 import pkg from '../package.json' with { type: 'json' }
 import { create, templateOptions, type Options } from './index.ts'
 
-const cli = cac('create-tsdown')
-cli.help().version(pkg.version)
+const cli = cac(pkg.name).version(pkg.version).help()
 
 cli
   .command('[path]', 'Create a tsdown project', {
     ignoreOptionDefaultValue: true,
-    allowUnknownOptions: true,
   })
   .option(
     '-t, --template <template>',
     `Available templates: ${templateOptions.map((option) => option.value).join(', ')}`,
-    { default: 'default' },
   )
   .action((path: string | undefined, options: Options) => create(path, options))
 
