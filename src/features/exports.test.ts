@@ -1,7 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
-import { detectIndent, generateExports } from './exports.ts'
+import { generateExports } from './exports.ts'
 import type { OutputChunk } from 'rolldown'
 
 const cwd = process.cwd()
@@ -401,29 +401,6 @@ describe.concurrent('generateExports', () => {
     `)
   })
 })
-
-describe('detectIndent', () => {
-  test('two spaces', ({ expect }) => {
-    expect(detectIndent(stringifyJson(2))).toBe(2)
-  })
-  test('four spaces', ({ expect }) => {
-    expect(detectIndent(stringifyJson(4))).toBe(4)
-  })
-  test('tab', ({ expect }) => {
-    expect(detectIndent(stringifyJson('\t'))).toBe('\t')
-  })
-  test('empty', ({ expect }) => {
-    expect(detectIndent('')).toBe(2)
-  })
-  test('empty line', ({ expect }) => {
-    expect(detectIndent('{\n\n  "foo": 42 }')).toBe(2)
-  })
-})
-
-function stringifyJson(indentation: string | number): string {
-  const contents = JSON.stringify({ foo: 42 }, null, indentation)
-  return contents
-}
 
 function genChunk(fileName: string) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

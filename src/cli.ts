@@ -2,6 +2,7 @@ import process from 'node:process'
 import { dim } from 'ansis'
 import { cac } from 'cac'
 import { VERSION as rolldownVersion } from 'rolldown'
+import { x } from 'tinyexec'
 import pkg from '../package.json' with { type: 'json' }
 import { enableDebugLog } from './features/debug.ts'
 import { globalLogger } from './utils/logger.ts'
@@ -76,12 +77,39 @@ cli
   })
 
 cli
-  .command('migrate', 'Migrate from tsup to tsdown')
-  .option('-c, --cwd <dir>', 'Working directory')
-  .option('-d, --dry-run', 'Dry run')
-  .action(async (args) => {
-    const { migrate } = await import('./migrate.ts')
-    await migrate(args)
+  .command(
+    'create',
+    '[deprecated] Create a tsdown project. Use "npx create-tsdown" instead.',
+    { allowUnknownOptions: true },
+  )
+  .action(async () => {
+    globalLogger.warn(
+      `"tsdown create" is deprecated. Please use "npx create-tsdown" instead.`,
+    )
+    const { exitCode } = await x(
+      'npx',
+      ['-y', 'create-tsdown@latest', ...process.argv.slice(3)],
+      { nodeOptions: { stdio: 'inherit' } },
+    )
+    process.exitCode = exitCode
+  })
+
+cli
+  .command(
+    'migrate',
+    '[deprecated] Migrate from tsup to tsdown. Use "npx tsdown-migrate" instead.',
+    { allowUnknownOptions: true },
+  )
+  .action(async () => {
+    globalLogger.warn(
+      `"tsdown migrate" is deprecated. Please use "npx tsdown-migrate" instead.`,
+    )
+    const { exitCode } = await x(
+      'npx',
+      ['-y', 'tsdown-migrate@latest', ...process.argv.slice(3)],
+      { nodeOptions: { stdio: 'inherit' } },
+    )
+    process.exitCode = exitCode
   })
 
 export async function runCLI(): Promise<void> {
