@@ -54,6 +54,7 @@ catalogs:
     empathic: ^2.0.0
     giget: ^2.0.0
     hookable: ^5.5.3
+    is-in-ci: ^2.0.0
     obug: ^2.1.1
     package-manager-detector: ^1.5.0
     rolldown: 1.0.0-beta.51

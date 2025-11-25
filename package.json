@@ -34,7 +34,7 @@
   "typesVersions": {
     "*": {
       "*": [
-        "./dist/*",
+        "./dist/*.d.mts",
         "./*"
       ]
     }
@@ -117,6 +117,7 @@
     "@vueuse/core": "catalog:docs",
     "bumpp": "catalog:dev",
     "eslint": "catalog:dev",
+    "is-in-ci": "catalog:prod",
     "lightningcss": "catalog:dev",
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",

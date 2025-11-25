@@ -23,7 +23,7 @@ export async function publint(options: ResolvedConfig): Promise<void> {
   const { publint } = await importWithError<typeof import('publint')>('publint')
   const { formatMessage } = await import('publint/utils')
   const { messages } = await publint({
-    ...(options.publint === true ? {} : options.publint),
+    ...options.publint,
     pkgDir: path.dirname(options.pkg.packageJsonPath),
   })
   debug('Found %d issues', messages.length)

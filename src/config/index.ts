@@ -1,6 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { blue } from 'ansis'
+import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
 import { resolveClean } from '../features/clean.ts'
@@ -19,7 +20,12 @@ import { createLogger } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadConfigFile, loadViteConfig } from './config.ts'
-import type { InlineConfig, ResolvedConfig, UserConfig } from './types.ts'
+import type {
+  CIOption,
+  InlineConfig,
+  ResolvedConfig,
+  UserConfig,
+} from './types.ts'
 
 export * from './types.ts'
 
@@ -203,7 +209,7 @@ async function resolveUserConfig(
     env = {},
     copy,
     publicDir,
-    hash,
+    hash = true,
     cwd = process.cwd(),
     name,
     workspace,
@@ -221,7 +227,10 @@ async function resolveUserConfig(
     debug = false,
   } = userConfig
 
-  const logger = createLogger(logLevel, { customLogger, failOnWarn })
+  const logger = createLogger(logLevel, {
+    customLogger,
+    failOnWarn: resolveFeatureOption(failOnWarn, true),
+  })
 
   if (typeof bundle === 'boolean') {
     logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')
@@ -260,9 +269,12 @@ async function resolveUserConfig(
     noExternal = resolveRegex(noExternal)
   }
 
-  if (publint === true) publint = {}
-  if (attw === true) attw = {}
-  if (exports === true) exports = {}
+  publint = resolveFeatureOption(publint, {})
+  attw = resolveFeatureOption(attw, {})
+  exports = resolveFeatureOption(exports, {})
+  unused = resolveFeatureOption(unused, {})
+  report = resolveFeatureOption(report, {})
+  dts = resolveFeatureOption(dts, {})
 
   if (publicDir) {
     if (copy) {
@@ -316,8 +328,8 @@ async function resolveUserConfig(
     inlineOnly = toArray(inlineOnly)
   }
 
+  debug = resolveFeatureOption(debug, {})
   if (debug) {
-    if (debug === true) debug = {}
     debug.devtools ??= !!pkgExists('@vitejs/devtools/cli')
   }
 
@@ -333,8 +345,8 @@ async function resolveUserConfig(
     treeshake,
     platform,
     sourcemap,
-    dts: dts === true ? {} : dts,
-    report: report === true ? {} : report,
+    dts,
+    report,
     unused,
     watch,
     ignoreWatch,
@@ -348,7 +360,7 @@ async function resolveUserConfig(
     env,
     pkg,
     copy: publicDir || copy,
-    hash: hash ?? true,
+    hash,
     name,
     external,
     noExternal,
@@ -377,4 +389,14 @@ export async function mergeUserOptions<T extends object, A extends unknown[]>(
   const userOutputOptions =
     typeof user === 'function' ? await user(defaults, ...args) : user
   return { ...defaults, ...userOutputOptions }
+}
+
+function resolveFeatureOption<T>(
+  value: boolean | CIOption | T,
+  defaults: T,
+): T | false {
+  if (value === true) return defaults
+  if (value === 'ci-only') return isInCi ? defaults : false
+  if (value === 'local-only') return isInCi ? false : defaults
+  return value
 }

@@ -93,6 +93,8 @@ export type NoExternalFn = (
   importer: string | undefined,
 ) => boolean | null | undefined | void
 
+export type CIOption = 'ci-only' | 'local-only'
+
 /**
  * Options for tsdown.
  */
@@ -243,7 +245,7 @@ export interface UserConfig {
 
   //#region Output Options
 
-  /** @default ['es'] */
+  /** @default 'es' */
   format?: Format | Format[]
   globalName?: string
   /** @default 'dist' */
@@ -353,7 +355,7 @@ export interface UserConfig {
    * If true, fails the build on warnings.
    * @default false
    */
-  failOnWarn?: boolean
+  failOnWarn?: boolean | CIOption
   /**
    * Custom logger.
    */
@@ -387,7 +389,7 @@ export interface UserConfig {
    *
    * @default false
    */
-  debug?: boolean | DebugOptions
+  debug?: boolean | CIOption | DebugOptions
 
   //#region Addons
 
@@ -398,21 +400,21 @@ export interface UserConfig {
    * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
    * - Otherwise, declaration file generation is disabled by default.
    */
-  dts?: boolean | DtsOptions
+  dts?: boolean | CIOption | DtsOptions
 
   /**
    * Enable unused dependencies check with `unplugin-unused`
    * Requires `unplugin-unused` to be installed.
    * @default false
    */
-  unused?: boolean | UnusedOptions
+  unused?: boolean | CIOption | UnusedOptions
 
   /**
    * Run publint after bundling.
    * Requires `publint` to be installed.
    * @default false
    */
-  publint?: boolean | PublintOptions
+  publint?: boolean | CIOption | PublintOptions
 
   /**
    * Run `arethetypeswrong` after bundling.
@@ -421,13 +423,13 @@ export interface UserConfig {
    * @default false
    * @see https://github.com/arethetypeswrong/arethetypeswrong.github.io
    */
-  attw?: boolean | AttwOptions
+  attw?: boolean | CIOption | AttwOptions
 
   /**
    * Enable size reporting after bundling.
    * @default true
    */
-  report?: boolean | ReportOptions
+  report?: boolean | CIOption | ReportOptions
 
   /**
    * `import.meta.glob` support.
@@ -442,7 +444,7 @@ export interface UserConfig {
    * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
    * to point to the generated files.
    */
-  exports?: boolean | ExportsOptions
+  exports?: boolean | CIOption | ExportsOptions
 
   /**
    * @deprecated Alias for `copy`, will be removed in the future.
@@ -492,6 +494,7 @@ export interface InlineConfig extends UserConfig {
 
 export type UserConfigFn = (
   inlineConfig: InlineConfig,
+  context: { ci: boolean },
 ) => Awaitable<Arrayable<UserConfig>>
 
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>
@@ -530,16 +533,20 @@ export type ResolvedConfig = Overwrite<
     format: NormalizedFormat[]
     target?: string[]
     clean: string[]
-    dts: false | DtsOptions
-    report: false | ReportOptions
-    tsconfig: false | string
     pkg?: PackageJson
-    exports: false | ExportsOptions
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
+
+    dts: false | DtsOptions
+    report: false | ReportOptions
+    tsconfig: false | string
+    exports: false | ExportsOptions
     debug: false | DebugOptions
+    publint: false | PublintOptions
+    attw: false | AttwOptions
+    unused: false | UnusedOptions
   }
 >

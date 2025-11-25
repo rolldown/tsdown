@@ -136,7 +136,7 @@ async function resolveInputOptions(
       plugins.push(
         Unused.rolldown({
           root: cwd,
-          ...(unused === true ? {} : unused),
+          ...unused,
         }),
       )
     }

@@ -114,11 +114,7 @@ export async function attw(options: ResolvedConfig): Promise<void> {
     options.logger.warn('attw is enabled but package.json is not found')
     return
   }
-  const {
-    profile = 'strict',
-    level = 'warn',
-    ...attwOptions
-  } = options.attw === true ? {} : options.attw
+  const { profile = 'strict', level = 'warn', ...attwOptions } = options.attw
 
   const t = performance.now()
   debug('Running attw check')

@@ -5,15 +5,16 @@ export default defineConfig([
   {
     entry: ['./src/{index,run,plugins,config}.ts'],
     name: 'tsdown',
-    inlineOnly: [],
+    inlineOnly: ['is-in-ci'],
     platform: 'node',
+    failOnWarn: 'ci-only',
     unused: {
       level: 'error',
       ignore: [
         'typescript', // Yarn PnP
       ],
     },
-    publint: true,
+    publint: 'ci-only',
     exports: {
       customExports(exports) {
         exports['./client'] = './client.d.ts'
@@ -30,7 +31,8 @@ export default defineConfig([
       include: ['packages/*'],
     },
     inlineOnly: [],
-    publint: true,
+    failOnWarn: 'ci-only',
+    publint: 'ci-only',
     exports: true,
   },
 ])

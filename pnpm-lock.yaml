@@ -126,6 +126,9 @@ catalogs:
     hookable:
       specifier: ^5.5.3
       version: 5.5.3
+    is-in-ci:
+      specifier: ^2.0.0
+      version: 2.0.0
     obug:
       specifier: ^2.1.1
       version: 2.1.1
@@ -241,6 +244,9 @@ importers:
       eslint:
         specifier: catalog:dev
         version: 9.39.1(jiti@2.6.1)
+      is-in-ci:
+        specifier: catalog:prod
+        version: 2.0.0
       lightningcss:
         specifier: catalog:dev
         version: 1.30.2
@@ -2597,6 +2603,11 @@ packages:
   is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
     engines: {node: '>=0.10.0'}
+
+  is-in-ci@2.0.0:
+    resolution: {integrity: sha512-cFeerHriAnhrQSbpAxL37W1wcJKUUX07HyLWZCW1URJT/ra3GyUTzBgUnh24TMVfNTV2Hij2HLxkPHFZfOZy5w==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   is-in-ssh@1.0.0:
     resolution: {integrity: sha512-jYa6Q9rH90kR1vKB6NM7qqd1mge3Fx4Dhw5TVlK1MUBqhEOuCagrEHMevNuCcbECmXZ0ThXkRm+Ymr51HwEPAw==}
@@ -6300,6 +6311,8 @@ snapshots:
   is-glob@4.0.3:
     dependencies:
       is-extglob: 2.1.1
+
+  is-in-ci@2.0.0: {}
 
   is-in-ssh@1.0.0: {}
 

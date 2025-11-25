@@ -3,6 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
+import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
 import { fsStat } from '../utils/fs.ts'
@@ -119,7 +120,7 @@ export async function loadConfigFile(
 
     exported = await exported
     if (typeof exported === 'function') {
-      exported = await exported(inlineConfig)
+      exported = await exported(inlineConfig, { ci: isInCi })
     }
   }
 
