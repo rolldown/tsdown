@@ -187,7 +187,7 @@ async function resolveUserConfig(
     clean = true,
     silent = false,
     logLevel = silent ? 'silent' : 'info',
-    failOnWarn = false,
+    failOnWarn = 'ci-only',
     customLogger,
     treeshake = true,
     platform = 'node',
