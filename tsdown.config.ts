@@ -15,6 +15,10 @@ export default defineConfig([
       ],
     },
     publint: 'ci-only',
+    attw: {
+      enabled: 'ci-only',
+      profile: 'esmOnly',
+    },
     exports: {
       customExports(exports) {
         exports['./client'] = './client.d.ts'
@@ -33,6 +37,10 @@ export default defineConfig([
     inlineOnly: [],
     failOnWarn: 'ci-only',
     publint: 'ci-only',
+    attw: {
+      enabled: 'ci-only',
+      profile: 'esmOnly',
+    },
     exports: true,
   },
 ])

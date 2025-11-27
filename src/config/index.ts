@@ -25,6 +25,7 @@ import type {
   InlineConfig,
   ResolvedConfig,
   UserConfig,
+  WithEnabled,
 } from './types.ts'
 
 export * from './types.ts'
@@ -391,12 +392,18 @@ export async function mergeUserOptions<T extends object, A extends unknown[]>(
   return { ...defaults, ...userOutputOptions }
 }
 
-function resolveFeatureOption<T>(
-  value: boolean | CIOption | T,
+export function resolveFeatureOption<T>(
+  value: Exclude<WithEnabled<T>, undefined>,
   defaults: T,
 ): T | false {
-  if (value === true) return defaults
-  if (value === 'ci-only') return isInCi ? defaults : false
-  if (value === 'local-only') return isInCi ? false : defaults
+  if (typeof value === 'object' && value !== null) {
+    return resolveCIOption(value.enabled ?? true) ? value : false
+  }
+  return resolveCIOption(value) ? defaults : false
+}
+
+function resolveCIOption(value: boolean | CIOption): boolean {
+  if (value === 'ci-only') return isInCi ? true : false
+  if (value === 'local-only') return isInCi ? false : true
   return value
 }
