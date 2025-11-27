@@ -17,7 +17,7 @@ export default defineConfig([
     publint: 'ci-only',
     attw: {
       enabled: 'ci-only',
-      profile: 'esmOnly',
+      profile: 'esm-only',
     },
     exports: {
       customExports(exports) {
@@ -39,7 +39,7 @@ export default defineConfig([
     publint: 'ci-only',
     attw: {
       enabled: 'ci-only',
-      profile: 'esmOnly',
+      profile: 'esm-only',
     },
     exports: true,
   },

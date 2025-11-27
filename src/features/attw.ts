@@ -9,9 +9,14 @@ import { fsRemove } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
 import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
-import type { CheckPackageOptions, Problem } from '@arethetypeswrong/core'
+import type {
+  CheckPackageOptions,
+  CheckResult,
+  Problem,
+} from '@arethetypeswrong/core'
 
 const debug = createDebug('tsdown:attw')
+const label = dim`[attw]`
 
 export interface AttwOptions extends CheckPackageOptions {
   /**
@@ -21,11 +26,11 @@ export interface AttwOptions extends CheckPackageOptions {
    * The available profiles are:
    * - `strict`: requires all resolutions
    * - `node16`: ignores node10 resolution failures
-   * - `esmOnly`: ignores CJS resolution failures
+   * - `esm-only`: ignores CJS resolution failures
    *
    * @default 'strict'
    */
-  profile?: 'strict' | 'node16' | 'esmOnly'
+  profile?: 'strict' | 'node16' | 'esm-only'
   /**
    * The level of the check.
    *
@@ -47,7 +52,92 @@ export interface AttwOptions extends CheckPackageOptions {
 const profiles: Record<Required<AttwOptions>['profile'], string[]> = {
   strict: [],
   node16: ['node10'],
-  esmOnly: ['node10', 'node16-cjs'],
+  'esm-only': ['node10', 'node16-cjs'],
+}
+
+export async function attw(options: ResolvedConfig): Promise<void> {
+  if (!options.attw) return
+  if (!options.pkg) {
+    options.logger.warn('attw is enabled but package.json is not found')
+    return
+  }
+  let { profile = 'strict', level = 'warn', ...attwOptions } = options.attw
+
+  // @ts-expect-error - deprecated key
+  if (profile === 'esmOnly') {
+    options.logger.warn(
+      'attw option "esmOnly" is deprecated, use "esm-only" instead',
+    )
+    profile = 'esm-only'
+  }
+
+  const t = performance.now()
+  debug('Running attw check')
+
+  const tempDir = await mkdtemp(path.join(tmpdir(), 'tsdown-attw-'))
+
+  const attwCore = await importWithError<
+    typeof import('@arethetypeswrong/core')
+  >('@arethetypeswrong/core')
+  let checkResult: CheckResult
+
+  try {
+    const { stdout: tarballInfo } = await exec(
+      'npm',
+      ['pack', '--json', '--pack-destination', tempDir],
+      { nodeOptions: { cwd: options.cwd } },
+    )
+    const parsed = JSON.parse(tarballInfo)
+    if (!Array.isArray(parsed) || !parsed[0]?.filename) {
+      throw new Error('Invalid npm pack output format')
+    }
+    const tarballPath = path.join(tempDir, parsed[0].filename as string)
+    const tarball = await readFile(tarballPath)
+
+    const pkg = attwCore.createPackageFromTarballData(tarball)
+    checkResult = await attwCore.checkPackage(pkg, attwOptions)
+  } catch (error) {
+    options.logger.error('ATTW check failed:', error)
+    debug('Found errors, setting exit code to 1')
+    process.exitCode = 1
+    return
+  } finally {
+    await fsRemove(tempDir)
+  }
+
+  let errorMessage: string | undefined
+  if (checkResult.types) {
+    const problems = checkResult.problems.filter((problem) => {
+      // Only apply profile filter to problems that have resolutionKind
+      if ('resolutionKind' in problem) {
+        return !profiles[profile]?.includes(problem.resolutionKind)
+      }
+      // Include all other problem types
+      return true
+    })
+
+    if (problems.length) {
+      const problemList = problems.map(formatProblem).join('\n')
+      errorMessage = `problems found:\n${problemList}`
+    }
+  } else {
+    errorMessage = `Package has no types`
+  }
+
+  if (errorMessage) {
+    options.logger[level](prettyName(options.name), label, errorMessage)
+    if (level === 'error') {
+      process.exitCode = 1
+      debug('Found problems, setting exit code to 1')
+    }
+  } else {
+    options.logger.success(
+      prettyName(options.name),
+      label,
+      'No problems found',
+      dim`(${Math.round(performance.now() - t)}ms)`,
+    )
+  }
 }
 
 /**
@@ -105,72 +195,5 @@ function formatProblem(problem: Problem): string {
 
     default:
       return `  ❓ Unknown problem: ${JSON.stringify(problem)}`
-  }
-}
-
-export async function attw(options: ResolvedConfig): Promise<void> {
-  if (!options.attw) return
-  if (!options.pkg) {
-    options.logger.warn('attw is enabled but package.json is not found')
-    return
-  }
-  const { profile = 'strict', level = 'warn', ...attwOptions } = options.attw
-
-  const t = performance.now()
-  debug('Running attw check')
-
-  const tempDir = await mkdtemp(path.join(tmpdir(), 'tsdown-attw-'))
-
-  const attwCore = await importWithError<
-    typeof import('@arethetypeswrong/core')
-  >('@arethetypeswrong/core')
-  try {
-    const { stdout: tarballInfo } = await exec(
-      'npm',
-      ['pack', '--json', '--pack-destination', tempDir],
-      { nodeOptions: { cwd: options.cwd } },
-    )
-    const parsed = JSON.parse(tarballInfo)
-    if (!Array.isArray(parsed) || !parsed[0]?.filename) {
-      throw new Error('Invalid npm pack output format')
-    }
-    const tarballPath = path.join(tempDir, parsed[0].filename as string)
-    const tarball = await readFile(tarballPath)
-
-    const pkg = attwCore.createPackageFromTarballData(tarball)
-    const checkResult = await attwCore.checkPackage(pkg, attwOptions)
-
-    if (checkResult.types !== false && checkResult.problems.length) {
-      const problems = checkResult.problems.filter((problem) => {
-        // Only apply profile filter to problems that have resolutionKind
-        if ('resolutionKind' in problem) {
-          return !profiles[profile]?.includes(problem.resolutionKind)
-        }
-        // Include all other problem types
-        return true
-      })
-      if (problems.length) {
-        const problemList = problems.map(formatProblem).join('\n')
-        const problemMessage = `Are the types wrong problems found:\n${problemList}`
-
-        if (level === 'error') {
-          throw new Error(problemMessage)
-        }
-
-        options.logger.warn(prettyName(options.name), problemMessage)
-      }
-    } else {
-      options.logger.success(
-        prettyName(options.name),
-        `No Are the types wrong problems found`,
-        dim`(${Math.round(performance.now() - t)}ms)`,
-      )
-    }
-  } catch (error) {
-    options.logger.error('ATTW check failed:', error)
-    debug('Found errors, setting exit code to 1')
-    process.exitCode = 1
-  } finally {
-    await fsRemove(tempDir)
   }
 }

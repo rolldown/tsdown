@@ -7,6 +7,7 @@ import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 
 const debug = createDebug('tsdown:publint')
+const label = dim`[publint]`
 
 export async function publint(options: ResolvedConfig): Promise<void> {
   if (!options.publint) return
@@ -31,7 +32,8 @@ export async function publint(options: ResolvedConfig): Promise<void> {
   if (!messages.length) {
     options.logger.success(
       prettyName(options.name),
-      `No publint issues found`,
+      label,
+      'No issues found',
       dim`(${Math.round(performance.now() - t)}ms)`,
     )
     return
@@ -44,7 +46,7 @@ export async function publint(options: ResolvedConfig): Promise<void> {
     const logType = (
       { error: 'error', warning: 'warn', suggestion: 'info' } as const
     )[message.type]
-    options.logger[logType](prettyName(options.name), formattedMessage)
+    options.logger[logType](prettyName(options.name), label, formattedMessage)
   }
   if (hasError) {
     debug('Found errors, setting exit code to 1')
