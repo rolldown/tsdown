@@ -9,29 +9,29 @@ overrides:
 catalogs:
   dev:
     '@sxzz/eslint-config': ^7.3.2
-    '@sxzz/prettier-config': ^2.2.5
+    '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.13
     '@types/node': ^24.10.1
     '@types/semver': ^7.7.1
-    bumpp: ^10.3.1
+    bumpp: ^10.3.2
     eslint: ^9.39.1
     lightningcss: ^1.30.2
     pkg-types: ^2.3.0
-    prettier: ^3.6.2
+    prettier: ^3.7.1
     rolldown-plugin-require-cjs: ^0.3.1
     typescript: ~5.9.3
     vitest: ^4.0.14
 
   docs:
-    '@shikijs/vitepress-twoslash': ^3.15.0
+    '@shikijs/vitepress-twoslash': ^3.17.0
     '@unocss/eslint-plugin': ^66.5.9
-    '@vueuse/core': ^14.0.0
+    '@vueuse/core': ^14.1.0
     oxc-minify: ^0.99.0
     typedoc: ^0.28.14
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.5.9
-    vite: npm:rolldown-vite@^7.2.7
+    vite: npm:rolldown-vite@^7.2.8
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.9.3
@@ -56,7 +56,7 @@ catalogs:
     hookable: ^5.5.3
     is-in-ci: ^2.0.0
     obug: ^2.1.1
-    package-manager-detector: ^1.5.0
+    package-manager-detector: ^1.6.0
     rolldown: 1.0.0-beta.52
     rolldown-plugin-dts: ^0.18.1
     semver: ^7.7.3
@@ -64,7 +64,7 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
-    unrun: ^0.2.11
+    unrun: ^0.2.13
 
 ignoredBuiltDependencies:
   - rolldown

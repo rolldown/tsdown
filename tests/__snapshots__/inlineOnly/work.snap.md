@@ -5,7 +5,7 @@
 const cac = 42;
 
 //#endregion
-//#region ../../../../node_modules/.pnpm/bumpp@10.3.1/node_modules/bumpp/dist/index.mjs
+//#region ../../../../node_modules/.pnpm/bumpp@10.3.2/node_modules/bumpp/dist/index.mjs
 const bumpp = 42;
 
 //#endregion
