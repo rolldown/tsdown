@@ -5,6 +5,7 @@ import { fsRemove } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import type { ResolvedConfig, UserConfig } from '../config/index.ts'
+import type { OutputAsset, OutputChunk } from 'rolldown'
 
 const debug = createDebug('tsdown:clean')
 
@@ -63,4 +64,17 @@ export function resolveClean(
   }
 
   return clean
+}
+
+export async function cleanupChunks(
+  outDir: string,
+  chunks: Array<OutputAsset | OutputChunk>,
+): Promise<void> {
+  await Promise.all(
+    chunks.map(async (chunk) => {
+      const filePath = path.resolve(outDir, chunk.fileName)
+      debug('Removing chunk file', filePath)
+      await fsRemove(filePath)
+    }),
+  )
 }

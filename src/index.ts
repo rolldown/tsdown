@@ -17,7 +17,7 @@ import {
 } from './config/index.ts'
 import { attw } from './features/attw.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
-import { cleanOutDir } from './features/clean.ts'
+import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import { writeExports, type TsdownChunks } from './features/exports.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
@@ -126,12 +126,7 @@ export async function buildSingle(
   const startTime = performance.now()
   await hooks.callHook('build:prepare', context)
 
-  // TODO
-  // if (first) {
   await clean()
-  // } else {
-  //   await cleanOutDir([config])
-  // }
 
   // output rolldown config for debugging
   const debugRolldownConfigDir = await getDebugRolldownDir()
@@ -194,6 +189,7 @@ export async function buildSingle(
       switch (event.code) {
         case 'START': {
           for (const format of formats) {
+            await cleanupChunks(config.outDir, chunks[format]!)
             chunks[format]!.length = 0
           }
           hasError = false
