@@ -32,7 +32,6 @@ export function WatchPlugin(
         }
       }
     },
-    // watchChange(id) {},
     generateBundle: {
       order: 'post',
       handler(outputOptions, bundle) {
