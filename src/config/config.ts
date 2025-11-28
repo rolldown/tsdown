@@ -52,10 +52,10 @@ export async function loadViteConfig(
 }
 
 const configPrefix = 'tsdown.config'
-let isWatch = false
+let noCacheLoad = false
 
-export function setWatch(): void {
-  isWatch = true
+export function setNoCacheLoad(): void {
+  noCacheLoad = true
 }
 
 export async function loadConfigFile(
@@ -110,7 +110,7 @@ export async function loadConfigFile(
     sources,
     cwd,
     stopAt: workspace && path.dirname(workspace),
-  }).load(isWatch)
+  }).load(noCacheLoad)
 
   let exported: UserConfigExport = []
   let file: string | undefined
@@ -146,7 +146,7 @@ type Parser = 'native' | 'unrun'
 function resolveConfigLoader(
   configLoader: InlineConfig['configLoader'] = 'auto',
 ): Parser {
-  if (isWatch) {
+  if (noCacheLoad) {
     return 'unrun'
   } else if (configLoader === 'auto') {
     const nativeTS = !!(

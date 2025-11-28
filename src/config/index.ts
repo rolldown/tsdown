@@ -331,48 +331,56 @@ async function resolveUserConfig(
 
   debug = resolveFeatureOption(debug, {})
   if (debug) {
-    debug.devtools ??= !!pkgExists('@vitejs/devtools/cli')
+    if (watch) {
+      if (debug.devtools) {
+        logger.warn('Devtools is not supported in watch mode, disabling it.')
+      }
+      debug.devtools = false
+    } else {
+      debug.devtools ??= !!pkgExists('@vitejs/devtools/cli')
+    }
   }
 
+  /// keep-sorted
   const config: ResolvedConfig = {
     ...userConfig,
-    entry,
-    plugins,
-    format: normalizeFormat(format),
-    target,
-    outDir,
+    alias,
+    attw,
+    cjsDefault,
     clean,
-    logger,
-    treeshake,
-    platform,
-    sourcemap,
+    copy: publicDir || copy,
+    cwd,
+    debug,
     dts,
-    report,
-    unused,
-    watch,
+    entry,
+    env,
+    exports,
+    external,
+    fixedExtension,
+    format: normalizeFormat(format),
+    globImport,
+    hash,
     ignoreWatch,
+    inlineOnly,
+    logger,
+    name,
+    nodeProtocol,
+    noExternal,
+    outDir,
+    pkg,
+    platform,
+    plugins,
+    publint,
+    report,
     shims,
     skipNodeModulesBundle,
-    publint,
-    attw,
-    alias,
+    sourcemap,
+    target,
+    treeshake,
     tsconfig,
-    cwd,
-    env,
-    pkg,
-    copy: publicDir || copy,
-    hash,
-    name,
-    external,
-    noExternal,
-    exports,
     unbundle,
-    nodeProtocol,
-    cjsDefault,
-    globImport,
-    inlineOnly,
-    fixedExtension,
-    debug,
+    unused,
+    watch,
   }
 
   return config

@@ -28,18 +28,23 @@ import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
+import { WatchPlugin, type WatchContext } from './watch.ts'
 
 const debug = createDebug('tsdown:rolldown')
 
 export async function getBuildOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
-  isMultiFormat?: boolean,
+  configFiles: string[],
+  watchContext: WatchContext,
   cjsDts: boolean = false,
+  isMultiFormat?: boolean,
 ): Promise<BuildOptions> {
   const inputOptions = await resolveInputOptions(
     config,
     format,
+    configFiles,
+    watchContext,
     cjsDts,
     isMultiFormat,
   )
@@ -67,33 +72,37 @@ export async function getBuildOptions(
 async function resolveInputOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
+  configFiles: string[],
+  watchContext: WatchContext,
   cjsDts: boolean,
   isMultiFormat?: boolean,
 ): Promise<InputOptions> {
+  /// keep-sorted
   const {
-    entry,
-    external,
-    plugins: userPlugins,
-    platform,
     alias,
-    treeshake,
-    dts,
-    unused,
-    target,
-    shims,
-    tsconfig,
-    cwd,
-    report,
-    env,
-    nodeProtocol,
-    loader,
-    name,
-    logger,
-    cjsDefault,
     banner,
+    cjsDefault,
+    cwd,
+    debug,
+    dts,
+    entry,
+    env,
+    external,
     footer,
     globImport,
-    debug,
+    loader,
+    logger,
+    name,
+    nodeProtocol,
+    platform,
+    plugins: userPlugins,
+    report,
+    shims,
+    target,
+    treeshake,
+    tsconfig,
+    unused,
+    watch,
   } = config
 
   const plugins: RolldownPluginOption = []
@@ -155,6 +164,10 @@ async function resolveInputOptions(
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
     plugins.push(ReportPlugin(report, logger, cwd, cjsDts, name, isMultiFormat))
+  }
+
+  if (watch) {
+    plugins.push(WatchPlugin(configFiles, watchContext))
   }
 
   if (!cjsDts) {

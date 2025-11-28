@@ -1,4 +1,7 @@
+import process from 'node:process'
 import { createHooks as create, type Hookable } from 'hookable'
+import { exec } from 'tinyexec'
+import treeKill from 'tree-kill'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { BuildOptions } from 'rolldown'
 
@@ -48,4 +51,34 @@ export async function createHooks(options: ResolvedConfig): Promise<{
     hooks,
   }
   return { hooks, context }
+}
+
+export function executeOnSuccess(
+  config: ResolvedConfig,
+): AbortController | undefined {
+  if (!config.onSuccess) return
+
+  const ab = new AbortController()
+  if (typeof config.onSuccess === 'string') {
+    const p = exec(config.onSuccess, [], {
+      nodeOptions: {
+        shell: true,
+        stdio: 'inherit',
+      },
+    })
+    p.then(({ exitCode }) => {
+      if (exitCode) {
+        process.exitCode = exitCode
+      }
+    })
+    ab.signal.addEventListener('abort', () => {
+      if (typeof p.pid === 'number') {
+        treeKill(p.pid)
+      }
+    })
+  } else {
+    config.onSuccess(config, ab.signal)
+  }
+
+  return ab
 }
