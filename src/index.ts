@@ -1,23 +1,26 @@
 import path from 'node:path'
-import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { green } from 'ansis'
-import { build as rolldownBuild } from 'rolldown'
-import { exec } from 'tinyexec'
-import treeKill from 'tree-kill'
-import { setWatch } from './config/config.ts'
+import { bold, green } from 'ansis'
+import {
+  build as rolldownBuild,
+  watch as rolldownWatch,
+  type BuildOptions,
+  type RolldownWatcher,
+} from 'rolldown'
+import { setNoCacheLoad } from './config/config.ts'
 import {
   resolveConfig,
   type DebugOptions,
   type InlineConfig,
+  type NormalizedFormat,
   type ResolvedConfig,
 } from './config/index.ts'
 import { attw } from './features/attw.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
-import { cleanOutDir } from './features/clean.ts'
+import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import { writeExports, type TsdownChunks } from './features/exports.ts'
-import { createHooks } from './features/hooks.ts'
+import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { publint } from './features/publint.ts'
 import {
   debugBuildOptions,
@@ -25,14 +28,23 @@ import {
   getDebugRolldownDir,
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
-import { watchBuild } from './features/watch.ts'
+import { endsWithConfig, type WatchContext } from './features/watch.ts'
 import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
+
+const asyncDispose: typeof Symbol.asyncDispose =
+  Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
+
+export interface TsdownBundle extends AsyncDisposable {
+  chunks: TsdownChunks
+}
 
 /**
  * Build with tsdown.
  */
-export async function build(userOptions: InlineConfig = {}): Promise<void> {
+export async function build(
+  userOptions: InlineConfig = {},
+): Promise<TsdownBundle[]> {
   globalLogger.level =
     userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
   const { configs, files: configFiles } = await resolveConfig(userOptions)
@@ -43,29 +55,39 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     return (cleanPromise = cleanOutDir(configs))
   }
 
-  globalLogger.info('Build start')
-  const rebuilds = await Promise.all(
-    configs.map((options) => buildSingle(options, clean)),
-  )
-  const disposeCbs: (() => void | Promise<void>)[] = []
+  const disposeCbs: Array<() => void | PromiseLike<void>> = []
+  let restarting = false
+  async function restart() {
+    if (restarting) return
+    restarting = true
 
-  for (const [i, config] of configs.entries()) {
-    const rebuild = rebuilds[i]
-    if (!rebuild) continue
+    await Promise.all(disposeCbs.map((cb) => cb()))
 
-    setWatch()
-
-    const watcher = await watchBuild(config, configFiles, rebuild, restart)
-    disposeCbs.push(() => watcher.close())
+    setNoCacheLoad()
+    build(userOptions)
   }
 
-  let firstDevtoolsConfig = configs.find(
+  globalLogger.info('Build start')
+  const bundles = await Promise.all(
+    configs.map((options) => buildSingle(options, configFiles, clean, restart)),
+  )
+
+  const firstDevtoolsConfig = configs.find(
     (config) => config.debug && config.debug.devtools,
   )
-  if (disposeCbs.length && firstDevtoolsConfig) {
-    globalLogger.warn('Devtools is not supported in watch mode, disabling it.')
-    firstDevtoolsConfig = undefined
+
+  const hasWatchConfig = configs.some((config) => config.watch)
+  if (hasWatchConfig) {
+    // Watch mode with shortcuts
+    disposeCbs.push(shortcuts(restart))
+    for (const bundle of bundles) {
+      disposeCbs.push(bundle[asyncDispose])
+    }
+
+    return undefined as never
   }
+
+  // build done
   if (firstDevtoolsConfig) {
     const { start } = await importWithError<
       typeof import('@vitejs/devtools/cli-commands')
@@ -79,24 +101,8 @@ export async function build(userOptions: InlineConfig = {}): Promise<void> {
     })
   }
 
-  // Watch mode with shortcuts
-  if (disposeCbs.length) {
-    disposeCbs.push(shortcuts(restart))
-  }
-
-  async function restart() {
-    for (const dispose of disposeCbs) {
-      await dispose()
-    }
-    build(userOptions)
-  }
+  return bundles
 }
-
-const dirname = path.dirname(fileURLToPath(import.meta.url))
-const pkgRoot: string = path.resolve(dirname, '..')
-
-/** @internal */
-export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 
 /**
  * Build a single configuration, without watch and shortcuts features.
@@ -108,115 +114,185 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
  */
 export async function buildSingle(
   config: ResolvedConfig,
+  configFiles: string[],
   clean: () => Promise<void>,
-): Promise<(() => Promise<void>) | undefined> {
-  const { format: formats, dts, watch, onSuccess, logger } = config
-  let ab: AbortController | undefined
-
+  restart: () => void,
+): Promise<TsdownBundle> {
+  const { format: formats, dts, watch, logger } = config
   const { hooks, context } = await createHooks(config)
 
   warnLegacyCJS(config)
 
-  await rebuild(true)
-  if (watch) {
-    return () => rebuild()
+  const startTime = performance.now()
+  await hooks.callHook('build:prepare', context)
+
+  await clean()
+
+  // output rolldown config for debugging
+  const debugRolldownConfigDir = await getDebugRolldownDir()
+
+  const chunks: TsdownChunks = {}
+  let watcher: RolldownWatcher | undefined
+  const watchCtx: Omit<WatchContext, 'chunks'> = {
+    config,
   }
 
-  async function rebuild(first?: boolean) {
-    const startTime = performance.now()
+  let ab: AbortController | undefined
 
-    await hooks.callHook('build:prepare', context)
-    ab?.abort()
-
-    if (first) {
-      await clean()
-    } else {
-      await cleanOutDir([config])
+  const isMultiFormat = formats.length > 1
+  const configsByFormat = (
+    await Promise.all(formats.map((format) => buildOptionsByFormat(format)))
+  ).flat()
+  if (watch) {
+    watcher = rolldownWatch(configsByFormat.map((item) => item[1]))
+    handleWatcher(watcher)
+  } else {
+    const outputs = await rolldownBuild(configsByFormat.map((item) => item[1]))
+    for (const [i, output] of outputs.entries()) {
+      const format = configsByFormat[i][0]
+      chunks[format] ||= []
+      chunks[format].push(...output.output)
     }
+  }
 
-    let hasErrors = false
-    const isMultiFormat = formats.length > 1
-    const chunks: TsdownChunks = {}
-    const debugRolldownDir = await getDebugRolldownDir()
-
-    await Promise.all(
-      formats.map(async (format) => {
-        try {
-          const buildOptions = await getBuildOptions(
-            config,
-            format,
-            isMultiFormat,
-            false,
-          )
-          await hooks.callHook('build:before', {
-            ...context,
-            buildOptions,
-          })
-          if (debugRolldownDir) {
-            await debugBuildOptions(
-              debugRolldownDir,
-              config.name,
-              format,
-              buildOptions,
-            )
-          }
-          const { output } = await rolldownBuild(buildOptions)
-          chunks[format] = output
-          if (format === 'cjs' && dts) {
-            const { output } = await rolldownBuild(
-              await getBuildOptions(config, format, isMultiFormat, true),
-            )
-            chunks[format].push(...output)
-          }
-        } catch (error) {
-          if (watch) {
-            logger.error(error)
-            hasErrors = true
-            return
-          }
-          throw error
-        }
-      }),
-    )
-
-    if (hasErrors) {
-      return
-    }
-
-    await Promise.all([writeExports(config, chunks), copy(config)])
-
-    // TODO: perf use one tarball for both attw and publint
-    await Promise.all([publint(config), attw(config)])
-
-    await hooks.callHook('build:done', context)
-
+  if (!watch) {
     logger.success(
       prettyName(config.name),
-      `${first ? 'Build' : 'Rebuild'} complete in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
+      `Build complete in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
     )
-    ab = new AbortController()
-    if (typeof onSuccess === 'string') {
-      const p = exec(onSuccess, [], {
-        nodeOptions: {
-          shell: true,
-          stdio: 'inherit',
-        },
-      })
-      p.then(({ exitCode }) => {
-        if (exitCode) {
-          process.exitCode = exitCode
+    await postBuild()
+  }
+
+  return {
+    chunks,
+    async [asyncDispose]() {
+      ab?.abort()
+      await watcher?.close()
+    },
+  }
+
+  function handleWatcher(watcher: RolldownWatcher) {
+    const changedFile: string[] = []
+    let hasError = false
+
+    watcher.on('change', (id, event) => {
+      if (event.event === 'update') {
+        changedFile.push(id)
+      }
+      if (configFiles.includes(id) || endsWithConfig.test(id)) {
+        globalLogger.info(`Reload config: ${id}, restarting...`)
+        restart()
+      }
+    })
+
+    watcher.on('event', async (event) => {
+      switch (event.code) {
+        case 'START': {
+          for (const format of formats) {
+            await cleanupChunks(config.outDir, chunks[format]!)
+            chunks[format]!.length = 0
+          }
+          hasError = false
+          break
         }
-      })
-      ab.signal.addEventListener('abort', () => {
-        if (typeof p.pid === 'number') {
-          treeKill(p.pid)
+
+        case 'END': {
+          if (!hasError) {
+            await postBuild()
+          }
+          break
         }
-      })
-    } else {
-      await onSuccess?.(config, ab.signal)
+
+        case 'BUNDLE_START': {
+          if (changedFile.length > 0) {
+            console.info('')
+            logger.info(
+              `Found ${bold(changedFile.join(', '))} changed, rebuilding...`,
+            )
+          }
+          changedFile.length = 0
+          break
+        }
+
+        case 'BUNDLE_END': {
+          await event.result.close()
+          logger.success(`Rebuilt in ${event.duration}ms.`)
+          break
+        }
+
+        case 'ERROR': {
+          await event.result.close()
+          logger.error(event.error)
+          hasError = true
+          break
+        }
+      }
+    })
+  }
+
+  async function buildOptionsByFormat(format: NormalizedFormat) {
+    const watchContext = {
+      ...watchCtx,
+      chunks: (chunks[format] = []),
     }
+
+    const buildOptions = await getBuildOptions(
+      config,
+      format,
+      configFiles,
+      watchContext,
+      false,
+      isMultiFormat,
+    )
+    await hooks.callHook('build:before', {
+      ...context,
+      buildOptions,
+    })
+    if (debugRolldownConfigDir) {
+      await debugBuildOptions(
+        debugRolldownConfigDir,
+        config.name,
+        format,
+        buildOptions,
+      )
+    }
+
+    const configs: [format: NormalizedFormat, config: BuildOptions][] = [
+      [format, buildOptions],
+    ]
+    if (format === 'cjs' && dts) {
+      configs.push([
+        format,
+        await getBuildOptions(
+          config,
+          format,
+          configFiles,
+          watchContext,
+          true,
+          isMultiFormat,
+        ),
+      ])
+    }
+
+    return configs
+  }
+
+  async function postBuild() {
+    await Promise.all([writeExports(config, chunks), copy(config)])
+    // TODO: perf use one tarball for both attw and publint
+    await Promise.all([publint(config), attw(config)])
+    await hooks.callHook('build:done', context)
+
+    ab?.abort()
+    ab = executeOnSuccess(config)
   }
 }
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
+const pkgRoot: string = path.resolve(dirname, '..')
+
+/** @internal */
+export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 
 export { defineConfig } from './config.ts'
 export * from './config/types.ts'

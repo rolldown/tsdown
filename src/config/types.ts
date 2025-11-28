@@ -380,6 +380,9 @@ export interface UserConfig {
    * @default false
    */
   watch?: boolean | Arrayable<string>
+  /**
+   * Files or patterns to not watch while in watch mode.
+   */
   ignoreWatch?: Arrayable<string | RegExp>
 
   /**
