@@ -18,7 +18,7 @@ catalogs:
     lightningcss: ^1.30.2
     pkg-types: ^2.3.0
     prettier: ^3.7.1
-    rolldown-plugin-require-cjs: ^0.3.1
+    rolldown-plugin-require-cjs: ^0.3.2
     typescript: ~5.9.3
     vitest: ^4.0.14
 
@@ -63,7 +63,7 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
-    unrun: ^0.2.13
+    unrun: ^0.2.14
 
 ignoredBuiltDependencies:
   - rolldown
