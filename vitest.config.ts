@@ -9,5 +9,8 @@ export default defineConfig({
   test: {
     testTimeout: 20_000,
     setupFiles: ['./tests/setup.ts'],
+    coverage: {
+      include: ['src/**'],
+    },
   },
 })
