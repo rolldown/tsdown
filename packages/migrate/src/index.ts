@@ -55,6 +55,7 @@ export async function migrate({ cwd, dryRun }: MigrateOptions): Promise<void> {
 const DEP_FIELDS = {
   dependencies: `^${pkg.version}`,
   devDependencies: `^${pkg.version}`,
+  optionalDependencies: `^${pkg.version}`,
   peerDependencies: '*',
   peerDependenciesMeta: null,
 } as const
