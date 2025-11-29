@@ -5,6 +5,13 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  create:
+    '@clack/prompts':
+      specifier: ^0.11.0
+      version: 0.11.0
+    giget:
+      specifier: ^2.0.0
+      version: 2.0.0
   dev:
     '@sxzz/eslint-config':
       specifier: ^7.4.0
@@ -88,6 +95,16 @@ catalogs:
     vue-tsc:
       specifier: ^3.1.5
       version: 3.1.5
+  migrate:
+    '@antfu/ni':
+      specifier: ^27.0.1
+      version: 27.0.1
+    consola:
+      specifier: ^3.4.2
+      version: 3.4.2
+    diff:
+      specifier: ^8.0.2
+      version: 8.0.2
   peer:
     '@arethetypeswrong/core':
       specifier: ^0.18.2
@@ -105,22 +122,13 @@ catalogs:
       specifier: ^0.5.6
       version: 0.5.6
   prod:
-    '@clack/prompts':
-      specifier: ^0.11.0
-      version: 0.11.0
     ansis:
       specifier: ^4.2.0
       version: 4.2.0
     cac:
       specifier: ^6.7.14
       version: 6.7.14
-    diff:
-      specifier: ^8.0.2
-      version: 8.0.2
     empathic:
-      specifier: ^2.0.0
-      version: 2.0.0
-    giget:
       specifier: ^2.0.0
       version: 2.0.0
     hookable:
@@ -171,9 +179,6 @@ importers:
       cac:
         specifier: catalog:prod
         version: 6.7.14
-      diff:
-        specifier: catalog:prod
-        version: 8.0.2
       empathic:
         specifier: catalog:prod
         version: 2.0.0
@@ -324,17 +329,35 @@ importers:
   packages/create-tsdown:
     dependencies:
       '@clack/prompts':
-        specifier: catalog:prod
+        specifier: catalog:create
         version: 0.11.0
       cac:
         specifier: catalog:prod
         version: 6.7.14
       giget:
-        specifier: catalog:prod
+        specifier: catalog:create
         version: 2.0.0
       package-manager-detector:
         specifier: catalog:prod
         version: 1.6.0
+
+  packages/migrate:
+    dependencies:
+      '@antfu/ni':
+        specifier: catalog:migrate
+        version: 27.0.1
+      ansis:
+        specifier: catalog:prod
+        version: 4.2.0
+      cac:
+        specifier: catalog:prod
+        version: 6.7.14
+      consola:
+        specifier: catalog:migrate
+        version: 3.4.2
+      diff:
+        specifier: catalog:migrate
+        version: 8.0.2
 
 packages:
 
@@ -343,6 +366,11 @@ packages:
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
+
+  '@antfu/ni@27.0.1':
+    resolution: {integrity: sha512-I6SOlwJ0MN73ECYcr7VJHpqSseyd7bpshx6JAaD0zNowS4kSWzFsqg8ikQT7DnCLiD4AZ+FaQJQ8WAk0Qi89Vw==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   '@arethetypeswrong/core@0.18.2':
     resolution: {integrity: sha512-GiwTmBFOU1/+UVNqqCGzFJYfBXEytUkiI+iRZ6Qx7KmUVtLm00sYySkfe203C9QtPG11yOz1ZaMek8dT/xnlgg==}
@@ -2178,6 +2206,9 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  fzf@0.5.2:
+    resolution: {integrity: sha512-Tt4kuxLXFKHy8KT40zwsUPUkg1CrsgY25FxA2U/j/0WgEDCk3ddc/zLTCCcbSHX9FcKtLuVaDGtGE/STWC+j3Q==}
+
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
@@ -3699,6 +3730,14 @@ snapshots:
       package-manager-detector: 1.6.0
       tinyexec: 1.0.2
 
+  '@antfu/ni@27.0.1':
+    dependencies:
+      ansis: 4.2.0
+      fzf: 0.5.2
+      package-manager-detector: 1.6.0
+      tinyexec: 1.0.2
+      tinyglobby: 0.2.15
+
   '@arethetypeswrong/core@0.18.2':
     dependencies:
       '@andrewbranch/untar.js': 1.0.3
@@ -3739,14 +3778,14 @@ snapshots:
   '@babel/template@7.27.2':
     dependencies:
       '@babel/code-frame': 7.27.1
-      '@babel/parser': 7.27.7
+      '@babel/parser': 7.28.5
       '@babel/types': 7.28.5
 
   '@babel/traverse@7.27.7':
     dependencies:
       '@babel/code-frame': 7.27.1
       '@babel/generator': 7.28.5
-      '@babel/parser': 7.27.7
+      '@babel/parser': 7.28.5
       '@babel/template': 7.27.2
       '@babel/types': 7.28.5
       debug: 4.4.3
@@ -5699,6 +5738,8 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
+
+  fzf@0.5.2: {}
 
   get-caller-file@2.0.5: {}
 

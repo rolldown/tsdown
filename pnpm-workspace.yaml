@@ -47,12 +47,9 @@ catalogs:
     unplugin-unused: ^0.5.6
 
   prod:
-    '@clack/prompts': ^0.11.0
     ansis: ^4.2.0
     cac: ^6.7.14
-    diff: ^8.0.2
     empathic: ^2.0.0
-    giget: ^2.0.0
     hookable: ^5.5.3
     is-in-ci: ^2.0.0
     obug: ^2.1.1
@@ -65,6 +62,15 @@ catalogs:
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.1
     unrun: ^0.2.14
+
+  create:
+    '@clack/prompts': ^0.11.0
+    giget: ^2.0.0
+
+  migrate:
+    '@antfu/ni': ^27.0.1
+    consola: ^3.4.2
+    diff: ^8.0.2
 
 ignoredBuiltDependencies:
   - rolldown
