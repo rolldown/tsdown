@@ -61,15 +61,7 @@ export async function attw(options: ResolvedConfig): Promise<void> {
     options.logger.warn('attw is enabled but package.json is not found')
     return
   }
-  let { profile = 'strict', level = 'warn', ...attwOptions } = options.attw
-
-  // @ts-expect-error - deprecated key
-  if (profile === 'esmOnly') {
-    options.logger.warn(
-      'attw option "esmOnly" is deprecated, use "esm-only" instead',
-    )
-    profile = 'esm-only'
-  }
+  const { profile = 'strict', level = 'warn', ...attwOptions } = options.attw
 
   const t = performance.now()
   debug('Running attw check')
