@@ -1,13 +1,13 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bold, green } from 'ansis'
+import { clearCJSCache } from 'import-without-cache'
 import {
   build as rolldownBuild,
   watch as rolldownWatch,
   type BuildOptions,
   type RolldownWatcher,
 } from 'rolldown'
-import { setNoCacheLoad } from './config/config.ts'
 import {
   resolveConfig,
   type DebugOptions,
@@ -62,8 +62,7 @@ export async function build(
     restarting = true
 
     await Promise.all(disposeCbs.map((cb) => cb()))
-
-    setNoCacheLoad()
+    clearCJSCache()
     build(userOptions)
   }
 

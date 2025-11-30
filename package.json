@@ -92,6 +92,7 @@
     "cac": "catalog:prod",
     "empathic": "catalog:prod",
     "hookable": "catalog:prod",
+    "import-without-cache": "catalog:prod",
     "obug": "catalog:prod",
     "rolldown": "catalog:prod",
     "rolldown-plugin-dts": "catalog:prod",

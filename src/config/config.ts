@@ -3,6 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
+import { init, isSupported } from 'import-without-cache'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
@@ -52,11 +53,6 @@ export async function loadViteConfig(
 }
 
 const configPrefix = 'tsdown.config'
-let noCacheLoad = false
-
-export function setNoCacheLoad(): void {
-  noCacheLoad = true
-}
 
 export async function loadConfigFile(
   inlineConfig: InlineConfig,
@@ -110,7 +106,7 @@ export async function loadConfigFile(
     sources,
     cwd,
     stopAt: workspace && path.dirname(workspace),
-  }).load(noCacheLoad)
+  }).load(true)
 
   let exported: UserConfigExport = []
   let file: string | undefined
@@ -146,15 +142,13 @@ type Parser = 'native' | 'unrun'
 function resolveConfigLoader(
   configLoader: InlineConfig['configLoader'] = 'auto',
 ): Parser {
-  if (noCacheLoad) {
-    return 'unrun'
-  } else if (configLoader === 'auto') {
+  if (configLoader === 'auto') {
     const nativeTS = !!(
       process.features.typescript ||
       process.versions.bun ||
       process.versions.deno
     )
-    return nativeTS ? 'native' : 'unrun'
+    return nativeTS && isSupported ? 'native' : 'unrun'
   } else {
     return configLoader === 'native' ? 'native' : 'unrun'
   }
@@ -184,7 +178,18 @@ function createParser(loader: Parser) {
 }
 
 async function nativeImport(id: string) {
-  const mod = await import(pathToFileURL(id).href).catch((error) => {
+  const url = pathToFileURL(id)
+  const importAttributes: Record<string, string> = Object.create(null)
+  if (isSupported) {
+    importAttributes.cache = 'no'
+    init()
+  } else {
+    url.searchParams.set('no-cache', crypto.randomUUID())
+  }
+
+  const mod = await import(url.href, {
+    with: importAttributes,
+  }).catch((error) => {
     const cannotFindModule = error?.message?.includes?.('Cannot find module')
     if (cannotFindModule) {
       const configError = new Error(
