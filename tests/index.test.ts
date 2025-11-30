@@ -616,3 +616,35 @@ test('incorrect config', async (context) => {
   `)
   restoreCwd()
 })
+
+describe('import.meta.glob', () => {
+  test('async', async (context) => {
+    const files = {
+      'index.ts': `
+      export const modules = import.meta.glob('./modules/*.ts');
+    `,
+      'modules/a.ts': `export const a = 1;`,
+      'modules/b.ts': `export const b = 2;`,
+    }
+    const { outputFiles } = await testBuild({
+      context,
+      files,
+    })
+    expect(outputFiles.length).toBe(3)
+  })
+
+  test('eager', async (context) => {
+    const files = {
+      'index.ts': `
+      export const modules = import.meta.glob('./modules/*.ts', { eager: true });
+    `,
+      'modules/a.ts': `export const a = 1;`,
+      'modules/b.ts': `export const b = 2;`,
+    }
+    const { outputFiles } = await testBuild({
+      context,
+      files,
+    })
+    expect(outputFiles.length).toBe(1)
+  })
+})
