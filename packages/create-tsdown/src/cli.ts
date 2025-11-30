@@ -7,9 +7,7 @@ import { create, templateOptions, type Options } from './index.ts'
 const cli = cac(pkg.name).version(pkg.version).help()
 
 cli
-  .command('[path]', 'Create a tsdown project', {
-    ignoreOptionDefaultValue: true,
-  })
+  .command('[path]', 'Create a tsdown project')
   .option(
     '-t, --template <template>',
     `Available templates: ${templateOptions.map((option) => option.value).join(', ')}`,
