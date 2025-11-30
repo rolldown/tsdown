@@ -17,7 +17,7 @@ import type {
   UserConfigExport as ViteUserConfigExport,
 } from 'vite'
 
-const debug = createDebug('tsdown:config')
+const debug = createDebug('tsdown:config:file')
 
 export async function loadViteConfig(
   prefix: string,
@@ -31,12 +31,12 @@ export async function loadViteConfig(
     sources: [
       {
         files: [`${prefix}.config`],
-        extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+        extensions: ['js', 'mjs', 'ts', 'cjs', 'mts', 'mts'],
         parser,
       },
     ],
     cwd,
-  }).load()
+  }).load(true)
   if (!result) return
 
   const { config, source } = result
@@ -96,7 +96,7 @@ export async function loadConfigFile(
     : [
         {
           files: [configPrefix],
-          extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', ''],
+          extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json'],
           parser,
         },
         { files: ['package.json'], parser },

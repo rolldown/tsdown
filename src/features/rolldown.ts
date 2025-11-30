@@ -12,15 +12,15 @@ import {
 } from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
-import {
-  mergeUserOptions,
-  type DtsOptions,
-  type NormalizedFormat,
-  type ResolvedConfig,
-} from '../config/index.ts'
+import { mergeUserOptions } from '../config/options.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
+import type {
+  DtsOptions,
+  NormalizedFormat,
+  ResolvedConfig,
+} from '../config/index.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'

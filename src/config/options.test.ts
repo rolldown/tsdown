@@ -1,6 +1,6 @@
 import isInCi from 'is-in-ci'
 import { describe, expect, test } from 'vitest'
-import { resolveFeatureOption as _resolveFeatureOption } from './index.ts'
+import { resolveFeatureOption as _resolveFeatureOption } from './options.ts'
 
 const defaultOption = { a: 1 }
 interface DefaultOption {
