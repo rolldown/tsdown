@@ -60,7 +60,7 @@ cli
   .option('-W, --workspace [dir]', 'Enable workspace mode')
   .option(
     '-F, --filter <pattern>',
-    'Filter workspace packages, e.g. /regex/ or substring',
+    'Filter configs (cwd or name), e.g. /pkg-name$/ or pkg-name',
   )
   .option(
     '--exports',

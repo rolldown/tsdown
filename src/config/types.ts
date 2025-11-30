@@ -499,9 +499,9 @@ export interface InlineConfig extends UserConfig {
   configLoader?: 'auto' | 'native' | 'unconfig' | 'unrun'
 
   /**
-   * Filter workspace packages. This option is only available in workspace mode.
+   * Filter configs by cwd or name.
    */
-  filter?: RegExp | string | string[]
+  filter?: RegExp | Arrayable<string>
 }
 
 export type UserConfigFn = (

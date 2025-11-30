@@ -30,7 +30,7 @@ import type {
 
 export * from './types.ts'
 
-const debug = createDebug('tsdown:options')
+const debugLog = createDebug('tsdown:options')
 
 const DEFAULT_EXCLUDE_WORKSPACE = [
   '**/node_modules/**',
@@ -52,16 +52,16 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
   configs: ResolvedConfig[]
   files: string[]
 }> {
-  debug('inline config %O', inlineConfig)
+  debugLog('inline config %O', inlineConfig)
 
   const { configs: rootConfigs, file } = await loadConfigFile(inlineConfig)
   const files: string[] = []
   if (file) {
     files.push(file)
-    debug('loaded root user config file %s', file)
-    debug('root user configs %O', rootConfigs)
+    debugLog('loaded root user config file %s', file)
+    debugLog('root user configs %O', rootConfigs)
   } else {
-    debug('no root user config file found')
+    debugLog('no root user config file found')
   }
 
   const configs: ResolvedConfig[] = (
@@ -72,15 +72,22 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
         if (workspaceFiles) {
           files.push(...workspaceFiles)
         }
-        return Promise.all(
-          workspaceConfigs
-            .filter((config) => !config.workspace || config.entry)
-            .map((config) => resolveUserConfig(config, inlineConfig)),
-        )
+        return (
+          await Promise.all(
+            workspaceConfigs
+              .filter((config) => !config.workspace || config.entry)
+              .map((config) => resolveUserConfig(config, inlineConfig)),
+          )
+        ).filter((config) => !!config)
       }),
     )
   ).flat()
-  debug('resolved configs %O', configs)
+  debugLog('resolved configs %O', configs)
+
+  if (configs.length === 0) {
+    throw new Error('No valid configuration found.')
+  }
+
   return { configs, files }
 }
 
@@ -89,7 +96,8 @@ async function resolveWorkspace(
   inlineConfig: InlineConfig,
 ): Promise<{ configs: UserConfig[]; files?: string[] }> {
   const normalized = { ...config, ...inlineConfig }
-  const rootCwd = normalized.cwd || process.cwd()
+  const rootCwd = config.cwd!
+
   let { workspace } = normalized
   if (!workspace) return { configs: [normalized], files: [] }
 
@@ -130,25 +138,11 @@ async function resolveWorkspace(
     throw new Error('No workspace packages found, please check your config')
   }
 
-  if (inlineConfig.filter) {
-    inlineConfig.filter = resolveRegex(inlineConfig.filter)
-    packages = packages.filter((path) => {
-      return typeof inlineConfig.filter === 'string'
-        ? path.includes(inlineConfig.filter)
-        : Array.isArray(inlineConfig.filter)
-          ? inlineConfig.filter.some((filter) => path.includes(filter))
-          : inlineConfig.filter!.test(path)
-    })
-    if (packages.length === 0) {
-      throw new Error('No packages matched the filters')
-    }
-  }
-
   const files: string[] = []
   const configs = (
     await Promise.all(
       packages.map(async (cwd) => {
-        debug('loading workspace config %s', cwd)
+        debugLog('loading workspace config %s', cwd)
         const { configs, file } = await loadConfigFile(
           {
             ...inlineConfig,
@@ -158,17 +152,13 @@ async function resolveWorkspace(
           cwd,
         )
         if (file) {
-          debug('loaded workspace config file %s', file)
+          debugLog('loaded workspace config file %s', file)
           files.push(file)
         } else {
-          debug('no workspace config file found in %s', cwd)
+          debugLog('no workspace config file found in %s', cwd)
         }
         return configs.map(
-          (config): UserConfig => ({
-            ...normalized,
-            cwd,
-            ...config,
-          }),
+          (config): UserConfig => ({ ...normalized, ...config }),
         )
       }),
     )
@@ -177,10 +167,29 @@ async function resolveWorkspace(
   return { configs, files }
 }
 
+function filterConfig(
+  filter: InlineConfig['filter'],
+  configCwd: string,
+  name?: string,
+) {
+  if (!filter) return true
+
+  let cwd = path.relative(process.cwd(), configCwd)
+  if (cwd === '') cwd = '.'
+
+  if (filter instanceof RegExp) {
+    return (name && filter.test(name)) || filter.test(cwd)
+  }
+
+  return toArray(filter).some(
+    (value) => (name && name === value) || cwd === value,
+  )
+}
+
 async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,
-): Promise<ResolvedConfig> {
+): Promise<ResolvedConfig | undefined> {
   let {
     entry,
     format = ['es'],
@@ -228,6 +237,16 @@ async function resolveUserConfig(
     debug = false,
   } = userConfig
 
+  const pkg = await readPackageJson(cwd)
+  if (workspace) {
+    name ||= pkg?.name
+  }
+
+  if (!filterConfig(inlineConfig.filter, cwd, name)) {
+    debugLog('[filter] skipping config %s', cwd)
+    return
+  }
+
   const logger = createLogger(logLevel, {
     customLogger,
     failOnWarn: resolveFeatureOption(failOnWarn, true),
@@ -253,10 +272,6 @@ async function resolveUserConfig(
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
 
-  const pkg = await readPackageJson(cwd)
-  if (workspace) {
-    name ||= pkg?.name
-  }
   entry = await resolveEntry(logger, entry, cwd, name)
   if (dts == null) {
     dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))

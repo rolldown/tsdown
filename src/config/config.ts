@@ -132,7 +132,7 @@ export async function loadConfigFile(
   }
 
   return {
-    configs: exported,
+    configs: exported.map((config) => ({ cwd, ...config })),
     file,
   }
 }
