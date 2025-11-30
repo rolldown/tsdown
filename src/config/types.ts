@@ -496,7 +496,7 @@ export interface InlineConfig extends UserConfig {
    * Config loader to use. It can only be set via CLI or API.
    * @default 'auto'
    */
-  configLoader?: 'auto' | 'native' | 'unconfig' | 'unrun'
+  configLoader?: 'auto' | 'native' | 'unrun'
 
   /**
    * Filter configs by cwd or name.
