@@ -142,16 +142,15 @@ export async function loadConfigFile(
 
 type Parser = 'native' | 'unrun'
 
+const isBun = !!process.versions.bun
+const nativeTS = process.features.typescript || process.versions.deno
+const autoLoader = isBun || (nativeTS && isSupported) ? 'native' : 'unrun'
+
 function resolveConfigLoader(
   configLoader: InlineConfig['configLoader'] = 'auto',
 ): Parser {
   if (configLoader === 'auto') {
-    const nativeTS = !!(
-      process.features.typescript ||
-      process.versions.bun ||
-      process.versions.deno
-    )
-    return nativeTS && isSupported ? 'native' : 'unrun'
+    return autoLoader
   } else {
     return configLoader === 'native' ? 'native' : 'unrun'
   }
@@ -186,7 +185,7 @@ async function nativeImport(id: string) {
   if (isSupported) {
     importAttributes.cache = 'no'
     init()
-  } else {
+  } else if (!isBun) {
     url.searchParams.set('no-cache', crypto.randomUUID())
   }
 

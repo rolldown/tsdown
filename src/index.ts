@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bold, green } from 'ansis'
-import { clearCJSCache } from 'import-without-cache'
+import { clearRequireCache } from 'import-without-cache'
 import {
   build as rolldownBuild,
   watch as rolldownWatch,
@@ -62,7 +62,7 @@ export async function build(
     restarting = true
 
     await Promise.all(disposeCbs.map((cb) => cb()))
-    clearCJSCache()
+    clearRequireCache()
     build(userOptions)
   }
 
