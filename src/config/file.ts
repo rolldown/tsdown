@@ -112,7 +112,10 @@ export async function loadConfigFile(
   let file: string | undefined
   if (result) {
     ;({ config: exported, source: file } = result)
-    globalLogger.info(`Using tsdown config: ${underline(file)}`)
+    globalLogger.info(
+      `config file: ${underline(file)}`,
+      loader === 'native' ? '' : `(${loader})`,
+    )
 
     exported = await exported
     if (typeof exported === 'function') {
