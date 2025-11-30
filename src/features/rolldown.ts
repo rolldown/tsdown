@@ -276,7 +276,7 @@ export async function debugBuildOptions(
   format: NormalizedFormat,
   buildOptions: BuildOptions,
 ): Promise<void> {
-  const outFile = join(dir, `tsdown.config.${format}.js`)
+  const outFile = join(dir, `rolldown.config.${format}.js`)
 
   handlePluginInspect(buildOptions.plugins)
   const serialized = util.formatWithOptions(
