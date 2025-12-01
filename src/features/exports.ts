@@ -36,6 +36,8 @@ export interface ExportsOptions {
   ) => Awaitable<Record<string, any>>
 }
 
+export const exportsState: Map<string, Set<TsdownChunks>> = new Map()
+
 export async function writeExports(
   options: ResolvedConfig,
   chunks: TsdownChunks,
@@ -47,10 +49,19 @@ export async function writeExports(
     throw new Error('`package.json` not found, cannot write exports')
   }
 
+  const stateKey = `${pkg.packageJsonPath as string}::${outDir}`
+  let chunkSets = exportsState.get(stateKey)
+  if (!chunkSets) {
+    chunkSets = new Set()
+    exportsState.set(stateKey, chunkSets)
+  }
+  chunkSets.add(chunks)
+  const mergedChunks = mergeChunks(chunkSets)
+
   const { publishExports, ...generated } = await generateExports(
     pkg,
     outDir,
-    chunks,
+    mergedChunks,
     options.exports,
   )
 
@@ -271,4 +282,19 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   }
 
   return false
+}
+
+function mergeChunks(chunkSets: Set<TsdownChunks>): TsdownChunks {
+  const merged: TsdownChunks = {}
+  for (const chunkSet of chunkSets) {
+    for (const [format, chunks] of Object.entries(chunkSet) as [
+      NormalizedFormat,
+      (OutputChunk | OutputAsset)[],
+    ][]) {
+      if (!chunks.length) continue
+      const target = (merged[format] ||= [])
+      target.push(...chunks)
+    }
+  }
+  return merged
 }
