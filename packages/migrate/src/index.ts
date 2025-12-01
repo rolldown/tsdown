@@ -24,8 +24,8 @@ export async function migrate({ cwd, dryRun }: MigrateOptions): Promise<void> {
   } else {
     const confirm = await consola.prompt(
       `Before proceeding, review the migration guide at ${underline`https://tsdown.dev/guide/migrate-from-tsup`}, as this process will modify your files.\n` +
-      `Uncommitted changes will be lost. Use the ${green`--dry-run`} flag to preview changes without applying them.\n\n` +
-      'Continue?',
+        `Uncommitted changes will be lost. Use the ${green`--dry-run`} flag to preview changes without applying them.\n\n` +
+        'Continue?',
       { type: 'confirm' },
     )
     if (!confirm) {
