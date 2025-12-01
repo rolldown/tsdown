@@ -216,15 +216,15 @@ describe.concurrent('generateExports', () => {
         "exports": {
           ".": {
             "dev": "./SRC/index.js",
-            "import": "./index.js",
-            "require": "./index.cjs"
+            "require": "./index.cjs",
+            "import": "./index.js"
           },
           "./package.json": "./package.json"
         },
         "publishExports": {
           ".": {
-            "import": "./index.js",
-            "require": "./index.cjs"
+            "require": "./index.cjs",
+            "import": "./index.js"
           },
           "./package.json": "./package.json"
         }
