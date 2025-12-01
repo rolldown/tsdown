@@ -3,14 +3,11 @@ import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../utils/format.ts'
 import { slash } from '../utils/general.ts'
+import type { TsdownChunks } from '../config/chunks.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
 import type { Awaitable } from '../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 import type { OutputAsset, OutputChunk } from 'rolldown'
-
-export type TsdownChunks = Partial<
-  Record<NormalizedFormat, Array<OutputChunk | OutputAsset>>
->
 
 export interface ExportsOptions {
   /**
@@ -36,7 +33,10 @@ export interface ExportsOptions {
   ) => Awaitable<Record<string, any>>
 }
 
-export const exportsState: Map<string, Set<TsdownChunks>> = new Map()
+export const exportsState: Map<
+  string /* packagePath::outDir */,
+  Set<TsdownChunks>
+> = new Map()
 
 export async function writeExports(
   options: ResolvedConfig,
@@ -49,7 +49,7 @@ export async function writeExports(
     throw new Error('`package.json` not found, cannot write exports')
   }
 
-  const stateKey = `${pkg.packageJsonPath as string}::${outDir}`
+  const stateKey = `${pkg.packageJsonPath}::${outDir}`
   let chunkSets = exportsState.get(stateKey)
   if (!chunkSets) {
     chunkSets = new Set()
@@ -98,8 +98,7 @@ export async function generateExports(
   exports: Record<string, any>
   publishExports?: Record<string, any>
 }> {
-  const pkgJsonPath = pkg.packageJsonPath as string
-  const pkgRoot = path.dirname(pkgJsonPath)
+  const pkgRoot = path.dirname(pkg.packageJsonPath)
   const outDirRelative = slash(path.relative(pkgRoot, outDir))
 
   let main: string | undefined,

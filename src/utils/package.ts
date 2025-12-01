@@ -7,9 +7,13 @@ import type { PackageJson } from 'pkg-types'
 
 const debug = createDebug('tsdown:package')
 
+export interface PackageJsonWithPath extends PackageJson {
+  packageJsonPath: string
+}
+
 export async function readPackageJson(
   dir: string,
-): Promise<PackageJson | undefined> {
+): Promise<PackageJsonWithPath | undefined> {
   const packageJsonPath = findPackage({ cwd: dir })
   if (!packageJsonPath) return
   debug('Reading package.json:', packageJsonPath)

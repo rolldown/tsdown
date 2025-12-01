@@ -1,7 +1,7 @@
 import type { AttwOptions } from '../features/attw.ts'
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { DebugOptions } from '../features/debug.ts'
-import type { ExportsOptions, TsdownChunks } from '../features/exports.ts'
+import type { ExportsOptions } from '../features/exports.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -17,7 +17,7 @@ import type {
 } from '../features/output.ts'
 import type { ReportOptions } from '../features/report.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
-import type { PackageType } from '../utils/package.ts'
+import type { PackageJsonWithPath, PackageType } from '../utils/package.ts'
 import type {
   Arrayable,
   Awaitable,
@@ -25,7 +25,6 @@ import type {
   Overwrite,
 } from '../utils/types.ts'
 import type { Hookable } from 'hookable'
-import type { PackageJson } from 'pkg-types'
 import type { Options as PublintOptions } from 'publint'
 import type {
   ExternalOption,
@@ -41,6 +40,7 @@ import type {
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 import type { Options as UnusedOptions } from 'unplugin-unused'
 
+export * from './chunks.ts'
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
 export type NormalizedFormat = InternalModuleFormat
@@ -59,12 +59,12 @@ export type {
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
+  PackageJsonWithPath,
   PackageType,
   PublintOptions,
   ReportOptions,
   RolldownContext,
   TreeshakingOptions,
-  TsdownChunks,
   TsdownHooks,
   UnusedOptions,
 }
@@ -545,7 +545,7 @@ export type ResolvedConfig = Overwrite<
     format: NormalizedFormat[]
     target?: string[]
     clean: string[]
-    pkg?: PackageJson
+    pkg?: PackageJsonWithPath
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>

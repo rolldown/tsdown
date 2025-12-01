@@ -19,11 +19,7 @@ import { attw } from './features/attw.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
-import {
-  exportsState,
-  writeExports,
-  type TsdownChunks,
-} from './features/exports.ts'
+import { exportsState, writeExports } from './features/exports.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { publint } from './features/publint.ts'
 import {
@@ -35,13 +31,10 @@ import { shortcuts } from './features/shortcuts.ts'
 import { endsWithConfig, type WatchContext } from './features/watch.ts'
 import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
+import type { TsdownBundle, TsdownChunks } from './config/chunks.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
-
-export interface TsdownBundle extends AsyncDisposable {
-  chunks: TsdownChunks
-}
 
 /**
  * Build with tsdown.

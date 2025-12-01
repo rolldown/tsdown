@@ -3,7 +3,7 @@ import type { ResolvedConfig } from '../config/types.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 export const endsWithConfig: RegExp =
-  /[\\/](?:tsdown\.config.*|tsconfig\.json)$/
+  /[\\/](?:tsdown\.config.*|package\.json|tsconfig\.json)$/
 
 export interface WatchContext {
   config: ResolvedConfig
@@ -32,6 +32,9 @@ export function WatchPlugin(
         for (const file of resolveComma(toArray(config.watch))) {
           this.addWatchFile(file)
         }
+      }
+      if (config.pkg) {
+        this.addWatchFile(config.pkg.packageJsonPath)
       }
     },
     generateBundle: {
