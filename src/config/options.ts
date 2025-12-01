@@ -77,6 +77,7 @@ export async function resolveUserConfig(
     inlineOnly,
     fixedExtension = platform === 'node',
     debug = false,
+    write = true,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -238,6 +239,7 @@ export async function resolveUserConfig(
     unbundle,
     unused,
     watch,
+    write,
   }
 
   return config

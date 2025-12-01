@@ -81,12 +81,8 @@ export async function build(
     for (const bundle of bundles) {
       disposeCbs.push(bundle[asyncDispose])
     }
-
-    return undefined as never
-  }
-
-  // build done
-  if (firstDevtoolsConfig) {
+  } else if (firstDevtoolsConfig) {
+    // build done, start devtools
     const { start } = await importWithError<
       typeof import('@vitejs/devtools/cli-commands')
     >('@vitejs/devtools/cli-commands')

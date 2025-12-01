@@ -59,6 +59,7 @@ export async function getBuildOptions(
   const rolldownConfig: BuildOptions = {
     ...inputOptions,
     output: outputOptions,
+    write: config.write,
   }
   debug(
     'rolldown config with format "%s" %O',

@@ -260,6 +260,12 @@ export interface UserConfig {
   /** @default 'dist' */
   outDir?: string
   /**
+   * Whether to write the files to disk.
+   * This option is incompatible with watch mode.
+   * @default true
+   */
+  write?: boolean
+  /**
    * Whether to generate source map files.
    *
    * Note that this option will always be `true` if you have
