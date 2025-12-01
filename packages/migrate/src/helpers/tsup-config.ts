@@ -4,6 +4,34 @@ import consola from 'consola'
 import { createTwoFilesPatch } from 'diff'
 import { outputDiff } from '../utils.ts'
 
+export interface TransformResult {
+  code: string
+  warnings: string[]
+}
+
+/**
+ * Transform tsup config code to tsdown config code.
+ * This function applies all migration rules and returns the transformed code
+ * along with any warnings for unsupported options.
+ *
+ * @param input - The tsup config source code
+ * @returns The transformed code and warnings
+ */
+export function transformTsupConfig(input: string): TransformResult {
+  // TODO: Implement transformation logic
+  // This is a stub for TDD - tests will fail until implemented
+
+  const warnings: string[] = []
+  let code = input
+
+  // Basic tsup -> tsdown replacement (existing logic)
+  code = code
+    .replaceAll(/\btsup\b/g, 'tsdown')
+    .replaceAll(/\bTSUP\b/g, 'TSDOWN')
+
+  return { code, warnings }
+}
+
 const TSUP_FILES = [
   'tsup.config.ts',
   'tsup.config.cts',
