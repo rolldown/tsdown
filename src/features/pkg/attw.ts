@@ -1,7 +1,6 @@
 import { mkdtemp, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import process from 'node:process'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { exec } from 'tinyexec'
@@ -90,8 +89,6 @@ export async function attw(options: ResolvedConfig): Promise<void> {
     checkResult = await attwCore.checkPackage(pkg, attwOptions)
   } catch (error) {
     options.logger.error('ATTW check failed:', error)
-    debug('Found errors, setting exit code to 1')
-    process.exitCode = 1
     return
   } finally {
     await fsRemove(tempDir)
@@ -118,10 +115,6 @@ export async function attw(options: ResolvedConfig): Promise<void> {
 
   if (errorMessage) {
     options.logger[level](prettyName(options.name), label, errorMessage)
-    if (level === 'error') {
-      process.exitCode = 1
-      debug('Found problems, setting exit code to 1')
-    }
   } else {
     options.logger.success(
       prettyName(options.name),

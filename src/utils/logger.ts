@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { bgRed, bgYellow, blue, green, rgb, yellow, type Ansis } from 'ansis'
 import { noop } from './general.ts'
 import type { InternalModuleFormat } from 'rolldown'
@@ -61,10 +62,10 @@ export function createLogger(
     },
 
     warn(...msgs: any[]): void {
-      const message = format(msgs)
       if (failOnWarn) {
-        throw new Error(message)
+        return this.error(...msgs)
       }
+      const message = format(msgs)
       warnedMessages.add(message)
       output('warn', `\n${bgYellow` WARN `} ${message}\n`)
     },
@@ -76,7 +77,7 @@ export function createLogger(
       }
 
       if (failOnWarn) {
-        throw new Error(message)
+        return this.error(...msgs)
       }
       warnedMessages.add(message)
 
@@ -85,6 +86,7 @@ export function createLogger(
 
     error(...msgs: any[]): void {
       output('error', `\n${bgRed` ERROR `} ${format(msgs)}\n`)
+      process.exitCode = 1
     },
 
     success(...msgs: any[]): void {
