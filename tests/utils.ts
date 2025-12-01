@@ -164,8 +164,8 @@ export async function testBuild({
   }
   if (
     userOptions &&
-    Object.prototype.hasOwnProperty.call(userOptions, 'entry') &&
-    userOptions.entry == null
+    userOptions.entry == null &&
+    Object.hasOwn(userOptions, 'entry')
   ) {
     delete resolvedOptions.entry
   }

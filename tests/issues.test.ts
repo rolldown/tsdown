@@ -161,7 +161,12 @@ describe('issues', () => {
     )
     expect(pkg.main).toBe('./dist/index.node.cjs')
     expect(pkg.module).toBe('./dist/index.browser.mjs')
-    expect(pkg.exports['.'].import).toBe('./dist/index.browser.mjs')
-    expect(pkg.exports['.'].require).toBe('./dist/index.node.cjs')
+    expect(pkg.exports).toEqual({
+      '.': {
+        import: './dist/index.browser.mjs',
+        require: './dist/index.node.cjs',
+      },
+      './package.json': './package.json',
+    })
   })
 })

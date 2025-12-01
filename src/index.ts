@@ -20,7 +20,7 @@ import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import {
-  resetExportsState,
+  exportsState,
   writeExports,
   type TsdownChunks,
 } from './features/exports.ts'
@@ -49,9 +49,10 @@ export interface TsdownBundle extends AsyncDisposable {
 export async function build(
   userOptions: InlineConfig = {},
 ): Promise<TsdownBundle[]> {
+  exportsState.clear()
+
   globalLogger.level =
     userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
-  resetExportsState()
   const { configs, files: configFiles } = await resolveConfig(userOptions)
 
   let cleanPromise: Promise<void> | undefined
