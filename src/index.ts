@@ -19,7 +19,11 @@ import { attw } from './features/attw.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
-import { writeExports, type TsdownChunks } from './features/exports.ts'
+import {
+  resetExportsState,
+  writeExports,
+  type TsdownChunks,
+} from './features/exports.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { publint } from './features/publint.ts'
 import {
@@ -47,6 +51,7 @@ export async function build(
 ): Promise<TsdownBundle[]> {
   globalLogger.level =
     userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
+  resetExportsState()
   const { configs, files: configFiles } = await resolveConfig(userOptions)
 
   let cleanPromise: Promise<void> | undefined
