@@ -11,6 +11,7 @@ import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
   matchPattern,
   pkgExists,
+  resolveComma,
   resolveRegex,
   toArray,
 } from '../utils/general.ts'
@@ -20,6 +21,7 @@ import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
 import type {
   CIOption,
+  Format,
   InlineConfig,
   ResolvedConfig,
   UserConfig,
@@ -259,15 +261,23 @@ export async function resolveUserConfig(
     write,
   }
 
-  return normalizeFormat(format).map((format, idx): ResolvedConfig => {
+  const objectFormat = typeof format === 'object' && !Array.isArray(format)
+  const formats = objectFormat
+    ? (Object.keys(format) as Format[])
+    : resolveComma(toArray<Format>(format, 'es'))
+  return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
+    const overrides = objectFormat ? format[fmt] : undefined
     return {
       ...config,
-      format,
       // only copy once
       copy: once ? config.copy : undefined,
       // don't register hooks repeatedly
       hooks: once ? config.hooks : undefined,
+      // only execute once
+      onSuccess: once ? config.onSuccess : undefined,
+      format: normalizeFormat(fmt),
+      ...overrides,
     }
   })
 }

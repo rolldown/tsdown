@@ -257,7 +257,7 @@ export interface UserConfig {
   //#region Output Options
 
   /** @default 'es' */
-  format?: Format | Format[]
+  format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
   /** @default 'dist' */
   outDir?: string
@@ -394,13 +394,6 @@ export interface UserConfig {
   ignoreWatch?: Arrayable<string | RegExp>
 
   /**
-   * You can specify command to be executed after a successful build, specially useful for Watch mode
-   */
-  onSuccess?:
-    | string
-    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
-
-  /**
    * **[experimental]** Enable debug mode.
    *
    * Both debug mode and Vite DevTools are still under development, and this is for early testers only.
@@ -412,6 +405,13 @@ export interface UserConfig {
   debug?: WithEnabled<DebugOptions>
 
   //#region Addons
+
+  /**
+   * You can specify command to be executed after a successful build, specially useful for Watch mode
+   */
+  onSuccess?:
+    | string
+    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
   /**
    * Enables generation of TypeScript declaration files (`.d.ts`).
