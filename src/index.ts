@@ -12,7 +12,6 @@ import {
   resolveConfig,
   type DebugOptions,
   type InlineConfig,
-  type NormalizedFormat,
   type ResolvedConfig,
 } from './config/index.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
@@ -26,11 +25,11 @@ import {
   getDebugRolldownDir,
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
-import { endsWithConfig, type WatchContext } from './features/watch.ts'
+import { endsWithConfig } from './features/watch.ts'
 import {
   addOutDirToChunks,
+  type RolldownChunk,
   type TsdownBundle,
-  type TsdownChunks,
 } from './utils/chunks.ts'
 import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
@@ -73,9 +72,19 @@ export async function build(
 
   globalLogger.info('Build start')
   const bundles = await Promise.all(
-    configs.map((options) =>
-      buildSingle(options, configFiles, clean, restart, done),
-    ),
+    configs.map((options) => {
+      const isDualFormat = options.pkg
+        ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
+        : true
+      return buildSingle(
+        options,
+        configFiles,
+        isDualFormat,
+        clean,
+        restart,
+        done,
+      )
+    }),
   )
 
   const firstDevtoolsConfig = configs.find(
@@ -117,11 +126,12 @@ export async function build(
 export async function buildSingle(
   config: ResolvedConfig,
   configFiles: string[],
+  isDualFormat: boolean,
   clean: () => Promise<void>,
   restart: () => void,
   done: (bundle: TsdownBundle) => Promise<void>,
 ): Promise<TsdownBundle> {
-  const { format: formats, dts, watch, logger, outDir } = config
+  const { format, dts, watch, logger, outDir } = config
   const { hooks, context } = await createHooks(config)
 
   warnLegacyCJS(config)
@@ -134,12 +144,8 @@ export async function buildSingle(
   // output rolldown config for debugging
   const debugRolldownConfigDir = await getDebugRolldownDir()
 
-  const chunks: TsdownChunks = {}
+  const chunks: RolldownChunk[] = []
   let watcher: RolldownWatcher | undefined
-  const watchCtx: Omit<WatchContext, 'chunks'> = {
-    config,
-  }
-
   let ab: AbortController | undefined
 
   let updated = false
@@ -152,19 +158,14 @@ export async function buildSingle(
     },
   }
 
-  const isMultiFormat = formats.length > 1
-  const configsByFormat = (
-    await Promise.all(formats.map((format) => buildOptionsByFormat(format)))
-  ).flat()
+  const configs = await initBuildOptions()
   if (watch) {
-    watcher = rolldownWatch(configsByFormat.map((item) => item[1]))
+    watcher = rolldownWatch(configs)
     handleWatcher(watcher)
   } else {
-    const outputs = await rolldownBuild(configsByFormat.map((item) => item[1]))
-    for (const [i, output] of outputs.entries()) {
-      const format = configsByFormat[i][0]
-      chunks[format] ||= []
-      chunks[format].push(...addOutDirToChunks(output.output, outDir))
+    const outputs = await rolldownBuild(configs)
+    for (const { output } of outputs) {
+      chunks.push(...addOutDirToChunks(output, outDir))
     }
   }
 
@@ -195,10 +196,8 @@ export async function buildSingle(
     watcher.on('event', async (event) => {
       switch (event.code) {
         case 'START': {
-          for (const format of formats) {
-            await cleanupChunks(config.outDir, chunks[format]!)
-            chunks[format]!.length = 0
-          }
+          await cleanupChunks(config.outDir, chunks)
+          chunks.length = 0
           hasError = false
           break
         }
@@ -237,19 +236,14 @@ export async function buildSingle(
     })
   }
 
-  async function buildOptionsByFormat(format: NormalizedFormat) {
-    const watchContext = {
-      ...watchCtx,
-      chunks: (chunks[format] = []),
-    }
-
+  async function initBuildOptions() {
     const buildOptions = await getBuildOptions(
       config,
       format,
       configFiles,
-      watchContext,
+      bundle,
       false,
-      isMultiFormat,
+      isDualFormat,
     )
     await hooks.callHook('build:before', {
       ...context,
@@ -264,21 +258,18 @@ export async function buildSingle(
       )
     }
 
-    const configs: [format: NormalizedFormat, config: BuildOptions][] = [
-      [format, buildOptions],
-    ]
+    const configs: BuildOptions[] = [buildOptions]
     if (format === 'cjs' && dts) {
-      configs.push([
-        format,
+      configs.push(
         await getBuildOptions(
           config,
           format,
           configFiles,
-          watchContext,
+          bundle,
           true,
-          isMultiFormat,
+          isDualFormat,
         ),
-      ])
+      )
     }
 
     return configs

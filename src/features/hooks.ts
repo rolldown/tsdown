@@ -2,7 +2,7 @@ import process from 'node:process'
 import { createHooks as create, type Hookable } from 'hookable'
 import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
-import type { ResolvedConfig, TsdownChunks } from '../config/index.ts'
+import type { ResolvedConfig, RolldownChunk } from '../config/index.ts'
 import type { BuildOptions } from 'rolldown'
 
 export interface BuildContext {
@@ -34,7 +34,7 @@ export interface TsdownHooks {
    * Use this hook for cleanup or post-processing tasks.
    */
   'build:done': (
-    ctx: BuildContext & { chunks: TsdownChunks },
+    ctx: BuildContext & { chunks: RolldownChunk[] },
   ) => void | Promise<void>
 }
 

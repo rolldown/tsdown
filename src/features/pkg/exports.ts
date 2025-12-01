@@ -4,7 +4,7 @@ import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { slash } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
-import type { RolldownChunk, TsdownChunks } from '../../utils/chunks.ts'
+import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -25,7 +25,7 @@ export interface ExportsOptions {
     exports: Record<string, any>,
     context: {
       pkg: PackageJson
-      chunks: TsdownChunks
+      chunks: ChunksByFormat
       isPublish: boolean
     },
   ) => Awaitable<Record<string, any>>
@@ -33,7 +33,7 @@ export interface ExportsOptions {
 
 export async function writeExports(
   options: ResolvedConfig,
-  chunks: TsdownChunks,
+  chunks: ChunksByFormat,
 ): Promise<void> {
   const pkg = options.pkg!
   const exports = options.exports as ExportsOptions
@@ -67,7 +67,7 @@ type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
 
 export async function generateExports(
   pkg: PackageJson,
-  chunks: TsdownChunks,
+  chunks: ChunksByFormat,
   { devExports, all, customExports }: ExportsOptions,
 ): Promise<{
   main: string | undefined
@@ -257,19 +257,4 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   }
 
   return false
-}
-
-export function mergeChunks(chunkSets: TsdownChunks[]): TsdownChunks {
-  const merged: TsdownChunks = {}
-  for (const chunkSet of chunkSets) {
-    for (const [format, chunks] of Object.entries(chunkSet) as [
-      NormalizedFormat,
-      RolldownChunk[],
-    ][]) {
-      if (!chunks.length) continue
-      const target = (merged[format] ||= [])
-      target.push(...chunks)
-    }
-  }
-  return merged
 }

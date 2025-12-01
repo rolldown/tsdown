@@ -20,6 +20,7 @@ import type {
   DtsOptions,
   NormalizedFormat,
   ResolvedConfig,
+  TsdownBundle,
 } from '../config/index.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
@@ -28,7 +29,7 @@ import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
-import { WatchPlugin, type WatchContext } from './watch.ts'
+import { WatchPlugin } from './watch.ts'
 
 const debug = createDebug('tsdown:rolldown')
 
@@ -36,17 +37,17 @@ export async function getBuildOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
   configFiles: string[],
-  watchContext: WatchContext,
+  bundle: TsdownBundle,
   cjsDts: boolean = false,
-  isMultiFormat?: boolean,
+  isDualFormat?: boolean,
 ): Promise<BuildOptions> {
   const inputOptions = await resolveInputOptions(
     config,
     format,
     configFiles,
-    watchContext,
+    bundle,
     cjsDts,
-    isMultiFormat,
+    isDualFormat,
   )
 
   const outputOptions: OutputOptions = await resolveOutputOptions(
@@ -74,9 +75,9 @@ async function resolveInputOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
   configFiles: string[],
-  watchContext: WatchContext,
+  bundle: TsdownBundle,
   cjsDts: boolean,
-  isMultiFormat?: boolean,
+  isDualFormat?: boolean,
 ): Promise<InputOptions> {
   /// keep-sorted
   const {
@@ -157,18 +158,18 @@ async function resolveInputOptions(
         await LightningCSSPlugin({ target }),
       )
     }
-    plugins.push(ShebangPlugin(logger, cwd, name, isMultiFormat))
+    plugins.push(ShebangPlugin(logger, cwd, name, isDualFormat))
     if (globImport) {
       plugins.push(importGlobPlugin())
     }
   }
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
-    plugins.push(ReportPlugin(report, logger, cwd, cjsDts, name, isMultiFormat))
+    plugins.push(ReportPlugin(report, logger, cwd, cjsDts, name, isDualFormat))
   }
 
   if (watch) {
-    plugins.push(WatchPlugin(configFiles, watchContext))
+    plugins.push(WatchPlugin(configFiles, bundle))
   }
 
   if (!cjsDts) {

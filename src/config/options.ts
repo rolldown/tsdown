@@ -31,7 +31,7 @@ const debugLog = createDebug('tsdown:config:options')
 export async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,
-): Promise<ResolvedConfig | undefined> {
+): Promise<ResolvedConfig[]> {
   let {
     entry,
     format = ['es'],
@@ -87,7 +87,7 @@ export async function resolveUserConfig(
 
   if (!filterConfig(inlineConfig.filter, cwd, name)) {
     debugLog('[filter] skipping config %s', cwd)
-    return
+    return []
   }
 
   const logger = createLogger(logLevel, {
@@ -150,7 +150,6 @@ export async function resolveUserConfig(
         prettyName(name),
         'attw is enabled but package.json is not found',
       )
-      return
     }
   }
 
@@ -219,7 +218,7 @@ export async function resolveUserConfig(
   }
 
   /// keep-sorted
-  const config: ResolvedConfig = {
+  const config: Omit<ResolvedConfig, 'format'> = {
     ...userConfig,
     alias,
     attw,
@@ -234,7 +233,6 @@ export async function resolveUserConfig(
     exports,
     external,
     fixedExtension,
-    format: normalizeFormat(format),
     globImport,
     hash,
     ignoreWatch,
@@ -261,7 +259,17 @@ export async function resolveUserConfig(
     write,
   }
 
-  return config
+  return normalizeFormat(format).map((format, idx): ResolvedConfig => {
+    const once = idx === 0
+    return {
+      ...config,
+      format,
+      // only copy once
+      copy: once ? config.copy : undefined,
+      // don't register hooks repeatedly
+      hooks: once ? config.hooks : undefined,
+    }
+  })
 }
 
 export async function mergeUserOptions<T extends object, A extends unknown[]>(

@@ -16,11 +16,7 @@ import type {
 import type { AttwOptions } from '../features/pkg/attw.ts'
 import type { ExportsOptions } from '../features/pkg/exports.ts'
 import type { ReportOptions } from '../features/report.ts'
-import type {
-  RolldownChunk,
-  TsdownBundle,
-  TsdownChunks,
-} from '../utils/chunks.ts'
+import type { RolldownChunk, TsdownBundle } from '../utils/chunks.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
 import type { PackageJsonWithPath, PackageType } from '../utils/package.ts'
 import type {
@@ -71,7 +67,6 @@ export type {
   RolldownContext,
   TreeshakingOptions,
   TsdownBundle,
-  TsdownChunks,
   TsdownHooks,
   UnusedOptions,
 }
@@ -555,7 +550,7 @@ export type ResolvedConfig = Overwrite<
     | 'footer'
   >,
   {
-    format: NormalizedFormat[]
+    format: NormalizedFormat
     target?: string[]
     clean: string[]
     pkg?: PackageJsonWithPath

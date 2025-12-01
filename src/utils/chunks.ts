@@ -1,12 +1,10 @@
-import type { ResolvedConfig } from '../config/types.ts'
-import type { InternalModuleFormat, OutputAsset, OutputChunk } from 'rolldown'
+import type { NormalizedFormat, ResolvedConfig } from '../config/types.ts'
+import type { OutputAsset, OutputChunk } from 'rolldown'
 
 export type RolldownChunk = (OutputChunk | OutputAsset) & { outDir: string }
-export type TsdownChunks = Partial<
-  Record<InternalModuleFormat, RolldownChunk[]>
->
+export type ChunksByFormat = Partial<Record<NormalizedFormat, RolldownChunk[]>>
 export interface TsdownBundle extends AsyncDisposable {
-  chunks: TsdownChunks
+  chunks: RolldownChunk[]
   config: ResolvedConfig
 }
 
