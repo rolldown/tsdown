@@ -1,13 +1,12 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
-import { detectIndentation } from '../utils/format.ts'
-import { slash } from '../utils/general.ts'
-import type { TsdownChunks } from '../config/chunks.ts'
-import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
-import type { Awaitable } from '../utils/types.ts'
+import { detectIndentation } from '../../utils/format.ts'
+import { slash } from '../../utils/general.ts'
+import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
+import type { RolldownChunk, TsdownChunks } from '../../utils/chunks.ts'
+import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
-import type { OutputAsset, OutputChunk } from 'rolldown'
 
 export interface ExportsOptions {
   /**
@@ -27,42 +26,22 @@ export interface ExportsOptions {
     context: {
       pkg: PackageJson
       chunks: TsdownChunks
-      outDir: string
       isPublish: boolean
     },
   ) => Awaitable<Record<string, any>>
 }
 
-export const exportsState: Map<
-  string /* packagePath::outDir */,
-  Set<TsdownChunks>
-> = new Map()
-
 export async function writeExports(
   options: ResolvedConfig,
   chunks: TsdownChunks,
 ): Promise<void> {
-  if (!options.exports) return
-
-  const { outDir, pkg } = options
-  if (!pkg) {
-    throw new Error('`package.json` not found, cannot write exports')
-  }
-
-  const stateKey = `${pkg.packageJsonPath}::${outDir}`
-  let chunkSets = exportsState.get(stateKey)
-  if (!chunkSets) {
-    chunkSets = new Set()
-    exportsState.set(stateKey, chunkSets)
-  }
-  chunkSets.add(chunks)
-  const mergedChunks = mergeChunks(chunkSets)
+  const pkg = options.pkg!
+  const exports = options.exports as ExportsOptions
 
   const { publishExports, ...generated } = await generateExports(
     pkg,
-    outDir,
-    mergedChunks,
-    options.exports,
+    chunks,
+    exports,
   )
 
   const updatedPkg = {
@@ -88,7 +67,6 @@ type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
 
 export async function generateExports(
   pkg: PackageJson,
-  outDir: string,
   chunks: TsdownChunks,
   { devExports, all, customExports }: ExportsOptions,
 ): Promise<{
@@ -99,7 +77,6 @@ export async function generateExports(
   publishExports?: Record<string, any>
 }> {
   const pkgRoot = path.dirname(pkg.packageJsonPath)
-  const outDirRelative = slash(path.relative(pkgRoot, outDir))
 
   let main: string | undefined,
     module: string | undefined,
@@ -109,7 +86,7 @@ export async function generateExports(
 
   for (const [format, chunksByFormat] of Object.entries(chunks) as [
     NormalizedFormat,
-    (OutputChunk | OutputAsset)[],
+    RolldownChunk[],
   ][]) {
     if (format !== 'es' && format !== 'cjs') continue
 
@@ -132,6 +109,7 @@ export async function generateExports(
         name = name.slice(0, -2)
       }
       const isIndex = onlyOneEntry || name === 'index'
+      const outDirRelative = slash(path.relative(pkgRoot, chunk.outDir))
       const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${normalizedName}`
 
       if (isIndex) {
@@ -187,7 +165,6 @@ export async function generateExports(
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
-      outDir,
       chunks,
       isPublish: false,
     })
@@ -205,7 +182,6 @@ export async function generateExports(
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
-        outDir,
         chunks,
         isPublish: true,
       })
@@ -283,12 +259,12 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   return false
 }
 
-function mergeChunks(chunkSets: Set<TsdownChunks>): TsdownChunks {
+export function mergeChunks(chunkSets: TsdownChunks[]): TsdownChunks {
   const merged: TsdownChunks = {}
   for (const chunkSet of chunkSets) {
     for (const [format, chunks] of Object.entries(chunkSet) as [
       NormalizedFormat,
-      (OutputChunk | OutputAsset)[],
+      RolldownChunk[],
     ][]) {
       if (!chunks.length) continue
       const target = (merged[format] ||= [])

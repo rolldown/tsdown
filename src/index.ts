@@ -15,13 +15,11 @@ import {
   type NormalizedFormat,
   type ResolvedConfig,
 } from './config/index.ts'
-import { attw } from './features/attw.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
-import { exportsState, writeExports } from './features/exports.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
-import { publint } from './features/publint.ts'
+import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
 import {
   debugBuildOptions,
   getBuildOptions,
@@ -29,9 +27,13 @@ import {
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
 import { endsWithConfig, type WatchContext } from './features/watch.ts'
+import {
+  addOutDirToChunks,
+  type TsdownBundle,
+  type TsdownChunks,
+} from './utils/chunks.ts'
 import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
-import type { TsdownBundle, TsdownChunks } from './config/chunks.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
@@ -42,8 +44,6 @@ const asyncDispose: typeof Symbol.asyncDispose =
 export async function build(
   userOptions: InlineConfig = {},
 ): Promise<TsdownBundle[]> {
-  exportsState.clear()
-
   globalLogger.level =
     userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
   const { configs, files: configFiles } = await resolveConfig(userOptions)
@@ -65,9 +65,17 @@ export async function build(
     build(userOptions)
   }
 
+  const configChunksByPkg = initBundleByPkg(configs)
+
+  function done(bundle: TsdownBundle) {
+    return bundleDone(configChunksByPkg, bundle)
+  }
+
   globalLogger.info('Build start')
   const bundles = await Promise.all(
-    configs.map((options) => buildSingle(options, configFiles, clean, restart)),
+    configs.map((options) =>
+      buildSingle(options, configFiles, clean, restart, done),
+    ),
   )
 
   const firstDevtoolsConfig = configs.find(
@@ -111,8 +119,9 @@ export async function buildSingle(
   configFiles: string[],
   clean: () => Promise<void>,
   restart: () => void,
+  done: (bundle: TsdownBundle) => Promise<void>,
 ): Promise<TsdownBundle> {
-  const { format: formats, dts, watch, logger } = config
+  const { format: formats, dts, watch, logger, outDir } = config
   const { hooks, context } = await createHooks(config)
 
   warnLegacyCJS(config)
@@ -133,6 +142,16 @@ export async function buildSingle(
 
   let ab: AbortController | undefined
 
+  let updated = false
+  const bundle: TsdownBundle = {
+    chunks,
+    config,
+    async [asyncDispose]() {
+      ab?.abort()
+      await watcher?.close()
+    },
+  }
+
   const isMultiFormat = formats.length > 1
   const configsByFormat = (
     await Promise.all(formats.map((format) => buildOptionsByFormat(format)))
@@ -145,7 +164,7 @@ export async function buildSingle(
     for (const [i, output] of outputs.entries()) {
       const format = configsByFormat[i][0]
       chunks[format] ||= []
-      chunks[format].push(...output.output)
+      chunks[format].push(...addOutDirToChunks(output.output, outDir))
     }
   }
 
@@ -157,13 +176,7 @@ export async function buildSingle(
     await postBuild()
   }
 
-  return {
-    chunks,
-    async [asyncDispose]() {
-      ab?.abort()
-      await watcher?.close()
-    },
-  }
+  return bundle
 
   function handleWatcher(watcher: RolldownWatcher) {
     const changedFile: string[] = []
@@ -272,10 +285,14 @@ export async function buildSingle(
   }
 
   async function postBuild() {
-    await Promise.all([writeExports(config, chunks), copy(config)])
-    // TODO: perf use one tarball for both attw and publint
-    await Promise.all([publint(config), attw(config)])
+    if (updated) {
+      await copy(config)
+    } else {
+      await done(bundle)
+    }
+
     await hooks.callHook('build:done', { ...context, chunks })
+    updated = true
 
     ab?.abort()
     ab = executeOnSuccess(config)

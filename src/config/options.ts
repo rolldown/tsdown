@@ -5,7 +5,7 @@ import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
 import { resolveEntry } from '../features/entry.ts'
-import { hasExportsTypes } from '../features/exports.ts'
+import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
@@ -14,7 +14,7 @@ import {
   resolveRegex,
   toArray,
 } from '../utils/general.ts'
-import { createLogger } from '../utils/logger.ts'
+import { createLogger, prettyName } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
@@ -134,6 +134,25 @@ export async function resolveUserConfig(
   unused = resolveFeatureOption(unused, {})
   report = resolveFeatureOption(report, {})
   dts = resolveFeatureOption(dts, {})
+
+  if (!pkg) {
+    if (exports) {
+      throw new Error('`package.json` not found, cannot write exports')
+    }
+    if (publint) {
+      logger.warn(
+        prettyName(name),
+        'publint is enabled but package.json is not found',
+      )
+    }
+    if (attw) {
+      logger.warn(
+        prettyName(name),
+        'attw is enabled but package.json is not found',
+      )
+      return
+    }
+  }
 
   if (publicDir) {
     if (copy) {

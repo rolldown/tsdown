@@ -2,9 +2,9 @@ import path from 'node:path'
 import process from 'node:process'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
-import { importWithError } from '../utils/general.ts'
-import { prettyName } from '../utils/logger.ts'
-import type { ResolvedConfig } from '../config/index.ts'
+import { importWithError } from '../../utils/general.ts'
+import { prettyName } from '../../utils/logger.ts'
+import type { ResolvedConfig } from '../../config/index.ts'
 
 const debug = createDebug('tsdown:publint')
 const label = dim`[publint]`

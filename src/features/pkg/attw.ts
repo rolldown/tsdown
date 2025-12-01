@@ -5,10 +5,10 @@ import process from 'node:process'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { exec } from 'tinyexec'
-import { fsRemove } from '../utils/fs.ts'
-import { importWithError } from '../utils/general.ts'
-import { prettyName } from '../utils/logger.ts'
-import type { ResolvedConfig } from '../config/index.ts'
+import { fsRemove } from '../../utils/fs.ts'
+import { importWithError } from '../../utils/general.ts'
+import { prettyName } from '../../utils/logger.ts'
+import type { ResolvedConfig } from '../../config/index.ts'
 import type {
   CheckPackageOptions,
   CheckResult,

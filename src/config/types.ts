@@ -1,7 +1,5 @@
-import type { AttwOptions } from '../features/attw.ts'
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { DebugOptions } from '../features/debug.ts'
-import type { ExportsOptions } from '../features/exports.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -15,7 +13,14 @@ import type {
   OutExtensionFactory,
   OutExtensionObject,
 } from '../features/output.ts'
+import type { AttwOptions } from '../features/pkg/attw.ts'
+import type { ExportsOptions } from '../features/pkg/exports.ts'
 import type { ReportOptions } from '../features/report.ts'
+import type {
+  RolldownChunk,
+  TsdownBundle,
+  TsdownChunks,
+} from '../utils/chunks.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
 import type { PackageJsonWithPath, PackageType } from '../utils/package.ts'
 import type {
@@ -40,7 +45,6 @@ import type {
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 import type { Options as UnusedOptions } from 'unplugin-unused'
 
-export * from './chunks.ts'
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
 export type NormalizedFormat = InternalModuleFormat
@@ -63,8 +67,11 @@ export type {
   PackageType,
   PublintOptions,
   ReportOptions,
+  RolldownChunk,
   RolldownContext,
   TreeshakingOptions,
+  TsdownBundle,
+  TsdownChunks,
   TsdownHooks,
   UnusedOptions,
 }

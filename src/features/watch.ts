@@ -1,3 +1,4 @@
+import { addOutDirToChunks } from '../utils/chunks.ts'
 import { resolveComma, toArray } from '../utils/general.ts'
 import type { ResolvedConfig } from '../config/types.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
@@ -40,7 +41,7 @@ export function WatchPlugin(
     generateBundle: {
       order: 'post',
       handler(outputOptions, bundle) {
-        chunks.push(...Object.values(bundle))
+        chunks.push(...addOutDirToChunks(Object.values(bundle), config.outDir))
       },
     },
   }
