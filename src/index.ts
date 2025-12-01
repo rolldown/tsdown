@@ -275,7 +275,7 @@ export async function buildSingle(
     await Promise.all([writeExports(config, chunks), copy(config)])
     // TODO: perf use one tarball for both attw and publint
     await Promise.all([publint(config), attw(config)])
-    await hooks.callHook('build:done', context)
+    await hooks.callHook('build:done', { ...context, chunks })
 
     ab?.abort()
     ab = executeOnSuccess(config)
