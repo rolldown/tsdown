@@ -3,13 +3,14 @@ import { readFile, unlink, writeFile } from 'node:fs/promises'
 import { Lang, parse } from '@ast-grep/napi'
 import consola from 'consola'
 import { createTwoFilesPatch } from 'diff'
-import { RE_TS } from 'rolldown-plugin-dts'
 import { outputDiff } from '../utils.ts'
 
 export interface TransformResult {
   code: string
   warnings: string[]
 }
+
+const RE_TS = /\.[cm]?ts$/
 
 // Warning messages for unsupported options
 const WARNING_MESSAGES: Record<string, string> = {
