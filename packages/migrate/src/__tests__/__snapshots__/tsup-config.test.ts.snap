@@ -101,6 +101,17 @@ exports[`option transformations > bundle: true should be removed > code 1`] = `
 }"
 `;
 
+exports[`option transformations > entryPoints should transform to entry > code 1`] = `
+"export default {
+  entry: ['src/index.ts'],
+
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
 exports[`option transformations > publicDir should transform to copy > code 1`] = `
 "export default {
   copy: 'public',
@@ -184,7 +195,7 @@ export default {
 
 exports[`warning options > cjsInterop should emit warning > code 1`] = `
 "export default {
-  cjsInterop: true,
+  cjsDefault: true,
 
   format: 'cjs',
   clean: false,
@@ -192,8 +203,6 @@ exports[`warning options > cjsInterop should emit warning > code 1`] = `
   target: false,
 }"
 `;
-
-exports[`warning options > cjsInterop should emit warning > warnings 1`] = `[]`;
 
 exports[`warning options > experimentalDts should emit warning > code 1`] = `
 "export default {

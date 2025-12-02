@@ -21,7 +21,6 @@ const WARNING_MESSAGES: Record<string, string> = {
     'The `metafile` option is not available in tsdown. Consider using Vite DevTools as an alternative.',
   injectStyle:
     'The `injectStyle` option has not yet been implemented in tsdown.',
-  // cjsInterop: 'The `cjsInterop` option is not supported in tsdown.',
   swc: 'The `swc` option is not supported in tsdown. Please use oxc instead.',
   experimentalDts:
     'The `experimentalDts` option is not supported in tsdown. Use the `dts` option instead.',
@@ -80,31 +79,37 @@ export function transformTsupConfig(
   }
 
   // Phase 2: Apply all transformations using regex
-  // 1. Transform unplugin-*/esbuild to unplugin-*/rolldown
+  // - Transform unplugin-*/esbuild to unplugin-*/rolldown
   code = code.replaceAll(
     /(['"])unplugin-([^'"/]+)\/esbuild\1/g,
     '$1unplugin-$2/rolldown$1',
   )
 
-  // 2. Transform esbuildPlugins to plugins
+  // - Transform entryPoints to entry
+  code = code.replaceAll(/\bentryPoints\s*:/g, 'entry:')
+
+  // - Transform esbuildPlugins to plugins
   code = code.replaceAll(/\besbuildPlugins\s*:/g, 'plugins:')
 
-  // 3. Remove bundle: true (it's the default in tsdown)
+  // - Remove bundle: true (it's the default in tsdown)
   code = code.replaceAll(/\bbundle\s*:\s*true\s*,?\s*/g, '')
 
-  // 4. Transform bundle: false to unbundle: true
+  // - Transform bundle: false to unbundle: true
   code = code.replaceAll(/\bbundle\s*:\s*false/g, 'unbundle: true')
 
-  // 5. Transform publicDir to copy
+  // - Transform publicDir to copy
   code = code.replaceAll(/\bpublicDir\s*:/g, 'copy:')
 
-  // 6. Transform removeNodeProtocol: true to nodeProtocol: 'strip'
+  // - Transform removeNodeProtocol: true to nodeProtocol: 'strip'
   code = code.replaceAll(
     /\bremoveNodeProtocol\s*:\s*true/g,
     "nodeProtocol: 'strip'",
   )
 
-  // 7. Basic tsup -> tsdown replacement
+  // - Transform cjsInterop to cjsDefault
+  code = code.replaceAll(/\bcjsInterop\s*:/g, 'cjsDefault:')
+
+  // - Basic tsup -> tsdown replacement
   code = code
     .replaceAll(/\btsup\b/g, 'tsdown')
     .replaceAll(/\bTSUP\b/g, 'TSDOWN')

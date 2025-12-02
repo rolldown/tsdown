@@ -52,6 +52,17 @@ describe('plugin migrations', () => {
 })
 
 describe('option transformations', () => {
+  test('entryPoints should transform to entry', () => {
+    const input = `
+      export default {
+        entryPoints: ['src/index.ts'],
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('entry:')
+    expect(code).not.toContain('entryPoints')
+  })
+
   test('splitting should emit warning', () => {
     const input = `
       export default {
@@ -129,14 +140,15 @@ describe('warning options', () => {
     expect(warnings).toContainEqual(expect.stringContaining('injectStyle'))
   })
 
-  test.fails('cjsInterop should emit warning', () => {
+  test('cjsInterop should emit warning', () => {
     const input = `
       export default {
         cjsInterop: true,
       }
     `
-    const { warnings } = transform(input, 'tsup.config.ts', 1)
-    expect(warnings).toContainEqual(expect.stringContaining('cjsInterop'))
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('cjsDefault')
+    expect(code).not.toContain('cjsInterop')
   })
 
   test('swc should emit warning (use oxc)', () => {
