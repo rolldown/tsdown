@@ -11,7 +11,7 @@ catalogs:
     '@clack/prompts': ^0.11.0
     giget: ^2.0.0
   dev:
-    '@sxzz/eslint-config': ^7.4.0
+    '@sxzz/eslint-config': ^7.4.1
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.13
     '@types/node': ^24.10.1

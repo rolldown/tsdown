@@ -1,28 +1,20 @@
 {
   "name": "tsdown",
+  "type": "module",
   "version": "0.17.0-beta.5",
   "packageManager": "pnpm@10.24.0",
   "description": "The Elegant Bundler for Libraries",
-  "type": "module",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
+  "funding": "https://github.com/sponsors/sxzz",
   "homepage": "http://tsdown.dev/",
-  "bugs": {
-    "url": "https://github.com/rolldown/tsdown/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rolldown/tsdown.git"
   },
-  "author": "Kevin Deng <sxzz@sxzz.moe>",
-  "funding": "https://github.com/sponsors/sxzz",
-  "files": [
-    "client.d.ts",
-    "dist",
-    "esm-shims.js"
-  ],
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "bugs": {
+    "url": "https://github.com/rolldown/tsdown/issues"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./config": "./dist/config.mjs",
@@ -31,6 +23,9 @@
     "./package.json": "./package.json",
     "./client": "./client.d.ts"
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "typesVersions": {
     "*": {
       "*": [
@@ -42,8 +37,16 @@
   "bin": {
     "tsdown": "./dist/run.mjs"
   },
+  "files": [
+    "client.d.ts",
+    "dist",
+    "esm-shims.js"
+  ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   },
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
@@ -128,9 +131,6 @@
     "unplugin-unused": "catalog:peer",
     "vite": "catalog:docs",
     "vitest": "catalog:dev"
-  },
-  "engines": {
-    "node": ">=20.19.0"
   },
   "prettier": "@sxzz/prettier-config"
 }

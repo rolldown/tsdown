@@ -11,9 +11,9 @@
     "strict": true,
     "noUnusedLocals": true,
     "declaration": true,
-    "isolatedDeclarations": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "isolatedDeclarations": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true

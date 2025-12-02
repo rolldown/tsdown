@@ -32,7 +32,7 @@ import {
   type TsdownBundle,
 } from './utils/chunks.ts'
 import { importWithError } from './utils/general.ts'
-import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
+import { globalLogger, prettyName } from './utils/logger.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
@@ -298,4 +298,4 @@ export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 
 export { defineConfig } from './config.ts'
 export * from './config/types.ts'
-export { globalLogger, type Logger }
+export { globalLogger, type Logger } from './utils/logger.ts'

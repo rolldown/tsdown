@@ -1,31 +1,28 @@
 {
   "name": "create-tsdown",
+  "type": "module",
   "version": "0.17.0-beta.5",
   "description": "Create a new tsdown project",
-  "type": "module",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
+  "funding": "https://github.com/sponsors/sxzz",
   "homepage": "http://tsdown.dev/",
-  "bugs": {
-    "url": "https://github.com/rolldown/tsdown/issues"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rolldown/tsdown.git",
     "directory": "packages/create-tsdown"
   },
-  "author": "Kevin Deng <sxzz@sxzz.moe>",
-  "funding": "https://github.com/sponsors/sxzz",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "bugs": {
+    "url": "https://github.com/rolldown/tsdown/issues"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./run": "./dist/run.mjs",
     "./package.json": "./package.json"
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "typesVersions": {
     "*": {
       "*": [
@@ -37,8 +34,14 @@
   "bin": {
     "create-tsdown": "./dist/run.mjs"
   },
+  "files": [
+    "dist"
+  ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   },
   "scripts": {
     "dev": "node ./src/run.ts",
@@ -49,8 +52,5 @@
     "cac": "catalog:prod",
     "giget": "catalog:create",
     "package-manager-detector": "catalog:prod"
-  },
-  "engines": {
-    "node": ">=20.19.0"
   }
 }
