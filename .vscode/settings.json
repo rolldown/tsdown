@@ -3,6 +3,5 @@
   "cSpell.words": ["rolldown", "tsdown"],
   "files.readonlyInclude": {
     "docs/**/reference/api/**": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  }
 }

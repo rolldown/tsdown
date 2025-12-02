@@ -16,6 +16,7 @@ catalogs:
     '@sxzz/test-utils': ^0.5.13
     '@types/node': ^24.10.1
     '@types/semver': ^7.7.1
+    '@typescript/native-preview': 7.0.0-dev.20251202.1
     '@vitest/coverage-v8': 4.0.14
     bumpp: ^10.3.2
     eslint: ^9.39.1
@@ -68,6 +69,7 @@ catalogs:
     unconfig-core: ^7.4.1
     unrun: ^0.2.14
 
+ignoreWorkspaceRootCheck: true
 ignoredBuiltDependencies:
   - rolldown
   - unrs-resolver
