@@ -90,7 +90,6 @@
   "dependencies": {
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
-    "chokidar": "catalog:prod",
     "empathic": "catalog:prod",
     "hookable": "catalog:prod",
     "import-without-cache": "catalog:prod",

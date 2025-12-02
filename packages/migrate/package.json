@@ -1,6 +1,6 @@
 {
   "name": "tsdown-migrate",
-  "version": "0.16.7",
+  "version": "0.17.0-beta.4",
   "description": "A CLI tool to help migrate your project to tsdown.",
   "type": "module",
   "license": "MIT",
@@ -41,7 +41,8 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "node ./src/run.ts"
+    "dev": "node ./src/run.ts",
+    "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "dependencies": {
     "@antfu/ni": "catalog:migrate",
