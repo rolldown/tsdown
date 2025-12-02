@@ -3,12 +3,18 @@ import { readFile, writeFile } from 'node:fs/promises'
 import consola from 'consola'
 import { createPatch } from 'diff'
 import { detectIndentation } from '../../../../src/utils/format.ts'
+import pkg from '../../package.json' with { type: 'json' }
 import { outputDiff, renameKey } from '../utils.ts'
 
-export async function migratePackageJson(
-  dryRun?: boolean,
-  depFields: Record<string, unknown> = {},
-): Promise<boolean> {
+const DEP_FIELDS = {
+  dependencies: `^${pkg.version}`,
+  devDependencies: `^${pkg.version}`,
+  optionalDependencies: `^${pkg.version}`,
+  peerDependencies: '*',
+  peerDependenciesMeta: null,
+} as const
+
+export async function migratePackageJson(dryRun?: boolean): Promise<boolean> {
   if (!existsSync('package.json')) {
     consola.error('No package.json found')
     return false
@@ -18,7 +24,7 @@ export async function migratePackageJson(
   let pkg = JSON.parse(pkgRaw)
   let found = false
 
-  for (const [field, semver] of Object.entries(depFields)) {
+  for (const [field, semver] of Object.entries(DEP_FIELDS)) {
     if (pkg[field]?.tsup) {
       consola.info(`Migrating \`${field}\` to tsdown.`)
       found = true

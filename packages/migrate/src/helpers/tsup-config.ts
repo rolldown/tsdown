@@ -3,6 +3,7 @@ import { readFile, unlink, writeFile } from 'node:fs/promises'
 import { Lang, parse } from '@ast-grep/napi'
 import consola from 'consola'
 import { createTwoFilesPatch } from 'diff'
+import { RE_TS } from 'rolldown-plugin-dts'
 import { outputDiff } from '../utils.ts'
 
 export interface TransformResult {
@@ -13,16 +14,17 @@ export interface TransformResult {
 // Warning messages for unsupported options
 const WARNING_MESSAGES: Record<string, string> = {
   plugins:
-    'The `plugins` option was experimental in tsup. Please migrate your plugins manually.',
+    'The `plugins` option in tsup is experimental. Please migrate your plugins manually.',
   splitting:
-    'The `splitting` option is not supported in tsdown. Code splitting is handled automatically.',
+    'The `splitting` option is currently unsupported in tsdown. Code splitting is always enabled and cannot be disabled.',
   metafile:
-    'The `metafile` option is not supported in tsdown. Consider using Vite DevTools instead.',
-  injectStyle: 'The `injectStyle` option is not implemented in tsdown yet.',
-  cjsInterop: 'The `cjsInterop` option is not supported in tsdown.',
-  swc: 'The `swc` option is not supported in tsdown. Use oxc instead.',
+    'The `metafile` option is not available in tsdown. Consider using Vite DevTools as an alternative.',
+  injectStyle:
+    'The `injectStyle` option has not yet been implemented in tsdown.',
+  // cjsInterop: 'The `cjsInterop` option is not supported in tsdown.',
+  swc: 'The `swc` option is not supported in tsdown. Please use oxc instead.',
   experimentalDts:
-    'The `experimentalDts` option is not supported in tsdown. Use `dts` option instead.',
+    'The `experimentalDts` option is not supported in tsdown. Use the `dts` option instead.',
   legacyOutput: 'The `legacyOutput` option is not supported in tsdown.',
 }
 
@@ -30,16 +32,20 @@ const WARNING_MESSAGES: Record<string, string> = {
  * Transform tsup config code to tsdown config code.
  * This function applies all migration rules and returns the transformed code
  * along with any warnings for unsupported options.
- *
- * @param input - The tsup config source code
- * @returns The transformed code and warnings
  */
-export function transformTsupConfig(input: string): TransformResult {
+export function transformTsupConfig(
+  code: string,
+  filename: string,
+): TransformResult {
   const warnings: string[] = []
-  let code = input
 
   // Phase 1: Parse original input and collect information using AST
-  const ast = parse(Lang.TypeScript, input)
+  const lang = filename.endsWith('.tsx')
+    ? Lang.Tsx
+    : RE_TS.test(filename)
+      ? Lang.TypeScript
+      : Lang.JavaScript
+  const ast = parse(lang, code)
   const root = ast.root()
 
   // Helper to check if a property exists using AST

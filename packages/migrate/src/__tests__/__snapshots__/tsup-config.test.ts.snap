@@ -1,8 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`comprehensive transformation > should transform complex tsup config 1`] = `
-{
-  "code": "import icons from 'unplugin-icons/rolldown'
+exports[`comprehensive transformation > should transform complex tsup config > code 1`] = `
+"import icons from 'unplugin-icons/rolldown'
 
 export default {
   entry: ['src/index.ts'],
@@ -16,175 +15,161 @@ export default {
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`splitting\` option is not supported in tsdown. Code splitting is handled automatically.",
-    "The \`metafile\` option is not supported in tsdown. Consider using Vite DevTools instead.",
-  ],
-}
+}"
 `;
 
-exports[`default values > should add clean: false when not present 1`] = `
-{
-  "code": "export default {
+exports[`comprehensive transformation > should transform complex tsup config > warnings 1`] = `
+[
+  "The \`splitting\` option is currently unsupported in tsdown. Code splitting is always enabled and cannot be disabled.",
+  "The \`metafile\` option is not available in tsdown. Consider using Vite DevTools as an alternative.",
+]
+`;
+
+exports[`default values > should add clean: false when not present > code 1`] = `
+"export default {
   entry: ['src/index.ts'],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`default values > should add dts: false when not present 1`] = `
-{
-  "code": "export default {
+exports[`default values > should add dts: false when not present > code 1`] = `
+"export default {
   entry: ['src/index.ts'],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`default values > should add format: "cjs" when not present 1`] = `
-{
-  "code": "export default {
+exports[`default values > should add format: "cjs" when not present > code 1`] = `
+"export default {
   entry: ['src/index.ts'],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`default values > should add target: false when not present 1`] = `
-{
-  "code": "export default {
+exports[`default values > should add target: false when not present > code 1`] = `
+"export default {
   entry: ['src/index.ts'],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`option transformations > bundle: false should transform to unbundle: true 1`] = `
-{
-  "code": "export default {
+exports[`default values > should not add format when present > code 1`] = `
+"export default {
+  format: ['esm', 'cjs'],
+
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
+exports[`option transformations > bundle: false should transform to unbundle: true > code 1`] = `
+"export default {
   unbundle: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`option transformations > bundle: true should be removed 1`] = `
-{
-  "code": "export default {
+exports[`option transformations > bundle: true should be removed > code 1`] = `
+"export default {
   entry: ['src/index.ts'],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`option transformations > publicDir should transform to copy 1`] = `
-{
-  "code": "export default {
+exports[`option transformations > publicDir should transform to copy > code 1`] = `
+"export default {
   copy: 'public',
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`option transformations > removeNodeProtocol should transform to nodeProtocol: "strip" 1`] = `
-{
-  "code": "export default {
+exports[`option transformations > removeNodeProtocol should transform to nodeProtocol: "strip" > code 1`] = `
+"export default {
   nodeProtocol: 'strip',
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`option transformations > splitting should emit warning 1`] = `
-{
-  "code": "export default {
+exports[`option transformations > splitting should emit warning > code 1`] = `
+"export default {
   splitting: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`splitting\` option is not supported in tsdown. Code splitting is handled automatically.",
-  ],
-}
+}"
 `;
 
-exports[`plugin migrations > esbuildPlugins should transform to plugins 1`] = `
-{
-  "code": "export default {
+exports[`option transformations > splitting should emit warning > warnings 1`] = `
+[
+  "The \`splitting\` option is currently unsupported in tsdown. Code splitting is always enabled and cannot be disabled.",
+]
+`;
+
+exports[`plugin migrations > esbuildPlugins should transform to plugins > code 1`] = `
+"export default {
   plugins: [somePlugin()],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`plugin migrations > plugins option should emit warning (experimental in tsup) 1`] = `
-{
-  "code": "export default {
+exports[`plugin migrations > plugins option should emit warning (experimental in tsup) > code 1`] = `
+"export default {
   plugins: [somePlugin()],
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`plugins\` option was experimental in tsup. Please migrate your plugins manually.",
-  ],
-}
+}"
 `;
 
-exports[`plugin migrations > unplugin-*/esbuild should transform to unplugin-*/rolldown 1`] = `
-{
-  "code": "import icons from 'unplugin-icons/rolldown'
+exports[`plugin migrations > plugins option should emit warning (experimental in tsup) > warnings 1`] = `
+[
+  "The \`plugins\` option in tsup is experimental. Please migrate your plugins manually.",
+]
+`;
+
+exports[`plugin migrations > unplugin-*/esbuild should transform to unplugin-*/rolldown > code 1`] = `
+"import icons from 'unplugin-icons/rolldown'
 import vue from 'unplugin-vue/rolldown'
 
 export default {
@@ -194,103 +179,103 @@ export default {
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [],
-}
+}"
 `;
 
-exports[`warning options > cjsInterop should emit warning 1`] = `
-{
-  "code": "export default {
+exports[`warning options > cjsInterop should emit warning > code 1`] = `
+"export default {
   cjsInterop: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`cjsInterop\` option is not supported in tsdown.",
-  ],
-}
+}"
 `;
 
-exports[`warning options > experimentalDts should emit warning 1`] = `
-{
-  "code": "export default {
+exports[`warning options > cjsInterop should emit warning > warnings 1`] = `[]`;
+
+exports[`warning options > experimentalDts should emit warning > code 1`] = `
+"export default {
   experimentalDts: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`experimentalDts\` option is not supported in tsdown. Use \`dts\` option instead.",
-  ],
-}
+}"
 `;
 
-exports[`warning options > injectStyle should emit warning (not implemented) 1`] = `
-{
-  "code": "export default {
+exports[`warning options > experimentalDts should emit warning > warnings 1`] = `
+[
+  "The \`experimentalDts\` option is not supported in tsdown. Use the \`dts\` option instead.",
+]
+`;
+
+exports[`warning options > injectStyle should emit warning (not implemented) > code 1`] = `
+"export default {
   injectStyle: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`injectStyle\` option is not implemented in tsdown yet.",
-  ],
-}
+}"
 `;
 
-exports[`warning options > legacyOutput should emit warning 1`] = `
-{
-  "code": "export default {
+exports[`warning options > injectStyle should emit warning (not implemented) > warnings 1`] = `
+[
+  "The \`injectStyle\` option has not yet been implemented in tsdown.",
+]
+`;
+
+exports[`warning options > legacyOutput should emit warning > code 1`] = `
+"export default {
   legacyOutput: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`legacyOutput\` option is not supported in tsdown.",
-  ],
-}
+}"
 `;
 
-exports[`warning options > metafile should emit warning (use Vite DevTools) 1`] = `
-{
-  "code": "export default {
+exports[`warning options > legacyOutput should emit warning > warnings 1`] = `
+[
+  "The \`legacyOutput\` option is not supported in tsdown.",
+]
+`;
+
+exports[`warning options > metafile should emit warning (use Vite DevTools) > code 1`] = `
+"export default {
   metafile: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`metafile\` option is not supported in tsdown. Consider using Vite DevTools instead.",
-  ],
-}
+}"
 `;
 
-exports[`warning options > swc should emit warning (use oxc) 1`] = `
-{
-  "code": "export default {
+exports[`warning options > metafile should emit warning (use Vite DevTools) > warnings 1`] = `
+[
+  "The \`metafile\` option is not available in tsdown. Consider using Vite DevTools as an alternative.",
+]
+`;
+
+exports[`warning options > swc should emit warning (use oxc) > code 1`] = `
+"export default {
   swc: true,
 
   format: 'cjs',
   clean: false,
   dts: false,
   target: false,
-}",
-  "warnings": [
-    "The \`swc\` option is not supported in tsdown. Use oxc instead.",
-  ],
-}
+}"
+`;
+
+exports[`warning options > swc should emit warning (use oxc) > warnings 1`] = `
+[
+  "The \`swc\` option is not supported in tsdown. Please use oxc instead.",
+]
 `;

@@ -2,7 +2,6 @@ import process from 'node:process'
 import { getCliCommand, parseNi, run } from '@antfu/ni'
 import { green, underline } from 'ansis'
 import consola from 'consola'
-import pkg from '../package.json' with { type: 'json' }
 import { migratePackageJson } from './helpers/package-json.ts'
 import { migrateTsupConfig } from './helpers/tsup-config.ts'
 
@@ -10,14 +9,6 @@ export interface MigrateOptions {
   cwd?: string
   dryRun?: boolean
 }
-
-const DEP_FIELDS = {
-  dependencies: `^${pkg.version}`,
-  devDependencies: `^${pkg.version}`,
-  optionalDependencies: `^${pkg.version}`,
-  peerDependencies: '*',
-  peerDependenciesMeta: null,
-} as const
 
 export async function migrate({ cwd, dryRun }: MigrateOptions): Promise<void> {
   if (dryRun) {
@@ -38,7 +29,7 @@ export async function migrate({ cwd, dryRun }: MigrateOptions): Promise<void> {
 
   if (cwd) process.chdir(cwd)
 
-  let migrated = await migratePackageJson(dryRun, DEP_FIELDS)
+  let migrated = await migratePackageJson(dryRun)
   if (await migrateTsupConfig(dryRun)) {
     migrated = true
   }
