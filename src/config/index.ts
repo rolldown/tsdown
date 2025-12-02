@@ -10,9 +10,8 @@ const debug = createDebug('tsdown:config')
 
 // InlineConfig (CLI)
 //  -> loadConfigFile: InlineConfig + UserConfig[]
-//  -> resolveWorkspace: InlineConfig + UserConfig[]
-//  -> UserConfig[]
-//  -> ResolvedConfig[]
+//  -> resolveWorkspace: InlineConfig (applied) + UserConfig[]
+//  -> resolveUserConfig: ResolvedConfig[]
 //  -> build
 
 // resolved configs count = 1 (inline config) * root config count * workspace count * sub config count
@@ -38,6 +37,7 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
       rootConfigs.map(async (rootConfig): Promise<ResolvedConfig[]> => {
         const { configs: workspaceConfigs, files: workspaceFiles } =
           await resolveWorkspace(rootConfig, inlineConfig)
+        debug('workspace configs %O', workspaceConfigs)
         if (workspaceFiles) {
           files.push(...workspaceFiles)
         }
@@ -47,7 +47,9 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
               .filter((config) => !config.workspace || config.entry)
               .map((config) => resolveUserConfig(config, inlineConfig)),
           )
-        ).filter((config) => !!config)
+        )
+          .flat()
+          .filter((config) => !!config)
       }),
     )
   ).flat()

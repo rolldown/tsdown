@@ -12,32 +12,30 @@ import {
   resolveConfig,
   type DebugOptions,
   type InlineConfig,
-  type NormalizedFormat,
   type ResolvedConfig,
 } from './config/index.ts'
-import { attw } from './features/attw.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanOutDir, cleanupChunks } from './features/clean.ts'
 import { copy } from './features/copy.ts'
-import { writeExports, type TsdownChunks } from './features/exports.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
-import { publint } from './features/publint.ts'
+import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
 import {
   debugBuildOptions,
   getBuildOptions,
   getDebugRolldownDir,
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
-import { endsWithConfig, type WatchContext } from './features/watch.ts'
+import { endsWithConfig } from './features/watch.ts'
+import {
+  addOutDirToChunks,
+  type RolldownChunk,
+  type TsdownBundle,
+} from './utils/chunks.ts'
 import { importWithError } from './utils/general.ts'
 import { globalLogger, prettyName, type Logger } from './utils/logger.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
-
-export interface TsdownBundle extends AsyncDisposable {
-  chunks: TsdownChunks
-}
 
 /**
  * Build with tsdown.
@@ -66,9 +64,27 @@ export async function build(
     build(userOptions)
   }
 
+  const configChunksByPkg = initBundleByPkg(configs)
+
+  function done(bundle: TsdownBundle) {
+    return bundleDone(configChunksByPkg, bundle)
+  }
+
   globalLogger.info('Build start')
   const bundles = await Promise.all(
-    configs.map((options) => buildSingle(options, configFiles, clean, restart)),
+    configs.map((options) => {
+      const isDualFormat = options.pkg
+        ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
+        : true
+      return buildSingle(
+        options,
+        configFiles,
+        isDualFormat,
+        clean,
+        restart,
+        done,
+      )
+    }),
   )
 
   const firstDevtoolsConfig = configs.find(
@@ -82,12 +98,8 @@ export async function build(
     for (const bundle of bundles) {
       disposeCbs.push(bundle[asyncDispose])
     }
-
-    return undefined as never
-  }
-
-  // build done
-  if (firstDevtoolsConfig) {
+  } else if (firstDevtoolsConfig) {
+    // build done, start devtools
     const { start } = await importWithError<
       typeof import('@vitejs/devtools/cli-commands')
     >('@vitejs/devtools/cli-commands')
@@ -114,10 +126,12 @@ export async function build(
 export async function buildSingle(
   config: ResolvedConfig,
   configFiles: string[],
+  isDualFormat: boolean,
   clean: () => Promise<void>,
   restart: () => void,
+  done: (bundle: TsdownBundle) => Promise<void>,
 ): Promise<TsdownBundle> {
-  const { format: formats, dts, watch, logger } = config
+  const { format, dts, watch, logger, outDir } = config
   const { hooks, context } = await createHooks(config)
 
   warnLegacyCJS(config)
@@ -130,27 +144,28 @@ export async function buildSingle(
   // output rolldown config for debugging
   const debugRolldownConfigDir = await getDebugRolldownDir()
 
-  const chunks: TsdownChunks = {}
+  const chunks: RolldownChunk[] = []
   let watcher: RolldownWatcher | undefined
-  const watchCtx: Omit<WatchContext, 'chunks'> = {
-    config,
-  }
-
   let ab: AbortController | undefined
 
-  const isMultiFormat = formats.length > 1
-  const configsByFormat = (
-    await Promise.all(formats.map((format) => buildOptionsByFormat(format)))
-  ).flat()
+  let updated = false
+  const bundle: TsdownBundle = {
+    chunks,
+    config,
+    async [asyncDispose]() {
+      ab?.abort()
+      await watcher?.close()
+    },
+  }
+
+  const configs = await initBuildOptions()
   if (watch) {
-    watcher = rolldownWatch(configsByFormat.map((item) => item[1]))
+    watcher = rolldownWatch(configs)
     handleWatcher(watcher)
   } else {
-    const outputs = await rolldownBuild(configsByFormat.map((item) => item[1]))
-    for (const [i, output] of outputs.entries()) {
-      const format = configsByFormat[i][0]
-      chunks[format] ||= []
-      chunks[format].push(...output.output)
+    const outputs = await rolldownBuild(configs)
+    for (const { output } of outputs) {
+      chunks.push(...addOutDirToChunks(output, outDir))
     }
   }
 
@@ -162,13 +177,7 @@ export async function buildSingle(
     await postBuild()
   }
 
-  return {
-    chunks,
-    async [asyncDispose]() {
-      ab?.abort()
-      await watcher?.close()
-    },
-  }
+  return bundle
 
   function handleWatcher(watcher: RolldownWatcher) {
     const changedFile: string[] = []
@@ -187,10 +196,8 @@ export async function buildSingle(
     watcher.on('event', async (event) => {
       switch (event.code) {
         case 'START': {
-          for (const format of formats) {
-            await cleanupChunks(config.outDir, chunks[format]!)
-            chunks[format]!.length = 0
-          }
+          await cleanupChunks(config.outDir, chunks)
+          chunks.length = 0
           hasError = false
           break
         }
@@ -229,19 +236,14 @@ export async function buildSingle(
     })
   }
 
-  async function buildOptionsByFormat(format: NormalizedFormat) {
-    const watchContext = {
-      ...watchCtx,
-      chunks: (chunks[format] = []),
-    }
-
+  async function initBuildOptions() {
     const buildOptions = await getBuildOptions(
       config,
       format,
       configFiles,
-      watchContext,
+      bundle,
       false,
-      isMultiFormat,
+      isDualFormat,
     )
     await hooks.callHook('build:before', {
       ...context,
@@ -256,31 +258,32 @@ export async function buildSingle(
       )
     }
 
-    const configs: [format: NormalizedFormat, config: BuildOptions][] = [
-      [format, buildOptions],
-    ]
+    const configs: BuildOptions[] = [buildOptions]
     if (format === 'cjs' && dts) {
-      configs.push([
-        format,
+      configs.push(
         await getBuildOptions(
           config,
           format,
           configFiles,
-          watchContext,
+          bundle,
           true,
-          isMultiFormat,
+          isDualFormat,
         ),
-      ])
+      )
     }
 
     return configs
   }
 
   async function postBuild() {
-    await Promise.all([writeExports(config, chunks), copy(config)])
-    // TODO: perf use one tarball for both attw and publint
-    await Promise.all([publint(config), attw(config)])
-    await hooks.callHook('build:done', context)
+    if (updated) {
+      await copy(config)
+    } else {
+      await done(bundle)
+    }
+
+    await hooks.callHook('build:done', { ...context, chunks })
+    updated = true
 
     ab?.abort()
     ab = executeOnSuccess(config)

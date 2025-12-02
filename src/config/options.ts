@@ -5,21 +5,23 @@ import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
 import { resolveEntry } from '../features/entry.ts'
-import { hasExportsTypes } from '../features/exports.ts'
+import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
   matchPattern,
   pkgExists,
+  resolveComma,
   resolveRegex,
   toArray,
 } from '../utils/general.ts'
-import { createLogger } from '../utils/logger.ts'
+import { createLogger, prettyName } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
 import type {
   CIOption,
+  Format,
   InlineConfig,
   ResolvedConfig,
   UserConfig,
@@ -31,7 +33,7 @@ const debugLog = createDebug('tsdown:config:options')
 export async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,
-): Promise<ResolvedConfig | undefined> {
+): Promise<ResolvedConfig[]> {
   let {
     entry,
     format = ['es'],
@@ -77,6 +79,7 @@ export async function resolveUserConfig(
     inlineOnly,
     fixedExtension = platform === 'node',
     debug = false,
+    write = true,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -86,7 +89,7 @@ export async function resolveUserConfig(
 
   if (!filterConfig(inlineConfig.filter, cwd, name)) {
     debugLog('[filter] skipping config %s', cwd)
-    return
+    return []
   }
 
   const logger = createLogger(logLevel, {
@@ -133,6 +136,24 @@ export async function resolveUserConfig(
   unused = resolveFeatureOption(unused, {})
   report = resolveFeatureOption(report, {})
   dts = resolveFeatureOption(dts, {})
+
+  if (!pkg) {
+    if (exports) {
+      throw new Error('`package.json` not found, cannot write exports')
+    }
+    if (publint) {
+      logger.warn(
+        prettyName(name),
+        'publint is enabled but package.json is not found',
+      )
+    }
+    if (attw) {
+      logger.warn(
+        prettyName(name),
+        'attw is enabled but package.json is not found',
+      )
+    }
+  }
 
   if (publicDir) {
     if (copy) {
@@ -199,7 +220,7 @@ export async function resolveUserConfig(
   }
 
   /// keep-sorted
-  const config: ResolvedConfig = {
+  const config: Omit<ResolvedConfig, 'format'> = {
     ...userConfig,
     alias,
     attw,
@@ -214,7 +235,6 @@ export async function resolveUserConfig(
     exports,
     external,
     fixedExtension,
-    format: normalizeFormat(format),
     globImport,
     hash,
     ignoreWatch,
@@ -238,9 +258,28 @@ export async function resolveUserConfig(
     unbundle,
     unused,
     watch,
+    write,
   }
 
-  return config
+  const objectFormat = typeof format === 'object' && !Array.isArray(format)
+  const formats = objectFormat
+    ? (Object.keys(format) as Format[])
+    : resolveComma(toArray<Format>(format, 'es'))
+  return formats.map((fmt, idx): ResolvedConfig => {
+    const once = idx === 0
+    const overrides = objectFormat ? format[fmt] : undefined
+    return {
+      ...config,
+      // only copy once
+      copy: once ? config.copy : undefined,
+      // don't register hooks repeatedly
+      hooks: once ? config.hooks : undefined,
+      // only execute once
+      onSuccess: once ? config.onSuccess : undefined,
+      format: normalizeFormat(fmt),
+      ...overrides,
+    }
+  })
 }
 
 export async function mergeUserOptions<T extends object, A extends unknown[]>(

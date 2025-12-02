@@ -1,16 +1,12 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
-import { detectIndentation } from '../utils/format.ts'
-import { slash } from '../utils/general.ts'
-import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
-import type { Awaitable } from '../utils/types.ts'
+import { detectIndentation } from '../../utils/format.ts'
+import { slash } from '../../utils/general.ts'
+import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
+import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
+import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
-import type { OutputAsset, OutputChunk } from 'rolldown'
-
-export type TsdownChunks = Partial<
-  Record<NormalizedFormat, Array<OutputChunk | OutputAsset>>
->
 
 export interface ExportsOptions {
   /**
@@ -29,8 +25,7 @@ export interface ExportsOptions {
     exports: Record<string, any>,
     context: {
       pkg: PackageJson
-      chunks: TsdownChunks
-      outDir: string
+      chunks: ChunksByFormat
       isPublish: boolean
     },
   ) => Awaitable<Record<string, any>>
@@ -38,20 +33,15 @@ export interface ExportsOptions {
 
 export async function writeExports(
   options: ResolvedConfig,
-  chunks: TsdownChunks,
+  chunks: ChunksByFormat,
 ): Promise<void> {
-  if (!options.exports) return
-
-  const { outDir, pkg } = options
-  if (!pkg) {
-    throw new Error('`package.json` not found, cannot write exports')
-  }
+  const pkg = options.pkg!
+  const exports = options.exports as ExportsOptions
 
   const { publishExports, ...generated } = await generateExports(
     pkg,
-    outDir,
     chunks,
-    options.exports,
+    exports,
   )
 
   const updatedPkg = {
@@ -77,8 +67,7 @@ type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
 
 export async function generateExports(
   pkg: PackageJson,
-  outDir: string,
-  chunks: TsdownChunks,
+  chunks: ChunksByFormat,
   { devExports, all, customExports }: ExportsOptions,
 ): Promise<{
   main: string | undefined
@@ -87,9 +76,7 @@ export async function generateExports(
   exports: Record<string, any>
   publishExports?: Record<string, any>
 }> {
-  const pkgJsonPath = pkg.packageJsonPath as string
-  const pkgRoot = path.dirname(pkgJsonPath)
-  const outDirRelative = slash(path.relative(pkgRoot, outDir))
+  const pkgRoot = path.dirname(pkg.packageJsonPath)
 
   let main: string | undefined,
     module: string | undefined,
@@ -99,7 +86,7 @@ export async function generateExports(
 
   for (const [format, chunksByFormat] of Object.entries(chunks) as [
     NormalizedFormat,
-    (OutputChunk | OutputAsset)[],
+    RolldownChunk[],
   ][]) {
     if (format !== 'es' && format !== 'cjs') continue
 
@@ -122,6 +109,7 @@ export async function generateExports(
         name = name.slice(0, -2)
       }
       const isIndex = onlyOneEntry || name === 'index'
+      const outDirRelative = slash(path.relative(pkgRoot, chunk.outDir))
       const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${normalizedName}`
 
       if (isIndex) {
@@ -177,7 +165,6 @@ export async function generateExports(
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
-      outDir,
       chunks,
       isPublish: false,
     })
@@ -195,7 +182,6 @@ export async function generateExports(
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
-        outDir,
         chunks,
         isPublish: true,
       })
@@ -228,8 +214,8 @@ function genSubExport(
     if (typeof devExports === 'string') {
       value[devExports] = src
     }
-    if (es) value[dualFormat ? 'import' : 'default'] = es
     if (cjs) value[dualFormat ? 'require' : 'default'] = cjs
+    if (es) value[dualFormat ? 'import' : 'default'] = es
   }
 
   return value

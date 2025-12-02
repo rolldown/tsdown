@@ -11,7 +11,7 @@ export function ShebangPlugin(
   logger: Logger,
   cwd: string,
   name?: string,
-  isMultiFormat?: boolean,
+  isDualFormat?: boolean,
 ): Plugin {
   return {
     name: 'tsdown:shebang',
@@ -27,7 +27,7 @@ export function ShebangPlugin(
         if (await fsExists(filepath)) {
           logger.info(
             prettyName(name),
-            isMultiFormat && prettyFormat(options.format),
+            isDualFormat && prettyFormat(options.format),
             `Granting execute permission to ${underline(path.relative(cwd, filepath))}`,
           )
           await chmod(filepath, 0o755)

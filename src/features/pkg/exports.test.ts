@@ -1,8 +1,8 @@
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
+import type { RolldownChunk } from '../../utils/chunks.ts'
 import { generateExports } from './exports.ts'
-import type { OutputChunk } from 'rolldown'
 
 const cwd = process.cwd()
 const FAKE_PACKAGE_JSON = {
@@ -11,7 +11,7 @@ const FAKE_PACKAGE_JSON = {
 
 describe.concurrent('generateExports', () => {
   test('no entries', async ({ expect }) => {
-    const results = generateExports(FAKE_PACKAGE_JSON, cwd, {}, {})
+    const results = generateExports(FAKE_PACKAGE_JSON, {}, {})
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
         "exports": {
@@ -28,10 +28,7 @@ describe.concurrent('generateExports', () => {
   test('only one entry', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
-      {
-        es: [genChunk('main.js')],
-      },
+      { es: [genChunk('main.js')] },
       {},
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -51,10 +48,7 @@ describe.concurrent('generateExports', () => {
   test('index entry', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
-      {
-        es: [genChunk('index.js'), genChunk('foo.js')],
-      },
+      { es: [genChunk('index.js'), genChunk('foo.js')] },
       {},
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -75,10 +69,7 @@ describe.concurrent('generateExports', () => {
   test('index entry in dir', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
-      {
-        es: [genChunk('index.js'), genChunk('foo/index.js')],
-      },
+      { es: [genChunk('index.js'), genChunk('foo/index.js')] },
       {},
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -99,10 +90,7 @@ describe.concurrent('generateExports', () => {
   test('multiple entries', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
-      {
-        es: [genChunk('foo.js'), genChunk('bar.js')],
-      },
+      { es: [genChunk('foo.js'), genChunk('bar.js')] },
       {},
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -123,7 +111,6 @@ describe.concurrent('generateExports', () => {
   test('dual formats', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       {
         es: [genChunk('foo.js')],
         cjs: [genChunk('foo.cjs')],
@@ -150,7 +137,6 @@ describe.concurrent('generateExports', () => {
   test('dts', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       {
         es: [genChunk('foo.js'), genChunk('foo.d.ts')],
         cjs: [genChunk('foo.cjs'), genChunk('foo.d.cts')],
@@ -177,7 +163,6 @@ describe.concurrent('generateExports', () => {
   test('fixed extension', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       {
         es: [genChunk('index.mjs'), genChunk('index.d.mts')],
         cjs: [genChunk('index.cjs'), genChunk('index.d.cts')],
@@ -204,7 +189,6 @@ describe.concurrent('generateExports', () => {
   test('dev exports: dev condition', async ({ expect }) => {
     const results = await generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       { devExports: 'dev' },
     )
@@ -216,15 +200,15 @@ describe.concurrent('generateExports', () => {
         "exports": {
           ".": {
             "dev": "./SRC/index.js",
-            "import": "./index.js",
-            "require": "./index.cjs"
+            "require": "./index.cjs",
+            "import": "./index.js"
           },
           "./package.json": "./package.json"
         },
         "publishExports": {
           ".": {
-            "import": "./index.js",
-            "require": "./index.cjs"
+            "require": "./index.cjs",
+            "import": "./index.js"
           },
           "./package.json": "./package.json"
         }
@@ -235,7 +219,6 @@ describe.concurrent('generateExports', () => {
   test('dev exports: all conditions', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       { devExports: true },
     )
@@ -262,7 +245,6 @@ describe.concurrent('generateExports', () => {
   test('customExports', async ({ expect }) => {
     const results = await generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       { es: [genChunk('index.js')] },
       {
         devExports: 'dev',
@@ -297,7 +279,6 @@ describe.concurrent('generateExports', () => {
   test('export all', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       { all: true },
     )
@@ -321,7 +302,6 @@ describe.concurrent('generateExports', () => {
   test('windows-like paths for subpackages', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       {
         es: [
           genChunk('index.js'),
@@ -355,7 +335,6 @@ describe.concurrent('generateExports', () => {
   }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       {
         es: [
           genChunk('index.js'),
@@ -409,5 +388,6 @@ function genChunk(fileName: string) {
     fileName,
     isEntry: true,
     facadeModuleId: `./SRC/${fileName}`,
-  } as OutputChunk
+    outDir: cwd,
+  } as RolldownChunk
 }

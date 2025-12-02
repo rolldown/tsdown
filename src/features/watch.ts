@@ -1,18 +1,14 @@
+import { addOutDirToChunks } from '../utils/chunks.ts'
 import { resolveComma, toArray } from '../utils/general.ts'
-import type { ResolvedConfig } from '../config/types.ts'
-import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
+import type { TsdownBundle } from '../config/types.ts'
+import type { Plugin } from 'rolldown'
 
 export const endsWithConfig: RegExp =
-  /[\\/](?:tsdown\.config.*|tsconfig\.json)$/
-
-export interface WatchContext {
-  config: ResolvedConfig
-  chunks: Array<OutputChunk | OutputAsset>
-}
+  /[\\/](?:tsdown\.config.*|package\.json|tsconfig\.json)$/
 
 export function WatchPlugin(
   configFiles: string[],
-  { config, chunks }: WatchContext,
+  { config, chunks }: TsdownBundle,
 ): Plugin {
   return {
     name: 'tsdown:watch',
@@ -33,11 +29,14 @@ export function WatchPlugin(
           this.addWatchFile(file)
         }
       }
+      if (config.pkg) {
+        this.addWatchFile(config.pkg.packageJsonPath)
+      }
     },
     generateBundle: {
       order: 'post',
       handler(outputOptions, bundle) {
-        chunks.push(...Object.values(bundle))
+        chunks.push(...addOutDirToChunks(Object.values(bundle), config.outDir))
       },
     },
   }

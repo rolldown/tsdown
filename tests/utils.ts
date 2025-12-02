@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { expectFilesSnapshot } from '@sxzz/test-utils'
 import { glob } from 'tinyglobby'
 import { mergeUserOptions } from '../src/config/options.ts'
-import { build, type UserConfig } from '../src/index.ts'
+import { build } from '../src/index.ts'
 import type { InlineConfig } from '../src/config/index.ts'
 import type { RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
@@ -92,7 +92,7 @@ export interface TestBuildOptions {
   /**
    * The options for the build.
    */
-  options?: UserConfig | ((cwd: string) => UserConfig)
+  options?: InlineConfig | ((cwd: string) => InlineConfig)
 
   /**
    * The working directory of the test. It's a relative path to the test directory.
@@ -161,6 +161,13 @@ export async function testBuild({
       )
       return options
     },
+  }
+  if (
+    userOptions &&
+    userOptions.entry == null &&
+    Object.hasOwn(userOptions, 'entry')
+  ) {
+    delete resolvedOptions.entry
   }
   await beforeBuild?.()
   await build(resolvedOptions)

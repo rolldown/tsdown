@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 import { exec } from 'tinyexec'
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
@@ -111,6 +113,60 @@ describe('issues', () => {
           build: true,
         },
       },
+    })
+  })
+
+  test('#566', async (context) => {
+    const { testDir } = await testBuild({
+      context,
+      files: {
+        'src/index.browser.ts': `export const platform = 'browser'`,
+        'src/index.node.ts': `export const platform = 'node'`,
+        'tsdown.config.ts': `
+          export default [
+            {
+              entry: './src/index.browser.ts',
+              format: 'es',
+              exports: true,
+              hash: false,
+              platform: 'browser',
+            },
+            {
+              entry: './src/index.node.ts',
+              format: 'cjs',
+              exports: true,
+              hash: false,
+              platform: 'node',
+            },
+          ]
+        `,
+        'package.json': JSON.stringify({
+          name: 'issue-566',
+          version: '1.0.0',
+        }),
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: { moduleResolution: 'bundler' },
+        }),
+      },
+      options: {
+        entry: undefined,
+        config: 'tsdown.config.ts',
+        dts: false,
+      },
+      expectPattern: '**/*.{js,cjs,d.mts}',
+    })
+
+    const pkg = JSON.parse(
+      await readFile(path.join(testDir, 'package.json'), 'utf8'),
+    )
+    expect(pkg.main).toBe('./dist/index.node.cjs')
+    expect(pkg.module).toBe('./dist/index.browser.mjs')
+    expect(pkg.exports).toEqual({
+      '.': {
+        import: './dist/index.browser.mjs',
+        require: './dist/index.node.cjs',
+      },
+      './package.json': './package.json',
     })
   })
 })

@@ -1,10 +1,9 @@
 import path from 'node:path'
-import process from 'node:process'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
-import { importWithError } from '../utils/general.ts'
-import { prettyName } from '../utils/logger.ts'
-import type { ResolvedConfig } from '../config/index.ts'
+import { importWithError } from '../../utils/general.ts'
+import { prettyName } from '../../utils/logger.ts'
+import type { ResolvedConfig } from '../../config/index.ts'
 
 const debug = createDebug('tsdown:publint')
 const label = dim`[publint]`
@@ -39,17 +38,11 @@ export async function publint(options: ResolvedConfig): Promise<void> {
     return
   }
 
-  let hasError = false
   for (const message of messages) {
-    hasError ||= message.type === 'error'
     const formattedMessage = formatMessage(message, options.pkg)
     const logType = (
       { error: 'error', warning: 'warn', suggestion: 'info' } as const
     )[message.type]
     options.logger[logType](prettyName(options.name), label, formattedMessage)
-  }
-  if (hasError) {
-    debug('Found errors, setting exit code to 1')
-    process.exitCode = 1
   }
 }

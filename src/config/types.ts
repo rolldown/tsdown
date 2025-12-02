@@ -1,7 +1,5 @@
-import type { AttwOptions } from '../features/attw.ts'
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { DebugOptions } from '../features/debug.ts'
-import type { ExportsOptions, TsdownChunks } from '../features/exports.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -15,9 +13,12 @@ import type {
   OutExtensionFactory,
   OutExtensionObject,
 } from '../features/output.ts'
+import type { AttwOptions } from '../features/pkg/attw.ts'
+import type { ExportsOptions } from '../features/pkg/exports.ts'
 import type { ReportOptions } from '../features/report.ts'
+import type { RolldownChunk, TsdownBundle } from '../utils/chunks.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
-import type { PackageType } from '../utils/package.ts'
+import type { PackageJsonWithPath, PackageType } from '../utils/package.ts'
 import type {
   Arrayable,
   Awaitable,
@@ -25,7 +26,6 @@ import type {
   Overwrite,
 } from '../utils/types.ts'
 import type { Hookable } from 'hookable'
-import type { PackageJson } from 'pkg-types'
 import type { Options as PublintOptions } from 'publint'
 import type {
   ExternalOption,
@@ -59,12 +59,14 @@ export type {
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
+  PackageJsonWithPath,
   PackageType,
   PublintOptions,
   ReportOptions,
+  RolldownChunk,
   RolldownContext,
   TreeshakingOptions,
-  TsdownChunks,
+  TsdownBundle,
   TsdownHooks,
   UnusedOptions,
 }
@@ -255,10 +257,16 @@ export interface UserConfig {
   //#region Output Options
 
   /** @default 'es' */
-  format?: Format | Format[]
+  format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
   /** @default 'dist' */
   outDir?: string
+  /**
+   * Whether to write the files to disk.
+   * This option is incompatible with watch mode.
+   * @default true
+   */
+  write?: boolean
   /**
    * Whether to generate source map files.
    *
@@ -386,13 +394,6 @@ export interface UserConfig {
   ignoreWatch?: Arrayable<string | RegExp>
 
   /**
-   * You can specify command to be executed after a successful build, specially useful for Watch mode
-   */
-  onSuccess?:
-    | string
-    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
-
-  /**
    * **[experimental]** Enable debug mode.
    *
    * Both debug mode and Vite DevTools are still under development, and this is for early testers only.
@@ -404,6 +405,13 @@ export interface UserConfig {
   debug?: WithEnabled<DebugOptions>
 
   //#region Addons
+
+  /**
+   * You can specify command to be executed after a successful build, specially useful for Watch mode
+   */
+  onSuccess?:
+    | string
+    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
   /**
    * Enables generation of TypeScript declaration files (`.d.ts`).
@@ -542,10 +550,10 @@ export type ResolvedConfig = Overwrite<
     | 'footer'
   >,
   {
-    format: NormalizedFormat[]
+    format: NormalizedFormat
     target?: string[]
     clean: string[]
-    pkg?: PackageJson
+    pkg?: PackageJsonWithPath
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>

@@ -62,7 +62,7 @@ export function ReportPlugin(
   cwd: string,
   cjsDts?: boolean,
   name?: string,
-  isMultiFormat?: boolean,
+  isDualFormat?: boolean,
 ): Plugin {
   const options = {
     ...defaultOptions,
@@ -124,7 +124,7 @@ export function ReportPlugin(
 
       const nameLabel = prettyName(name)
       const formatLabel =
-        isMultiFormat && prettyFormat(cjsDts ? 'cjs' : outputOptions.format)
+        isDualFormat && prettyFormat(cjsDts ? 'cjs' : outputOptions.format)
 
       for (const size of sizes) {
         const filenameColor = size.dts ? green : noop
