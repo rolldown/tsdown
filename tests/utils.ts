@@ -6,7 +6,7 @@ import { expectFilesSnapshot } from '@sxzz/test-utils'
 import { glob } from 'tinyglobby'
 import { mergeUserOptions } from '../src/config/options.ts'
 import { build } from '../src/index.ts'
-import type { InlineConfig } from '../src/config/index.ts'
+import type { InlineConfig, TsdownBundle } from '../src/config/index.ts'
 import type { RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
 
@@ -127,6 +127,7 @@ export async function testBuild({
   snapshot: string
   fileMap: Record<string, string>
   warnings: RollupLog[]
+  bundle: TsdownBundle[]
 }> {
   const { expect } = context
   const { testName, testDir } = await writeFixtures(context, files, fixture)
@@ -142,6 +143,7 @@ export async function testBuild({
     outDir: 'dist',
     dts: false,
     silent: true,
+    tsconfig: false,
     ...userOptions,
     async inputOptions(options, ...args) {
       options = await mergeUserOptions(
@@ -170,7 +172,7 @@ export async function testBuild({
     delete resolvedOptions.entry
   }
   await beforeBuild?.()
-  await build(resolvedOptions)
+  const bundle = await build(resolvedOptions)
   restoreCwd()
 
   const outputDir = path.resolve(workingDir, resolvedOptions.outDir!)
@@ -192,6 +194,7 @@ export async function testBuild({
     snapshot,
     fileMap,
     warnings,
+    bundle,
   }
 }
 

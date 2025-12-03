@@ -26,6 +26,7 @@ describe('issues', () => {
         skipNodeModulesBundle: true,
         target: 'es2022',
         platform: 'node',
+        tsconfig: 'tsconfig.json',
       },
     })
   })
@@ -109,6 +110,7 @@ describe('issues', () => {
       },
       options: {
         entry: ['src/dom/dom.ts', 'src/node/node.ts'],
+        tsconfig: 'tsconfig.json',
         dts: {
           build: true,
         },

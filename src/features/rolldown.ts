@@ -160,7 +160,7 @@ async function resolveInputOptions(
     }
     plugins.push(ShebangPlugin(logger, cwd, name, isDualFormat))
     if (globImport) {
-      plugins.push(importGlobPlugin())
+      plugins.push(importGlobPlugin({ root: cwd }))
     }
   }
 
