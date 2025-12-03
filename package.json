@@ -119,6 +119,7 @@
     "@vitest/coverage-v8": "catalog:dev",
     "@vueuse/core": "catalog:docs",
     "bumpp": "catalog:dev",
+    "dedent": "catalog:dev",
     "eslint": "catalog:dev",
     "is-in-ci": "catalog:prod",
     "lightningcss": "catalog:dev",
