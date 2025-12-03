@@ -256,18 +256,16 @@ export function transformTsupConfig(
     )
   }
 
-  const exportDefault = root.find('export default { $$$OPTS }')
-  const missingDefaults: string[] = []
-  if (exportDefault) {
-    if (!hasOption('format')) missingDefaults.push("format: 'cjs'")
-    if (!hasOption('clean')) missingDefaults.push('clean: false')
-    if (!hasOption('dts')) missingDefaults.push('dts: false')
-    if (!hasOption('target')) missingDefaults.push('target: false')
-  }
+  // Find the config object - either direct object or wrapped in defineConfig()
+  const exportDefaultDirect = root.find('export default { $$$OPTS }')
+  const exportDefaultDefineConfig = root.find(
+    'export default defineConfig({ $$$OPTS })',
+  )
 
-  // Add default values using AST edit
-  if (missingDefaults.length > 0 && exportDefault) {
-    const objectNode = exportDefault.find({
+  // Determine which config object to use
+  let configObjectNode: SgNode | null = null
+  if (exportDefaultDirect) {
+    configObjectNode = exportDefaultDirect.find({
       rule: {
         kind: 'object',
         inside: {
@@ -275,25 +273,45 @@ export function transformTsupConfig(
         },
       },
     })
-    if (objectNode) {
-      const children = objectNode.children()
-      const closeBrace = children.find((c) => c.text() === '}')
-      if (closeBrace) {
-        const additionsStr = missingDefaults.join(',\n  ')
-        const lastChild = children.findLast((c) => c.kind() === 'pair')
-        const needsComma = lastChild && !lastChild.text().endsWith(',')
+  } else if (exportDefaultDefineConfig) {
+    // For defineConfig, find the object inside the call expression
+    configObjectNode = exportDefaultDefineConfig.find({
+      rule: {
+        kind: 'object',
+        inside: {
+          kind: 'arguments',
+        },
+      },
+    })
+  }
 
-        const insertText = needsComma
-          ? `,\n  ${additionsStr},\n`
-          : `\n  ${additionsStr},\n`
+  const missingDefaults: string[] = []
+  if (configObjectNode) {
+    if (!hasOption('format')) missingDefaults.push("format: 'cjs'")
+    if (!hasOption('clean')) missingDefaults.push('clean: false')
+    if (!hasOption('dts')) missingDefaults.push('dts: false')
+    if (!hasOption('target')) missingDefaults.push('target: false')
+  }
 
-        const edit: Edit = {
-          startPos: closeBrace.range().start.index,
-          endPos: closeBrace.range().start.index,
-          insertedText: insertText,
-        }
-        code = root.commitEdits([edit])
+  // Add default values using AST edit
+  if (missingDefaults.length > 0 && configObjectNode) {
+    const children = configObjectNode.children()
+    const closeBrace = children.find((c) => c.text() === '}')
+    if (closeBrace) {
+      const additionsStr = missingDefaults.join(',\n  ')
+      const lastChild = children.findLast((c) => c.kind() === 'pair')
+      const needsComma = lastChild && !lastChild.text().endsWith(',')
+
+      const insertText = needsComma
+        ? `,\n  ${additionsStr},\n`
+        : `\n  ${additionsStr},\n`
+
+      const edit: Edit = {
+        startPos: closeBrace.range().start.index,
+        endPos: closeBrace.range().start.index,
+        insertedText: insertText,
       }
+      code = root.commitEdits([edit])
     }
   }
 
