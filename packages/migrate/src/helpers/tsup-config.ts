@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { readFile, unlink, writeFile } from 'node:fs/promises'
-import { Lang, parse } from '@ast-grep/napi'
+import { Lang, parse, type Edit, type SgNode } from '@ast-grep/napi'
 import consola from 'consola'
 import { createTwoFilesPatch } from 'diff'
 import { outputDiff } from '../utils.ts'
@@ -28,6 +28,14 @@ const WARNING_MESSAGES: Record<string, string> = {
   legacyOutput: 'The `legacyOutput` option is not supported in tsdown.',
 }
 
+// Property rename mappings: oldName -> newName
+const PROPERTY_RENAMES: Record<string, string> = {
+  entryPoints: 'entry',
+  esbuildPlugins: 'plugins',
+  publicDir: 'copy',
+  cjsInterop: 'cjsDefault',
+}
+
 /**
  * Transform tsup config code to tsdown config code.
  * This function applies all migration rules and returns the transformed code
@@ -38,38 +46,216 @@ export function transformTsupConfig(
   filename: string,
 ): TransformResult {
   const warnings: string[] = []
+  const edits: Edit[] = []
 
-  // Phase 1: Parse original input and collect information using AST
+  // Determine language based on file extension
   const lang = filename.endsWith('.tsx')
     ? Lang.Tsx
     : RE_TS.test(filename)
       ? Lang.TypeScript
       : Lang.JavaScript
-  const ast = parse(lang, code)
-  const root = ast.root()
+  let ast = parse(lang, code)
+  let root = ast.root()
 
-  // Helper to check if a property exists using AST
-  const hasOption = (optionName: string): boolean => {
-    const found = root.find({
+  // Helper: Find property pair by name using relational rule
+  const findPropertyPair = (propName: string): SgNode | null => {
+    return root.find({
       rule: {
         kind: 'pair',
         has: {
+          field: 'key',
           kind: 'property_identifier',
-          regex: `^${optionName}$`,
+          regex: `^${propName}$`,
         },
       },
     })
-    return found !== null
   }
 
-  // Collect warnings for unsupported options (based on original AST)
+  // 1. Collect warnings for unsupported options
   for (const [optionName, message] of Object.entries(WARNING_MESSAGES)) {
-    if (hasOption(optionName)) {
+    if (findPropertyPair(optionName)) {
       warnings.push(message)
     }
   }
 
-  // Check which default values need to be added (based on original AST)
+  // 2. Transform unplugin-*/esbuild imports to unplugin-*/rolldown
+  // Using relational rule: find string nodes inside import statements
+  const importStrings = root.findAll({
+    rule: {
+      kind: 'string',
+      inside: {
+        kind: 'import_statement',
+      },
+      has: {
+        kind: 'string_fragment',
+        regex: 'unplugin-.*/esbuild',
+      },
+    },
+  })
+  for (const node of importStrings) {
+    const text = node.text()
+    edits.push(node.replace(text.replace('/esbuild', '/rolldown')))
+  }
+
+  // Helper: Find property identifier (key only) by name using relational rule
+  const findPropertyIdentifier = (propName: string): SgNode | null => {
+    return root.find({
+      rule: {
+        kind: 'property_identifier',
+        regex: `^${propName}$`,
+        inside: {
+          kind: 'pair',
+          field: 'key',
+        },
+      },
+    })
+  }
+
+  // 3. Rename properties using AST - only replace the key identifier
+  for (const [oldName, newName] of Object.entries(PROPERTY_RENAMES)) {
+    const propIdentifier = findPropertyIdentifier(oldName)
+    if (propIdentifier) {
+      edits.push(propIdentifier.replace(newName))
+    }
+  }
+
+  // 4. Transform bundle: true -> remove the entire pair
+  const bundleTruePairs = root.findAll({
+    rule: {
+      kind: 'pair',
+      all: [
+        {
+          has: {
+            field: 'key',
+            kind: 'property_identifier',
+            regex: '^bundle$',
+          },
+        },
+        {
+          has: {
+            field: 'value',
+            kind: 'true',
+          },
+        },
+      ],
+    },
+  })
+  for (const node of bundleTruePairs) {
+    edits.push(node.replace(''))
+  }
+
+  // 5. Transform bundle: false -> unbundle: true
+  const bundleFalsePairs = root.findAll({
+    rule: {
+      kind: 'pair',
+      all: [
+        {
+          has: {
+            field: 'key',
+            kind: 'property_identifier',
+            regex: '^bundle$',
+          },
+        },
+        {
+          has: {
+            field: 'value',
+            kind: 'false',
+          },
+        },
+      ],
+    },
+  })
+  for (const node of bundleFalsePairs) {
+    edits.push(node.replace('unbundle: true'))
+  }
+
+  // 6. Transform removeNodeProtocol: true -> nodeProtocol: 'strip'
+  const removeNodeProtocolPairs = root.findAll({
+    rule: {
+      kind: 'pair',
+      all: [
+        {
+          has: {
+            field: 'key',
+            kind: 'property_identifier',
+            regex: '^removeNodeProtocol$',
+          },
+        },
+        {
+          has: {
+            field: 'value',
+            kind: 'true',
+          },
+        },
+      ],
+    },
+  })
+  for (const node of removeNodeProtocolPairs) {
+    edits.push(node.replace("nodeProtocol: 'strip'"))
+  }
+
+  // 7. Transform tsup/TSUP identifiers
+  const tsupIdentifiers = root.findAll({
+    rule: {
+      kind: 'identifier',
+      regex: '^tsup$',
+    },
+  })
+  for (const node of tsupIdentifiers) {
+    edits.push(node.replace('tsdown'))
+  }
+
+  const tsupUpperIdentifiers = root.findAll({
+    rule: {
+      kind: 'identifier',
+      regex: '^TSUP$',
+    },
+  })
+  for (const node of tsupUpperIdentifiers) {
+    edits.push(node.replace('TSDOWN'))
+  }
+
+  // 8. Transform 'tsup' string literals in imports
+  const tsupImportStrings = root.findAll({
+    rule: {
+      kind: 'string',
+      inside: {
+        kind: 'import_statement',
+      },
+      has: {
+        kind: 'string_fragment',
+        regex: 'tsup',
+      },
+    },
+  })
+  for (const node of tsupImportStrings) {
+    const text = node.text()
+    edits.push(node.replace(text.replace('tsup', 'tsdown')))
+  }
+
+  // Apply all AST-based edits
+  code = root.commitEdits(edits)
+
+  // Phase 2: Re-parse and check for default values
+  ast = parse(lang, code)
+  root = ast.root()
+
+  // Helper using relational rule for checking options
+  const hasOption = (optionName: string): boolean => {
+    return (
+      root.find({
+        rule: {
+          kind: 'pair',
+          has: {
+            field: 'key',
+            kind: 'property_identifier',
+            regex: `^${optionName}$`,
+          },
+        },
+      }) !== null
+    )
+  }
+
   const hasExportDefault = root.find('export default { $$$OPTS }') !== null
   const missingDefaults: string[] = []
   if (hasExportDefault) {
@@ -79,68 +265,52 @@ export function transformTsupConfig(
     if (!hasOption('target')) missingDefaults.push('target: false')
   }
 
-  // Phase 2: Apply all transformations using regex
-  // - Transform unplugin-*/esbuild to unplugin-*/rolldown
-  code = code.replaceAll(
-    /(['"])unplugin-([^'"/]+)\/esbuild\1/g,
-    '$1unplugin-$2/rolldown$1',
-  )
-
-  // - Transform entryPoints to entry
-  code = code.replaceAll(/\bentryPoints\s*:/g, 'entry:')
-
-  // - Transform esbuildPlugins to plugins
-  code = code.replaceAll(/\besbuildPlugins\s*:/g, 'plugins:')
-
-  // - Remove bundle: true (it's the default in tsdown)
-  code = code.replaceAll(/\bbundle\s*:\s*true\s*,?\s*/g, '')
-
-  // - Transform bundle: false to unbundle: true
-  code = code.replaceAll(/\bbundle\s*:\s*false/g, 'unbundle: true')
-
-  // - Transform publicDir to copy
-  code = code.replaceAll(/\bpublicDir\s*:/g, 'copy:')
-
-  // - Transform removeNodeProtocol: true to nodeProtocol: 'strip'
-  code = code.replaceAll(
-    /\bremoveNodeProtocol\s*:\s*true/g,
-    "nodeProtocol: 'strip'",
-  )
-
-  // - Transform cjsInterop to cjsDefault
-  code = code.replaceAll(/\bcjsInterop\s*:/g, 'cjsDefault:')
-
-  // - Basic tsup -> tsdown replacement
-  code = code
-    .replaceAll(/\btsup\b/g, 'tsdown')
-    .replaceAll(/\bTSUP\b/g, 'TSDOWN')
-
-  // Phase 3: Add default values if needed
+  // Add default values using AST edit
   if (missingDefaults.length > 0) {
-    const exportMatch = code.match(/export\s+default\s*\{([\s\S]*?)\}/)
-    if (exportMatch) {
-      const existingContent = exportMatch[1].trim()
-      const needsComma = existingContent && !existingContent.endsWith(',')
-      const additionsStr = missingDefaults.join(',\n  ')
+    const exportDefault = root.find('export default { $$$OPTS }')
+    if (exportDefault) {
+      const objectNode = exportDefault.find({
+        rule: {
+          kind: 'object',
+          inside: {
+            kind: 'export_statement',
+          },
+        },
+      })
+      if (objectNode) {
+        const children = objectNode.children()
+        const closeBrace = children.find((c) => c.text() === '}')
+        if (closeBrace) {
+          const additionsStr = missingDefaults.join(',\n  ')
+          const lastChild = children.findLast((c) => c.kind() === 'pair')
+          const needsComma = lastChild && !lastChild.text().endsWith(',')
 
-      if (needsComma) {
-        code = code.replace(
-          /export\s+default\s*\{([\s\S]*?)\}/,
-          `export default {$1,\n  ${additionsStr},\n}`,
-        )
-      } else {
-        code = code.replace(
-          /export\s+default\s*\{([\s\S]*?)\}/,
-          `export default {$1\n  ${additionsStr},\n}`,
-        )
+          const insertText = needsComma
+            ? `,\n  ${additionsStr},\n`
+            : `\n  ${additionsStr},\n`
+
+          const edit: Edit = {
+            startPos: closeBrace.range().start.index,
+            endPos: closeBrace.range().start.index,
+            insertedText: insertText,
+          }
+          code = root.commitEdits([edit])
+        }
       }
     }
   }
 
-  // Phase 4: Final cleanup
+  // Final cleanup: remove empty lines and fix formatting
   code = code
-    .replaceAll(/,[ \t]*,/g, ',')
+    // Remove consecutive commas with whitespace between
+    .replaceAll(/,\s*,/g, ',')
+    // Remove standalone comma lines
+    .replaceAll(/\n\s*,\s*\n/g, '\n')
+    // Fix comma at start of line after content
+    .replaceAll(/([^\s,])\n\s*,/g, '$1,')
+    // Remove multiple empty lines
     .replaceAll(/\n[ \t]*\n[ \t]*\n/g, '\n\n')
+    // Fix opening brace followed by comma
     .replaceAll(/\{[ \t]*\n[ \t]*,/g, '{\n')
 
   return { code, warnings }
@@ -164,9 +334,15 @@ export async function migrateTsupConfig(dryRun?: boolean): Promise<boolean> {
     found = true
 
     const tsupConfigRaw = await readFile(file, 'utf8')
-    const tsupConfig = tsupConfigRaw
-      .replaceAll(/\btsup\b/g, 'tsdown')
-      .replaceAll(/\bTSUP\b/g, 'TSDOWN')
+    const { code: tsupConfig, warnings } = transformTsupConfig(
+      tsupConfigRaw,
+      file,
+    )
+
+    // Output warnings
+    for (const warning of warnings) {
+      consola.warn(warning)
+    }
 
     const renamed = file.replaceAll('tsup', 'tsdown')
     if (dryRun) {
