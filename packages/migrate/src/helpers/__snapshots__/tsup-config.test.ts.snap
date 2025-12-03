@@ -1,9 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`comprehensive transformation > should transform complex tsup config > code 1`] = `
-"import icons from 'unplugin-icons/rolldown'
+"import { defineConfig } from 'tsdown'
+import icons from 'unplugin-icons/rolldown'
 
-export default {
+export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
   plugins: [icons()],
@@ -11,10 +12,7 @@ export default {
   copy: 'public',
   splitting: true,
   metafile: true,
-  clean: false,
-  dts: false,
-  target: false,
-}"
+})"
 `;
 
 exports[`comprehensive transformation > should transform complex tsup config > warnings 1`] = `

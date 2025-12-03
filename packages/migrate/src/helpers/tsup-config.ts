@@ -256,9 +256,9 @@ export function transformTsupConfig(
     )
   }
 
-  const hasExportDefault = root.find('export default { $$$OPTS }') !== null
+  const exportDefault = root.find('export default { $$$OPTS }')
   const missingDefaults: string[] = []
-  if (hasExportDefault) {
+  if (exportDefault) {
     if (!hasOption('format')) missingDefaults.push("format: 'cjs'")
     if (!hasOption('clean')) missingDefaults.push('clean: false')
     if (!hasOption('dts')) missingDefaults.push('dts: false')
@@ -266,36 +266,33 @@ export function transformTsupConfig(
   }
 
   // Add default values using AST edit
-  if (missingDefaults.length > 0) {
-    const exportDefault = root.find('export default { $$$OPTS }')
-    if (exportDefault) {
-      const objectNode = exportDefault.find({
-        rule: {
-          kind: 'object',
-          inside: {
-            kind: 'export_statement',
-          },
+  if (missingDefaults.length > 0 && exportDefault) {
+    const objectNode = exportDefault.find({
+      rule: {
+        kind: 'object',
+        inside: {
+          kind: 'export_statement',
         },
-      })
-      if (objectNode) {
-        const children = objectNode.children()
-        const closeBrace = children.find((c) => c.text() === '}')
-        if (closeBrace) {
-          const additionsStr = missingDefaults.join(',\n  ')
-          const lastChild = children.findLast((c) => c.kind() === 'pair')
-          const needsComma = lastChild && !lastChild.text().endsWith(',')
+      },
+    })
+    if (objectNode) {
+      const children = objectNode.children()
+      const closeBrace = children.find((c) => c.text() === '}')
+      if (closeBrace) {
+        const additionsStr = missingDefaults.join(',\n  ')
+        const lastChild = children.findLast((c) => c.kind() === 'pair')
+        const needsComma = lastChild && !lastChild.text().endsWith(',')
 
-          const insertText = needsComma
-            ? `,\n  ${additionsStr},\n`
-            : `\n  ${additionsStr},\n`
+        const insertText = needsComma
+          ? `,\n  ${additionsStr},\n`
+          : `\n  ${additionsStr},\n`
 
-          const edit: Edit = {
-            startPos: closeBrace.range().start.index,
-            endPos: closeBrace.range().start.index,
-            insertedText: insertText,
-          }
-          code = root.commitEdits([edit])
+        const edit: Edit = {
+          startPos: closeBrace.range().start.index,
+          endPos: closeBrace.range().start.index,
+          insertedText: insertText,
         }
+        code = root.commitEdits([edit])
       }
     }
   }

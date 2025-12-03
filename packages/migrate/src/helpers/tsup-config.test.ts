@@ -238,9 +238,10 @@ describe('default values', () => {
 describe('comprehensive transformation', () => {
   test('should transform complex tsup config', () => {
     const input = `
+      import { defineConfig } from 'tsup'
       import icons from 'unplugin-icons/esbuild'
 
-      export default {
+      export default defineConfig({
         entry: ['src/index.ts'],
         format: ['esm', 'cjs'],
         esbuildPlugins: [icons()],
@@ -248,7 +249,7 @@ describe('comprehensive transformation', () => {
         publicDir: 'public',
         splitting: true,
         metafile: true,
-      }
+      })
     `
     const { code, warnings } = transform(input, 'tsup.config.ts', 2)
 
@@ -257,6 +258,9 @@ describe('comprehensive transformation', () => {
     expect(code).toContain('plugins:')
     expect(code).toContain('unbundle: true')
     expect(code).toContain('copy:')
+    expect(code).toContain('clean: false')
+    expect(code).toContain('dts: false')
+    expect(code).toContain('target: false')
     expect(code).not.toContain('esbuildPlugins')
     expect(code).not.toContain('bundle: false')
     expect(code).not.toContain('publicDir')
