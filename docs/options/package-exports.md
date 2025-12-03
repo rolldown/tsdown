@@ -35,7 +35,7 @@ This will include all relevant files in the generated `exports` field.
 
 ## Dev-Time Source Linking
 
-### Dev Exports
+### Dev Exports {#dev-exports}
 
 During development, you may want your `exports` to point directly to your source files for better debugging and editor support. You can enable this by setting `exports.devExports` to `true`:
 

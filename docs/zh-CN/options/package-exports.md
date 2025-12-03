@@ -35,7 +35,7 @@ export default defineConfig({
 
 ## 开发时源码链接
 
-### 开发导出（Dev Exports）
+### 开发导出（Dev Exports） {#dev-exports}
 
 在开发过程中，您可能希望 `exports` 字段直接指向源码文件，以便更好地调试和获得编辑器支持。可以通过设置 `exports.devExports` 为 `true` 来启用：
 
