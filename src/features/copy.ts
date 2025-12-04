@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { fsCopy } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
+import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { Arrayable, Awaitable } from '../utils/types.ts'
 
@@ -19,18 +20,29 @@ export async function copy(options: ResolvedConfig): Promise<void> {
       ? await options.copy(options)
       : options.copy
 
+  const resolved: [from: string, to: string][] = toArray(copy).map((dir) => {
+    const from = path.resolve(
+      options.cwd,
+      typeof dir === 'string' ? dir : dir.from,
+    )
+    const to =
+      typeof dir === 'string'
+        ? path.resolve(options.outDir, path.basename(from))
+        : path.resolve(options.cwd, dir.to)
+    return [from, to]
+  })
+
+  const name = prettyName(options.name)
   await Promise.all(
-    toArray(copy).map((dir) => {
-      const from = typeof dir === 'string' ? dir : dir.from
-      const to =
-        typeof dir === 'string'
-          ? path.resolve(options.outDir, path.basename(from))
-          : dir.to
-      return cp(options.cwd, from, to)
+    resolved.map(([from, to]) => {
+      options.logger.info(
+        name,
+        `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
+          options.cwd,
+          to,
+        )}`,
+      )
+      return fsCopy(from, to)
     }),
   )
-}
-
-function cp(cwd: string, from: string, to: string): Promise<void> {
-  return fsCopy(path.resolve(cwd, from), path.resolve(cwd, to))
 }

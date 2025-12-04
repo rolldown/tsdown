@@ -276,9 +276,8 @@ export async function buildSingle(
   }
 
   async function postBuild() {
-    if (updated) {
-      await copy(config)
-    } else {
+    await copy(config)
+    if (!updated) {
       await done(bundle)
     }
 
