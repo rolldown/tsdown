@@ -52,7 +52,7 @@ describe('issues', () => {
     expect(outputFiles.toSorted()).toEqual(['index.d.mts', 'index.mjs'])
   })
 
-  test.fails('#216', async (context) => {
+  test('#216', async (context) => {
     const { outputFiles } = await testBuild({
       context,
       files: {
