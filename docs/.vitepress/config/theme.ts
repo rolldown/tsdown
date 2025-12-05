@@ -22,6 +22,15 @@ function getTypedocSidebar() {
 }
 
 const typedocSidebar = getTypedocSidebar()
+const rolldownSidebar: { items: DefaultTheme.SidebarItem[]; base: string } = {
+  items: typedocSidebar[0]
+    .items![0].items!.filter(
+      (item) => item.text === 'Interfaces' || item.text === 'Type Aliases',
+    )!
+    .flatMap((item) => item.items!)
+    .toSorted((a, b) => a.text!.localeCompare(b.text!)),
+  base: '/reference',
+}
 
 export function getLocaleConfig(lang: string) {
   const t = createTranslate(lang)
@@ -131,9 +140,13 @@ export function getLocaleConfig(lang: string) {
         },
         {
           text: t('Type Definitions'),
-          items: typedocSidebar
-            .flatMap((i) => i.items!)
-            .filter((i) => i.text !== 'Options'),
+          items: [
+            { text: 'Rolldown', link: '/api/rolldown.md' },
+            ...typedocSidebar
+              .flatMap((i) => i.items!)
+              .filter((i) => i.text !== 'Options' && i.text !== 'rolldown')
+              .toSorted((a, b) => a.text!.localeCompare(b.text!)),
+          ],
           collapsed: true,
         },
       ],
@@ -143,7 +156,10 @@ export function getLocaleConfig(lang: string) {
   const themeConfig: DefaultTheme.Config = {
     logo: { src: '/tsdown.svg', width: 24, height: 24 },
     nav,
-    sidebar,
+    sidebar: {
+      '/reference/api/rolldown': rolldownSidebar,
+      '/': sidebar,
+    },
     outline: 'deep',
     socialLinks: [
       { icon: 'github', link: 'https://github.com/rolldown/tsdown' },
