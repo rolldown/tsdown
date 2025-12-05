@@ -1,10 +1,11 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { slash } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
+import type { Logger } from '../../utils/logger.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -25,8 +26,7 @@ export interface ExportsOptions {
    * Generate legacy fields (`main` and `module`) for older Node.js and bundlers
    * that do not support package `exports` field.
    *
-   * - Defaults to false, if only ESM builds are included.
-   * - Defaults to true, if CJS builds are included.
+   * Defaults to false, if only ESM builds are included, true otherwise.
    *
    * @see {@link https://github.com/publint/publint/issues/24}
    */
@@ -53,6 +53,7 @@ export async function writeExports(
     pkg,
     chunks,
     exports,
+    options.logger,
   )
 
   const updatedPkg = {
@@ -66,11 +67,11 @@ export async function writeExports(
     updatedPkg.publishConfig.exports = publishExports
   }
 
-  const original = await readFile(pkg.packageJsonPath, 'utf8')
+  const original = readFileSync(pkg.packageJsonPath, 'utf8')
   let contents = JSON.stringify(updatedPkg, null, detectIndentation(original))
   if (original.endsWith('\n')) contents += '\n'
   if (contents !== original) {
-    await writeFile(pkg.packageJsonPath, contents, 'utf8')
+    writeFileSync(pkg.packageJsonPath, contents, 'utf8')
   }
 }
 
@@ -80,6 +81,7 @@ export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
   { devExports, all, customExports, legacy }: ExportsOptions,
+  logger: Logger,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -96,6 +98,10 @@ export async function generateExports(
   const exportsMap: Map<string, SubExport> = new Map()
 
   const formats = Object.keys(chunks)
+  if (!formats.includes('cjs') && !formats.includes('es')) {
+    logger.warn(`No CJS or ESM formats found in chunks for package ${pkg.name}`)
+  }
+
   const isPureESM = formats.length === 1 && formats[0] === 'es'
   legacy ??= !isPureESM
 
