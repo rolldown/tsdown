@@ -52,8 +52,8 @@ describe.concurrent('generateExports', () => {
           ".": "./main.js",
           "./package.json": "./package.json",
         },
-        "main": "./main.js",
-        "module": "./main.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -77,8 +77,8 @@ describe.concurrent('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -102,8 +102,8 @@ describe.concurrent('generateExports', () => {
           "./foo": "./foo/index.js",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -308,8 +308,6 @@ describe.concurrent('generateExports', () => {
     // key order matters
     expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
       "{
-        "main": "./index.js",
-        "module": "./index.js",
         "exports": {
           ".": {
             "dev": "./SRC/index.js",
@@ -345,8 +343,8 @@ describe.concurrent('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -373,8 +371,8 @@ describe.concurrent('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -459,8 +457,8 @@ describe.concurrent('generateExports', () => {
           "./foo": "./foo/index.js",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": "./index.d.ts",
       }
@@ -538,8 +536,8 @@ describe.concurrent('generateExports', () => {
           "./package.json": "./package.json",
           "./style.css": "./style.css",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -564,8 +562,8 @@ describe.concurrent('generateExports', () => {
           ".": "./index.js",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -589,8 +587,8 @@ describe.concurrent('generateExports', () => {
           "./custom.css": "./custom.css",
           "./package.json": "./package.json",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -614,8 +612,8 @@ describe.concurrent('generateExports', () => {
           "./package.json": "./package.json",
           "./style.css": "./dist/style.css",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -644,8 +642,8 @@ describe.concurrent('generateExports', () => {
           "./package.json": "./package.json",
           "./style.css": "./style.css",
         },
-        "main": "./index.js",
-        "module": "./index.js",
+        "main": undefined,
+        "module": undefined,
         "publishExports": {
           ".": "./index.js",
           "./package.json": "./package.json",

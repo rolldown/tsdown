@@ -48,6 +48,16 @@ export interface ExportsOptions {
    */
   exclude?: (RegExp | string)[]
 
+  /**
+   * Generate legacy fields (`main` and `module`) for older Node.js and bundlers
+   * that do not support package `exports` field.
+   *
+   * Defaults to false, if only ESM builds are included, true otherwise.
+   *
+   * @see {@link https://github.com/publint/publint/issues/24}
+   */
+  legacy?: boolean
+
   customExports?: (
     exports: Record<string, any>,
     context: {
@@ -112,8 +122,15 @@ export async function generateExports(
   publishExports?: Record<string, any>
 }> {
   typeAssert(options.exports)
-  const {
-    exports: { devExports, all, packageJson = true, exclude, customExports },
+  let {
+    exports: {
+      devExports,
+      all,
+      packageJson = true,
+      exclude,
+      customExports,
+      legacy,
+    },
     css,
     logger,
   } = options
@@ -130,6 +147,9 @@ export async function generateExports(
   if (!formats.includes('cjs') && !formats.includes('es')) {
     logger.warn(`No CJS or ESM formats found in chunks for package ${pkg.name}`)
   }
+
+  const isPureESM = formats.length === 1 && formats[0] === 'es'
+  legacy ??= !isPureESM
 
   for (const [format, chunksByFormat] of Object.entries(chunks) as [
     NormalizedFormat,
@@ -239,8 +259,8 @@ export async function generateExports(
   }
 
   return {
-    main: main || module || pkg.main,
-    module: module || pkg.module,
+    main: legacy ? main || module || pkg.main : undefined,
+    module: legacy ? module || pkg.module : undefined,
     types: cjsTypes || esmTypes || pkg.types,
     exports,
     publishExports,
