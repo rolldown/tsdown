@@ -16,7 +16,7 @@ catalogs:
     '@sxzz/test-utils': ^0.5.13
     '@types/node': ^24.10.1
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20251207.1
+    '@typescript/native-preview': 7.0.0-dev.20251208.1
     '@vitest/coverage-v8': 4.0.15
     bumpp: ^10.3.2
     dedent: ^1.7.0
@@ -31,7 +31,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^3.19.0
     '@unocss/eslint-plugin': ^66.5.10
     '@vueuse/core': ^14.1.0
-    oxc-minify: ^0.101.0
+    oxc-minify: ^0.102.0
     typedoc: ^0.28.15
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
@@ -69,7 +69,7 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.2
-    unrun: ^0.2.17
+    unrun: ^0.2.19
 
 ignoreWorkspaceRootCheck: true
 ignoredBuiltDependencies:
