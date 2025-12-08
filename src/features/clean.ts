@@ -66,7 +66,7 @@ export function resolveClean(
   return clean
 }
 
-export async function cleanupChunks(
+export async function cleanChunks(
   outDir: string,
   chunks: Array<OutputAsset | OutputChunk>,
 ): Promise<void> {

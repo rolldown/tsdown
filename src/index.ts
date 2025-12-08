@@ -15,7 +15,7 @@ import {
   type ResolvedConfig,
 } from './config/index.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
-import { cleanOutDir, cleanupChunks } from './features/clean.ts'
+import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
@@ -196,7 +196,10 @@ export async function buildSingle(
     watcher.on('event', async (event) => {
       switch (event.code) {
         case 'START': {
-          await cleanupChunks(config.outDir, chunks)
+          if (config.clean) {
+            await cleanChunks(config.outDir, chunks)
+          }
+
           chunks.length = 0
           hasError = false
           break
