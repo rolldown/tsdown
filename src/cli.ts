@@ -123,8 +123,8 @@ export async function runCLI(): Promise<void> {
 
   try {
     await cli.runMatchedCommand()
-  } catch (error) {
-    globalLogger.error(error)
+  } catch (error: any) {
+    globalLogger.error(String(error.stack || error.message))
     process.exit(1)
   }
 }
