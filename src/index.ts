@@ -196,7 +196,7 @@ export async function buildSingle(
     watcher.on('event', async (event) => {
       switch (event.code) {
         case 'START': {
-          if (config.clean) {
+          if (config.clean.length) {
             await cleanChunks(config.outDir, chunks)
           }
 
