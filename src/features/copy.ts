@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsCopy } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
 import { prettyName } from '../utils/logger.ts'
@@ -20,29 +21,45 @@ export async function copy(options: ResolvedConfig): Promise<void> {
       ? await options.copy(options)
       : options.copy
 
-  const resolved: [from: string, to: string][] = toArray(copy).map((dir) => {
-    const from = path.resolve(
-      options.cwd,
-      typeof dir === 'string' ? dir : dir.from,
-    )
-    const to =
-      typeof dir === 'string'
-        ? path.resolve(options.outDir, path.basename(from))
-        : path.resolve(options.cwd, dir.to)
-    return [from, to]
-  })
+  const resolveCopyEntry = (dir: string | CopyEntry) => {
+    const onlyHasFrom = typeof dir === 'string'
+    const from = path.resolve(options.cwd, onlyHasFrom ? dir : dir.from)
+
+    const relativeTo = path.relative(options.cwd, from).split(path.sep).slice(1).join(path.sep)
+    const baseTo = onlyHasFrom ? options.outDir : path.resolve(options.cwd, dir.to)
+    const to = path.resolve(baseTo, relativeTo)
+
+    return { from, to }
+  }
+
+  const resolved = (await Promise.all(toArray(copy).map(async (dir) => {
+    const onlyHasFrom = typeof dir === 'string'
+    const from = onlyHasFrom ? dir : dir.from
+
+    if (isDynamicPattern(from)) {
+      const matchedFiles = await glob(from, {
+        cwd: options.cwd,
+        expandDirectories: false,
+      })
+      return matchedFiles.map((file) => resolveCopyEntry(
+        onlyHasFrom ? file : { from: file, to: dir.to },
+      ))
+    }
+
+    return resolveCopyEntry(dir)
+  }))).flat()
 
   const name = prettyName(options.name)
   await Promise.all(
-    resolved.map(([from, to]) => {
+    resolved.map((dir) => {
       options.logger.info(
         name,
-        `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
+        `Copying files from ${path.relative(options.cwd, dir.from)} to ${path.relative(
           options.cwd,
-          to,
+          dir.to,
         )}`,
       )
-      return fsCopy(from, to)
+      return fsCopy(dir.from, dir.to)
     }),
   )
 }
