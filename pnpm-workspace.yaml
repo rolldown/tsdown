@@ -14,9 +14,9 @@ catalogs:
     '@sxzz/eslint-config': ^7.4.1
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.13
-    '@types/node': ^24.10.1
+    '@types/node': ^24.10.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20251208.1
+    '@typescript/native-preview': 7.0.0-dev.20251210.1
     '@vitest/coverage-v8': 4.0.15
     bumpp: ^10.3.2
     dedent: ^1.7.0
@@ -41,7 +41,7 @@ catalogs:
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.9.3
     vue: ^3.5.25
-    vue-tsc: ^3.1.7
+    vue-tsc: ^3.1.8
   migrate:
     '@antfu/ni': ^28.0.0
     '@ast-grep/napi': ^0.40.0
@@ -50,7 +50,7 @@ catalogs:
   peer:
     '@arethetypeswrong/core': ^0.18.2
     '@vitejs/devtools': ^0.0.0-alpha.19
-    publint: ^0.3.15
+    publint: ^0.3.16
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.6
   prod:
@@ -58,7 +58,7 @@ catalogs:
     cac: ^6.7.14
     empathic: ^2.0.0
     hookable: ^5.5.3
-    import-without-cache: ^0.2.2
+    import-without-cache: ^0.2.3
     is-in-ci: ^2.0.0
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
