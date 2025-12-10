@@ -225,7 +225,10 @@ export async function buildSingle(
 
         case 'BUNDLE_END': {
           await event.result.close()
-          logger.success(`Rebuilt in ${event.duration}ms.`)
+          logger.success(
+            prettyName(config.name),
+            `Rebuilt in ${event.duration}ms.`,
+          )
           break
         }
 
