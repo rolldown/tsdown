@@ -550,6 +550,7 @@ export type ResolvedConfig = Overwrite<
     | 'footer'
   >,
   {
+    nameLabel: string | undefined
     format: NormalizedFormat
     target?: string[]
     clean: string[]

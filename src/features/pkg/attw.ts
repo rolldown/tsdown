@@ -6,7 +6,6 @@ import { createDebug } from 'obug'
 import { exec } from 'tinyexec'
 import { fsRemove } from '../../utils/fs.ts'
 import { importWithError } from '../../utils/general.ts'
-import { prettyName } from '../../utils/logger.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type {
   CheckPackageOptions,
@@ -114,10 +113,10 @@ export async function attw(options: ResolvedConfig): Promise<void> {
   }
 
   if (errorMessage) {
-    options.logger[level](prettyName(options.name), label, errorMessage)
+    options.logger[level](options.nameLabel, label, errorMessage)
   } else {
     options.logger.success(
-      prettyName(options.name),
+      options.nameLabel,
       label,
       'No problems found',
       dim`(${Math.round(performance.now() - t)}ms)`,

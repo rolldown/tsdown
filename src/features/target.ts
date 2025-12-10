@@ -1,13 +1,15 @@
 import minVersion from 'semver/ranges/min-version.js'
 import { resolveComma, toArray } from '../utils/general.ts'
-import { generateColor, prettyName, type Logger } from '../utils/logger.ts'
+import type { Logger } from '../utils/logger.ts'
+import type { Ansis } from 'ansis'
 import type { PackageJson } from 'pkg-types'
 
 export function resolveTarget(
   logger: Logger,
   target: string | string[] | false | undefined,
+  color: Ansis,
   pkg?: PackageJson,
-  name?: string,
+  nameLabel?: string,
 ): string[] | undefined {
   if (target === false) return
   if (target == null) {
@@ -25,8 +27,8 @@ export function resolveTarget(
   const targets = resolveComma(toArray(target))
   if (targets.length)
     logger.info(
-      prettyName(name),
-      `target${targets.length > 1 ? 's' : ''}: ${generateColor(name)(targets.join(', '))}`,
+      nameLabel,
+      `target${targets.length > 1 ? 's' : ''}: ${color(targets.join(', '))}`,
     )
 
   return targets

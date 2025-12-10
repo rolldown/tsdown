@@ -7,7 +7,7 @@ import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { formatBytes } from '../utils/format.ts'
 import { noop } from '../utils/general.ts'
-import { prettyFormat, prettyName, type Logger } from '../utils/logger.ts'
+import { prettyFormat, type Logger } from '../utils/logger.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 const debug = createDebug('tsdown:report')
@@ -61,7 +61,7 @@ export function ReportPlugin(
   logger: Logger,
   cwd: string,
   cjsDts?: boolean,
-  name?: string,
+  nameLabel?: string,
   isDualFormat?: boolean,
 ): Plugin {
   const options = {
@@ -122,7 +122,6 @@ export function ReportPlugin(
         return b.raw - a.raw
       })
 
-      const nameLabel = prettyName(name)
       const formatLabel =
         isDualFormat && prettyFormat(cjsDts ? 'cjs' : outputOptions.format)
 

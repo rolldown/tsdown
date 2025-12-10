@@ -2,7 +2,6 @@ import path from 'node:path'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { importWithError } from '../../utils/general.ts'
-import { prettyName } from '../../utils/logger.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 
 const debug = createDebug('tsdown:publint')
@@ -12,7 +11,7 @@ export async function publint(options: ResolvedConfig): Promise<void> {
   if (!options.publint) return
   if (!options.pkg) {
     options.logger.warn(
-      prettyName(options.name),
+      options.nameLabel,
       'publint is enabled but package.json is not found',
     )
     return
@@ -30,7 +29,7 @@ export async function publint(options: ResolvedConfig): Promise<void> {
 
   if (!messages.length) {
     options.logger.success(
-      prettyName(options.name),
+      options.nameLabel,
       label,
       'No issues found',
       dim`(${Math.round(performance.now() - t)}ms)`,
@@ -43,6 +42,6 @@ export async function publint(options: ResolvedConfig): Promise<void> {
     const logType = (
       { error: 'error', warning: 'warn', suggestion: 'info' } as const
     )[message.type]
-    options.logger[logType](prettyName(options.name), label, formattedMessage)
+    options.logger[logType](options.nameLabel, label, formattedMessage)
   }
 }

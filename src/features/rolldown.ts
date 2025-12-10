@@ -94,7 +94,7 @@ async function resolveInputOptions(
     globImport,
     loader,
     logger,
-    name,
+    nameLabel,
     nodeProtocol,
     platform,
     plugins: userPlugins,
@@ -158,14 +158,16 @@ async function resolveInputOptions(
         await LightningCSSPlugin({ target }),
       )
     }
-    plugins.push(ShebangPlugin(logger, cwd, name, isDualFormat))
+    plugins.push(ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
     if (globImport) {
       plugins.push(importGlobPlugin({ root: cwd }))
     }
   }
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
-    plugins.push(ReportPlugin(report, logger, cwd, cjsDts, name, isDualFormat))
+    plugins.push(
+      ReportPlugin(report, logger, cwd, cjsDts, nameLabel, isDualFormat),
+    )
   }
 
   if (watch) {
