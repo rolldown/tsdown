@@ -1,14 +1,27 @@
 import path from 'node:path'
 import { glob, isDynamicPattern } from 'tinyglobby'
-import { fsCopy } from '../utils/fs.ts'
+import { fsCopy, fsStat } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
 import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { Arrayable, Awaitable } from '../utils/types.ts'
 
 export interface CopyEntry {
+  /**
+   * Source path or glob pattern.
+   */
   from: string
-  to: string
+  /**
+   * Destination path.
+   * If not specified, defaults to the output directory ("outDir").
+   */
+  to?: string
+  /**
+   * Whether to flatten the copied files (not preserving directory structure).
+   *
+   * @default false
+   */
+  flatten?: boolean
 }
 export type CopyOptions = Arrayable<string | CopyEntry>
 export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
@@ -21,33 +34,55 @@ export async function copy(options: ResolvedConfig): Promise<void> {
       ? await options.copy(options)
       : options.copy
 
-  const resolveCopyEntry = (dir: string | CopyEntry) => {
-    const onlyHasFrom = typeof dir === 'string'
-    const from = path.resolve(options.cwd, onlyHasFrom ? dir : dir.from)
+  const resolveCopyEntry = async (entry: CopyEntry) => {
+    const from = path.resolve(options.cwd, entry.from)
+    const parsedFrom = path.parse(path.relative(options.cwd, from))
+    const dest = entry.to ? path.resolve(options.cwd, entry.to) : options.outDir
 
-    const relativeTo = path.relative(options.cwd, from).split(path.sep).slice(1).join(path.sep)
-    const baseTo = onlyHasFrom ? options.outDir : path.resolve(options.cwd, dir.to)
-    const to = path.resolve(baseTo, relativeTo)
+    if (entry.flatten || !parsedFrom.dir) {
+      const isFile = (await fsStat(from))?.isFile()
+      const to = isFile ? path.join(dest, parsedFrom.base) : dest
+      return { from, to }
+    }
+
+    const to = path.join(
+      dest,
+      // Stripe off the first segment to avoid unnecessary nesting
+      // e.g. "src/index.css" -> index.css" -> "dist/index.css"
+      parsedFrom.dir.replace(parsedFrom.dir.split(path.sep)[0], ''),
+      parsedFrom.base,
+    )
 
     return { from, to }
   }
 
-  const resolved = (await Promise.all(toArray(copy).map(async (dir) => {
-    const onlyHasFrom = typeof dir === 'string'
-    const from = onlyHasFrom ? dir : dir.from
+  const resolved = (
+    await Promise.all(
+      toArray(copy).map(async (entry) => {
+        const isNakedEntry = typeof entry === 'string'
+        const from = isNakedEntry ? entry : entry.from
 
-    if (isDynamicPattern(from)) {
-      const matchedFiles = await glob(from, {
-        cwd: options.cwd,
-        expandDirectories: false,
-      })
-      return matchedFiles.map((file) => resolveCopyEntry(
-        onlyHasFrom ? file : { from: file, to: dir.to },
-      ))
-    }
+        if (isDynamicPattern(from)) {
+          const files = await glob(from, {
+            cwd: options.cwd,
+            onlyFiles: true,
+            expandDirectories: false,
+          })
+          return Promise.all(
+            files.map((file) =>
+              resolveCopyEntry(
+                isNakedEntry
+                  ? { from: file }
+                  : { from: file, to: entry.to, flatten: entry.flatten },
+              ),
+            ),
+          )
+        }
 
-    return resolveCopyEntry(dir)
-  }))).flat()
+        return resolveCopyEntry(isNakedEntry ? { from: entry } : entry)
+      }),
+    )
+  ).flat()
 
   const name = prettyName(options.name)
   await Promise.all(

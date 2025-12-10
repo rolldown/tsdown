@@ -477,7 +477,10 @@ export interface UserConfig {
    * ```ts
    * [
    *   'src/assets',
+   *   'src/env.d.ts',
+   *   'src/styles/**\/*.css',
    *   { from: 'src/assets', to: 'dist/assets' },
+   *   { from: 'src/styles/**\/*.css', to: 'dist', flatten: true },
    * ]
    * ```
    */
