@@ -269,8 +269,6 @@ export async function resolveUserConfig(
       ...config,
       // only copy once
       copy: once ? config.copy : undefined,
-      // don't register hooks repeatedly
-      hooks: once ? config.hooks : undefined,
       // only execute once
       onSuccess: once ? config.onSuccess : undefined,
       format: normalizeFormat(fmt),
