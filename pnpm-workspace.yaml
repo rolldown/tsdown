@@ -56,6 +56,7 @@ catalogs:
   prod:
     ansis: ^4.2.0
     cac: ^6.7.14
+    defu: ^6.1.4
     empathic: ^2.0.0
     hookable: ^5.5.3
     import-without-cache: ^0.2.3

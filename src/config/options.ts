@@ -1,6 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { blue } from 'ansis'
+import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
@@ -277,6 +278,13 @@ export async function resolveUserConfig(
   })
 }
 
+const defu = createDefu((obj, key, value) => {
+  if (Array.isArray(obj[key]) && Array.isArray(value)) {
+    obj[key] = value
+    return true
+  }
+})
+
 export async function mergeUserOptions<T extends object, A extends unknown[]>(
   defaults: T,
   user:
@@ -288,7 +296,8 @@ export async function mergeUserOptions<T extends object, A extends unknown[]>(
 ): Promise<T> {
   const userOutputOptions =
     typeof user === 'function' ? await user(defaults, ...args) : user
-  return { ...defaults, ...userOutputOptions }
+  if (!userOutputOptions) return defaults
+  return defu(userOutputOptions, defaults)
 }
 
 export function resolveFeatureOption<T>(

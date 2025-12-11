@@ -137,6 +137,9 @@ catalogs:
     cac:
       specifier: ^6.7.14
       version: 6.7.14
+    defu:
+      specifier: ^6.1.4
+      version: 6.1.4
     empathic:
       specifier: ^2.0.0
       version: 2.0.0
@@ -191,6 +194,9 @@ importers:
       cac:
         specifier: catalog:prod
         version: 6.7.14
+      defu:
+        specifier: catalog:prod
+        version: 6.1.4
       empathic:
         specifier: catalog:prod
         version: 2.0.0
