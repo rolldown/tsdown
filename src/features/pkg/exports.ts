@@ -2,9 +2,13 @@ import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
-import { slash } from '../../utils/general.ts'
+import { matchPattern, slash } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
-import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
+import type {
+  ChunksByFormat,
+  RolldownChunk,
+  RolldownCodeChunk,
+} from '../../utils/chunks.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -20,6 +24,18 @@ export interface ExportsOptions {
    * Exports for all files.
    */
   all?: boolean
+
+  /**
+   * Define filenames or RegExp patterns to exclude files from exports.
+   * This is useful for excluding files that should not be part of the package exports,
+   * such as bin files or internal utilities.
+   *
+   * @example
+   * ```js
+   * exclude: ['foo.ts', /\.spec\.ts$/, /internal/]
+   * ```
+   */
+  exclude?: (RegExp | string)[]
 
   customExports?: (
     exports: Record<string, any>,
@@ -65,10 +81,18 @@ export async function writeExports(
 
 type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
 
+function shouldExclude(
+  fileName: string,
+  exclude?: (RegExp | string)[],
+): boolean {
+  if (!exclude?.length) return false
+  return matchPattern(fileName, exclude)
+}
+
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  { devExports, all, customExports }: ExportsOptions,
+  { devExports, all, exclude, customExports }: ExportsOptions,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -90,16 +114,19 @@ export async function generateExports(
   ][]) {
     if (format !== 'es' && format !== 'cjs') continue
 
-    const onlyOneEntry =
-      chunksByFormat.filter(
-        (chunk) =>
-          chunk.type === 'chunk' &&
-          chunk.isEntry &&
-          !RE_DTS.test(chunk.fileName),
-      ).length === 1
-    for (const chunk of chunksByFormat) {
-      if (chunk.type !== 'chunk' || !chunk.isEntry) continue
+    // Filter out non-entry chunks and excluded files
+    const filteredChunks = chunksByFormat.filter(
+      (chunk): chunk is RolldownCodeChunk =>
+        chunk.type === 'chunk' &&
+        chunk.isEntry &&
+        !shouldExclude(chunk.fileName, exclude),
+    )
 
+    const onlyOneEntry =
+      filteredChunks.filter((chunk) => !RE_DTS.test(chunk.fileName)).length ===
+      1
+
+    for (const chunk of filteredChunks) {
       const normalizedName = slash(chunk.fileName)
       const ext = path.extname(chunk.fileName)
       let name = normalizedName.slice(0, -ext.length)

@@ -2,6 +2,7 @@ import type { NormalizedFormat, ResolvedConfig } from '../config/types.ts'
 import type { OutputAsset, OutputChunk } from 'rolldown'
 
 export type RolldownChunk = (OutputChunk | OutputAsset) & { outDir: string }
+export type RolldownCodeChunk = RolldownChunk & { type: 'chunk' }
 export type ChunksByFormat = Partial<Record<NormalizedFormat, RolldownChunk[]>>
 export interface TsdownBundle extends AsyncDisposable {
   chunks: RolldownChunk[]
