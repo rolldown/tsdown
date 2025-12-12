@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { createDebug } from 'obug'
 import { loadConfigFile } from './file.ts'
 import { resolveUserConfig } from './options.ts'
@@ -21,6 +22,10 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
   files: string[]
 }> {
   debug('inline config %O', inlineConfig)
+
+  if (inlineConfig.cwd) {
+    inlineConfig.cwd = path.resolve(inlineConfig.cwd)
+  }
 
   const { configs: rootConfigs, file } = await loadConfigFile(inlineConfig)
   const files: string[] = []

@@ -135,7 +135,10 @@ export async function loadConfigFile(
   }
 
   return {
-    configs: exported.map((config) => ({ cwd, ...config })),
+    configs: exported.map((config) => ({
+      ...config,
+      cwd: config.cwd ? path.resolve(cwd, config.cwd) : cwd,
+    })),
     file,
   }
 }
