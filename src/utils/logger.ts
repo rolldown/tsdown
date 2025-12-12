@@ -98,9 +98,9 @@ export function createLogger(
 
 export const globalLogger: Logger = createLogger()
 
-export function prettyName(name?: string): string | undefined {
+export function getNameLabel(ansis: Ansis, name?: string): string | undefined {
   if (!name) return undefined
-  return generateColor(name)(`[${name}]`)
+  return ansis(`[${name}]`)
 }
 
 export function prettyFormat(format: InternalModuleFormat): string {

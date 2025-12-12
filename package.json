@@ -93,6 +93,7 @@
   "dependencies": {
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
+    "defu": "catalog:prod",
     "empathic": "catalog:prod",
     "hookable": "catalog:prod",
     "import-without-cache": "catalog:prod",

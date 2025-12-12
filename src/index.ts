@@ -32,7 +32,7 @@ import {
   type TsdownBundle,
 } from './utils/chunks.ts'
 import { importWithError } from './utils/general.ts'
-import { globalLogger, prettyName } from './utils/logger.ts'
+import { globalLogger } from './utils/logger.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
@@ -171,7 +171,7 @@ export async function buildSingle(
 
   if (!watch) {
     logger.success(
-      prettyName(config.name),
+      config.nameLabel,
       `Build complete in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
     )
     await postBuild()
@@ -225,7 +225,7 @@ export async function buildSingle(
 
         case 'BUNDLE_END': {
           await event.result.close()
-          logger.success(`Rebuilt in ${event.duration}ms.`)
+          logger.success(config.nameLabel, `Rebuilt in ${event.duration}ms.`)
           break
         }
 

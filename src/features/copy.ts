@@ -2,7 +2,6 @@ import path from 'node:path'
 import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsCopy, fsStat } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
-import { prettyName } from '../utils/logger.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { Arrayable, Awaitable } from '../utils/types.ts'
 
@@ -58,11 +57,10 @@ export async function copy(options: ResolvedConfig): Promise<void> {
     )
   ).flat()
 
-  const name = prettyName(options.name)
   await Promise.all(
     resolved.map(([from, to]) => {
       options.logger.info(
-        name,
+        options.nameLabel,
         `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
           options.cwd,
           to,

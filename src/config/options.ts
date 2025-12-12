@@ -1,6 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { blue } from 'ansis'
+import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
@@ -15,7 +16,7 @@ import {
   resolveRegex,
   toArray,
 } from '../utils/general.ts'
-import { createLogger, prettyName } from '../utils/logger.ts'
+import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
@@ -86,6 +87,8 @@ export async function resolveUserConfig(
   if (workspace) {
     name ||= pkg?.name
   }
+  const color = generateColor(name)
+  const nameLabel = getNameLabel(color, name)
 
   if (!filterConfig(inlineConfig.filter, cwd, name)) {
     debugLog('[filter] skipping config %s', cwd)
@@ -117,12 +120,12 @@ export async function resolveUserConfig(
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
 
-  entry = await resolveEntry(logger, entry, cwd, name)
+  entry = await resolveEntry(logger, entry, cwd, color, nameLabel)
   if (dts == null) {
     dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
   }
-  target = resolveTarget(logger, target, pkg, name)
-  tsconfig = await resolveTsconfig(logger, tsconfig, cwd, name)
+  target = resolveTarget(logger, target, color, pkg, nameLabel)
+  tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
   if (typeof external === 'string') {
     external = resolveRegex(external)
   }
@@ -142,16 +145,10 @@ export async function resolveUserConfig(
       throw new Error('`package.json` not found, cannot write exports')
     }
     if (publint) {
-      logger.warn(
-        prettyName(name),
-        'publint is enabled but package.json is not found',
-      )
+      logger.warn(nameLabel, 'publint is enabled but package.json is not found')
     }
     if (attw) {
-      logger.warn(
-        prettyName(name),
-        'attw is enabled but package.json is not found',
-      )
+      logger.warn(nameLabel, 'attw is enabled but package.json is not found')
     }
   }
 
@@ -241,6 +238,7 @@ export async function resolveUserConfig(
     inlineOnly,
     logger,
     name,
+    nameLabel,
     nodeProtocol,
     noExternal,
     outDir,
@@ -272,8 +270,6 @@ export async function resolveUserConfig(
       ...config,
       // only copy once
       copy: once ? config.copy : undefined,
-      // don't register hooks repeatedly
-      hooks: once ? config.hooks : undefined,
       // only execute once
       onSuccess: once ? config.onSuccess : undefined,
       format: normalizeFormat(fmt),
@@ -281,6 +277,13 @@ export async function resolveUserConfig(
     }
   })
 }
+
+const defu = createDefu((obj, key, value) => {
+  if (Array.isArray(obj[key]) && Array.isArray(value)) {
+    obj[key] = value
+    return true
+  }
+})
 
 export async function mergeUserOptions<T extends object, A extends unknown[]>(
   defaults: T,
@@ -293,7 +296,8 @@ export async function mergeUserOptions<T extends object, A extends unknown[]>(
 ): Promise<T> {
   const userOutputOptions =
     typeof user === 'function' ? await user(defaults, ...args) : user
-  return { ...defaults, ...userOutputOptions }
+  if (!userOutputOptions) return defaults
+  return defu(userOutputOptions, defaults)
 }
 
 export function resolveFeatureOption<T>(
