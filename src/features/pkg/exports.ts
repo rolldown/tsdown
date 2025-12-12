@@ -1,9 +1,8 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import picomatch from 'picomatch'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
-import { slash } from '../../utils/general.ts'
+import { matchPattern, slash } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
 import type { Awaitable } from '../../utils/types.ts'
@@ -23,13 +22,13 @@ export interface ExportsOptions {
   all?: boolean
 
   /**
-   * Define globs or regexes to exclude files from exports.
+   * Define filenames or RegExps to exclude files from exports.
    * This is useful for excluding files that should not be part of the package exports,
-   * such as test files or internal utilities.
+   * such as bin files or internal utilities.
    *
    * @example
    * ```js
-   * exclude: ['**\/*.test.ts', '**\/*.spec.ts', '**\/internal\/**']
+   * exclude: ['foo.ts', /\.spec\.ts$/, /internal/]
    * ```
    */
   exclude?: (RegExp | string)[]
@@ -83,14 +82,7 @@ function shouldExclude(
   exclude?: (RegExp | string)[],
 ): boolean {
   if (!exclude || exclude.length === 0) return false
-
-  return exclude.some((pattern) => {
-    if (pattern instanceof RegExp) {
-      return pattern.test(fileName)
-    }
-    const isMatch = picomatch(pattern)
-    return isMatch(fileName)
-  })
+  return matchPattern(fileName, exclude)
 }
 
 export async function generateExports(

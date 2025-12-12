@@ -279,10 +279,7 @@ describe.concurrent('generateExports', () => {
   test('exclude via regex', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
-      {
-        es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')],
-      },
+      { es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')] },
       { exclude: [/bar/] },
     )
 
@@ -301,14 +298,13 @@ describe.concurrent('generateExports', () => {
     `)
   })
 
-  test('exclude via glob', async ({ expect }) => {
+  test('exclude via filename', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
       {
         es: [genChunk('index.js'), genChunk('foo.js'), genChunk('abc/bar.js')],
       },
-      { exclude: ['**/bar.js'] },
+      { exclude: ['abc/bar.js'] },
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -329,11 +325,8 @@ describe.concurrent('generateExports', () => {
   test('multiple excludes', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      cwd,
-      {
-        es: [genChunk('foo.js'), genChunk('abc/bar.js')],
-      },
-      { exclude: ['**/bar.js', /foo/] },
+      { es: [genChunk('foo.js'), genChunk('abc/bar.js')] },
+      { exclude: ['abc/bar.js', /foo/] },
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
