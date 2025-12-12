@@ -1,6 +1,17 @@
 # 命令行接口
 
-所有 CLI 参数也可以在配置文件中设置，以便在复杂项目中实现更好的复用性和可维护性。有关更多详细信息，请参阅 [配置文件](../options/config-file.md) 文档。
+所有 CLI 参数都可以在配置文件中设置，这有助于提升复杂项目的复用性和可维护性。反过来，即使某些选项未在本页明确列出，也都可以通过 CLI 参数覆盖。更多详细信息请参阅 [配置文件](../options/config-file.md) 文档。
+
+## CLI 参数映射规则
+
+CLI 参数与配置选项之间的映射遵循以下规则：
+
+- `--foo` 等价于设置 `foo: true`
+- `--no-foo` 等价于设置 `foo: false`
+- `--foo.bar` 等价于设置 `foo: { bar: true }`
+- `--format esm --format cjs` 等价于设置 `format: ['esm', 'cjs']`
+
+这种灵活的模式使您能够直接通过命令行方便地控制并覆盖配置选项。
 
 ## `[...files]`
 
@@ -15,6 +26,12 @@ tsdown src/index.ts src/util.ts
 ## `-c, --config <filename>`
 
 指定自定义配置文件。使用此选项定义要使用的配置文件路径。
+
+另请参阅 [配置文件](../options/config-file.md)。
+
+## `--config-loader <loader>`
+
+指定要使用的配置加载器。
 
 另请参阅 [配置文件](../options/config-file.md)。
 
@@ -39,6 +56,7 @@ tsdown --tsconfig tsconfig.build.json
 - `esm`（ECMAScript 模块）
 - `cjs`（CommonJS）
 - `iife`（立即调用函数表达式）
+- `umd`（通用模块定义）
 
 另请参阅 [输出格式](../options/output-format.md)。
 
@@ -66,14 +84,24 @@ tsdown --tsconfig tsconfig.build.json
 
 - `es2015`
 - `esnext`
+- `chrome100`
+- `node18`
+
+您也可以使用 `--no-target` 或在配置文件中将目标设置为 `false` 来禁用所有语法转换。
 
 另请参阅 [构建目标](../options/target.md)。
 
-## `--silent`
+## `--log-level <level>`
 
-在构建过程中屏蔽非错误日志。仅显示错误消息，使您更专注于关键问题。
+设置日志级别，以控制构建过程中日志的详细程度。
 
-另请参阅 [静默模式](../options/silent-mode.md)。
+另请参阅 [日志级别](../options/log-level.md)。
+
+### ~~`--silent`~~
+
+**已废弃：** 请使用 `--log-level error` 以获得更好的兼容性。
+
+在构建过程中屏蔽非错误日志，仅显示错误信息，便于专注于关键问题。
 
 ## `-d, --out-dir <dir>`
 
@@ -153,7 +181,7 @@ tsdown --env.NODE_ENV=production
 
 注意，通过 `--env.VAR_NAME` 定义的环境变量只能通过 `import.meta.env.VAR_NAME` 或 `process.env.VAR_NAME` 访问。
 
-## `--debug [feat]`
+## `--debug-logs [feat]`
 
 显示调试日志。
 

@@ -1,6 +1,16 @@
-import { getPackageType, type PackageType } from '../utils/package'
-import type { NormalizedFormat, ResolvedOptions } from '../options'
-import type { InputOptions, PreRenderedChunk } from 'rolldown'
+import { RE_CSS, RE_DTS, RE_JS } from 'rolldown-plugin-dts/filename'
+import { getPackageType, type PackageType } from '../utils/package.ts'
+import type {
+  Format,
+  NormalizedFormat,
+  ResolvedConfig,
+} from '../config/index.ts'
+import type {
+  AddonFunction,
+  InputOptions,
+  PreRenderedChunk,
+  RenderedChunk,
+} from 'rolldown'
 
 export interface OutExtensionContext {
   options: InputOptions
@@ -32,7 +42,7 @@ function resolveJsOutputExtension(
 }
 
 export function resolveChunkFilename(
-  { outExtensions, fixedExtension, pkg, hash }: ResolvedOptions,
+  { outExtensions, fixedExtension, pkg, hash }: ResolvedConfig,
   inputOptions: InputOptions,
   format: NormalizedFormat,
 ): [entry: ChunkFileName, chunk: ChunkFileName] {
@@ -52,7 +62,7 @@ export function resolveChunkFilename(
     dtsExtension = dts
   }
 
-  jsExtension ||= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
+  jsExtension ??= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
 
   const suffix = format === 'iife' || format === 'umd' ? `.${format}` : ''
   return [
@@ -71,8 +81,53 @@ function createChunkFilename(
   jsExtension: string,
   dtsExtension?: string,
 ): ChunkFileName {
-  if (!dtsExtension) return `${basename}${jsExtension}`
+  if (dtsExtension === undefined) return `${basename}${jsExtension}`
   return (chunk: PreRenderedChunk) => {
     return `${basename}${chunk.name.endsWith('.d') ? dtsExtension : jsExtension}`
+  }
+}
+
+export interface ChunkAddonObject {
+  js?: string
+  css?: string
+  dts?: string
+}
+export type ChunkAddonFunction = (ctx: {
+  format: Format
+  fileName: string
+}) => ChunkAddonObject | string | undefined
+export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string
+
+export function resolveChunkAddon(
+  chunkAddon: ChunkAddon | undefined,
+  format: NormalizedFormat,
+  dts?: boolean,
+): AddonFunction | undefined {
+  if (!chunkAddon) return
+
+  return (chunk: RenderedChunk) => {
+    if (!dts && RE_DTS.test(chunk.fileName)) return ''
+
+    if (typeof chunkAddon === 'function') {
+      chunkAddon = chunkAddon({
+        format,
+        fileName: chunk.fileName,
+      })
+    }
+
+    if (typeof chunkAddon === 'string') {
+      return chunkAddon
+    }
+
+    switch (true) {
+      case RE_JS.test(chunk.fileName):
+        return chunkAddon?.js || ''
+      case RE_CSS.test(chunk.fileName):
+        return chunkAddon?.css || ''
+      case RE_DTS.test(chunk.fileName):
+        return chunkAddon?.dts || ''
+      default:
+        return ''
+    }
   }
 }

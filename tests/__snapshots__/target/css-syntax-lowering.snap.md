@@ -7,8 +7,9 @@
 
 
 ```
-## index.js
 
-```js
+## index.mjs
 
+```mjs
+export {  };
 ```

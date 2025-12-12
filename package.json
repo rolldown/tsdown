@@ -1,38 +1,35 @@
 {
   "name": "tsdown",
-  "version": "0.12.8",
-  "packageManager": "pnpm@10.12.1",
-  "description": "The Elegant Bundler for Libraries",
   "type": "module",
+  "version": "0.17.3",
+  "packageManager": "pnpm@10.25.0",
+  "description": "The Elegant Bundler for Libraries",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
-  "homepage": "https://github.com/rolldown/tsdown#readme",
-  "bugs": {
-    "url": "https://github.com/rolldown/tsdown/issues"
-  },
+  "funding": "https://github.com/sponsors/sxzz",
+  "homepage": "http://tsdown.dev/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rolldown/tsdown.git"
   },
-  "author": "三咲智子 Kevin Deng <sxzz@sxzz.moe>",
-  "funding": "https://github.com/sponsors/sxzz",
-  "files": [
-    "dist",
-    "esm-shims.js"
-  ],
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
+  "bugs": {
+    "url": "https://github.com/rolldown/tsdown/issues"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./config": "./dist/config.mjs",
     "./plugins": "./dist/plugins.mjs",
     "./run": "./dist/run.mjs",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./client": "./client.d.ts"
   },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "typesVersions": {
     "*": {
       "*": [
-        "./dist/*",
+        "./dist/*.d.mts",
         "./*"
       ]
     }
@@ -40,26 +37,34 @@
   "bin": {
     "tsdown": "./dist/run.mjs"
   },
+  "files": [
+    "client.d.ts",
+    "dist",
+    "esm-shims.js"
+  ],
   "publishConfig": {
     "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   },
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
     "lint:fix": "pnpm run lint --fix",
-    "build": "node --import @oxc-node/core/register ./src/run.ts",
-    "dev": "node --import @oxc-node/core/register ./src/run.ts",
+    "build": "unrun ./src/run.ts",
+    "dev": "node ./src/run.ts",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsgo --noEmit",
     "format": "prettier --cache --write .",
-    "release": "bumpp && pnpm publish",
-    "prepublishOnly": "pnpm run build",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "docs:generate": "node --import @oxc-node/core/register ./docs/.vitepress/scripts/docs-generate.ts"
+    "release": "bumpp -r",
+    "docs:dev": "pnpm -C docs run dev",
+    "docs:build": "pnpm -C docs run build",
+    "docs:preview": "pnpm -C docs run preview",
+    "docs:generate": "pnpm -C docs run generate"
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
+    "@vitejs/devtools": "catalog:peer",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
     "unplugin-lightningcss": "^0.4.0",
@@ -67,6 +72,9 @@
   },
   "peerDependenciesMeta": {
     "@arethetypeswrong/core": {
+      "optional": true
+    },
+    "@vitejs/devtools": {
       "optional": true
     },
     "publint": {
@@ -85,56 +93,47 @@
   "dependencies": {
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
-    "chokidar": "catalog:prod",
-    "debug": "catalog:prod",
-    "diff": "catalog:prod",
+    "defu": "catalog:prod",
     "empathic": "catalog:prod",
     "hookable": "catalog:prod",
-    "picomatch": "catalog:prod",
+    "import-without-cache": "catalog:prod",
+    "obug": "catalog:prod",
     "rolldown": "catalog:prod",
     "rolldown-plugin-dts": "catalog:prod",
     "semver": "catalog:prod",
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
-    "unconfig": "catalog:prod"
+    "tree-kill": "catalog:prod",
+    "unconfig-core": "catalog:prod",
+    "unrun": "catalog:prod"
   },
   "devDependencies": {
-    "@arethetypeswrong/core": "catalog:dev",
-    "@oxc-node/core": "catalog:dev",
+    "@arethetypeswrong/core": "catalog:peer",
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",
-    "@types/debug": "catalog:dev",
     "@types/node": "catalog:dev",
-    "@types/picomatch": "catalog:dev",
     "@types/semver": "catalog:dev",
+    "@typescript/native-preview": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
+    "@vitejs/devtools": "catalog:peer",
+    "@vitest/coverage-v8": "catalog:dev",
     "@vueuse/core": "catalog:docs",
     "bumpp": "catalog:dev",
+    "dedent": "catalog:dev",
     "eslint": "catalog:dev",
+    "is-in-ci": "catalog:prod",
     "lightningcss": "catalog:dev",
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
-    "publint": "catalog:dev",
-    "typedoc": "catalog:docs",
-    "typedoc-plugin-markdown": "catalog:docs",
+    "publint": "catalog:peer",
+    "rolldown-plugin-require-cjs": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
-    "unplugin-lightningcss": "catalog:dev",
-    "unplugin-unused": "catalog:dev",
+    "unplugin-lightningcss": "catalog:peer",
+    "unplugin-unused": "catalog:peer",
     "vite": "catalog:docs",
-    "vitepress": "catalog:docs",
-    "vitepress-plugin-group-icons": "catalog:docs",
-    "vitepress-plugin-llms": "catalog:docs",
-    "vitest": "catalog:dev",
-    "vue": "catalog:docs"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "resolutions": {
-    "rolldown": "catalog:prod",
-    "vite": "catalog:docs"
+    "vitest": "catalog:dev"
   },
   "prettier": "@sxzz/prettier-config"
 }

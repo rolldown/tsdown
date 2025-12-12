@@ -1,0 +1,296 @@
+import { readFile, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+import picomatch from 'picomatch'
+import { RE_DTS } from 'rolldown-plugin-dts/filename'
+import { detectIndentation } from '../../utils/format.ts'
+import { slash } from '../../utils/general.ts'
+import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
+import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
+import type { Awaitable } from '../../utils/types.ts'
+import type { PackageJson } from 'pkg-types'
+
+export interface ExportsOptions {
+  /**
+   * Generate exports that link to source code during development.
+   * - string: add as a custom condition.
+   * - true: all conditions point to source files, and add dist exports to `publishConfig`.
+   */
+  devExports?: boolean | string
+
+  /**
+   * Exports for all files.
+   */
+  all?: boolean
+
+  /**
+   * Define globs or regexes to exclude files from exports.
+   * This is useful for excluding files that should not be part of the package exports,
+   * such as test files or internal utilities.
+   *
+   * @example
+   * ```js
+   * exclude: ['**\/*.test.ts', '**\/*.spec.ts', '**\/internal\/**']
+   * ```
+   */
+  exclude?: (RegExp | string)[]
+
+  customExports?: (
+    exports: Record<string, any>,
+    context: {
+      pkg: PackageJson
+      chunks: ChunksByFormat
+      isPublish: boolean
+    },
+  ) => Awaitable<Record<string, any>>
+}
+
+export async function writeExports(
+  options: ResolvedConfig,
+  chunks: ChunksByFormat,
+): Promise<void> {
+  const pkg = options.pkg!
+  const exports = options.exports as ExportsOptions
+
+  const { publishExports, ...generated } = await generateExports(
+    pkg,
+    chunks,
+    exports,
+  )
+
+  const updatedPkg = {
+    ...pkg,
+    ...generated,
+    packageJsonPath: undefined,
+  }
+
+  if (publishExports) {
+    updatedPkg.publishConfig ||= {}
+    updatedPkg.publishConfig.exports = publishExports
+  }
+
+  const original = await readFile(pkg.packageJsonPath, 'utf8')
+  let contents = JSON.stringify(updatedPkg, null, detectIndentation(original))
+  if (original.endsWith('\n')) contents += '\n'
+  if (contents !== original) {
+    await writeFile(pkg.packageJsonPath, contents, 'utf8')
+  }
+}
+
+type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
+
+function shouldExclude(
+  fileName: string,
+  exclude?: (RegExp | string)[],
+): boolean {
+  if (!exclude || exclude.length === 0) return false
+
+  return exclude.some((pattern) => {
+    if (pattern instanceof RegExp) {
+      return pattern.test(fileName)
+    }
+    const isMatch = picomatch(pattern)
+    return isMatch(fileName)
+  })
+}
+
+export async function generateExports(
+  pkg: PackageJson,
+  chunks: ChunksByFormat,
+  { devExports, all, exclude, customExports }: ExportsOptions,
+): Promise<{
+  main: string | undefined
+  module: string | undefined
+  types: string | undefined
+  exports: Record<string, any>
+  publishExports?: Record<string, any>
+}> {
+  const pkgRoot = path.dirname(pkg.packageJsonPath)
+
+  let main: string | undefined,
+    module: string | undefined,
+    cjsTypes: string | undefined,
+    esmTypes: string | undefined
+  const exportsMap: Map<string, SubExport> = new Map()
+
+  for (const [format, chunksByFormat] of Object.entries(chunks) as [
+    NormalizedFormat,
+    RolldownChunk[],
+  ][]) {
+    if (format !== 'es' && format !== 'cjs') continue
+
+    // Filter out excluded chunks
+    const filteredChunks = chunksByFormat.filter(
+      (chunk) =>
+        chunk.type !== 'chunk' ||
+        !chunk.isEntry ||
+        !shouldExclude(chunk.fileName, exclude),
+    )
+
+    const onlyOneEntry =
+      filteredChunks.filter(
+        (chunk) =>
+          chunk.type === 'chunk' &&
+          chunk.isEntry &&
+          !RE_DTS.test(chunk.fileName),
+      ).length === 1
+    for (const chunk of filteredChunks) {
+      if (chunk.type !== 'chunk' || !chunk.isEntry) continue
+
+      const normalizedName = slash(chunk.fileName)
+      const ext = path.extname(chunk.fileName)
+      let name = normalizedName.slice(0, -ext.length)
+
+      const isDts = name.endsWith('.d')
+      if (isDts) {
+        name = name.slice(0, -2)
+      }
+      const isIndex = onlyOneEntry || name === 'index'
+      const outDirRelative = slash(path.relative(pkgRoot, chunk.outDir))
+      const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${normalizedName}`
+
+      if (isIndex) {
+        name = '.'
+        if (format === 'cjs') {
+          if (isDts) {
+            cjsTypes = distFile
+          } else {
+            main = distFile
+          }
+        } else if (format === 'es') {
+          if (isDts) {
+            esmTypes = distFile
+          } else {
+            module = distFile
+          }
+        }
+      } else if (name.endsWith('/index')) {
+        name = `./${name.slice(0, -6)}`
+      } else {
+        name = `./${name}`
+      }
+
+      let subExport = exportsMap.get(name)
+      if (!subExport) {
+        subExport = {}
+        exportsMap.set(name, subExport)
+      }
+
+      if (!isDts) {
+        subExport[format] = distFile
+        if (chunk.facadeModuleId && !subExport.src) {
+          subExport.src = `./${slash(path.relative(pkgRoot, chunk.facadeModuleId))}`
+        }
+      }
+    }
+  }
+
+  const sortedExportsMap = Array.from(exportsMap.entries()).toSorted(
+    ([a], [b]) => {
+      if (a === 'index') return -1
+      return a.localeCompare(b)
+    },
+  )
+
+  let exports: Record<string, any> = Object.fromEntries(
+    sortedExportsMap.map(([name, subExport]) => [
+      name,
+      genSubExport(devExports, subExport),
+    ]),
+  )
+  exportMeta(exports, all)
+  if (customExports) {
+    exports = await customExports(exports, {
+      pkg,
+      chunks,
+      isPublish: false,
+    })
+  }
+
+  let publishExports: Record<string, any> | undefined
+  if (devExports) {
+    publishExports = Object.fromEntries(
+      sortedExportsMap.map(([name, subExport]) => [
+        name,
+        genSubExport(false, subExport),
+      ]),
+    )
+    exportMeta(publishExports, all)
+    if (customExports) {
+      publishExports = await customExports(publishExports, {
+        pkg,
+        chunks,
+        isPublish: true,
+      })
+    }
+  }
+
+  return {
+    main: main || module || pkg.main,
+    module: module || pkg.module,
+    types: cjsTypes || esmTypes || pkg.types,
+    exports,
+    publishExports,
+  }
+}
+
+function genSubExport(
+  devExports: string | boolean | undefined,
+  { src, es, cjs }: SubExport,
+) {
+  if (devExports === true) {
+    return src!
+  }
+
+  let value: any
+  const dualFormat = es && cjs
+  if (!dualFormat && !devExports) {
+    value = cjs || es
+  } else {
+    value = {}
+    if (typeof devExports === 'string') {
+      value[devExports] = src
+    }
+    if (cjs) value[dualFormat ? 'require' : 'default'] = cjs
+    if (es) value[dualFormat ? 'import' : 'default'] = es
+  }
+
+  return value
+}
+
+function exportMeta(exports: Record<string, any>, all?: boolean) {
+  if (all) {
+    exports['./*'] = './*'
+  } else {
+    exports['./package.json'] = './package.json'
+  }
+}
+
+export function hasExportsTypes(pkg?: PackageJson): boolean {
+  const exports = pkg?.exports
+  if (!exports) return false
+
+  if (
+    typeof exports === 'object' &&
+    exports !== null &&
+    !Array.isArray(exports)
+  ) {
+    // Check if exports.types exists
+    if ('types' in exports) {
+      return true
+    }
+
+    // Check if exports['.'].types exists
+    if ('.' in exports) {
+      const mainExport = exports['.']
+      if (
+        typeof mainExport === 'object' &&
+        mainExport !== null &&
+        'types' in mainExport
+      ) {
+        return true
+      }
+    }
+  }
+
+  return false
+}

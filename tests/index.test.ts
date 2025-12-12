@@ -1,13 +1,21 @@
 import path from 'node:path'
-import { beforeEach, expect, test, vi } from 'vitest'
-import { resolveOptions, type Options } from '../src/options'
-import { fsRemove } from '../src/utils/fs'
-import { chdir, getTestDir, testBuild, writeFixtures } from './utils'
+import { RE_NODE_MODULES } from 'rolldown-plugin-dts'
+import { describe, expect, test, vi } from 'vitest'
+import { resolveConfig, type UserConfig } from '../src/config/index.ts'
+import { slash } from '../src/utils/general.ts'
+import { chdir, testBuild, writeFixtures } from './utils.ts'
+import type { Plugin } from 'rolldown'
 
-beforeEach(async (context) => {
-  const dir = getTestDir(context.task)
-  await fsRemove(dir)
-})
+const pluginMockDepCode: Plugin = {
+  name: 'mock-dep-code',
+  load: {
+    filter: { id: RE_NODE_MODULES },
+    handler(id) {
+      const name = slash(id).split('/node_modules/').at(-1)!.split('/')[0]
+      return `export const ${name} = 42`
+    },
+  },
+}
 
 test('basic', async (context) => {
   const content = `console.log("Hello, world!")`
@@ -73,18 +81,18 @@ test('bundle dts', async (context) => {
   })
 })
 
-test('cjs interop', async (context) => {
+test('cjs default', async (context) => {
   const files = {
-    'index.ts': `
-    export default {}
-    export type Foo = string
-    `,
+    'index.ts': `export default function hello(): void {
+      console.log('Hello!')
+    }`,
   }
   await testBuild({
     context,
     files,
     options: {
       format: ['esm', 'cjs'],
+      dts: true,
     },
   })
 })
@@ -124,6 +132,24 @@ test('custom extension', async (context) => {
   `)
 })
 
+test('custom extension with empty string', async (context) => {
+  const files = {
+    'index.ts': `export default 10`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      outExtensions: () => ({ js: '', dts: '' }),
+    },
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "index",
+    ]
+  `)
+})
+
 test('noExternal', async (context) => {
   const files = {
     'index.ts': `export * from 'cac'`,
@@ -147,6 +173,41 @@ test('noExternal', async (context) => {
   })
 })
 
+describe('inlineOnly', () => {
+  test('work', async (context) => {
+    const files = {
+      'index.ts': `export * from 'cac'; export * from 'bumpp'`,
+    }
+    await testBuild({
+      context,
+      files,
+      options: {
+        noExternal: ['cac'],
+        inlineOnly: ['bumpp'],
+        plugins: [pluginMockDepCode],
+      },
+    })
+  })
+
+  test('throw error', async (context) => {
+    const files = {
+      'index.ts': `export * from 'bumpp'`,
+    }
+    await expect(() =>
+      testBuild({
+        context,
+        files,
+        options: {
+          inlineOnly: [],
+          plugins: [pluginMockDepCode],
+        },
+      }),
+    ).rejects.toThrow(
+      'declare it as a production or peer dependency in your package.json',
+    )
+  })
+})
+
 test('fromVite', async (context) => {
   const files = {
     'index.ts': `export default 10`,
@@ -165,8 +226,9 @@ test('fromVite', async (context) => {
   }
   const { testDir } = await writeFixtures(context, files)
   const restoreCwd = chdir(testDir)
-  const options = await resolveOptions({
+  const options = await resolveConfig({
     config: testDir,
+    logLevel: 'silent',
   })
   expect(options.configs).toMatchObject([
     {
@@ -189,17 +251,22 @@ test('fromVite', async (context) => {
 
 test('resolve dependency for dts', async (context) => {
   const files = {
-    'index.ts': `export type { GlobOptions } from 'tinyglobby'
-    export type * from 'unconfig'`,
+    'index.ts': `export type { Options } from 'empathic/walk'
+    export type * from 'unconfig-core'`,
   }
   const { snapshot } = await testBuild({
     context,
     files,
     options: {
-      dts: { resolve: ['tinyglobby'] },
+      dts: { resolve: ['empathic/walk'] },
+      inputOptions: {
+        experimental: {
+          attachDebugInfo: 'none',
+        },
+      },
     },
   })
-  expect(snapshot).contain(`export * from "unconfig"`)
+  expect(snapshot).contain(`export * from "unconfig-core"`)
 })
 
 test('resolve paths in tsconfig', async (context) => {
@@ -216,7 +283,7 @@ test('resolve paths in tsconfig', async (context) => {
     context,
     files,
     options: {
-      dts: { isolatedDeclarations: true },
+      dts: { oxc: true },
       tsconfig: 'tsconfig.build.json',
     },
   })
@@ -275,13 +342,11 @@ test('minify', async (context) => {
       minify: {
         mangle: true,
         compress: true,
-        removeWhitespace: false,
       },
     },
   })
   expect(snapshot).contains('!0')
   expect(snapshot).not.contains('true')
-  expect(snapshot).not.contains('const foo')
 })
 
 test('iife and umd', async (context) => {
@@ -337,9 +402,9 @@ test('without hash and filename conflict', async (context) => {
   })
   expect(outputFiles).toMatchInlineSnapshot(`
     [
-      "foo.js",
-      "index.js",
-      "run.js",
+      "foo.mjs",
+      "index.mjs",
+      "run.mjs",
     ]
   `)
 })
@@ -396,7 +461,7 @@ test('workspace option', async (context) => {
       }
     `,
   }
-  const options: Options = {
+  const options: UserConfig = {
     workspace: true,
     entry: ['src/index.ts'],
   }
@@ -406,5 +471,180 @@ test('workspace option', async (context) => {
     options,
     expectDir: '..',
     expectPattern: '**/dist',
+  })
+})
+
+test('banner and footer option', async (context) => {
+  const content = `console.log("Hello, world!")`
+  const { fileMap } = await testBuild({
+    context,
+    files: {
+      'index.ts': content,
+    },
+    options: {
+      dts: true,
+      banner: {
+        js: '// js banner',
+        dts: '// dts banner',
+      },
+      footer: {
+        js: '// js footer',
+        dts: '// dts footer',
+      },
+    },
+  })
+
+  expect(fileMap['index.mjs']).toContain('// js banner')
+  expect(fileMap['index.mjs']).toContain('// js footer')
+
+  expect(fileMap['index.d.mts']).toContain('// dts banner')
+  expect(fileMap['index.d.mts']).toContain('// dts footer')
+})
+
+test('dts enabled when exports.types exists', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: no "types" field, only exports.types
+      exports: {
+        types: './dist/index.d.ts',
+        import: './dist/index.js',
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+})
+
+test('dts enabled when exports["."].types exists', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: no "types" field, only exports["."].types
+      exports: {
+        '.': {
+          types: './dist/index.d.ts',
+          import: './dist/index.js',
+        },
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+})
+
+test('dts not enabled when no types field and no exports.types', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: no "types" field and no exports.types
+      exports: {
+        import: './dist/index.js',
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).not.toContain('index.d.mts')
+  expect(outputFiles).toContain('index.mjs')
+})
+
+test('dts not enabled when exports["."] is string instead of object', async (context) => {
+  const files = {
+    'index.ts': `export const hello = "world"`,
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      // Note: exports["."] is a string, not an object
+      exports: {
+        '.': './dist/index.js',
+      },
+    }),
+  }
+
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      dts: undefined, // Allow auto-detection
+    },
+  })
+
+  expect(outputFiles).not.toContain('index.d.mts')
+  expect(outputFiles).toContain('index.mjs')
+})
+
+test('incorrect config', async (context) => {
+  const files = {
+    'tsdown.config.ts': `export default [() => ({})]`,
+  }
+  const { testDir } = await writeFixtures(context, files)
+  const restoreCwd = chdir(testDir)
+  await expect(
+    resolveConfig({
+      config: testDir,
+      logLevel: 'silent',
+    }),
+  ).rejects.toMatchInlineSnapshot(`
+    [Error: Function should not be nested within multiple tsdown configurations. It must be at the top level.
+    Example: export default defineConfig(() => [...])]
+  `)
+  restoreCwd()
+})
+
+describe('import.meta.glob', () => {
+  test('async', async (context) => {
+    const files = {
+      'index.ts': `
+      export const modules = import.meta.glob('./modules/*.ts');
+    `,
+      'modules/a.ts': `export const a = 1;`,
+      'modules/b.ts': `export const b = 2;`,
+    }
+    const { outputFiles } = await testBuild({
+      context,
+      files,
+    })
+    expect(outputFiles.length).toBe(3)
+  })
+
+  test('eager', async (context) => {
+    const files = {
+      'index.ts': `
+      export const modules = import.meta.glob('./modules/*.ts', { eager: true });
+    `,
+      'modules/a.ts': `export const a = 1;`,
+      'modules/b.ts': `export const b = 2;`,
+    }
+    const { outputFiles } = await testBuild({
+      context,
+      files,
+    })
+    expect(outputFiles.length).toBe(1)
   })
 })

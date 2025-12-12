@@ -1,11 +1,11 @@
 import path from 'node:path'
-import { blue } from 'ansis'
+import { blue, type Ansis } from 'ansis'
 import { up as findUp } from 'empathic/find'
-import { fsStat } from '../utils/fs'
-import { generateColor, logger, prettyName } from '../utils/logger'
-import type { Options } from '../options'
+import { fsStat } from '../utils/fs.ts'
+import type { UserConfig } from '../config/index.ts'
+import type { Logger } from '../utils/logger.ts'
 
-export function findTsconfig(
+function findTsconfig(
   cwd?: string,
   name: string = 'tsconfig.json',
 ): string | false {
@@ -13,9 +13,11 @@ export function findTsconfig(
 }
 
 export async function resolveTsconfig(
-  tsconfig: Options['tsconfig'],
+  logger: Logger,
+  tsconfig: UserConfig['tsconfig'],
   cwd: string,
-  name?: string,
+  color: Ansis,
+  nameLabel?: string,
 ): Promise<string | false> {
   const original = tsconfig
 
@@ -44,10 +46,7 @@ export async function resolveTsconfig(
     }
 
     if (tsconfig) {
-      logger.info(
-        prettyName(name),
-        `tsconfig: ${generateColor(name)(path.relative(cwd, tsconfig))}`,
-      )
+      logger.info(nameLabel, `tsconfig: ${color(path.relative(cwd, tsconfig))}`)
     }
   }
 

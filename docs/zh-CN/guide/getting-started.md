@@ -36,13 +36,35 @@ bun add -D tsdown
 
 :::
 
+可选地，如果您未启用 [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations)，还应将 TypeScript 作为开发依赖进行安装：
+
+::: code-group
+
+```sh [npm]
+npm install -D typescript
+```
+
+```sh [pnpm]
+pnpm add -D typescript
+```
+
+```sh [yarn]
+yarn add -D typescript
+```
+
+```sh [bun]
+bun add -D typescript
+```
+
+:::
+
 :::tip 兼容性说明
-`tsdown` 需要 Node.js 18 或更高版本。请确保您的开发环境满足此要求后再进行安装。虽然 `tsdown` 主要在 Node.js 下测试，但对 Deno 和 Bun 的支持仍为实验性，可能无法正常工作。
+`tsdown` 需要 Node.js 20.19 或更高版本。请确保您的开发环境满足此要求后再进行安装。虽然 `tsdown` 主要在 Node.js 下测试，但对 Deno 和 Bun 的支持仍为实验性，可能无法正常工作。
 :::
 
 ### 起步模板 {#starter-templates}
 
-为了更快速地开始，您可以使用 [create-tsdown](https://github.com/gugustinette/create-tsdown) CLI，它提供了一系列起步模板，适用于构建纯 TypeScript 库以及如 React、Vue 等前端库。
+为了更快速地开始，您可以使用 [create-tsdown](https://github.com/rolldown/tsdown/tree/main/packages/create-tsdown) CLI，它提供了一系列起步模板，适用于构建纯 TypeScript 库以及如 React、Vue 等前端库。
 
 ::: code-group
 
@@ -110,7 +132,7 @@ export function hello() {
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['./src'],
+  entry: ['./src/index.ts'],
 })
 ```
 

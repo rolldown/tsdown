@@ -1,13 +1,13 @@
 # 从 tsup 迁移
 
-[tsup](https://tsup.egoist.dev/) 是一个功能强大且广泛使用的打包器，与 `tsdown` 有许多相似之处。虽然 `tsup` 构建于 [esbuild](https://esbuild.github.io/) 之上，`tsdown` 则利用了 [Rolldown](https://rolldown.rs/) 的强大功能，提供了更**快速**且更**强大**的打包体验。
+[tsup](https://tsup.egoist.dev/) 是一个功能强大且广泛使用的打包器，与 `tsdown` 有许多相似之处。`tsup` 基于 [esbuild](https://esbuild.github.io/) 构建，而 `tsdown` 则利用了 [Rolldown](https://rolldown.rs/) 的强大能力，带来更**快速**、更**强大**的打包体验。
 
 ## 迁移指南
 
 如果您当前正在使用 `tsup` 并希望迁移到 `tsdown`，迁移过程非常简单，因为 `tsdown` 提供了专门的 `migrate` 命令：
 
 ```bash
-npx tsdown migrate
+npx tsdown-migrate
 ```
 
 > [!WARNING]
@@ -36,6 +36,15 @@ npx tsdown migrate
 ### 功能差距
 
 `tsdown` 尚未实现 `tsup` 中的某些功能。如果您发现缺少某些您需要的选项，请 [提交问题](https://github.com/rolldown/tsdown/issues) 告诉我们您的需求。
+
+### tsdown 的新功能
+
+`tsdown` 还引入了一些 `tsup` 中没有的新功能：
+
+- **`nodeProtocol`**：控制 Node.js 内置模块导入的处理方式：
+  - `true`：为内置模块添加 `node:` 前缀（例如，`fs` → `node:fs`）
+  - `'strip'`：从导入中移除 `node:` 前缀（例如，`node:fs` → `fs`）
+  - `false`：保持导入不变（默认）
 
 迁移后，请仔细检查您的配置以确保其符合您的预期。
 

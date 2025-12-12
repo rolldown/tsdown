@@ -1,6 +1,6 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region rolldown:runtime
 var __toBinaryNode = (base64) => new Uint8Array(Buffer.from(base64, "base64"));
 

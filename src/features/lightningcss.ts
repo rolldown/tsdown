@@ -1,9 +1,9 @@
-import { esbuildTargetToLightningCSS } from '../utils/lightningcss'
-import type { ResolvedOptions } from '../options'
+import { esbuildTargetToLightningCSS } from '../utils/lightningcss.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { Plugin } from 'rolldown'
 
 export async function LightningCSSPlugin(
-  options: Pick<ResolvedOptions, 'target'>,
+  options: Pick<ResolvedConfig, 'target'>,
 ): Promise<Plugin | undefined> {
   const LightningCSS = await import('unplugin-lightningcss/rolldown').catch(
     () => undefined,

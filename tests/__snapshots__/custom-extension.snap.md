@@ -2,10 +2,11 @@
 
 ```mts
 //#region index.d.ts
-declare const _default: number;
+declare const _default: 10;
 //#endregion
 export { _default as default };
 ```
+
 ## index.some.mjs
 
 ```mjs

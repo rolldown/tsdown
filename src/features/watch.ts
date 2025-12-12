@@ -1,55 +1,43 @@
-import { blue } from 'ansis'
-import { debounce, toArray } from '../utils/general'
-import { logger } from '../utils/logger'
-import type { ResolvedOptions } from '../options'
-import type { FSWatcher } from 'chokidar'
+import { addOutDirToChunks } from '../utils/chunks.ts'
+import { resolveComma, toArray } from '../utils/general.ts'
+import type { TsdownBundle } from '../config/types.ts'
+import type { Plugin } from 'rolldown'
 
-const endsWithConfig = /[\\/](?:package\.json|tsdown\.config.*)$/
+export const endsWithConfig: RegExp =
+  /[\\/](?:tsdown\.config.*|package\.json|tsconfig\.json)$/
 
-export async function watchBuild(
-  options: ResolvedOptions,
+export function WatchPlugin(
   configFiles: string[],
-  rebuild: () => void,
-  restart: () => void,
-): Promise<FSWatcher> {
-  if (typeof options.watch === 'boolean' && options.outDir === options.cwd) {
-    throw new Error(
-      `Watch is enabled, but output directory is the same as the current working directory.` +
-        `Please specify a different watch directory using ${blue`watch`} option,` +
-        `or set ${blue`outDir`} to a different directory.`,
-    )
+  { config, chunks }: TsdownBundle,
+): Plugin {
+  return {
+    name: 'tsdown:watch',
+    options: config.ignoreWatch.length
+      ? (inputOptions) => {
+          inputOptions.watch ||= {}
+          inputOptions.watch.exclude = toArray(inputOptions.watch.exclude)
+          inputOptions.watch.exclude.push(...config.ignoreWatch)
+        }
+      : undefined,
+    buildStart() {
+      config.tsconfig && this.addWatchFile(config.tsconfig)
+      for (const file of configFiles) {
+        this.addWatchFile(file)
+      }
+      if (typeof config.watch !== 'boolean') {
+        for (const file of resolveComma(toArray(config.watch))) {
+          this.addWatchFile(file)
+        }
+      }
+      if (config.pkg) {
+        this.addWatchFile(config.pkg.packageJsonPath)
+      }
+    },
+    generateBundle: {
+      order: 'post',
+      handler(outputOptions, bundle) {
+        chunks.push(...addOutDirToChunks(Object.values(bundle), config.outDir))
+      },
+    },
   }
-
-  const files = toArray(
-    typeof options.watch === 'boolean' ? options.cwd : options.watch,
-  )
-  logger.info(`Watching for changes in ${files.join(', ')}`)
-  files.push(...configFiles)
-
-  const { watch } = await import('chokidar')
-  const debouncedRebuild = debounce(rebuild, 100)
-
-  const watcher = watch(files, {
-    ignoreInitial: true,
-    ignorePermissionErrors: true,
-    ignored: [
-      /[\\/]\.git[\\/]/,
-      /[\\/]node_modules[\\/]/,
-      options.outDir,
-      ...toArray(options.ignoreWatch),
-    ],
-  })
-
-  watcher.on('all', (type: string, file: string) => {
-    if (configFiles.includes(file) || endsWithConfig.test(file)) {
-      logger.info(`Reload config: ${file}`)
-      restart()
-      return
-    }
-
-    logger.info(`Change detected: ${type} ${file}`)
-    debouncedRebuild()
-  })
-
-  return watcher
 }

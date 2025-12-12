@@ -1,14 +1,10 @@
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 import { exec } from 'tinyexec'
-import { beforeEach, describe, expect, test } from 'vitest'
-import { fsRemove } from '../src/utils/fs'
-import { getTestDir, testBuild } from './utils'
+import { describe, expect, test } from 'vitest'
+import { testBuild } from './utils.ts'
 
 describe('issues', () => {
-  beforeEach(async (context) => {
-    const dir = getTestDir(context.task)
-    await fsRemove(dir)
-  })
-
   test('#61', async (context) => {
     await testBuild({
       context,
@@ -30,6 +26,7 @@ describe('issues', () => {
         skipNodeModulesBundle: true,
         target: 'es2022',
         platform: 'node',
+        tsconfig: 'tsconfig.json',
       },
     })
   })
@@ -52,10 +49,10 @@ describe('issues', () => {
         })
       },
     })
-    expect(outputFiles.sort()).toEqual(['index.d.ts', 'index.js'])
+    expect(outputFiles.toSorted()).toEqual(['index.d.mts', 'index.mjs'])
   })
 
-  test.fails('#216', async (context) => {
+  test('#216', async (context) => {
     const { outputFiles } = await testBuild({
       context,
       files: {
@@ -113,8 +110,65 @@ describe('issues', () => {
       },
       options: {
         entry: ['src/dom/dom.ts', 'src/node/node.ts'],
-        dts: true,
+        tsconfig: 'tsconfig.json',
+        dts: {
+          build: true,
+        },
       },
+    })
+  })
+
+  test('#566', async (context) => {
+    const { testDir } = await testBuild({
+      context,
+      files: {
+        'src/index.browser.ts': `export const platform = 'browser'`,
+        'src/index.node.ts': `export const platform = 'node'`,
+        'tsdown.config.ts': `
+          export default [
+            {
+              entry: './src/index.browser.ts',
+              format: 'es',
+              exports: true,
+              hash: false,
+              platform: 'browser',
+            },
+            {
+              entry: './src/index.node.ts',
+              format: 'cjs',
+              exports: true,
+              hash: false,
+              platform: 'node',
+            },
+          ]
+        `,
+        'package.json': JSON.stringify({
+          name: 'issue-566',
+          version: '1.0.0',
+        }),
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: { moduleResolution: 'bundler' },
+        }),
+      },
+      options: {
+        entry: undefined,
+        config: 'tsdown.config.ts',
+        dts: false,
+      },
+      expectPattern: '**/*.{js,cjs,d.mts}',
+    })
+
+    const pkg = JSON.parse(
+      await readFile(path.join(testDir, 'package.json'), 'utf8'),
+    )
+    expect(pkg.main).toBe('./dist/index.node.cjs')
+    expect(pkg.module).toBe('./dist/index.browser.mjs')
+    expect(pkg.exports).toEqual({
+      '.': {
+        import: './dist/index.browser.mjs',
+        require: './dist/index.node.cjs',
+      },
+      './package.json': './package.json',
     })
   })
 })

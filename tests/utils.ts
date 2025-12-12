@@ -4,7 +4,10 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { expectFilesSnapshot } from '@sxzz/test-utils'
 import { glob } from 'tinyglobby'
-import { build, type Options } from '../src/index'
+import { mergeUserOptions } from '../src/config/options.ts'
+import { build } from '../src/index.ts'
+import type { InlineConfig, TsdownBundle } from '../src/config/index.ts'
+import type { RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -89,7 +92,7 @@ export interface TestBuildOptions {
   /**
    * The options for the build.
    */
-  options?: Options | ((cwd: string) => Options)
+  options?: InlineConfig | ((cwd: string) => InlineConfig)
 
   /**
    * The working directory of the test. It's a relative path to the test directory.
@@ -122,26 +125,62 @@ export async function testBuild({
   outputFiles: string[]
   outputDir: string
   snapshot: string
+  fileMap: Record<string, string>
+  warnings: RollupLog[]
+  bundle: TsdownBundle[]
 }> {
   const { expect } = context
   const { testName, testDir } = await writeFixtures(context, files, fixture)
 
   const workingDir = path.join(testDir, cwd || '.')
   const restoreCwd = chdir(workingDir)
-  const resolvedOptions: Options = {
+  const warnings: RollupLog[] = []
+  const userOptions =
+    typeof options === 'function' ? options(workingDir) : options
+  const resolvedOptions: InlineConfig = {
     entry: 'index.ts',
     config: false,
     outDir: 'dist',
     dts: false,
     silent: true,
-    ...(typeof options === 'function' ? options(workingDir) : options),
+    tsconfig: false,
+    ...userOptions,
+    async inputOptions(options, ...args) {
+      options = await mergeUserOptions(
+        {
+          ...options,
+          onLog(level, log, defaultHandler) {
+            if (level === 'warn') {
+              warnings.push(log)
+              return
+            }
+            defaultHandler(level, log)
+          },
+          logLevel: 'info',
+        },
+        userOptions?.inputOptions,
+        args,
+      )
+      return options
+    },
+  }
+  if (
+    userOptions &&
+    userOptions.entry == null &&
+    Object.hasOwn(userOptions, 'entry')
+  ) {
+    delete resolvedOptions.entry
   }
   await beforeBuild?.()
-  await build(resolvedOptions)
+  const bundle = await build(resolvedOptions)
   restoreCwd()
 
   const outputDir = path.resolve(workingDir, resolvedOptions.outDir!)
-  const { files: outputFiles, snapshot } = await expectFilesSnapshot(
+  const {
+    files: outputFiles,
+    snapshot,
+    fileMap,
+  } = await expectFilesSnapshot(
     path.resolve(outputDir, expectDir),
     path.resolve(snapshotsDir, `${testName}.snap.md`),
     { pattern: expectPattern, expect },
@@ -153,6 +192,9 @@ export async function testBuild({
     outputFiles,
     outputDir,
     snapshot,
+    fileMap,
+    warnings,
+    bundle,
   }
 }
 

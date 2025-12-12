@@ -1,15 +1,18 @@
 import path from 'node:path'
-import { glob } from 'tinyglobby'
-import { fsExists, lowestCommonAncestor } from '../utils/fs'
-import { generateColor, logger, prettyName } from '../utils/logger'
-import type { Options } from '../options'
+import { glob, isDynamicPattern } from 'tinyglobby'
+import { fsExists, lowestCommonAncestor } from '../utils/fs.ts'
+import { slash } from '../utils/general.ts'
+import type { UserConfig } from '../config/index.ts'
+import type { Logger } from '../utils/logger.ts'
+import type { Ansis } from 'ansis'
 
 export async function resolveEntry(
-  entry: Options['entry'],
+  logger: Logger,
+  entry: UserConfig['entry'],
   cwd: string,
-  name?: string,
+  color: Ansis,
+  nameLabel?: string,
 ): Promise<Record<string, string>> {
-  const nameLabel = name ? `[${name}] ` : ''
   if (!entry || Object.keys(entry).length === 0) {
     const defaultEntry = path.resolve(cwd, 'src/index.ts')
 
@@ -17,7 +20,7 @@ export async function resolveEntry(
       entry = { index: defaultEntry }
     } else {
       throw new Error(
-        `${nameLabel}No input files, try "tsdown <your-file>" or create src/index.ts`,
+        `${nameLabel} No input files, try "tsdown <your-file>" or create src/index.ts`,
       )
     }
   }
@@ -25,11 +28,11 @@ export async function resolveEntry(
   const entryMap = await toObjectEntry(entry, cwd)
   const entries = Object.values(entryMap)
   if (entries.length === 0) {
-    throw new Error(`${nameLabel}Cannot find entry: ${JSON.stringify(entry)}`)
+    throw new Error(`${nameLabel} Cannot find entry: ${JSON.stringify(entry)}`)
   }
   logger.info(
-    prettyName(name),
-    `entry: ${generateColor(name)(entries.map((entry) => path.relative(cwd, entry)).join(', '))}`,
+    nameLabel,
+    `entry: ${color(entries.map((entry) => path.relative(cwd, entry)).join(', '))}`,
   )
   return entryMap
 }
@@ -45,15 +48,28 @@ export async function toObjectEntry(
     return entry
   }
 
-  const resolvedEntry = (await glob(entry, { cwd })).map((file) =>
-    path.resolve(cwd, file),
-  )
+  const isGlob = entry.some((e) => isDynamicPattern(e))
+  let resolvedEntry: string[]
+  if (isGlob) {
+    resolvedEntry = (
+      await glob(entry, {
+        cwd,
+        expandDirectories: false,
+        absolute: true,
+      })
+    ).map((file) => path.resolve(file))
+  } else {
+    resolvedEntry = entry
+  }
+
   const base = lowestCommonAncestor(...resolvedEntry)
   return Object.fromEntries(
     resolvedEntry.map((file) => {
       const relative = path.relative(base, file)
       return [
-        relative.slice(0, relative.length - path.extname(relative).length),
+        slash(
+          relative.slice(0, relative.length - path.extname(relative).length),
+        ),
         file,
       ]
     }),

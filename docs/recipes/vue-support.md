@@ -4,7 +4,11 @@
 
 ## Quick Start
 
-For the fastest way to get started, use the [vue-components-starter](https://github.com/sxzz/vue-components-starter) template. This starter project comes pre-configured for Vue library development, so you can focus on building components right away.
+For the fastest way to get started, use the Vue component starter template. This starter project comes pre-configured for Vue library development, so you can focus on building components right away.
+
+```bash
+npx create-tsdown@latest -t vue
+```
 
 ## Minimal Example
 
@@ -24,9 +28,25 @@ export default defineConfig({
 
 Install the required dependencies:
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install -D unplugin-vue vue-tsc
 ```
+
+```sh [pnpm]
+pnpm add -D unplugin-vue vue-tsc
+```
+
+```sh [yarn]
+yarn add -D unplugin-vue vue-tsc
+```
+
+```sh [bun]
+bun add -D unplugin-vue vue-tsc
+```
+
+:::
 
 ## How It Works
 

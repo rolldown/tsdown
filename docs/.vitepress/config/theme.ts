@@ -1,5 +1,36 @@
-import { createTranslate } from '../i18n/utils'
+import { existsSync } from 'node:fs'
+import module from 'node:module'
+import path from 'node:path'
+import { createTranslate } from '../i18n/utils.ts'
 import type { DefaultTheme, HeadConfig, LocaleConfig } from 'vitepress'
+
+const require = module.createRequire(import.meta.url)
+
+function getTypedocSidebar() {
+  const filepath = path.resolve(
+    import.meta.dirname,
+    '../../reference/api/typedoc-sidebar.json',
+  )
+  if (!existsSync(filepath)) return []
+
+  try {
+    return require(filepath) as DefaultTheme.SidebarItem[]
+  } catch (error) {
+    console.error('Failed to load typedoc sidebar:', error)
+    return []
+  }
+}
+
+const typedocSidebar = getTypedocSidebar()
+const rolldownSidebar: { items: DefaultTheme.SidebarItem[]; base: string } = {
+  items: typedocSidebar[0]
+    .items![0].items!.filter(
+      (item) => item.text === 'Interfaces' || item.text === 'Type Aliases',
+    )!
+    .flatMap((item) => item.items!)
+    .toSorted((a, b) => a.text!.localeCompare(b.text!)),
+  base: '/reference',
+}
 
 export function getLocaleConfig(lang: string) {
   const t = createTranslate(lang)
@@ -37,7 +68,7 @@ export function getLocaleConfig(lang: string) {
     { text: t('Guide'), link: `${urlPrefix}/guide/` },
     {
       text: t('API Reference'),
-      link: `${urlPrefix}/reference/config-options.md`,
+      link: `${urlPrefix}/reference/api/Interface.UserConfig.md`,
     },
     { text: t('FAQ'), link: `${urlPrefix}/guide/faq.md` },
   ]
@@ -70,16 +101,22 @@ export function getLocaleConfig(lang: string) {
         { text: t('Tree-shaking'), link: '/tree-shaking.md' },
         { text: t('Source Maps'), link: '/sourcemap.md' },
         { text: t('Minification'), link: '/minification.md' },
-        { text: t('Silent Mode'), link: '/silent-mode.md' },
+        { text: t('Log Level'), link: '/log-level.md' },
         { text: t('Shims'), link: '/shims.md' },
         { text: t('Package Exports'), link: '/package-exports.md' },
         { text: t('Unbundle'), link: '/unbundle.md' },
+        { text: t('CJS Default Export'), link: '/cjs-default.md' },
       ],
     },
     {
       text: t('Recipes'),
       base: `${urlPrefix}/recipes`,
-      items: [{ text: t('Vue Support'), link: '/vue-support.md' }],
+      items: [
+        { text: t('Vue Support'), link: '/vue-support.md' },
+        { text: t('React Support'), link: '/react-support.md' },
+        { text: t('Solid Support'), link: '/solid-support.md' },
+        { text: t('Svelte Support'), link: '/svelte-support.md' },
+      ],
     },
     {
       text: t('Advanced'),
@@ -89,14 +126,29 @@ export function getLocaleConfig(lang: string) {
         { text: t('Hooks'), link: '/hooks.md' },
         { text: t('Rolldown Options'), link: '/rolldown-options.md' },
         { text: t('Programmatic Usage'), link: '/programmatic-usage.md' },
+        { text: t('Benchmark'), link: '/benchmark.md' },
       ],
     },
     {
       text: t('API Reference'),
       base: `${urlPrefix}/reference`,
       items: [
-        { text: t('Config Options'), link: '/config-options.md' },
         { text: t('Command Line Interface'), link: '/cli.md' },
+        {
+          text: t('Config Options'),
+          link: '/api/Interface.UserConfig.md',
+        },
+        {
+          text: t('Type Definitions'),
+          items: [
+            { text: 'Rolldown', link: '/api/rolldown.md' },
+            ...typedocSidebar
+              .flatMap((i) => i.items!)
+              .filter((i) => i.text !== 'Options' && i.text !== 'rolldown')
+              .toSorted((a, b) => a.text!.localeCompare(b.text!)),
+          ],
+          collapsed: true,
+        },
       ],
     },
   ]
@@ -104,7 +156,10 @@ export function getLocaleConfig(lang: string) {
   const themeConfig: DefaultTheme.Config = {
     logo: { src: '/tsdown.svg', width: 24, height: 24 },
     nav,
-    sidebar,
+    sidebar: {
+      '/reference/api/rolldown': rolldownSidebar,
+      '/': sidebar,
+    },
     outline: 'deep',
     socialLinks: [
       { icon: 'github', link: 'https://github.com/rolldown/tsdown' },
@@ -123,11 +178,21 @@ export function getLocaleConfig(lang: string) {
         label: '页面导航',
         level: 'deep',
       },
-      lastUpdatedText: '最后更新于',
+      lastUpdated: {
+        text: '最后更新于',
+        formatOptions: {
+          forceLocale: true,
+          dateStyle: 'short',
+          timeStyle: 'short',
+        },
+      },
       darkModeSwitchLabel: '外观',
+      lightModeSwitchTitle: '切换到浅色模式',
+      darkModeSwitchTitle: '切换到深色模式',
       sidebarMenuLabel: '目录',
       returnToTopLabel: '返回顶部',
-      langMenuLabel: '选择语言',
+      langMenuLabel: '切换语言',
+      skipToContentLabel: '跳到正文',
       docFooter: {
         prev: '上一页',
         next: '下一页',

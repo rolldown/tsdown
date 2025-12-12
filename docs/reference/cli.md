@@ -1,6 +1,17 @@
 # Command Line Interface
 
-All CLI flags can also be set in the configuration file for better reusability and maintainability in complex projects. Refer to the [Config File](../options/config-file.md) documentation for more details.
+All CLI flags can also be set in the configuration file, which improves reusability and maintainability for complex projects. Conversely, any option can be overridden by CLI flags, even if not explicitly listed on this page. For more details, see the [Config File](../options/config-file.md) documentation.
+
+## CLI Flag Patterns
+
+The mapping between CLI flags and configuration options follows these rules:
+
+- `--foo` sets `foo: true`
+- `--no-foo` sets `foo: false`
+- `--foo.bar` sets `foo: { bar: true }`
+- `--format esm --format cjs` sets `format: ['esm', 'cjs']`
+
+This flexible pattern allows you to easily control and override configuration options directly from the command line.
 
 ## `[...files]`
 
@@ -15,6 +26,12 @@ This will bundle `src/index.ts` and `src/util.ts` as separate entry points. See 
 ## `-c, --config <filename>`
 
 Specify a custom configuration file. Use this option to define the path to the configuration file you want to use.
+
+See also [Config File](../options/config-file.md).
+
+## `--config-loader <loader>`
+
+Specifies which config loader to use.
 
 See also [Config File](../options/config-file.md).
 
@@ -39,6 +56,7 @@ Define the bundle format. Supported formats include:
 - `esm` (ECMAScript Modules)
 - `cjs` (CommonJS)
 - `iife` (Immediately Invoked Function Expression)
+- `umd` (Universal Module Definition)
 
 See also [Output Format](../options/output-format.md).
 
@@ -66,14 +84,24 @@ Specify the JavaScript target version for the bundle. Examples include:
 
 - `es2015`
 - `esnext`
+- `chrome100`
+- `node18`
+
+You can also disable all syntax transformations by using `--no-target` or by setting the target to `false` in your configuration file.
 
 See also [Target](../options/target.md).
 
-## `--silent`
+## `--log-level <level>`
+
+Set the log level to control the verbosity of logs during the build process.
+
+See also [Log Level](../options/log-level.md).
+
+### ~~`--silent`~~
+
+**Deprecated:** Please use `--log-level error` instead for better compatibility.
 
 Suppress non-error logs during the build process. Only error messages will be displayed, making it easier to focus on critical issues.
-
-See also [Silent Mode](../options/silent-mode.md).
 
 ## `-d, --out-dir <dir>`
 
@@ -153,7 +181,7 @@ tsdown --env.NODE_ENV=production
 
 Note that environment variables defined with `--env.VAR_NAME` can only be accessed as `import.meta.env.VAR_NAME` or `process.env.VAR_NAME`.
 
-## `--debug [feat]`
+## `--debug-logs [feat]`
 
 Show debug logs.
 

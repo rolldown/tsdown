@@ -1,8 +1,9 @@
-## index.js
+## index.mjs
 
-```js
+```mjs
 //#region index.ts
 console.log("Hello, world!");
 
 //#endregion
+export {  };
 ```

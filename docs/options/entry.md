@@ -71,10 +71,6 @@ export default defineConfig({
 
 This configuration will include all `.ts` files in the `src` directory and its subdirectories as entry points.
 
-> [!WARNING]
-> The `entry` option is treated as a glob pattern by default. This means:
+> [!TIP]
 >
-> - On **Windows**, you must use forward slashes (`/`) instead of backslashes (`\`) in file paths.
-> - You cannot specify files that do not exist in the file system.
->
-> If you need to bypass these limitations, you can use `inputOptions.input` directly in the configuration file for more precise control.
+> On **Windows**, you must use forward slashes (`/`) instead of backslashes (`\`) in file paths when using glob patterns.

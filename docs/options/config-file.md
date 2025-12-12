@@ -18,7 +18,7 @@ Additionally, you can define your configuration directly in the `tsdown` field o
 The configuration file allows you to define and customize your build settings in a centralized and reusable way. Below is a simple example of a `tsdown` configuration file:
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: 'src/index.ts',
@@ -30,18 +30,18 @@ export default defineConfig({
 `tsdown` also supports returning an **array of configurations** from the config file. This allows you to build multiple outputs with different settings in a single run. For example:
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
-export default [
-  defineConfig({
+export default defineConfig([
+  {
     entry: 'src/entry1.ts',
     platform: 'node',
-  }),
-  defineConfig({
+  },
+  {
     entry: 'src/entry2.ts',
     platform: 'browser',
-  }),
-]
+  },
+])
 ```
 
 ## Specifying a Custom Config File
@@ -62,6 +62,17 @@ tsdown --no-config
 
 This is useful if you want to rely solely on command-line options or default settings.
 
+## Config Loaders
+
+`tsdown` supports multiple config loaders to accommodate various file formats. You can select a config loader using the `--config-loader` option. The available loaders are:
+
+- `auto` (default): Utilizes native runtime loading for TypeScript if supported; otherwise, defaults to `unrun`.
+- `native`: Loads TypeScript configuration files using native runtime support. Requires a compatible environment, such as the latest Node.js, Deno, or Bun.
+- `unrun`: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library. It provides more powerful and flexible loading capabilities.
+
+> [!TIP]
+> Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider using the `unrun` loader for seamless compatibility.
+
 ## Extending Vite or Vitest Config (Experimental)
 
 `tsdown` provides an **experimental** feature to extend your existing Vite or Vitest configuration files. This allows you to reuse specific configuration options, such as `resolve` and `plugins`, while ignoring others that are not relevant to `tsdown`.
@@ -81,4 +92,4 @@ tsdown --from-vite vitest # Load vitest.config.*
 
 ## Reference
 
-For a full list of available configuration options, refer to the [Config Options Reference](../reference/config-options.md). This includes detailed explanations of all supported fields and their usage.
+For a full list of available configuration options, refer to the [Config Options Reference](../reference/api/Interface.UserConfig.md). This includes detailed explanations of all supported fields and their usage.

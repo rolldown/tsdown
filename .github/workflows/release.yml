@@ -1,8 +1,5 @@
 name: Release
 
-permissions:
-  contents: write
-
 on:
   push:
     tags:
@@ -10,50 +7,10 @@ on:
 
 jobs:
   release:
-    name: 🚀 Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Set node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      - name: Generate changelog
-        run: npx changelogithub
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  # publish-jsr:
-  #   name: Publish JSR
-  #   runs-on: ubuntu-latest
-
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         persist-credentials: false
-
-  #     - name: Install pnpm
-  #       uses: pnpm/action-setup@v4.1.0
-
-  #     - name: Set node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: lts/*
-  #         cache: pnpm
-
-  #     - name: Install dependencies
-  #       run: pnpm install
-
-  #     - name: Publish package
-  #       run: npx jsr publish
+    uses: sxzz/workflows/.github/workflows/release.yml@v1
+    with:
+      publish: true
+      build: pnpm run build
+    permissions:
+      contents: write
+      id-token: write

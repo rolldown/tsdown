@@ -24,7 +24,7 @@ For more details, refer to the [Plugins](../advanced/plugins.md) documentation.
 
 - **TypeScript and JavaScript**: Seamlessly bundle `.ts` and `.js` files with support for modern syntax and features.
 - **TypeScript Declarations**: Automatically generate declaration files (`.d.ts`) for your library.
-- **Multiple Output Formats**: Generate `esm`, `cjs`, and `iife` bundles to ensure compatibility across different environments.
+- **Multiple Output Formats**: Generate `esm`, `cjs`, `iife`, and `umd` bundles to ensure compatibility across different environments.
 - **Assets**: Include and process non-code assets like `.json` or `.wasm` files.
 
 With its built-in support for [tree shaking](../options/tree-shaking.md), [minification](../options/minification.md), and [source maps](../options/sourcemap.md), `tsdown` ensures your library is optimized for production.

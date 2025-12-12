@@ -1,9 +1,12 @@
+import process from 'node:process'
 import { createHooks as create, type Hookable } from 'hookable'
-import type { ResolvedOptions } from '../options'
+import { exec } from 'tinyexec'
+import treeKill from 'tree-kill'
+import type { ResolvedConfig, RolldownChunk } from '../config/index.ts'
 import type { BuildOptions } from 'rolldown'
 
 export interface BuildContext {
-  options: ResolvedOptions
+  options: ResolvedConfig
   hooks: Hookable<TsdownHooks>
 }
 
@@ -30,10 +33,12 @@ export interface TsdownHooks {
    * Invoked after each tsdown build completes.
    * Use this hook for cleanup or post-processing tasks.
    */
-  'build:done': (ctx: BuildContext) => void | Promise<void>
+  'build:done': (
+    ctx: BuildContext & { chunks: RolldownChunk[] },
+  ) => void | Promise<void>
 }
 
-export async function createHooks(options: ResolvedOptions): Promise<{
+export async function createHooks(options: ResolvedConfig): Promise<{
   hooks: Hookable<TsdownHooks>
   context: BuildContext
 }> {
@@ -48,4 +53,34 @@ export async function createHooks(options: ResolvedOptions): Promise<{
     hooks,
   }
   return { hooks, context }
+}
+
+export function executeOnSuccess(
+  config: ResolvedConfig,
+): AbortController | undefined {
+  if (!config.onSuccess) return
+
+  const ab = new AbortController()
+  if (typeof config.onSuccess === 'string') {
+    const p = exec(config.onSuccess, [], {
+      nodeOptions: {
+        shell: true,
+        stdio: 'inherit',
+      },
+    })
+    p.then(({ exitCode }) => {
+      if (exitCode) {
+        process.exitCode = exitCode
+      }
+    })
+    ab.signal.addEventListener('abort', () => {
+      if (typeof p.pid === 'number') {
+        treeKill(p.pid)
+      }
+    })
+  } else {
+    config.onSuccess(config, ab.signal)
+  }
+
+  return ab
 }

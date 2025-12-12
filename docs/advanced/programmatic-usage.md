@@ -4,7 +4,7 @@ You can use `tsdown` directly from your JavaScript or TypeScript code. This is u
 
 ## Example
 
-```ts
+```ts twoslash
 import { build } from 'tsdown'
 
 await build({
@@ -16,4 +16,4 @@ await build({
 })
 ```
 
-All CLI options are available as properties in the options object. See [Config Options](../reference/config-options.md) for the full list.
+All CLI options are available as properties in the options object. See [Config Options](../reference/api/Interface.UserConfig.md) for the full list.

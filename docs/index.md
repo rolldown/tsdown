@@ -17,7 +17,7 @@ hero:
       link: /guide/
     - theme: alt
       text: API Reference
-      link: /reference/config-options.md
+      link: /reference/api/Interface.UserConfig.md
 
 features:
   - icon: 🚀

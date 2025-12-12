@@ -18,6 +18,20 @@ By default, `tsdown` **does not bundle dependencies** listed in your `package.js
 
 In other words, only the `devDependencies` and phantom dependencies that are actually referenced in your project will be included in the bundle.
 
+## Skipping Node Modules Bundling
+
+If you want to **skip resolving and bundling all dependencies from `node_modules`**, you can enable the `skipNodeModulesBundle` option in your configuration:
+
+```ts
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  skipNodeModulesBundle: true,
+})
+```
+
+This will prevent `tsdown` from parsing and bundling any dependencies from `node_modules`, regardless of how they are referenced in your code.
+
 ## Customizing Dependency Handling
 
 `tsdown` provides two options to override the default behavior:
@@ -70,6 +84,36 @@ export default defineConfig({
 
 In this example, type definitions for `lodash` and all packages under the `@types` namespace will be bundled into the `.d.ts` files.
 
+### Resolver Option
+
+When bundling complex third-party types, you may encounter cases where the default resolver (Oxc) cannot handle certain scenarios. For example, the types for `@babel/generator` are located in the `@types/babel__generator` package, which may not be resolved correctly by Oxc.
+
+To address this, you can set the `resolver` option to `tsc` in your configuration. This uses the native TypeScript resolver, which is slower but much more compatible with complex type setups:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    resolve: ['@babel/generator'],
+    resolver: 'tsc',
+  },
+})
+```
+
+If you want to bundle **all** types, you can set `resolve: true`. However, it is strongly recommended to also set `resolver: 'tsc'` to minimize unexpected issues:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    resolve: true,
+    resolver: 'tsc',
+  },
+})
+```
+
 ## Summary
 
 - **Default Behavior**:
@@ -78,8 +122,10 @@ In this example, type definitions for `lodash` and all packages under the `@type
 - **Customization**:
   - Use `external` to mark specific dependencies as external.
   - Use `noExternal` to force specific dependencies to be bundled.
+  - Use `skipNodeModulesBundle` to skip resolving and bundling all dependencies from `node_modules`.
 - **Declaration Files**:
   - Dependencies are not bundled by default.
   - Use `dts.resolve` to include specific dependency types in `.d.ts` files.
+  - Use `resolver: 'tsc'` for better compatibility with complex third-party types.
 
 By understanding and customizing dependency handling, you can ensure your library is optimized for both size and usability.

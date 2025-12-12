@@ -6,6 +6,7 @@ import { bar } from "./utils/bar.mjs";
 
 export { bar, version };
 ```
+
 ## package.mjs
 
 ```mjs
@@ -15,6 +16,7 @@ var version = "0.0.0";
 //#endregion
 export { version };
 ```
+
 ## utils/bar.mjs
 
 ```mjs

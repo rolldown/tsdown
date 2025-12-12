@@ -1,16 +1,17 @@
 import { chmod } from 'node:fs/promises'
 import path from 'node:path'
 import { underline } from 'ansis'
-import { fsExists } from '../utils/fs'
-import { logger, prettyFormat, prettyName } from '../utils/logger'
+import { fsExists } from '../utils/fs.ts'
+import { prettyFormat, type Logger } from '../utils/logger.ts'
 import type { Plugin } from 'rolldown'
 
 const RE_SHEBANG = /^#!.*/
 
 export function ShebangPlugin(
+  logger: Logger,
   cwd: string,
-  name?: string,
-  isMultiFormat?: boolean,
+  nameLabel?: string,
+  isDualFormat?: boolean,
 ): Plugin {
   return {
     name: 'tsdown:shebang',
@@ -25,8 +26,8 @@ export function ShebangPlugin(
         )
         if (await fsExists(filepath)) {
           logger.info(
-            prettyName(name),
-            isMultiFormat && prettyFormat(options.format),
+            nameLabel,
+            isDualFormat && prettyFormat(options.format),
             `Granting execute permission to ${underline(path.relative(cwd, filepath))}`,
           )
           await chmod(filepath, 0o755)

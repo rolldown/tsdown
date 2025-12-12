@@ -1,69 +1,110 @@
-import { builtinModules } from 'node:module'
-import Debug from 'debug'
-import { toArray } from '../utils/general'
-import type { ResolvedOptions } from '../options'
+import { isBuiltin } from 'node:module'
+import path from 'node:path'
+import { blue, underline } from 'ansis'
+import { createDebug } from 'obug'
+import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
+import { shimFile } from '../index.ts'
+import { matchPattern } from '../utils/general.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { PackageJson } from 'pkg-types'
-import type { Plugin } from 'rolldown'
+import type { Plugin, PluginContext, ResolveIdExtraOptions } from 'rolldown'
 
-const debug = Debug('tsdown:external')
+const debug = createDebug('tsdown:external')
 
-export function ExternalPlugin(options: ResolvedOptions): Plugin {
-  const deps = options.pkg && Array.from(getProductionDeps(options.pkg))
+export function ExternalPlugin({
+  pkg,
+  noExternal,
+  inlineOnly,
+  skipNodeModulesBundle,
+}: ResolvedConfig): Plugin {
+  const deps = pkg && Array.from(getProductionDeps(pkg))
+
   return {
     name: 'tsdown:external',
     async resolveId(id, importer, extraOptions) {
-      if (extraOptions.isEntry) return
+      if (extraOptions.isEntry || !importer) return
 
-      const { noExternal } = options
-      if (typeof noExternal === 'function' && noExternal(id, importer)) {
-        return
-      }
-      if (noExternal) {
-        const noExternalPatterns = toArray(noExternal)
-        if (
-          noExternalPatterns.some((pattern) => {
-            if (pattern instanceof RegExp) {
-              pattern.lastIndex = 0
-              return pattern.test(id)
-            }
-            return id === pattern
-          })
-        )
-          return
-      }
+      const shouldExternal = await externalStrategy(
+        this,
+        id,
+        importer,
+        extraOptions,
+      )
+      const nodeBuiltinModule = isBuiltin(id)
 
-      let shouldExternal: boolean | 'absolute' = false
-      if (options.skipNodeModulesBundle) {
-        const resolved = await this.resolve(id, importer, extraOptions)
-        if (!resolved) return resolved
-        shouldExternal =
-          resolved.external || /[\\/]node_modules[\\/]/.test(resolved.id)
-      }
-      if (deps) {
-        shouldExternal ||= deps.some(
-          (dep) => id === dep || id.startsWith(`${dep}/`),
-        )
-      }
+      debug('shouldExternal: %s = %s', id, shouldExternal)
 
-      if (shouldExternal) {
-        debug('External dependency:', id)
+      if (shouldExternal === true || shouldExternal === 'absolute') {
         return {
           id,
           external: shouldExternal,
-          moduleSideEffects:
-            id.startsWith('node:') || builtinModules.includes(id)
-              ? false
-              : undefined,
+          moduleSideEffects: nodeBuiltinModule ? false : undefined,
+        }
+      }
+
+      if (
+        inlineOnly &&
+        !RE_DTS.test(importer) && // skip dts files
+        !nodeBuiltinModule && // skip node built-in modules
+        id[0] !== '.' && // skip relative imports
+        !path.isAbsolute(id) // skip absolute imports
+      ) {
+        const shouldInline =
+          shouldExternal === 'no-external' || // force inline
+          matchPattern(id, inlineOnly)
+        debug('shouldInline: %s = %s', id, shouldInline)
+        if (shouldInline) return
+
+        const resolved = await this.resolve(id, importer, extraOptions)
+        if (!resolved) return
+
+        if (RE_NODE_MODULES.test(resolved.id)) {
+          throw new Error(
+            `${underline(id)} is located in node_modules but is not included in ${blue`inlineOnly`} option.
+To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.
+Imported by ${underline(importer)}`,
+          )
         }
       }
     },
+  }
+
+  /**
+   * - `true`: always external
+   * - `false`: skip, let other plugins handle it
+   * - `'absolute'`: external as absolute path
+   * - `'no-external'`: skip, but mark as non-external for inlineOnly check
+   */
+  async function externalStrategy(
+    context: PluginContext,
+    id: string,
+    importer: string | undefined,
+    extraOptions: ResolveIdExtraOptions,
+  ): Promise<boolean | 'absolute' | 'no-external'> {
+    if (id === shimFile) return false
+
+    if (noExternal?.(id, importer)) {
+      return 'no-external'
+    }
+
+    if (skipNodeModulesBundle) {
+      const resolved = await context.resolve(id, importer, extraOptions)
+      if (!resolved) return false
+      return resolved.external || RE_NODE_MODULES.test(resolved.id)
+    }
+
+    if (deps) {
+      return deps.some((dep) => id === dep || id.startsWith(`${dep}/`))
+    }
+
+    return false
   }
 }
 
 /*
  * Production deps should be excluded from the bundle
  */
-export function getProductionDeps(pkg: PackageJson): Set<string> {
+function getProductionDeps(pkg: PackageJson): Set<string> {
   return new Set([
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),

@@ -1,7 +1,5 @@
-## index.js
+## index.mjs
 
-```js
-const e = !0;
-export { e as foo };
-
+```mjs
+const foo=!0;export{foo};
 ```

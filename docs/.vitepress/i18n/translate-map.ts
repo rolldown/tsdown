@@ -1,4 +1,4 @@
-export const zhCN = {
+const zhCN = {
   // nav
   Home: '首页',
   Guide: '指南',
@@ -18,7 +18,7 @@ export const zhCN = {
   'Output Directory': '输出目录',
   'Output Format': '输出格式',
   Platform: '运行平台（Platform）',
-  'Silent Mode': '静默模式',
+  'Log Level': '日志级别',
   'Source Maps': '源映射（Source Maps）',
   Target: '构建目标（Target）',
   'Tree-shaking': '除屑优化（Tree-shaking）',
@@ -27,19 +27,25 @@ export const zhCN = {
   'Declaration Files (dts)': '声明文件（dts）',
   'Package Exports': '包导出（Package Exports）',
   Unbundle: '非打包模式（Unbundle）',
+  'CJS Default Export': 'CJS 默认导出',
 
   Recipes: '实践指南',
   'Vue Support': 'Vue 支持',
+  'React Support': 'React 支持',
+  'Solid Support': 'Solid 支持',
+  'Svelte Support': 'Svelte 支持',
 
   Advanced: '高级功能',
   'Rolldown Options': 'Rolldown 选项',
   Plugins: '插件',
   Hooks: '钩子（Hooks）',
   'Programmatic Usage': '编程使用',
+  Benchmark: '性能基准',
   FAQ: '常见问题',
 
-  'Config Options': '配置选项',
   'Command Line Interface': '命令行接口',
+  'Config Options': '配置选项',
+  'Type Definitions': '类型定义',
 
   'The Elegant Bundler for Libraries': '优雅的库打包器',
 

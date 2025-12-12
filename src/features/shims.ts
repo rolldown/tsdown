@@ -1,13 +1,11 @@
-import path from 'node:path'
-import { pkgRoot } from '../index'
-import type { NormalizedFormat, ResolvedOptions } from '../options'
+import { shimFile } from '../index.ts'
+import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
 
 export function getShimsInject(
   format: NormalizedFormat,
-  platform: ResolvedOptions['platform'],
+  platform: ResolvedConfig['platform'],
 ): Record<string, [string, string]> | undefined {
   if (format === 'es' && platform === 'node') {
-    const shimFile = path.resolve(pkgRoot, 'esm-shims.js')
     return {
       __dirname: [shimFile, '__dirname'],
       __filename: [shimFile, '__filename'],

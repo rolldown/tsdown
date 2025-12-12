@@ -1,23 +1,25 @@
-## foo.js
+## foo.mjs
 
-```js
+```mjs
 //#region src/foo.ts
 const foo = 1;
 
 //#endregion
 export { foo };
 ```
-## index.js
 
-```js
-import { foo } from "./foo.js";
-import { bar } from "./utils/bar.js";
+## index.mjs
+
+```mjs
+import { foo } from "./foo.mjs";
+import { bar } from "./utils/bar.mjs";
 
 export { bar, foo };
 ```
-## utils/bar.js
 
-```js
+## utils/bar.mjs
+
+```mjs
 //#region src/utils/bar.ts
 const bar = 2;
 

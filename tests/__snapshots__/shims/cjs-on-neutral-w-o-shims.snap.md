@@ -9,7 +9,7 @@ var cjs_on_neutral_w_o_shims_default = [
 	require("url").pathToFileURL(__filename).href,
 	__filename,
 	__dirname,
-	void 0
+	{}.something
 ];
 
 //#endregion

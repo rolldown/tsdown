@@ -18,7 +18,7 @@
 配置文件允许您以集中且可复用的方式定义和自定义构建设置。以下是一个简单的 `tsdown` 配置文件示例：
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: 'src/index.ts',
@@ -30,18 +30,18 @@ export default defineConfig({
 `tsdown` 还支持从配置文件返回一个**配置数组**。这允许您在一次运行中使用不同的设置构建多个输出。例如：
 
 ```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown/config'
+import { defineConfig } from 'tsdown'
 
-export default [
-  defineConfig({
+export default defineConfig([
+  {
     entry: 'src/entry1.ts',
     platform: 'node',
-  }),
-  defineConfig({
+  },
+  {
     entry: 'src/entry2.ts',
     platform: 'browser',
-  }),
-]
+  },
+])
 ```
 
 ## 指定自定义配置文件
@@ -62,6 +62,17 @@ tsdown --no-config
 
 这在您希望仅依赖命令行选项或默认设置时非常有用。
 
+## 配置加载器
+
+`tsdown` 支持多种配置加载器，以适配不同的文件格式。您可以通过 `--config-loader` 选项选择配置加载器。可用的加载器包括：
+
+- `auto`（默认）：如果运行时支持，则使用原生方式加载 TypeScript，否则回退到 `unrun`。
+- `native`：通过原生运行时支持加载 TypeScript 配置文件。需要兼容的环境，如最新版 Node.js、Deno 或 Bun。
+- `unrun`：使用 [`unrun`](https://gugustinette.github.io/unrun/) 库加载配置文件，提供更强大和灵活的加载能力。
+
+> [!TIP]
+> Node.js 原生不支持在不指定文件扩展名的情况下导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unrun` 加载器以获得更好的兼容性。
+
 ## 扩展 Vite 或 Vitest 配置（实验性功能）{#extending-vite-or-vitest-config-experimental}
 
 `tsdown` 提供了一个**实验性**功能，允许您扩展现有的 Vite 或 Vitest 配置文件。通过此功能，您可以复用特定的配置选项（如 `resolve` 和 `plugins`），同时忽略与 `tsdown` 无关的其他选项。
@@ -81,4 +92,4 @@ tsdown --from-vite vitest # 加载 vitest.config.*
 
 ## 参考
 
-有关可用配置选项的完整列表，请参阅 [配置选项参考](../reference/config-options.md)。其中包括所有支持字段及其用法的详细说明。
+有关可用配置选项的完整列表，请参阅 [配置选项参考](../reference/api/Interface.UserConfig.md)。其中包括所有支持字段及其用法的详细说明。

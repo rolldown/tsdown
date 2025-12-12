@@ -1,19 +1,24 @@
 import path from 'node:path'
-import Debug from 'debug'
+import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
-import { fsRemove } from '../utils/fs'
-import { slash } from '../utils/general'
-import { logger } from '../utils/logger'
-import type { Options, ResolvedOptions } from '../options'
+import { fsRemove } from '../utils/fs.ts'
+import { slash } from '../utils/general.ts'
+import { globalLogger } from '../utils/logger.ts'
+import type { ResolvedConfig, UserConfig } from '../config/index.ts'
+import type { OutputAsset, OutputChunk } from 'rolldown'
 
-const debug = Debug('tsdown:clean')
+const debug = createDebug('tsdown:clean')
 
 const RE_LAST_SLASH = /[/\\]$/
 
-export async function cleanOutDir(configs: ResolvedOptions[]): Promise<void> {
+export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
   const removes = new Set<string>()
 
   for (const config of configs) {
+    if (config.debug && (config.debug.clean ?? true)) {
+      config.clean.push('.rolldown')
+    }
+
     if (!config.clean.length) continue
     const files = await glob(config.clean, {
       cwd: config.cwd,
@@ -31,7 +36,7 @@ export async function cleanOutDir(configs: ResolvedOptions[]): Promise<void> {
   }
   if (!removes.size) return
 
-  logger.info(`Cleaning ${removes.size} files`)
+  globalLogger.info(`Cleaning ${removes.size} files`)
   await Promise.all(
     [...removes].map(async (file) => {
       debug('Removing', file)
@@ -42,7 +47,7 @@ export async function cleanOutDir(configs: ResolvedOptions[]): Promise<void> {
 }
 
 export function resolveClean(
-  clean: Options['clean'],
+  clean: UserConfig['clean'],
   outDir: string,
   cwd: string,
 ): string[] {
@@ -59,4 +64,17 @@ export function resolveClean(
   }
 
   return clean
+}
+
+export async function cleanChunks(
+  outDir: string,
+  chunks: Array<OutputAsset | OutputChunk>,
+): Promise<void> {
+  await Promise.all(
+    chunks.map(async (chunk) => {
+      const filePath = path.resolve(outDir, chunk.fileName)
+      debug('Removing chunk file', filePath)
+      await fsRemove(filePath)
+    }),
+  )
 }

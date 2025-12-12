@@ -1,13 +1,19 @@
 node_modules
 dist
+coverage
+.temp
+temp
+.idea
+.netlify
+.rolldown
 
 *.log
 .DS_Store
 .eslintcache
 tsdown-*.tgz
 
-temp
-
 docs/.vitepress/dist
 docs/.vitepress/cache
+
 docs/reference/api
+docs/zh-CN/reference/api

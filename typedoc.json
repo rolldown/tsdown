@@ -1,6 +1,0 @@
-{
-  "$schema": "https://typedoc.org/schema.json",
-  "plugin": ["typedoc-plugin-markdown"],
-  "out": "./docs/reference/api",
-  "entryPoints": ["./src/options/types.ts"]
-}

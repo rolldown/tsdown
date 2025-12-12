@@ -1,48 +1,106 @@
+import process from 'node:process'
 import { bgRed, bgYellow, blue, green, rgb, yellow, type Ansis } from 'ansis'
-import { noop } from './general'
+import { noop } from './general.ts'
 import type { InternalModuleFormat } from 'rolldown'
 
-export class Logger {
-  silent: boolean = false
+export type LogType = 'error' | 'warn' | 'info'
+export type LogLevel = LogType | 'silent'
 
-  setSilent(value: boolean): void {
-    this.silent = value
-  }
-
-  filter(...args: any[]): any[] {
-    return args.filter((arg) => arg !== undefined && arg !== false)
-  }
-
-  info(...args: any[]): void {
-    if (!this.silent) {
-      console.info(blue`ℹ`, ...this.filter(...args))
-    }
-  }
-
-  warn(...args: any[]): void {
-    if (!this.silent) {
-      console.warn('\n', bgYellow` WARN `, ...this.filter(...args), '\n')
-    }
-  }
-
-  error(...args: any[]): void {
-    if (!this.silent) {
-      console.error('\n', bgRed` ERROR `, ...this.filter(...args), '\n')
-    }
-  }
-
-  success(...args: any[]): void {
-    if (!this.silent) {
-      console.info(green`✔`, ...this.filter(...args))
-    }
-  }
+export interface LoggerOptions {
+  customLogger?: Logger
+  console?: Console
+  failOnWarn?: boolean
 }
 
-export const logger: Logger = new Logger()
+export const LogLevels: Record<LogLevel, number> = {
+  silent: 0,
+  error: 1,
+  warn: 2,
+  info: 3,
+}
 
-export function prettyName(name?: string): string | undefined {
+export interface Logger {
+  level: LogLevel
+  info: (...args: any[]) => void
+  warn: (...args: any[]) => void
+  warnOnce: (...args: any[]) => void
+  error: (...args: any[]) => void
+  success: (...args: any[]) => void
+}
+
+function format(msgs: any[]) {
+  return msgs.filter((arg) => arg !== undefined && arg !== false).join(' ')
+}
+
+const warnedMessages = new Set<string>()
+
+export function createLogger(
+  level: LogLevel = 'info',
+  {
+    customLogger,
+    console = globalThis.console,
+    failOnWarn = false,
+  }: LoggerOptions = {},
+): Logger {
+  if (customLogger) {
+    return customLogger
+  }
+
+  function output(type: LogType, msg: string) {
+    const thresh = LogLevels[logger.level]
+    if (thresh < LogLevels[type]) return
+
+    const method = type === 'info' ? 'log' : type
+    console[method](msg)
+  }
+
+  const logger: Logger = {
+    level,
+
+    info(...msgs: any[]): void {
+      output('info', `${blue`ℹ`} ${format(msgs)}`)
+    },
+
+    warn(...msgs: any[]): void {
+      if (failOnWarn) {
+        return this.error(...msgs)
+      }
+      const message = format(msgs)
+      warnedMessages.add(message)
+      output('warn', `\n${bgYellow` WARN `} ${message}\n`)
+    },
+
+    warnOnce(...msgs: any[]): void {
+      const message = format(msgs)
+      if (warnedMessages.has(message)) {
+        return
+      }
+
+      if (failOnWarn) {
+        return this.error(...msgs)
+      }
+      warnedMessages.add(message)
+
+      output('warn', `\n${bgYellow` WARN `} ${message}\n`)
+    },
+
+    error(...msgs: any[]): void {
+      output('error', `\n${bgRed` ERROR `} ${format(msgs)}\n`)
+      process.exitCode = 1
+    },
+
+    success(...msgs: any[]): void {
+      output('info', `${green`✔`} ${format(msgs)}`)
+    },
+  }
+  return logger
+}
+
+export const globalLogger: Logger = createLogger()
+
+export function getNameLabel(ansis: Ansis, name?: string): string | undefined {
   if (!name) return undefined
-  return generateColor(name)(`[${name}]`)
+  return ansis(`[${name}]`)
 }
 
 export function prettyFormat(format: InternalModuleFormat): string {
@@ -73,6 +131,7 @@ export function generateColor(name: string = 'default'): Ansis {
   } else {
     let hash = 0
     for (let i = 0; i < name.length; i++)
+      // eslint-disable-next-line unicorn/prefer-code-point
       hash = name.charCodeAt(i) + ((hash << 5) - hash)
     const hue = hash % 360
     const saturation = 35

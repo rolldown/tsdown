@@ -57,4 +57,9 @@ onMounted(async () => {
 .dark .voidzero {
   background-image: url(https://voidzero.dev/logo-white.svg);
 }
+
+:deep(svg) {
+  max-width: 100%;
+  height: auto;
+}
 </style>

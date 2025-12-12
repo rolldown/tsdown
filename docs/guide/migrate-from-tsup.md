@@ -7,7 +7,7 @@
 If you're currently using `tsup` and want to migrate to `tsdown`, the process is straightforward thanks to the dedicated `migrate` command:
 
 ```bash
-npx tsdown migrate
+npx tsdown-migrate
 ```
 
 > [!WARNING]
@@ -36,6 +36,15 @@ While `tsdown` aims to be highly compatible with `tsup`, there are some differen
 ### Feature Gaps
 
 Some features available in `tsup` are not yet implemented in `tsdown`. If you find an option missing that you need, please [open an issue](https://github.com/rolldown/tsdown/issues) to let us know your requirements.
+
+### New Features in tsdown
+
+`tsdown` also introduces new features not available in `tsup`:
+
+- **`nodeProtocol`**: Control how Node.js built-in module imports are handled:
+  - `true`: Add `node:` prefix to built-in modules (e.g., `fs` → `node:fs`)
+  - `'strip'`: Remove `node:` prefix from imports (e.g., `node:fs` → `fs`)
+  - `false`: Keep imports as-is (default)
 
 Please review your configuration after migration to ensure it matches your expectations.
 

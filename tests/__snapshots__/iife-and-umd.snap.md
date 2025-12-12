@@ -5,13 +5,14 @@ var Lib = (function(exports) {
 
 
 //#region index.ts
-const foo = true;
+	const foo = true;
 
 //#endregion
 exports.foo = foo;
 return exports;
 })({});
 ```
+
 ## index.umd.js
 
 ```js
@@ -22,7 +23,7 @@ return exports;
 })(this, function(exports) {
 
 //#region index.ts
-const foo = true;
+	const foo = true;
 
 //#endregion
 exports.foo = foo;

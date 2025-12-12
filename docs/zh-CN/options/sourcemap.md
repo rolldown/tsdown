@@ -11,3 +11,5 @@
 ```bash
 tsdown --sourcemap
 ```
+
+请注意，如果您在 `tsconfig.json` 中启用了 [`declarationMap`](https://www.typescriptlang.org/tsconfig/#declarationMap) 选项，则 source map 将始终启用。

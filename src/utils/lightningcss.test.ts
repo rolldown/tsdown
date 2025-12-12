@@ -1,6 +1,6 @@
 import { browserslistToTargets } from 'lightningcss'
 import { expect, test } from 'vitest'
-import { esbuildTargetToLightningCSS } from './lightningcss'
+import { esbuildTargetToLightningCSS } from './lightningcss.ts'
 
 test('esbuildTargetToLightningCSS', () => {
   const expected = browserslistToTargets([

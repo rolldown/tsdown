@@ -4,7 +4,7 @@
 
 ## 示例
 
-```ts
+```ts twoslash
 import { build } from 'tsdown'
 
 await build({
@@ -16,4 +16,4 @@ await build({
 })
 ```
 
-所有 CLI 选项都可以作为参数对象的属性传递。完整选项请参见 [配置选项](../reference/config-options.md)。
+所有 CLI 选项都可以作为参数对象的属性传递。完整选项请参见 [配置选项](../reference/api/Interface.UserConfig.md)。

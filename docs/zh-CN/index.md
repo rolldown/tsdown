@@ -10,12 +10,14 @@ hero:
     src: /tsdown.svg
     alt: tsdown
   actions:
+    - text: 什么是 tsdown？
+      openVideoModal: true
     - theme: brand
       text: 开始使用
       link: /zh-CN/guide/
     - theme: alt
       text: API 参考
-      link: /zh-CN/reference/config-options.md
+      link: /zh-CN/reference/api/Interface.UserConfig.md
 
 features:
   - icon: 🚀

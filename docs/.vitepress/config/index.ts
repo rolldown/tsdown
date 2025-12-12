@@ -1,7 +1,8 @@
 import { fileURLToPath } from 'node:url'
+import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { defineConfig } from 'vitepress'
 import { groupIconMdPlugin } from 'vitepress-plugin-group-icons'
-import { getLocaleConfig } from './theme'
+import { getLocaleConfig } from './theme.ts'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -10,7 +11,7 @@ export default defineConfig({
     'zh-CN': getLocaleConfig('zh-CN'),
     ru: {
       label: 'Русский (community)',
-      link: 'https://github.com/teplostanski/tsdown.ru',
+      link: 'https://github.com/teplostanski/tsdown.ru#',
     },
   },
 
@@ -47,6 +48,17 @@ export default defineConfig({
     config(md) {
       md.use(groupIconMdPlugin)
     },
+    codeTransformers: [
+      transformerTwoslash({
+        twoslashOptions: {
+          compilerOptions: {
+            paths: {
+              tsdown: ['../src/index.ts'],
+            },
+          },
+        },
+      }),
+    ],
   },
 
   vite: {

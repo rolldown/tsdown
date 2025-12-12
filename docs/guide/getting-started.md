@@ -36,13 +36,35 @@ bun add -D tsdown
 
 :::
 
+Optionally, if you're not using [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations), you should also install TypeScript as a development dependency:
+
+::: code-group
+
+```sh [npm]
+npm install -D typescript
+```
+
+```sh [pnpm]
+pnpm add -D typescript
+```
+
+```sh [yarn]
+yarn add -D typescript
+```
+
+```sh [bun]
+bun add -D typescript
+```
+
+:::
+
 :::tip Compatibility Note
-`tsdown` requires Node.js version 18 or higher. Please ensure your development environment meets this requirement before installing. While `tsdown` is primarily tested with Node.js, support for Deno and Bun is experimental and may not work as expected.
+`tsdown` requires Node.js version 20.19 or higher. Please ensure your development environment meets this requirement before installing. While `tsdown` is primarily tested with Node.js, support for Deno and Bun is experimental and may not work as expected.
 :::
 
 ### Starter Templates {#starter-templates}
 
-To get started even faster, you can use the [create-tsdown](https://github.com/gugustinette/create-tsdown) CLI, which provides a set of starter templates for building pure TypeScript libraries, as well as frontend libraries like React and Vue.
+To get started even faster, you can use the [create-tsdown](https://github.com/rolldown/tsdown/tree/main/packages/create-tsdown) CLI, which provides a set of starter templates for building pure TypeScript libraries, as well as frontend libraries like React and Vue.
 
 ::: code-group
 
@@ -110,7 +132,7 @@ Next, initialize the `tsdown` configuration file:
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  entry: ['./src'],
+  entry: ['./src/index.ts'],
 })
 ```
 

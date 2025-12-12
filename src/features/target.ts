@@ -1,14 +1,15 @@
-import { blue } from 'ansis'
 import minVersion from 'semver/ranges/min-version.js'
-import { resolveComma, toArray } from '../utils/general'
-import { generateColor, logger, prettyName } from '../utils/logger'
+import { resolveComma, toArray } from '../utils/general.ts'
+import type { Logger } from '../utils/logger.ts'
+import type { Ansis } from 'ansis'
 import type { PackageJson } from 'pkg-types'
-import type { Plugin } from 'rolldown'
 
 export function resolveTarget(
+  logger: Logger,
   target: string | string[] | false | undefined,
+  color: Ansis,
   pkg?: PackageJson,
-  name?: string,
+  nameLabel?: string,
 ): string[] | undefined {
   if (target === false) return
   if (target == null) {
@@ -19,11 +20,15 @@ export function resolveTarget(
       return
     }
   }
+
+  if (typeof target === 'number') {
+    throw new TypeError(`Invalid target: ${target}`)
+  }
   const targets = resolveComma(toArray(target))
   if (targets.length)
     logger.info(
-      prettyName(name),
-      `target${targets.length > 1 ? 's' : ''}: ${generateColor(name)(targets.join(', '))}`,
+      nameLabel,
+      `target${targets.length > 1 ? 's' : ''}: ${color(targets.join(', '))}`,
     )
 
   return targets
@@ -36,32 +41,4 @@ export function resolvePackageTarget(pkg?: PackageJson): string | undefined {
   if (!nodeMinVersion) return
   if (nodeMinVersion.version === '0.0.0') return
   return `node${nodeMinVersion.version}`
-}
-
-let warned = false
-export function RuntimeHelperCheckPlugin(targets: string[]): Plugin {
-  return {
-    name: 'tsdown:runtime-helper-check',
-    resolveId: {
-      filter: { id: /^@oxc-project\/runtime/ },
-      async handler(id, ...args) {
-        const EXTERNAL = { id, external: true }
-        if (warned) return EXTERNAL
-
-        const resolved = await this.resolve(id, ...args)
-        if (!resolved) {
-          if (!warned) {
-            warned = true
-            logger.warn(
-              `The target environment (${targets.join(', ')}) requires runtime helpers from ${blue`@oxc-project/runtime`}. ` +
-                `Please install it to ensure all necessary polyfills are included.\n` +
-                `For more information, visit: https://tsdown.dev/options/target#runtime-helpers`,
-            )
-          }
-          return EXTERNAL
-        }
-        return resolved
-      },
-    },
-  }
 }

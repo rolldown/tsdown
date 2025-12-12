@@ -1,14 +1,15 @@
-## index.d.ts
+## index.d.mts
 
-```ts
+```mts
 //#region mod.d.ts
 declare const mod = 42;
 //#endregion
 export { mod };
 ```
-## index.js
 
-```js
+## index.mjs
+
+```mjs
 //#region mod.ts
 const mod = 42;
 

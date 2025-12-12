@@ -3,14 +3,14 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import { brotliCompress, gzip } from 'node:zlib'
 import { bold, dim, green } from 'ansis'
-import Debug from 'debug'
+import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
-import { formatBytes } from '../utils/format'
-import { noop } from '../utils/general'
-import { logger, prettyFormat, prettyName } from '../utils/logger'
+import { formatBytes } from '../utils/format.ts'
+import { noop } from '../utils/general.ts'
+import { prettyFormat, type Logger } from '../utils/logger.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
-const debug = Debug('tsdown:report')
+const debug = createDebug('tsdown:report')
 const brotliCompressAsync = promisify(brotliCompress)
 const gzipAsync = promisify(gzip)
 
@@ -28,6 +28,14 @@ interface SizeInfo {
 
 export interface ReportOptions {
   /**
+   * Enable/disable gzip-compressed size reporting.
+   * Compressing large output files can be slow, so disabling this may increase build performance for large projects.
+   *
+   * @default true
+   */
+  gzip?: boolean
+
+  /**
    * Enable/disable brotli-compressed size reporting.
    * Compressing large output files can be slow, so disabling this may increase build performance for large projects.
    *
@@ -42,13 +50,25 @@ export interface ReportOptions {
   maxCompressSize?: number
 }
 
+const defaultOptions = {
+  gzip: true,
+  brotli: false,
+  maxCompressSize: 1_000_000,
+}
+
 export function ReportPlugin(
-  options: ReportOptions,
+  userOptions: ReportOptions,
+  logger: Logger,
   cwd: string,
   cjsDts?: boolean,
-  name?: string,
-  isMultiFormat?: boolean,
+  nameLabel?: string,
+  isDualFormat?: boolean,
 ): Plugin {
+  const options = {
+    ...defaultOptions,
+    ...userOptions,
+  }
+
   return {
     name: 'tsdown:report',
     async writeBundle(outputOptions, bundle) {
@@ -102,9 +122,8 @@ export function ReportPlugin(
         return b.raw - a.raw
       })
 
-      const nameLabel = prettyName(name)
       const formatLabel =
-        isMultiFormat && prettyFormat(cjsDts ? 'cjs' : outputOptions.format)
+        isDualFormat && prettyFormat(cjsDts ? 'cjs' : outputOptions.format)
 
       for (const size of sizes) {
         const filenameColor = size.dts ? green : noop
@@ -112,11 +131,11 @@ export function ReportPlugin(
         logger.info(
           nameLabel,
           formatLabel,
-          dim(`${outDir}/`) +
+          dim(outDir + path.sep) +
             filenameColor((size.isEntry ? bold : noop)(size.filename)),
           ` `.repeat(filenameLength - size.filename.length),
           dim(size.rawText),
-          size.gzipText && dim`│ gzip: ${size.gzipText}`,
+          options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,
           options.brotli &&
             size.brotliText &&
             dim`│ brotli: ${size.brotliText}`,
@@ -134,7 +153,7 @@ export function ReportPlugin(
 }
 
 async function calcSize(
-  options: ReportOptions,
+  options: Required<ReportOptions>,
   chunk: OutputAsset | OutputChunk,
 ): Promise<SizeInfo> {
   debug(`Calculating size for`, chunk.fileName)
@@ -146,12 +165,13 @@ async function calcSize(
 
   let gzip: number = Infinity
   let brotli: number = Infinity
-  if (raw > (options.maxCompressSize ?? 1_000_000)) {
+  if (raw > options.maxCompressSize) {
     debug(chunk.fileName, 'file size exceeds limit, skip gzip/brotli')
   } else {
-    gzip = (await gzipAsync(content)).length
-    debug('[gzip]', chunk.fileName, gzip)
-
+    if (options.gzip) {
+      gzip = (await gzipAsync(content)).length
+      debug('[gzip]', chunk.fileName, gzip)
+    }
     if (options.brotli) {
       brotli = (await brotliCompressAsync(content)).length
       debug('[brotli]', chunk.fileName, brotli)

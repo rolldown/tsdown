@@ -1,0 +1,56 @@
+{
+  "name": "create-tsdown",
+  "type": "module",
+  "version": "0.17.3",
+  "description": "Create a new tsdown project",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/sxzz",
+  "homepage": "http://tsdown.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolldown/tsdown.git",
+    "directory": "packages/create-tsdown"
+  },
+  "bugs": {
+    "url": "https://github.com/rolldown/tsdown/issues"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./run": "./dist/run.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*.d.mts",
+        "./*"
+      ]
+    }
+  },
+  "bin": {
+    "create-tsdown": "./dist/run.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "dev": "node ./src/run.ts",
+    "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
+  },
+  "dependencies": {
+    "@clack/prompts": "catalog:create",
+    "cac": "catalog:prod",
+    "giget": "catalog:create",
+    "package-manager-detector": "catalog:prod"
+  }
+}

@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import { resolvePackageTarget } from './target'
+import { resolvePackageTarget } from './target.ts'
 
 test('resolvePackageTarget', () => {
   expect(testVersion('>= 14')).toMatchInlineSnapshot(`"node14.0.0"`)

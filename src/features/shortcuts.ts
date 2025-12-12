@@ -1,7 +1,7 @@
 import process from 'node:process'
 import readline from 'node:readline'
 import { bold, dim } from 'ansis'
-import { logger } from '../utils/logger'
+import { globalLogger } from '../utils/logger.ts'
 
 // Copied from https://github.com/vitejs/vite/blob/main/packages/vite/src/node/shortcuts.ts - MIT License
 
@@ -11,7 +11,7 @@ export interface Shortcut {
   action: () => void | Promise<void>
 }
 
-export function shortcuts(restart: () => void): void {
+export function shortcuts(restart: () => void): () => void {
   let actionRunning = false
   async function onInput(input: string) {
     if (actionRunning) return
@@ -20,7 +20,6 @@ export function shortcuts(restart: () => void): void {
         key: 'r',
         description: 'reload config and rebuild',
         action() {
-          rl.close()
           restart()
         },
       },
@@ -42,7 +41,7 @@ export function shortcuts(restart: () => void): void {
 
     if (input === 'h') {
       const loggedKeys = new Set<string>()
-      logger.info('  Shortcuts')
+      globalLogger.info('  Shortcuts')
 
       for (const shortcut of SHORTCUTS) {
         if (loggedKeys.has(shortcut.key)) continue
@@ -50,7 +49,7 @@ export function shortcuts(restart: () => void): void {
 
         if (shortcut.action == null) continue
 
-        logger.info(
+        globalLogger.info(
           dim`  press ` +
             bold`${shortcut.key} + enter` +
             dim` to ${shortcut.description}`,
@@ -72,4 +71,5 @@ export function shortcuts(restart: () => void): void {
     input: process.stdin,
   })
   rl.on('line', onInput)
+  return () => rl.close()
 }

@@ -1,10 +1,7 @@
 {
   "editor.formatOnSave": true,
-  "cSpell.words": ["tsdown"],
+  "cSpell.words": ["rolldown", "tsdown"],
   "files.readonlyInclude": {
-    "docs/**/config-options.md": true,
-    "docs/**/workspace.md": true,
-    "docs/**/type-aliases/*.md": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
+    "docs/**/reference/api/**": true
+  }
 }
