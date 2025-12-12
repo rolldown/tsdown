@@ -10,7 +10,7 @@ export interface CopyEntry {
   /**
    * Source path or glob pattern.
    */
-  from: string
+  from: string | string[]
   /**
    * Destination path.
    * If not specified, defaults to the output directory ("outDir").
@@ -34,7 +34,47 @@ export async function copy(options: ResolvedConfig): Promise<void> {
       ? await options.copy(options)
       : options.copy
 
-  const resolveCopyEntry = async (entry: CopyEntry) => {
+  const resolved = (
+    await Promise.all(
+      toArray(copy).map(async (entry) => {
+        if (typeof entry === 'string') {
+          entry = { from: [entry] }
+        }
+        let from = toArray(entry.from)
+
+        const isGlob = from.some((f) => isDynamicPattern(f))
+        if (isGlob) {
+          from = await glob(from, {
+            cwd: options.cwd,
+            onlyFiles: true,
+            expandDirectories: false,
+          })
+        }
+
+        return Promise.all(
+          from.map((file) => resolveCopyEntry({ ...entry, from: file })),
+        )
+      }),
+    )
+  ).flat()
+
+  const name = prettyName(options.name)
+  await Promise.all(
+    resolved.map(([from, to]) => {
+      options.logger.info(
+        name,
+        `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
+          options.cwd,
+          to,
+        )}`,
+      )
+      return fsCopy(from, to)
+    }),
+  )
+
+  async function resolveCopyEntry(
+    entry: CopyEntry & { from: string },
+  ): Promise<[from: string, to: string]> {
     const from = path.resolve(options.cwd, entry.from)
     const parsedFrom = path.parse(path.relative(options.cwd, from))
     const dest = entry.to ? path.resolve(options.cwd, entry.to) : options.outDir
@@ -42,7 +82,7 @@ export async function copy(options: ResolvedConfig): Promise<void> {
     if (entry.flatten || !parsedFrom.dir) {
       const isFile = (await fsStat(from))?.isFile()
       const to = isFile ? path.join(dest, parsedFrom.base) : dest
-      return { from, to }
+      return [from, to]
     }
 
     const to = path.join(
@@ -53,48 +93,6 @@ export async function copy(options: ResolvedConfig): Promise<void> {
       parsedFrom.base,
     )
 
-    return { from, to }
+    return [from, to]
   }
-
-  const resolved = (
-    await Promise.all(
-      toArray(copy).map(async (entry) => {
-        const isNakedEntry = typeof entry === 'string'
-        const from = isNakedEntry ? entry : entry.from
-
-        if (isDynamicPattern(from)) {
-          const files = await glob(from, {
-            cwd: options.cwd,
-            onlyFiles: true,
-            expandDirectories: false,
-          })
-          return Promise.all(
-            files.map((file) =>
-              resolveCopyEntry(
-                isNakedEntry
-                  ? { from: file }
-                  : { from: file, to: entry.to, flatten: entry.flatten },
-              ),
-            ),
-          )
-        }
-
-        return resolveCopyEntry(isNakedEntry ? { from: entry } : entry)
-      }),
-    )
-  ).flat()
-
-  const name = prettyName(options.name)
-  await Promise.all(
-    resolved.map((dir) => {
-      options.logger.info(
-        name,
-        `Copying files from ${path.relative(options.cwd, dir.from)} to ${path.relative(
-          options.cwd,
-          dir.to,
-        )}`,
-      )
-      return fsCopy(dir.from, dir.to)
-    }),
-  )
 }
