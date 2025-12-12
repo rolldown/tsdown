@@ -26,7 +26,7 @@ export interface ExportsOptions {
   all?: boolean
 
   /**
-   * Define filenames or RegExps to exclude files from exports.
+   * Define filenames or RegExp patterns to exclude files from exports.
    * This is useful for excluding files that should not be part of the package exports,
    * such as bin files or internal utilities.
    *
