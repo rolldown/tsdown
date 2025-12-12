@@ -28,7 +28,7 @@ describe.concurrent('generateExports', () => {
   test('only one entry', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      { es: [genChunk('main.js')] },
+      { es: [genChunk('main.js'), genChunk('chunk.js', false)] },
       {},
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -447,12 +447,12 @@ describe.concurrent('generateExports', () => {
   })
 })
 
-function genChunk(fileName: string) {
+function genChunk(fileName: string, isEntry = true) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return {
     type: 'chunk',
     fileName,
-    isEntry: true,
+    isEntry,
     facadeModuleId: `./SRC/${fileName}`,
     outDir: cwd,
   } as RolldownChunk

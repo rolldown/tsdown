@@ -4,7 +4,11 @@ import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { matchPattern, slash } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
-import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
+import type {
+  ChunksByFormat,
+  RolldownChunk,
+  RolldownCodeChunk,
+} from '../../utils/chunks.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -81,7 +85,7 @@ function shouldExclude(
   fileName: string,
   exclude?: (RegExp | string)[],
 ): boolean {
-  if (!exclude || exclude.length === 0) return false
+  if (!exclude?.length) return false
   return matchPattern(fileName, exclude)
 }
 
@@ -110,24 +114,19 @@ export async function generateExports(
   ][]) {
     if (format !== 'es' && format !== 'cjs') continue
 
-    // Filter out excluded chunks
+    // Filter out non-entry chunks and excluded files
     const filteredChunks = chunksByFormat.filter(
-      (chunk) =>
-        chunk.type !== 'chunk' ||
-        !chunk.isEntry ||
+      (chunk): chunk is RolldownCodeChunk =>
+        chunk.type === 'chunk' &&
+        chunk.isEntry &&
         !shouldExclude(chunk.fileName, exclude),
     )
 
     const onlyOneEntry =
-      filteredChunks.filter(
-        (chunk) =>
-          chunk.type === 'chunk' &&
-          chunk.isEntry &&
-          !RE_DTS.test(chunk.fileName),
-      ).length === 1
-    for (const chunk of filteredChunks) {
-      if (chunk.type !== 'chunk' || !chunk.isEntry) continue
+      filteredChunks.filter((chunk) => !RE_DTS.test(chunk.fileName)).length ===
+      1
 
+    for (const chunk of filteredChunks) {
       const normalizedName = slash(chunk.fileName)
       const ext = path.extname(chunk.fileName)
       let name = normalizedName.slice(0, -ext.length)
