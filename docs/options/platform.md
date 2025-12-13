@@ -19,6 +19,35 @@ tsdown --platform neutral
 > [!NOTE]
 > For the CJS format, the platform is always set to `'node'` and cannot be changed. [Why?](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
 
+### Troubleshooting
+
+::: warning Main Fields Configuration for Neutral Platform
+
+When using the `neutral` platform, `mainFields` defaults to an empty array `[]`, which means it relies solely on the `exports` field in `package.json` for module resolution. This can cause issues with older packages that don't have an `exports` field defined.
+
+:::
+
+You may encounter warnings like:
+
+```
+Help: The "main" field here was ignored. Main fields must be configured explicitly when using the "neutral" platform.
+```
+
+To resolve this, explicitly configure `mainFields` in `inputOptions.resolve`:
+
+```ts
+export default defineConfig({
+  platform: 'neutral',
+  inputOptions: {
+    resolve: {
+      mainFields: ['module', 'main'],
+    },
+  },
+})
+```
+
+See the [Rolldown resolve options documentation](https://rolldown.rs/options/resolve#mainfields) for more details.
+
 ### Example
 
 ```bash
