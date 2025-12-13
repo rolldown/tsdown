@@ -19,6 +19,35 @@ tsdown --platform neutral
 > [!NOTE]
 > 对于 CJS 格式，平台始终为 `'node'`，无法更改。 [为什么？](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
 
+### 故障排除
+
+::: warning `neutral` 的 `mainFields` 配置
+
+使用 `neutral` 平台时，`mainFields` 默认为 `[]`，这意味着它仅依赖 `package.json` 中的 `exports` 字段进行模块解析。这可能会导致没有定义 `exports` 字段的旧依赖出现问题。
+
+:::
+
+您可能会遇到如下警告：
+
+```
+Help: The "main" field here was ignored. Main fields must be configured explicitly when using the "neutral" platform.
+```
+
+要解决此问题，请在 `inputOptions.resolve` 中显式配置 `mainFields`：
+
+```ts
+export default defineConfig({
+  platform: 'neutral',
+  inputOptions: {
+    resolve: {
+      mainFields: ['module', 'main'],
+    },
+  },
+})
+```
+
+更多详情请参阅 [Rolldown 解析选项文档](https://rolldown.rs/options/resolve#mainfields)。
+
 ### 示例
 
 ```bash
