@@ -15,6 +15,7 @@ export function shortcuts(restart: () => void): () => void {
   let actionRunning = false
   async function onInput(input: string) {
     if (actionRunning) return
+    input = input.trim().toLowerCase()
     const SHORTCUTS: Shortcut[] = [
       {
         key: 'r',
@@ -51,8 +52,8 @@ export function shortcuts(restart: () => void): () => void {
 
         globalLogger.info(
           dim`  press ` +
-            bold`${shortcut.key} + enter` +
-            dim` to ${shortcut.description}`,
+          bold`${shortcut.key} + enter` +
+          dim` to ${shortcut.description}`,
         )
       }
 
