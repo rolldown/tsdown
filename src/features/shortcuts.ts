@@ -52,8 +52,8 @@ export function shortcuts(restart: () => void): () => void {
 
         globalLogger.info(
           dim`  press ` +
-          bold`${shortcut.key} + enter` +
-          dim` to ${shortcut.description}`,
+            bold`${shortcut.key} + enter` +
+            dim` to ${shortcut.description}`,
         )
       }
 
