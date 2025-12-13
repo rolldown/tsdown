@@ -15,6 +15,7 @@ export function shortcuts(restart: () => void): () => void {
   let actionRunning = false
   async function onInput(input: string) {
     if (actionRunning) return
+    input = input.trim().toLowerCase()
     const SHORTCUTS: Shortcut[] = [
       {
         key: 'r',
