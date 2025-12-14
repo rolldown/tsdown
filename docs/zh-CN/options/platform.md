@@ -19,21 +19,21 @@ tsdown --platform neutral
 > [!NOTE]
 > 对于 CJS 格式，平台始终为 `'node'`，无法更改。 [为什么？](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
 
-### 故障排除
+### 模块解析
 
-::: warning `neutral` 的 `mainFields` 配置
+不同平台使用不同的解析策略来确定包的入口点。`mainFields` 选项决定了检查 `package.json` 中的哪些字段：
 
-使用 `neutral` 平台时，`mainFields` 默认为 `[]`，这意味着它仅依赖 `package.json` 中的 `exports` 字段进行模块解析。这可能会导致没有定义 `exports` 字段的旧依赖出现问题。
+- **`node`：** `['main', 'module']`
+- **`browser`：** `['browser', 'module', 'main']`
+- **`neutral`：** `[]`（仅依赖 `exports` 字段）
 
-:::
-
-您可能会遇到如下警告：
+使用 `neutral` 平台时，没有 `exports` 字段的包可能会出现解析问题。如果遇到如下警告：
 
 ```
 Help: The "main" field here was ignored. Main fields must be configured explicitly when using the "neutral" platform.
 ```
 
-要解决此问题，请在 `inputOptions.resolve` 中显式配置 `mainFields`：
+请在 `inputOptions.resolve` 中显式配置 `mainFields`：
 
 ```ts
 export default defineConfig({

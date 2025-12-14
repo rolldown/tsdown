@@ -19,21 +19,21 @@ tsdown --platform neutral
 > [!NOTE]
 > For the CJS format, the platform is always set to `'node'` and cannot be changed. [Why?](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
 
-### Troubleshooting
+### Module Resolution
 
-::: warning Main Fields Configuration for Neutral Platform
+Different platforms use different resolve strategies for package entry points. The `mainFields` option determines which fields in `package.json` are checked:
 
-When using the `neutral` platform, `mainFields` defaults to an empty array `[]`, which means it relies solely on the `exports` field in `package.json` for module resolution. This can cause issues with older packages that don't have an `exports` field defined.
+- **`node`:** `['main', 'module']`
+- **`browser`:** `['browser', 'module', 'main']`
+- **`neutral`:** `[]` (relies solely on the `exports` field)
 
-:::
-
-You may encounter warnings like:
+When using the `neutral` platform, packages without an `exports` field may cause resolution issues. If you encounter warnings like:
 
 ```
 Help: The "main" field here was ignored. Main fields must be configured explicitly when using the "neutral" platform.
 ```
 
-To resolve this, explicitly configure `mainFields` in `inputOptions.resolve`:
+Configure `mainFields` explicitly in `inputOptions.resolve`:
 
 ```ts
 export default defineConfig({
