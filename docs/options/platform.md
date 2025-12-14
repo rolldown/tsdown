@@ -34,3 +34,32 @@ tsdown --platform neutral
 
 > [!TIP]
 > Choosing the right platform ensures your code is optimized for its intended runtime. For example, use `browser` for front-end projects, `node` for server-side applications, and `neutral` for universal libraries.
+
+### Module Resolution
+
+Different platforms use different resolve strategies for package entry points. The `mainFields` option determines which fields in `package.json` are checked:
+
+- **`node`:** `['main', 'module']`
+- **`browser`:** `['browser', 'module', 'main']`
+- **`neutral`:** `[]` (relies solely on the `exports` field)
+
+When using the `neutral` platform, packages without an `exports` field may cause resolution issues. If you encounter warnings like:
+
+```
+Help: The "main" field here was ignored. Main fields must be configured explicitly when using the "neutral" platform.
+```
+
+Configure `mainFields` explicitly in `inputOptions.resolve`:
+
+```ts
+export default defineConfig({
+  platform: 'neutral',
+  inputOptions: {
+    resolve: {
+      mainFields: ['module', 'main'],
+    },
+  },
+})
+```
+
+See the [Rolldown resolve options documentation](https://rolldown.rs/options/resolve#mainfields) for more details.
