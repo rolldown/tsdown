@@ -35,7 +35,6 @@ tsdown --platform neutral
 > [!TIP]
 > Choosing the right platform ensures your code is optimized for its intended runtime. For example, use `browser` for front-end projects, `node` for server-side applications, and `neutral` for universal libraries.
 
-
 ### Module Resolution
 
 Different platforms use different resolve strategies for package entry points. The `mainFields` option determines which fields in `package.json` are checked:
@@ -64,4 +63,3 @@ export default defineConfig({
 ```
 
 See the [Rolldown resolve options documentation](https://rolldown.rs/options/resolve#mainfields) for more details.
-

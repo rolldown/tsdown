@@ -63,4 +63,3 @@ export default defineConfig({
 ```
 
 更多详情请参阅 [Rolldown 解析选项文档](https://rolldown.rs/options/resolve#mainfields)。
-
