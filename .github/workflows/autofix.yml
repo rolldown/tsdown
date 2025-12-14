@@ -5,5 +5,7 @@ on: [pull_request]
 jobs:
   autofix:
     uses: sxzz/workflows/.github/workflows/autofix.yml@v1
+    with:
+      command: pnpm run format && pnpm run lint --fix
     permissions:
       contents: read

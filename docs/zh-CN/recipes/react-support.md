@@ -66,7 +66,7 @@ export default defineConfig({
   inputOptions: {
     transform: {
       jsx: 'react', // 使用经典 JSX 转换
-    }
+    },
   },
 })
 ```
