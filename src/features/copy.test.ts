@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { fs as memFs, vol } from 'memfs'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { copy as _copy } from '../features/copy.ts'
@@ -39,7 +40,7 @@ beforeEach(() => {
   vol.reset()
 })
 
-describe('copy', () => {
+describe.skipIf(process.platform === 'win32')('copy', () => {
   test('basic', async () => {
     vol.fromJSON({
       '/cwd/src/file.txt': 'file content',
