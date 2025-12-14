@@ -19,6 +19,23 @@ tsdown --platform neutral
 > [!NOTE]
 > For the CJS format, the platform is always set to `'node'` and cannot be changed. [Why?](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
 
+### Example
+
+```bash
+# Bundle for Node.js (default)
+tsdown --platform node
+
+# Bundle for browsers
+tsdown --platform browser
+
+# Bundle for a neutral platform
+tsdown --platform neutral
+```
+
+> [!TIP]
+> Choosing the right platform ensures your code is optimized for its intended runtime. For example, use `browser` for front-end projects, `node` for server-side applications, and `neutral` for universal libraries.
+
+
 ### Module Resolution
 
 Different platforms use different resolve strategies for package entry points. The `mainFields` option determines which fields in `package.json` are checked:
@@ -48,18 +65,3 @@ export default defineConfig({
 
 See the [Rolldown resolve options documentation](https://rolldown.rs/options/resolve#mainfields) for more details.
 
-### Example
-
-```bash
-# Bundle for Node.js (default)
-tsdown --platform node
-
-# Bundle for browsers
-tsdown --platform browser
-
-# Bundle for a neutral platform
-tsdown --platform neutral
-```
-
-> [!TIP]
-> Choosing the right platform ensures your code is optimized for its intended runtime. For example, use `browser` for front-end projects, `node` for server-side applications, and `neutral` for universal libraries.

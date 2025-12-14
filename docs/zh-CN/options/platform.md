@@ -19,6 +19,22 @@ tsdown --platform neutral
 > [!NOTE]
 > 对于 CJS 格式，平台始终为 `'node'`，无法更改。 [为什么？](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
 
+### 示例
+
+```bash
+# 针对 Node.js 打包（默认）
+tsdown --platform node
+
+# 针对浏览器打包
+tsdown --platform browser
+
+# 针对中立平台打包
+tsdown --platform neutral
+```
+
+> [!TIP]
+> 选择正确的平台可以确保您的代码针对目标运行时进行了优化。例如，前端项目使用 `browser`，服务端应用使用 `node`，而通用库使用 `neutral`。
+
 ### 模块解析
 
 不同平台使用不同的解析策略来确定包的入口点。`mainFields` 选项决定了检查 `package.json` 中的哪些字段：
@@ -48,18 +64,3 @@ export default defineConfig({
 
 更多详情请参阅 [Rolldown 解析选项文档](https://rolldown.rs/options/resolve#mainfields)。
 
-### 示例
-
-```bash
-# 针对 Node.js 打包（默认）
-tsdown --platform node
-
-# 针对浏览器打包
-tsdown --platform browser
-
-# 针对中立平台打包
-tsdown --platform neutral
-```
-
-> [!TIP]
-> 选择正确的平台可以确保您的代码针对目标运行时进行了优化。例如，前端项目使用 `browser`，服务端应用使用 `node`，而通用库使用 `neutral`。
