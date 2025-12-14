@@ -18,10 +18,12 @@ catalogs:
     '@types/semver': ^7.7.1
     '@typescript/native-preview': 7.0.0-dev.20251212.1
     '@vitest/coverage-v8': 4.0.15
+    '@vitest/ui': ^4.0.15
     bumpp: ^10.3.2
     dedent: ^1.7.0
     eslint: ^9.39.2
     lightningcss: ^1.30.2
+    memfs: ^4.51.1
     pkg-types: ^2.3.0
     prettier: ^3.7.4
     rolldown-plugin-require-cjs: ^0.3.3

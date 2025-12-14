@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { glob, isDynamicPattern } from 'tinyglobby'
-import { fsCopy, fsStat } from '../utils/fs.ts'
+import { fsCopy } from '../utils/fs.ts'
 import { toArray } from '../utils/general.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { Arrayable, Awaitable } from '../utils/types.ts'
@@ -18,9 +18,20 @@ export interface CopyEntry {
   /**
    * Whether to flatten the copied files (not preserving directory structure).
    *
-   * @default false
+   * @default true
    */
   flatten?: boolean
+  /**
+   * Output copied items to console.
+   * @default false
+   */
+  verbose?: boolean
+  /**
+   * Change destination file or folder name.
+   */
+  rename?:
+    | string
+    | ((name: string, extension: string, fullPath: string) => string)
 }
 export type CopyOptions = Arrayable<string | CopyEntry>
 export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
@@ -50,47 +61,62 @@ export async function copy(options: ResolvedConfig): Promise<void> {
           })
         }
 
-        return Promise.all(
-          from.map((file) => resolveCopyEntry({ ...entry, from: file })),
-        )
+        return from.map((file) => resolveCopyEntry({ ...entry, from: file }))
       }),
     )
   ).flat()
 
+  if (!resolved.length) {
+    options.logger.warn(options.nameLabel, `No files matched for copying.`)
+    return
+  }
+
   await Promise.all(
-    resolved.map(([from, to]) => {
-      options.logger.info(
-        options.nameLabel,
-        `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
-          options.cwd,
-          to,
-        )}`,
-      )
+    resolved.map(({ from, to, verbose }) => {
+      if (verbose) {
+        options.logger.info(
+          options.nameLabel,
+          `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
+            options.cwd,
+            to,
+          )}`,
+        )
+      }
       return fsCopy(from, to)
     }),
   )
 
-  async function resolveCopyEntry(
+  // https://github.com/vladshcherbin/rollup-plugin-copy/blob/master/src/index.js
+  // MIT License
+  function resolveCopyEntry(
     entry: CopyEntry & { from: string },
-  ): Promise<[from: string, to: string]> {
+  ): CopyEntry & { from: string; to: string } {
+    const { flatten = true, rename } = entry
     const from = path.resolve(options.cwd, entry.from)
-    const parsedFrom = path.parse(path.relative(options.cwd, from))
-    const dest = entry.to ? path.resolve(options.cwd, entry.to) : options.outDir
+    const to = entry.to ? path.resolve(options.cwd, entry.to) : options.outDir
 
-    if (entry.flatten || !parsedFrom.dir) {
-      const isFile = (await fsStat(from))?.isFile()
-      const to = isFile ? path.join(dest, parsedFrom.base) : dest
-      return [from, to]
-    }
-
-    const to = path.join(
-      dest,
-      // Stripe off the first segment to avoid unnecessary nesting
-      // e.g. "src/index.css" -> index.css" -> "dist/index.css"
-      parsedFrom.dir.replace(parsedFrom.dir.split(path.sep)[0], ''),
-      parsedFrom.base,
+    const { base, dir } = path.parse(path.relative(options.cwd, from))
+    const destFolder =
+      flatten || (!flatten && !dir)
+        ? to
+        : dir.replace(dir.split(path.sep)[0], to)
+    const dest = path.join(
+      destFolder,
+      rename ? renameTarget(base, rename, from) : base,
     )
 
-    return [from, to]
+    return { ...entry, from, to: dest }
   }
+}
+
+function renameTarget(
+  target: string,
+  rename: NonNullable<CopyEntry['rename']>,
+  src: string,
+) {
+  const parsedPath = path.parse(target)
+
+  return typeof rename === 'string'
+    ? rename
+    : rename(parsedPath.name, parsedPath.ext.replace('.', ''), src)
 }

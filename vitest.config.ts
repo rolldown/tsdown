@@ -8,9 +8,14 @@ export default defineConfig({
   },
   test: {
     testTimeout: 20_000,
-    setupFiles: ['./tests/setup.ts'],
+    setupFiles: './tests/setup.ts',
     coverage: {
       include: ['src/**'],
+    },
+    server: {
+      deps: {
+        inline: ['tinyglobby', 'fdir'], // mock fs
+      },
     },
   },
 })
