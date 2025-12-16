@@ -81,6 +81,7 @@ export async function resolveUserConfig(
     fixedExtension = platform === 'node',
     debug = false,
     write = true,
+    cssCodeSplit = false,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -224,6 +225,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
+    cssCodeSplit,
     cwd,
     debug,
     dts,

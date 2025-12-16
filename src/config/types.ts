@@ -467,6 +467,14 @@ export interface UserConfig {
   exports?: WithEnabled<ExportsOptions>
 
   /**
+   * Enable/disable CSS code splitting.
+   * When set to `true`, all CSS in the entire project will be extracted into a single CSS file.
+   * When set to `false`, CSS imported in async JS chunks will be preserved as chunks.
+   * @default false
+   */
+  cssCodeSplit?: boolean
+
+  /**
    * @deprecated Alias for `copy`, will be removed in the future.
    */
   publicDir?: CopyOptions | CopyOptionsFn
@@ -563,6 +571,7 @@ export type ResolvedConfig = Overwrite<
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
+    cssCodeSplit: boolean
 
     dts: false | DtsOptions
     report: false | ReportOptions
