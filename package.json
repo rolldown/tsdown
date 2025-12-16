@@ -2,7 +2,7 @@
   "name": "tsdown",
   "type": "module",
   "version": "0.18.0",
-  "packageManager": "pnpm@10.25.0",
+  "packageManager": "pnpm@10.26.0",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -64,7 +64,7 @@
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
-    "@vitejs/devtools": "catalog:peer",
+    "@vitejs/devtools": "*",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
     "unplugin-lightningcss": "^0.4.0",

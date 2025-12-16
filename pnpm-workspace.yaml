@@ -14,9 +14,9 @@ catalogs:
     '@sxzz/eslint-config': ^7.4.3
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.14
-    '@types/node': ^25.0.1
+    '@types/node': ^25.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20251212.1
+    '@typescript/native-preview': 7.0.0-dev.20251216.1
     '@vitest/coverage-v8': 4.0.15
     '@vitest/ui': ^4.0.15
     bumpp: ^10.3.2
@@ -33,7 +33,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^3.20.0
     '@unocss/eslint-plugin': ^66.5.10
     '@vueuse/core': ^14.1.0
-    oxc-minify: ^0.102.0
+    oxc-minify: ^0.103.0
     typedoc: ^0.28.15
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
@@ -46,12 +46,12 @@ catalogs:
     vue-tsc: ^3.1.8
   migrate:
     '@antfu/ni': ^28.0.0
-    '@ast-grep/napi': ^0.40.1
+    '@ast-grep/napi': ^0.40.3
     consola: ^3.4.2
     diff: ^8.0.2
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.0.0-alpha.19
+    '@vitejs/devtools': ^0.0.0-alpha.20
     publint: ^0.3.16
     unplugin-lightningcss: ^0.4.3
     unplugin-unused: ^0.5.6
@@ -61,7 +61,7 @@ catalogs:
     defu: ^6.1.4
     empathic: ^2.0.0
     hookable: ^5.5.3
-    import-without-cache: ^0.2.3
+    import-without-cache: ^0.2.4
     is-in-ci: ^2.0.0
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
