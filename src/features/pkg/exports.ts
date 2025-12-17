@@ -27,13 +27,13 @@ export interface ExportsOptions {
   all?: boolean
 
   /**
-   * Define filenames or RegExp patterns to exclude files from exports.
+   * Define globs or RegExp patterns to exclude files from exports.
    * This is useful for excluding files that should not be part of the package exports,
    * such as bin files or internal utilities.
    *
    * @example
    * ```js
-   * exclude: ['foo.ts', /\.spec\.ts$/, /internal/]
+   * exclude: ['**\/*.test.ts', '**\/*.spec.ts', /internal/]
    * ```
    */
   exclude?: (RegExp | string)[]
