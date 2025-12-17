@@ -82,7 +82,6 @@ async function resolveInputOptions(
   /// keep-sorted
   const {
     alias,
-    banner,
     cjsDefault,
     cwd,
     debug,
@@ -90,7 +89,6 @@ async function resolveInputOptions(
     entry,
     env,
     external,
-    footer,
     globImport,
     loader,
     logger,
@@ -121,8 +119,6 @@ async function resolveInputOptions(
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
     const options: DtsOptions = {
       tsconfig,
-      banner: resolveChunkAddon(banner, format, true),
-      footer: resolveChunkAddon(footer, format, true),
       ...dts,
     }
 
@@ -233,15 +229,16 @@ async function resolveOutputOptions(
   format: NormalizedFormat,
   cjsDts: boolean,
 ): Promise<OutputOptions> {
+  /// keep-sorted
   const {
+    banner,
+    cjsDefault,
     entry,
+    footer,
+    minify,
     outDir,
     sourcemap,
-    minify,
     unbundle,
-    banner,
-    footer,
-    cjsDefault,
   } = config
 
   const [entryFileNames, chunkFileNames] = resolveChunkFilename(
@@ -263,8 +260,8 @@ async function resolveOutputOptions(
       preserveModulesRoot: unbundle
         ? lowestCommonAncestor(...Object.values(entry))
         : undefined,
-      banner: resolveChunkAddon(banner, format),
-      footer: resolveChunkAddon(footer, format),
+      postBanner: resolveChunkAddon(banner, format),
+      postFooter: resolveChunkAddon(footer, format),
     },
     config.outputOptions,
     [format, { cjsDts }],

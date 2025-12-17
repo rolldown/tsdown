@@ -13,7 +13,7 @@ catalogs:
   dev:
     '@sxzz/eslint-config': ^7.4.3
     '@sxzz/prettier-config': ^2.2.6
-    '@sxzz/test-utils': ^0.5.14
+    '@sxzz/test-utils': ^0.5.15
     '@types/node': ^25.0.3
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
@@ -68,7 +68,7 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
     rolldown: 1.0.0-beta.55
-    rolldown-plugin-dts: ^0.18.4
+    rolldown-plugin-dts: ^0.19.1
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
