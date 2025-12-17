@@ -44,6 +44,34 @@ describe('toObjectEntry', () => {
     })
   })
 
+  test('object entry with globs', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'index.ts': '',
+      'src/foo.ts': '',
+      'src/bar.ts': '',
+      'test/test.ts': '',
+      'nested/a/b/c.ts': '',
+    })
+    const result = await toObjectEntry(
+      {
+        '*.min': '*.ts',
+        'lib/*': 'src/*.ts',
+        test: 'test/test.ts',
+        test2: 'test/*.ts',
+        'nested/*': 'nested/**/*.ts',
+      },
+      testDir,
+    )
+    expect(result).toEqual({
+      'index.min': path.join(testDir, 'index.ts'),
+      'lib/foo': path.join(testDir, 'src/foo.ts'),
+      'lib/bar': path.join(testDir, 'src/bar.ts'),
+      test: 'test/test.ts',
+      test2: 'test/*.ts',
+      'nested/a/b/c': path.join(testDir, 'nested/a/b/c.ts'),
+    })
+  })
+
   test('glob pattern', async (context) => {
     const { testDir } = await writeFixtures(context, {
       'src/foo.ts': '',

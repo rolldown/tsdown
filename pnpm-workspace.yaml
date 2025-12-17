@@ -15,6 +15,7 @@ catalogs:
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.14
     '@types/node': ^25.0.2
+    '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
     '@typescript/native-preview': 7.0.0-dev.20251216.1
     '@vitest/coverage-v8': 4.0.15
@@ -65,6 +66,7 @@ catalogs:
     is-in-ci: ^2.0.0
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
+    picomatch: ^4.0.3
     rolldown: 1.0.0-beta.53
     rolldown-plugin-dts: ^0.18.3
     semver: ^7.7.3

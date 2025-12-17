@@ -25,6 +25,9 @@ catalogs:
     '@types/node':
       specifier: ^25.0.2
       version: 25.0.2
+    '@types/picomatch':
+      specifier: ^4.0.2
+      version: 4.0.2
     '@types/semver':
       specifier: ^7.7.1
       version: 7.7.1
@@ -164,6 +167,9 @@ catalogs:
     package-manager-detector:
       specifier: ^1.6.0
       version: 1.6.0
+    picomatch:
+      specifier: ^4.0.3
+      version: 4.0.3
     rolldown-plugin-dts:
       specifier: ^0.18.3
       version: 0.18.3
@@ -215,6 +221,9 @@ importers:
       obug:
         specifier: catalog:prod
         version: 2.1.1
+      picomatch:
+        specifier: catalog:prod
+        version: 4.0.3
       rolldown:
         specifier: 1.0.0-beta.53
         version: 1.0.0-beta.53
@@ -255,6 +264,9 @@ importers:
       '@types/node':
         specifier: catalog:dev
         version: 25.0.2
+      '@types/picomatch':
+        specifier: catalog:dev
+        version: 4.0.2
       '@types/semver':
         specifier: catalog:dev
         version: 7.7.1
@@ -1200,6 +1212,9 @@ packages:
 
   '@types/node@25.0.2':
     resolution: {integrity: sha512-gWEkeiyYE4vqjON/+Obqcoeffmk0NF15WSBwSs7zwVA2bAbTaE0SJ7P0WNGoJn8uE7fiaV5a7dKYIJriEqOrmA==}
+
+  '@types/picomatch@4.0.2':
+    resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
 
   '@types/semver@7.7.1':
     resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
@@ -4571,6 +4586,8 @@ snapshots:
   '@types/node@25.0.2':
     dependencies:
       undici-types: 7.16.0
+
+  '@types/picomatch@4.0.2': {}
 
   '@types/semver@7.7.1': {}
 

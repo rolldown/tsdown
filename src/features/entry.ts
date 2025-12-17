@@ -1,6 +1,7 @@
 import path from 'node:path'
+import picomatch from 'picomatch'
 import { glob, isDynamicPattern } from 'tinyglobby'
-import { fsExists, lowestCommonAncestor } from '../utils/fs.ts'
+import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
 import type { UserConfig } from '../config/index.ts'
 import type { Logger } from '../utils/logger.ts'
@@ -45,7 +46,32 @@ export async function toObjectEntry(
     entry = [entry]
   }
   if (!Array.isArray(entry)) {
-    return entry
+    // resolve object entry with globs
+    return Object.fromEntries(
+      (
+        await Promise.all(
+          Object.entries(entry).map(async ([key, value]) => {
+            if (!key.includes('*')) return [[key, value]]
+
+            const valueGlob = picomatch.scan(value)
+            const files = await glob(value, {
+              cwd,
+              expandDirectories: false,
+            })
+
+            return files.map((file) => [
+              slash(
+                key.replaceAll(
+                  '*',
+                  stripExtname(path.relative(valueGlob.base, file)),
+                ),
+              ),
+              path.resolve(cwd, file),
+            ])
+          }),
+        )
+      ).flat(),
+    )
   }
 
   const isGlob = entry.some((e) => isDynamicPattern(e))
@@ -66,12 +92,7 @@ export async function toObjectEntry(
   return Object.fromEntries(
     resolvedEntry.map((file) => {
       const relative = path.relative(base, file)
-      return [
-        slash(
-          relative.slice(0, relative.length - path.extname(relative).length),
-        ),
-        file,
-      ]
+      return [slash(stripExtname(relative)), file]
     }),
   )
 }

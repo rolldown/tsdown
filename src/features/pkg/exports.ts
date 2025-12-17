@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
+import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
 import type {
@@ -128,8 +129,7 @@ export async function generateExports(
 
     for (const chunk of filteredChunks) {
       const normalizedName = slash(chunk.fileName)
-      const ext = path.extname(chunk.fileName)
-      let name = normalizedName.slice(0, -ext.length)
+      let name = stripExtname(normalizedName)
 
       const isDts = name.endsWith('.d')
       if (isDts) {
