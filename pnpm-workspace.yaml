@@ -14,14 +14,14 @@ catalogs:
     '@sxzz/eslint-config': ^7.4.3
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.14
-    '@types/node': ^25.0.2
+    '@types/node': ^25.0.3
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20251216.1
-    '@vitest/coverage-v8': 4.0.15
-    '@vitest/ui': ^4.0.15
+    '@typescript/native-preview': 7.0.0-dev.20251217.1
+    '@vitest/coverage-v8': 4.0.16
+    '@vitest/ui': ^4.0.16
     bumpp: ^10.3.2
-    dedent: ^1.7.0
+    dedent: ^1.7.1
     eslint: ^9.39.2
     lightningcss: ^1.30.2
     memfs: ^4.51.1
@@ -29,7 +29,7 @@ catalogs:
     prettier: ^3.7.4
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
-    vitest: ^4.0.15
+    vitest: ^4.0.16
   docs:
     '@shikijs/vitepress-twoslash': ^3.20.0
     '@unocss/eslint-plugin': ^66.5.10
@@ -67,14 +67,14 @@ catalogs:
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
-    rolldown: 1.0.0-beta.53
-    rolldown-plugin-dts: ^0.18.3
+    rolldown: 1.0.0-beta.55
+    rolldown-plugin-dts: ^0.18.4
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.2
-    unrun: ^0.2.19
+    unrun: ^0.2.20
 
 ignoreWorkspaceRootCheck: true
 

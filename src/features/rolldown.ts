@@ -216,6 +216,9 @@ async function resolveInputOptions(
           }
         : undefined,
       debug: debug || undefined,
+      checks: {
+        pluginTimings: false,
+      },
     },
     config.inputOptions,
     [format, { cjsDts }],
