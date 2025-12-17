@@ -17,7 +17,7 @@ export default defineConfig({
 This will automatically analyze your entry points and output files, and update your `package.json` accordingly.
 
 > [!WARNING]
-> This is an **experimental feature**. Please review the generated fields before publishing your package.
+> Please review the generated fields before publishing your package, or enable publint for validation.
 
 ## Exporting All Files
 
