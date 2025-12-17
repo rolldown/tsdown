@@ -1,7 +1,7 @@
 {
   "name": "create-tsdown",
   "type": "module",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Create a new tsdown project",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",

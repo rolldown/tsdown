@@ -1,7 +1,7 @@
 {
   "name": "tsdown-migrate",
   "type": "module",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "A CLI tool to help migrate your project to tsdown.",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
