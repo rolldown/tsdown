@@ -5,7 +5,7 @@ import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { exec } from 'tinyexec'
 import { fsRemove } from '../../utils/fs.ts'
-import { importWithError } from '../../utils/general.ts'
+import { importWithError, slash } from '../../utils/general.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type {
   CheckPackageOptions,
@@ -105,7 +105,9 @@ export async function attw(options: ResolvedConfig): Promise<void> {
     })
 
     if (problems.length) {
-      const problemList = problems.map(formatProblem).join('\n')
+      const problemList = problems
+        .map((problem) => formatProblem(checkResult.packageName, problem))
+        .join('\n')
       errorMessage = `problems found:\n${problemList}`
     }
   } else {
@@ -127,10 +129,13 @@ export async function attw(options: ResolvedConfig): Promise<void> {
 /**
  * Format an ATTW problem for display
  */
-function formatProblem(problem: Problem): string {
+function formatProblem(packageName: string, problem: Problem): string {
   const resolutionKind =
     'resolutionKind' in problem ? ` (${problem.resolutionKind})` : ''
-  const entrypoint = 'entrypoint' in problem ? ` at ${problem.entrypoint}` : ''
+  const entrypoint =
+    'entrypoint' in problem
+      ? ` at ${slash(path.join(packageName, problem.entrypoint))}`
+      : ''
 
   switch (problem.kind) {
     case 'NoResolution':
