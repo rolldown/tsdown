@@ -10,14 +10,29 @@ If you're currently using `tsup` and want to migrate to `tsdown`, the process is
 npx tsdown-migrate
 ```
 
+For monorepos, you can specify directories using glob patterns:
+
+```bash
+npx tsdown-migrate packages/*
+```
+
+Or specify multiple directories explicitly:
+
+```bash
+npx tsdown-migrate packages/foo packages/bar
+```
+
 > [!WARNING]
 > Please save your changes before migration. The migration process may modify your configuration files, so it's important to ensure all your changes are committed or backed up beforehand.
+
+> [!TIP]
+> The migration tool will automatically install dependencies after migration. Make sure to run the command from within your project directory.
 
 ### Migration Options
 
 The `migrate` command supports the following options to customize the migration process:
 
-- `--cwd <dir>` (or `-c`): Specify the working directory for the migration.
+- `[...dirs]`: Specify directories to migrate. Supports glob patterns (e.g., `packages/*`). Defaults to the current directory if not specified.
 - `--dry-run` (or `-d`): Perform a dry run to preview the migration without making any changes.
 
 With these options, you can easily tailor the migration process to fit your specific project setup.

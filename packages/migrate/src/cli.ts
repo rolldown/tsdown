@@ -7,13 +7,11 @@ import { migrate, type MigrateOptions } from './index.ts'
 const cli = cac(pkg.name).version(pkg.version).help()
 
 cli
-  .command('', 'Migrate a project to tsdown')
-  .option(
-    '-c, --cwd <path>',
-    'Current working directory to run the migration in',
-  )
+  .command('[...dirs]', 'Migrate a project to tsdown')
   .option('-d, --dry-run', 'Perform a dry run without making changes')
-  .action((options: MigrateOptions) => migrate(options))
+  .action((dirs: string[], options: Omit<MigrateOptions, 'dirs'>) =>
+    migrate({ ...options, dirs }),
+  )
 
 export async function runCLI(): Promise<void> {
   cli.parse(process.argv, { run: false })

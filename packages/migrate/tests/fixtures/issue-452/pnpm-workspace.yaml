@@ -1,0 +1,6 @@
+packages:
+  - apps/*
+  - packages/*
+
+catalog:
+  tsup: 8.5.1

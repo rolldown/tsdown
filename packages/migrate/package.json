@@ -51,6 +51,7 @@
     "ansis": "catalog:prod",
     "cac": "catalog:prod",
     "consola": "catalog:migrate",
-    "diff": "catalog:migrate"
+    "diff": "catalog:migrate",
+    "tinyglobby": "catalog:prod"
   }
 }

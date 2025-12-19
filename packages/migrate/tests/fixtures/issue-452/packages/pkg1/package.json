@@ -1,0 +1,16 @@
+{
+  "name": "pkg-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "dependencies": {
+    "pkg2": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "catalog:"
+  },
+  "scripts": {
+    "build": "tsup"
+  }
+}
