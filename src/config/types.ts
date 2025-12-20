@@ -564,7 +564,7 @@ export type ResolvedConfig = Overwrite<
       | 'removeNodeProtocol' // deprecated
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
-      | 'customLogger' // merge to `logger'
+      | 'customLogger' // merge to `logger`
     >,
     | 'globalName'
     | 'inputOptions'

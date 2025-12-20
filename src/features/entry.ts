@@ -2,7 +2,7 @@ import path from 'node:path'
 import picomatch from 'picomatch'
 import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
-import { slash } from '../utils/general.ts'
+import { slash, toArray } from '../utils/general.ts'
 import type { UserConfig } from '../config/index.ts'
 import type { Logger } from '../utils/logger.ts'
 import type { Ansis } from 'ansis'
@@ -52,29 +52,32 @@ export async function toObjectEntry(
         await Promise.all(
           Object.entries(entry).map(async ([key, value]) => {
             if (!key.includes('*')) {
-              const singleValue = Array.isArray(value) ? value[0] : value
-              return [[key, singleValue]]
+              if (Array.isArray(value)) {
+                throw new TypeError(
+                  `Object entry "${key}" cannot have an array value when the key is not a glob pattern.`,
+                )
+              }
+
+              return [[key, value]]
             }
 
-            const patterns = Array.isArray(value) ? value : [value]
-            const positivePatterns = patterns.filter((p) => !p.startsWith('!'))
+            const patterns = toArray(value)
 
+            const positivePatterns = patterns.filter((p) => !p.startsWith('!'))
             if (positivePatterns.length === 0) {
-              throw new Error(
+              throw new TypeError(
                 `Object entry "${key}" has no positive pattern. At least one positive pattern is required.`,
               )
             }
 
             if (positivePatterns.length > 1) {
-              throw new Error(
+              throw new TypeError(
                 `Object entry "${key}" has multiple positive patterns: ${positivePatterns.join(', ')}. ` +
                   `Only one positive pattern is allowed. Use negation patterns (prefixed with "!") to exclude files.`,
               )
             }
 
-            const positivePattern = positivePatterns[0]
-            const valueGlob = picomatch.scan(positivePattern.replace(/^!/, ''))
-
+            const valueGlob = picomatch.scan(positivePatterns[0])
             const files = await glob(patterns, {
               cwd,
               expandDirectories: false,
