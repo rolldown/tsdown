@@ -28,14 +28,14 @@ function normalizeChunkFileName(chunkFileName: string): string {
 /**
  * CSS Code Split Plugin
  *
- * When cssCodeSplit is true, this plugin merges all CSS files into a single file.
- * When cssCodeSplit is false (default), CSS code splitting is preserved.
+ * When cssCodeSplit is false, this plugin merges all CSS files into a single file.
+ * When cssCodeSplit is true (default), CSS code splitting is preserved.
  * Based on Vite's implementation.
  */
 export function CssCodeSplitPlugin(
   config: Pick<ResolvedConfig, 'cssCodeSplit'>,
 ): Plugin | undefined {
-  if (!config.cssCodeSplit) return undefined
+  if (config.cssCodeSplit) return undefined
 
   let hasEmitted = false
 

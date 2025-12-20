@@ -41,7 +41,7 @@ describe('css', () => {
     expect(outputFiles).toEqual(['style.css', 'style.js', 'style.d.ts'])
   })
 
-  test('merge css with cssCodeSplit: true', async (context) => {
+  test('merge css with cssCodeSplit: false', async (context) => {
     const { outputFiles, fileMap } = await testBuild({
       context,
       files: {
@@ -54,7 +54,7 @@ describe('css', () => {
         'async.css': `.async { color: blue }`,
       },
       options: {
-        cssCodeSplit: true,
+        cssCodeSplit: false,
       },
     })
 

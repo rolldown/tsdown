@@ -51,14 +51,14 @@ export default defineConfig({
 
 ## CSS 代码拆分
 
-默认情况下，CSS 代码拆分会被保留（`cssCodeSplit: false`），这意味着异步 JS chunks 中导入的 CSS 会保留为独立的 chunks。当设置为 `true` 时，项目中的所有 CSS 会合并到一个 `style.css` 文件中。
+默认情况下，CSS 代码拆分会被保留（`cssCodeSplit: true`），这意味着异步 JS chunks 中导入的 CSS 会保留为独立的 chunks。当设置为 `false` 时，项目中的所有 CSS 会合并到一个 `style.css` 文件中。
 
 ```ts
 export default defineConfig({
   entry: ['src/index.ts'],
-  cssCodeSplit: true, // 将所有 CSS 合并到 style.css
+  cssCodeSplit: false, // 将所有 CSS 合并到 style.css
 })
 ```
 
-**默认** (`cssCodeSplit: false`): 异步 JS chunks 中导入的 CSS 会保留为独立的 chunks。
-**启用 `cssCodeSplit: true`**: 所有 CSS 会合并到一个 `style.css` 文件中，按照 chunk 依赖关系排序。
+**默认** (`cssCodeSplit: true`): 异步 JS chunks 中导入的 CSS 会保留为独立的 chunks。
+**启用 `cssCodeSplit: false`**: 所有 CSS 会合并到一个 `style.css` 文件中，按照 chunk 依赖关系排序。

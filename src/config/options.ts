@@ -81,7 +81,7 @@ export async function resolveUserConfig(
     fixedExtension = platform === 'node',
     debug = false,
     write = true,
-    cssCodeSplit = false,
+    cssCodeSplit = true,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)

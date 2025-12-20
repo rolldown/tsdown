@@ -51,14 +51,14 @@ In this example, the ESM output will target ES2015, while the CJS output will ta
 
 ## CSS Code Splitting
 
-By default, CSS code splitting is preserved (`cssCodeSplit: false`), meaning CSS imported in async JS chunks will be preserved as separate chunks. When set to `true`, all CSS in the project is merged into a single `style.css` file.
+By default, CSS code splitting is preserved (`cssCodeSplit: true`), meaning CSS imported in async JS chunks will be preserved as separate chunks. When set to `false`, all CSS in the project is merged into a single `style.css` file.
 
 ```ts
 export default defineConfig({
   entry: ['src/index.ts'],
-  cssCodeSplit: true, // Merge all CSS into style.css
+  cssCodeSplit: false, // Merge all CSS into style.css
 })
 ```
 
-**Default** (`cssCodeSplit: false`): CSS imported in async JS chunks will be preserved as separate chunks.
-**With `cssCodeSplit: true`**: All CSS is merged into a single `style.css` file, ordered by chunk dependencies.
+**Default** (`cssCodeSplit: true`): CSS imported in async JS chunks will be preserved as separate chunks.
+**With `cssCodeSplit: false`**: All CSS is merged into a single `style.css` file, ordered by chunk dependencies.
