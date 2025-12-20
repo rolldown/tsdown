@@ -216,10 +216,10 @@ async function resolveInputOptions(
       logLevel: logger.level === 'error' ? 'silent' : logger.level,
       onLog: cjsDefault
         ? (level, log, defaultHandler) => {
-          // suppress mixed export warnings if cjsDefault is enabled
-          if (log.code === 'MIXED_EXPORT') return
-          defaultHandler(level, log)
-        }
+            // suppress mixed export warnings if cjsDefault is enabled
+            if (log.code === 'MIXED_EXPORT') return
+            defaultHandler(level, log)
+          }
         : undefined,
       debug: debug || undefined,
     },
@@ -324,7 +324,7 @@ function handlePluginInspect(plugins: RolldownPluginOption) {
     plugins !== null &&
     'name' in plugins
   ) {
-    ; (plugins as any)[util.inspect.custom] = function (
+    ;(plugins as any)[util.inspect.custom] = function (
       depth: number,
       options: InspectOptionsStylized,
       inspect: typeof util.inspect,
