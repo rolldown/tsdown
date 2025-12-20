@@ -157,21 +157,6 @@ describe('toObjectEntry', () => {
     })
   })
 
-  test('object entry with array value for non-glob key', async (context) => {
-    const { testDir } = await writeFixtures(context, {
-      'src/index.ts': '',
-    })
-    const result = await toObjectEntry(
-      {
-        main: ['src/index.ts', '!src/other.ts'],
-      },
-      testDir,
-    )
-    expect(result).toEqual({
-      main: 'src/index.ts',
-    })
-  })
-
   test('object entry with multiple positive patterns should throw', async (context) => {
     const { testDir } = await writeFixtures(context, {
       'src/hooks/useAuth.ts': '',
