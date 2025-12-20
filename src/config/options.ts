@@ -120,7 +120,7 @@ export async function resolveUserConfig(
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
 
-  entry = await resolveEntry(logger, entry, cwd, color, nameLabel)
+  const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
   if (dts == null) {
     dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
   }
@@ -227,7 +227,7 @@ export async function resolveUserConfig(
     cwd,
     debug,
     dts,
-    entry,
+    entry: resolvedEntry,
     env,
     exports,
     external,
