@@ -29,7 +29,6 @@ import type { Hookable } from 'hookable'
 import type { Options as PublintOptions } from 'publint'
 import type {
   ExternalOption,
-  InputOption,
   InputOptions,
   InternalModuleFormat,
   MinifyOptions,
@@ -44,6 +43,29 @@ import type { Options as UnusedOptions } from 'unplugin-unused'
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
 export type NormalizedFormat = InternalModuleFormat
+
+/**
+ * Extended input option that supports glob negation patterns.
+ *
+ * When using object form, values can be:
+ * - A single glob pattern string
+ * - An array of glob patterns, including negation patterns (prefixed with `!`)
+ *
+ * @example
+ * ```ts
+ * entry: {
+ *   // Single pattern
+ *   "utils/*": "./src/utils/*.ts",
+ *   // Array with negation pattern to exclude files
+ *   "hooks/*": ["./src/hooks/*.ts", "!./src/hooks/index.ts"],
+ * }
+ * ```
+ */
+export type TsdownInputOption =
+  | string
+  | string[]
+  | Record<string, string | string[]>
+
 export type {
   AttwOptions,
   BuildContext,
@@ -113,8 +135,16 @@ export interface UserConfig {
   // #region Input Options
   /**
    * Defaults to `'src/index.ts'` if it exists.
+   *
+   * Supports glob patterns with negation to exclude files:
+   * @example
+   * ```ts
+   * entry: {
+   *   "hooks/*": ["./src/hooks/*.ts", "!./src/hooks/index.ts"],
+   * }
+   * ```
    */
-  entry?: InputOption
+  entry?: TsdownInputOption
 
   external?: ExternalOption
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
@@ -553,6 +583,8 @@ export type ResolvedConfig = Overwrite<
     | 'footer'
   >,
   {
+    /** Resolved entry map (after glob expansion) */
+    entry: Record<string, string>
     nameLabel: string | undefined
     format: NormalizedFormat
     target?: string[]
