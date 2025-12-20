@@ -113,4 +113,91 @@ describe('toObjectEntry', () => {
       'src/bar': path.join(testDir, 'src/bar.ts'),
     })
   })
+
+  // #660
+  test('object entry with glob negation pattern', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/hooks/index.ts': '',
+      'src/hooks/useAuth.ts': '',
+      'src/hooks/useUser.ts': '',
+    })
+    const result = await toObjectEntry(
+      {
+        'hooks/*': ['src/hooks/*.ts', '!src/hooks/index.ts'],
+      },
+      testDir,
+    )
+    expect(result).toEqual({
+      'hooks/useAuth': path.join(testDir, 'src/hooks/useAuth.ts'),
+      'hooks/useUser': path.join(testDir, 'src/hooks/useUser.ts'),
+    })
+    expect(Object.keys(result)).not.toContain('hooks/index')
+  })
+
+  test('object entry with multiple negation patterns', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/utils/index.ts': '',
+      'src/utils/internal.ts': '',
+      'src/utils/helper.ts': '',
+      'src/utils/format.ts': '',
+    })
+    const result = await toObjectEntry(
+      {
+        'utils/*': [
+          'src/utils/*.ts',
+          '!src/utils/index.ts',
+          '!src/utils/internal.ts',
+        ],
+      },
+      testDir,
+    )
+    expect(result).toEqual({
+      'utils/helper': path.join(testDir, 'src/utils/helper.ts'),
+      'utils/format': path.join(testDir, 'src/utils/format.ts'),
+    })
+  })
+
+  test('object entry with array value for non-glob key', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+    })
+    const result = await toObjectEntry(
+      {
+        main: ['src/index.ts', '!src/other.ts'],
+      },
+      testDir,
+    )
+    expect(result).toEqual({
+      main: 'src/index.ts',
+    })
+  })
+
+  test('object entry with multiple positive patterns should throw', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/hooks/useAuth.ts': '',
+      'src/utils/helper.ts': '',
+    })
+    await expect(
+      toObjectEntry(
+        {
+          'lib/*': ['src/hooks/*.ts', 'src/utils/*.ts'],
+        },
+        testDir,
+      ),
+    ).rejects.toThrow(/multiple positive patterns/)
+  })
+
+  test('object entry with no positive pattern should throw', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/hooks/useAuth.ts': '',
+    })
+    await expect(
+      toObjectEntry(
+        {
+          'hooks/*': ['!src/hooks/index.ts'],
+        },
+        testDir,
+      ),
+    ).rejects.toThrow(/no positive pattern/)
+  })
 })

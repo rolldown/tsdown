@@ -39,7 +39,7 @@ export async function resolveEntry(
 }
 
 export async function toObjectEntry(
-  entry: string | string[] | Record<string, string>,
+  entry: string | string[] | Record<string, string | string[]>,
   cwd: string,
 ): Promise<Record<string, string>> {
   if (typeof entry === 'string') {
@@ -51,10 +51,31 @@ export async function toObjectEntry(
       (
         await Promise.all(
           Object.entries(entry).map(async ([key, value]) => {
-            if (!key.includes('*')) return [[key, value]]
+            if (!key.includes('*')) {
+              const singleValue = Array.isArray(value) ? value[0] : value
+              return [[key, singleValue]]
+            }
 
-            const valueGlob = picomatch.scan(value)
-            const files = await glob(value, {
+            const patterns = Array.isArray(value) ? value : [value]
+            const positivePatterns = patterns.filter((p) => !p.startsWith('!'))
+
+            if (positivePatterns.length === 0) {
+              throw new Error(
+                `Object entry "${key}" has no positive pattern. At least one positive pattern is required.`,
+              )
+            }
+
+            if (positivePatterns.length > 1) {
+              throw new Error(
+                `Object entry "${key}" has multiple positive patterns: ${positivePatterns.join(', ')}. ` +
+                  `Only one positive pattern is allowed. Use negation patterns (prefixed with "!") to exclude files.`,
+              )
+            }
+
+            const positivePattern = positivePatterns[0]
+            const valueGlob = picomatch.scan(positivePattern.replace(/^!/, ''))
+
+            const files = await glob(patterns, {
               cwd,
               expandDirectories: false,
             })
