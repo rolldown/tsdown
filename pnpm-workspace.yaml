@@ -62,7 +62,7 @@ catalogs:
     defu: ^6.1.4
     empathic: ^2.0.0
     hookable: ^5.5.3
-    import-without-cache: ^0.2.4
+    import-without-cache: ^0.2.5
     is-in-ci: ^2.0.0
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
