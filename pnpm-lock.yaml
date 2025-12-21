@@ -152,6 +152,9 @@ catalogs:
     defu:
       specifier: ^6.1.4
       version: 6.1.4
+    dotenv:
+      specifier: ^17.2.3
+      version: 17.2.3
     empathic:
       specifier: ^2.0.0
       version: 2.0.0
@@ -212,6 +215,9 @@ importers:
       defu:
         specifier: catalog:prod
         version: 6.1.4
+      dotenv:
+        specifier: catalog:prod
+        version: 17.2.3
       empathic:
         specifier: catalog:prod
         version: 2.0.0
