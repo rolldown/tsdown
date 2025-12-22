@@ -59,7 +59,7 @@ export interface AttwOptions extends CheckPackageOptions {
   /**
    * List of problem types to ignore.
    *
-   * @see problemFlags
+   * @see {@link problemFlags}
    */
   ignoreRules?: (typeof problemFlags)[keyof typeof problemFlags][]
 }
