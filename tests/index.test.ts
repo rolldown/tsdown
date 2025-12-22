@@ -333,6 +333,61 @@ test('env flag', async (context) => {
   expect(snapshot).contains('const debug = true')
 })
 
+test('env-file flag', async (context) => {
+  const files = {
+    'index.ts': `export const foo = import.meta.env.TSDOWN_FOO
+    export const bar = import.meta.env.TSDOWN_BAR
+    export const custom = import.meta.env.CUSTOM
+    export const debug = process.env.DEBUG
+    `,
+    '.env': `TSDOWN_FOO=bar
+    TSDOWN_BAR=baz`
+  }
+  const { snapshot } = await testBuild({
+    context,
+    files,
+    options: {
+      env: {
+        CUSTOM: 'tsdown',
+        DEBUG: true,
+        TSDOWN_BAR: 'override',
+      },
+      envFile: '.env',
+    },
+  })
+  expect(snapshot).contains('const foo = "bar"')
+  expect(snapshot).contains('const bar = "override"', "Env var from --env should override .env file")
+  expect(snapshot).contains('const custom = "tsdown"')
+  expect(snapshot).contains('const debug = true')
+})
+
+test('env-prefix flag', async (context) => {
+  const files = {
+    'index.ts': `export const foo = import.meta.env.MYAPP_FOO
+    export const bar = import.meta.env.TSDOWN_BAR
+    export const custom = import.meta.env.CUSTOM
+    `,
+    '.env': `MYAPP_FOO=foo
+    TSDOWN_BAR=bar
+    `
+  }
+  const { snapshot } = await testBuild({
+    context,
+    files,
+    options: {
+      env: {
+        MYAPP_FOO: 'foo',
+        TSDOWN_BAR: 'bar',
+      },
+      envFile: '.env',
+      envPrefix: ['MYAPP_', 'TSDOWN_'],
+    },
+  })
+  expect(snapshot).contains('const foo = "foo"')
+  expect(snapshot).contains('const bar = "bar"')
+  expect(snapshot).contains('const custom = import.meta.env.CUSTOM', "Unmatched prefix env var should not be replaced")
+})
+
 test('minify', async (context) => {
   const files = { 'index.ts': `export const foo = true` }
   const { snapshot } = await testBuild({
