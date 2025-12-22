@@ -1,9 +1,8 @@
-import fs from 'node:fs'
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import process from 'node:process'
+import process, { loadEnvFile } from 'node:process'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
-import { parse } from 'dotenv'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
@@ -174,9 +173,8 @@ export async function resolveUserConfig(
   }
 
   if (envFile) {
-    // MARK: -  handling envFile
     const resolvedPath = path.resolve(cwd, envFile)
-    const envFromFile = loadEnvFile(resolvedPath, toArray(envPrefix), logger)
+    const envFromFile = await loadEnv(resolvedPath, toArray(envPrefix), logger)
     env = { ...envFromFile, ...env }
     logger.info(
       nameLabel,
@@ -302,9 +300,9 @@ export async function resolveUserConfig(
   })
 }
 
-function loadEnvFile(filePath: string, envPrefixes: string[], logger: Logger) {
+async function loadEnv(filePath: string, envPrefixes: string[], logger: Logger) {
   const env: Record<string, string> = {}
-  const parsed = parse(fs.readFileSync(filePath))
+  loadEnvFile(await readFile(filePath, 'utf-8'))
 
   if (envPrefixes.includes('')) {
     logger.warn(
@@ -312,9 +310,9 @@ function loadEnvFile(filePath: string, envPrefixes: string[], logger: Logger) {
     )
   }
   // filter env variables by prefixes
-  for (const [key, value] of Object.entries(parsed)) {
+  for (const [key, value] of Object.entries(process.env)) {
     if (envPrefixes.some((prefix) => key.startsWith(prefix))) {
-      env[key] = value
+      value !== undefined && (env[key] = value)
     }
   }
 
