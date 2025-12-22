@@ -94,7 +94,7 @@ export async function attw(options: ResolvedConfig): Promise<void> {
   )
   if (invalid) {
     options.logger.warn(
-      `attw config option 'ignoreRules' argument '${invalid}' is invalid. Allowed choices are ${Object.values(
+      `attw config option 'ignoreRules' contains invalid value '${invalid}'. Allowed values are: ${Object.values(
         problemFlags,
       ).join(', ')}.`,
     )
