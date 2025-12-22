@@ -1,8 +1,9 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import fs from 'node:fs'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
+import { parse } from 'dotenv'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
@@ -17,7 +18,12 @@ import {
   resolveRegex,
   toArray,
 } from '../utils/general.ts'
-import { createLogger, generateColor, getNameLabel, type Logger } from '../utils/logger.ts'
+import {
+  createLogger,
+  generateColor,
+  getNameLabel,
+  type Logger,
+} from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
@@ -29,7 +35,6 @@ import type {
   UserConfig,
   WithEnabled,
 } from './types.ts'
-import { parse } from 'dotenv'
 
 const debugLog = createDebug('tsdown:config:options')
 
@@ -168,8 +173,11 @@ export async function resolveUserConfig(
     }
   }
 
-  if (envFile) {  // MARK: -  handling envFile
-    const resolvedPath = path.isAbsolute(envFile) ? envFile : path.resolve(cwd, envFile)
+  if (envFile) {
+    // MARK: -  handling envFile
+    const resolvedPath = path.isAbsolute(envFile)
+      ? envFile
+      : path.resolve(cwd, envFile)
     const envFromFile = loadEnvFile(resolvedPath, toArray(envPrefix), logger)
     env = { ...envFromFile, ...env }
     logger.info(
@@ -177,7 +185,10 @@ export async function resolveUserConfig(
       `Loaded environment variables from ${color(resolvedPath)}`,
     )
   }
-  debugLog(`Marged environment variables: %O`, Object.entries(env).map(([k, v]) => `${k}=${v}`))
+  debugLog(
+    `Marged environment variables: %O`,
+    Object.entries(env).map(([k, v]) => `${k}=${v}`),
+  )
 
   if (fromVite) {
     const viteUserConfig = await loadViteConfig(
@@ -298,12 +309,14 @@ function loadEnvFile(filePath: string, envPrefixes: string[], logger: Logger) {
   const env: Record<string, string> = {}
   const parsed = parse(fs.readFileSync(filePath))
 
-  if (envPrefixes.some(prefix => prefix === '')) {
-    logger.warn('envPrefix contains empty string, which could lead to unintentional injection of all variables from env file.')
+  if (envPrefixes.includes('')) {
+    logger.warn(
+      'envPrefix contains empty string, which could lead to unintentional injection of all variables from env file.',
+    )
   }
   // filter env variables by prefixes
   for (const [key, value] of Object.entries(parsed)) {
-    if (envPrefixes.some(prefix => key.startsWith(prefix))) {
+    if (envPrefixes.some((prefix) => key.startsWith(prefix))) {
       env[key] = value
     }
   }

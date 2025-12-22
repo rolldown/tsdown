@@ -341,7 +341,7 @@ test('env-file flag', async (context) => {
     export const debug = process.env.DEBUG
     `,
     '.env': `TSDOWN_FOO=bar
-    TSDOWN_BAR=baz`
+    TSDOWN_BAR=baz`,
   }
   const { snapshot } = await testBuild({
     context,
@@ -356,7 +356,10 @@ test('env-file flag', async (context) => {
     },
   })
   expect(snapshot).contains('const foo = "bar"')
-  expect(snapshot).contains('const bar = "override"', "Env var from --env should override .env file")
+  expect(snapshot).contains(
+    'const bar = "override"',
+    'Env var from --env should override .env file',
+  )
   expect(snapshot).contains('const custom = "tsdown"')
   expect(snapshot).contains('const debug = true')
 })
@@ -369,7 +372,7 @@ test('env-prefix flag', async (context) => {
     `,
     '.env': `MYAPP_FOO=foo
     TSDOWN_BAR=bar
-    `
+    `,
   }
   const { snapshot } = await testBuild({
     context,
@@ -385,7 +388,10 @@ test('env-prefix flag', async (context) => {
   })
   expect(snapshot).contains('const foo = "foo"')
   expect(snapshot).contains('const bar = "bar"')
-  expect(snapshot).contains('const custom = import.meta.env.CUSTOM', "Unmatched prefix env var should not be replaced")
+  expect(snapshot).contains(
+    'const custom = import.meta.env.CUSTOM',
+    'Unmatched prefix env var should not be replaced',
+  )
 })
 
 test('minify', async (context) => {
