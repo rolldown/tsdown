@@ -470,7 +470,7 @@ export interface UserConfig {
   /**
    * Configure CSS generation options.
    */
-  css?: WithEnabled<CssOptions>
+  css?: CssOptions
 
   /**
    * @deprecated Alias for `copy`, will be removed in the future.
@@ -569,7 +569,7 @@ export type ResolvedConfig = Overwrite<
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
-    css: false | CssOptions
+    css: CssOptions
 
     dts: false | DtsOptions
     report: false | ReportOptions

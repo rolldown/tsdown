@@ -78,7 +78,7 @@ export async function resolveUserConfig(
     cjsDefault = true,
     globImport = true,
     inlineOnly,
-    css = false,
+    css = { splitting: true },
     fixedExtension = platform === 'node',
     debug = false,
     write = true,
@@ -140,7 +140,6 @@ export async function resolveUserConfig(
   unused = resolveFeatureOption(unused, {})
   report = resolveFeatureOption(report, {})
   dts = resolveFeatureOption(dts, {})
-  css = resolveFeatureOption(css, {})
 
   if (!pkg) {
     if (exports) {

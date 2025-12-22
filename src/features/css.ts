@@ -50,9 +50,8 @@ function normalizeChunkFileName(chunkFileName: string): string {
 export function CssCodeSplitPlugin(
   config: Pick<ResolvedConfig, 'css'>,
 ): Plugin | undefined {
-  if (config.css === false || config.css?.splitting) return undefined
-
-  const cssFileName = config.css?.fileName ?? defaultCssBundleName
+  const { splitting = true, fileName = defaultCssBundleName } = config.css
+  if (splitting) return undefined
 
   let hasEmitted = false
 
@@ -165,7 +164,7 @@ export function CssCodeSplitPlugin(
         this.emitFile({
           type: 'asset',
           source: extractedCss,
-          fileName: cssFileName,
+          fileName,
           // this file is an implicit entry point, use `style.css` as the original file name
           originalFileName: defaultCssBundleName,
         })
