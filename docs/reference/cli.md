@@ -186,7 +186,7 @@ Note that environment variables defined with `--env.VAR_NAME` can only be access
 Load environment variables from a file. When used together with `--env`, variables in `--env` take precedence.
 
 :::tip
-To prevent accidental exposure of sensitive information, only environment variables prefixed with `TSDOWN_` are injected by default. You can customize this behavior using the [`--env-prefix`](#env-prefix) flag.
+To prevent accidental exposure of sensitive information, only environment variables prefixed with `TSDOWN_` are injected by default. You can customize this behavior using the [`--env-prefix`](#env-prefix-prefix) flag.
 :::
 
 ```bash
