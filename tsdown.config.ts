@@ -1,3 +1,4 @@
+import { DtsSnapshot } from 'rolldown-plugin-dts-snapshot'
 import { RequireCJS } from 'rolldown-plugin-require-cjs'
 import { defineConfig } from './src/config.ts'
 
@@ -8,6 +9,11 @@ export default defineConfig([
     inlineOnly: ['is-in-ci'],
     platform: 'node',
     failOnWarn: 'ci-only',
+    dts: {
+      oxc: {
+        stripInternal: true,
+      },
+    },
     unused: {
       level: 'error',
       ignore: [
@@ -25,7 +31,7 @@ export default defineConfig([
         return exports
       },
     },
-    plugins: [RequireCJS()],
+    plugins: [RequireCJS(), DtsSnapshot()],
     onSuccess() {
       console.info('🙏 Build succeeded!')
     },

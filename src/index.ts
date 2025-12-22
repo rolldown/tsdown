@@ -120,7 +120,7 @@ export async function build(
  *
  * Internal API, not for public use
  *
- * @private
+ * @internal
  * @param config Resolved options
  */
 export async function buildSingle(

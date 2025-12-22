@@ -131,6 +131,7 @@
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",
+    "rolldown-plugin-dts-snapshot": "catalog:dev",
     "rolldown-plugin-require-cjs": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
