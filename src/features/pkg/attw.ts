@@ -11,10 +11,26 @@ import type {
   CheckPackageOptions,
   CheckResult,
   Problem,
+  ProblemKind,
 } from '@arethetypeswrong/core'
 
 const debug = createDebug('tsdown:attw')
 const label = dim`[attw]`
+
+const problemFlags: Record<ProblemKind, string> = {
+  NoResolution: 'no-resolution',
+  UntypedResolution: 'untyped-resolution',
+  FalseCJS: 'false-cjs',
+  FalseESM: 'false-esm',
+  CJSResolvesToESM: 'cjs-resolves-to-esm',
+  FallbackCondition: 'fallback-condition',
+  CJSOnlyExportsDefault: 'cjs-only-exports-default',
+  NamedExports: 'named-exports',
+  FalseExportDefault: 'false-export-default',
+  MissingExportEquals: 'missing-export-equals',
+  UnexpectedModuleSyntax: 'unexpected-module-syntax',
+  InternalResolutionError: 'internal-resolution-error',
+}
 
 export interface AttwOptions extends CheckPackageOptions {
   /**
@@ -39,6 +55,33 @@ export interface AttwOptions extends CheckPackageOptions {
    * @default 'warn'
    */
   level?: 'error' | 'warn'
+
+  /**
+   * List of problem types to ignore by rule name.
+   *
+   * These rule names correspond to the string values in the {@link problemFlags} mapping above.
+   * The available values are:
+   * - `no-resolution`
+   * - `untyped-resolution`
+   * - `false-cjs`
+   * - `false-esm`
+   * - `cjs-resolves-to-esm`
+   * - `fallback-condition`
+   * - `cjs-only-exports-default`
+   * - `named-exports`
+   * - `false-export-default`
+   * - `missing-export-equals`
+   * - `unexpected-module-syntax`
+   * - `internal-resolution-error`
+   *
+   * Example:
+   * ```ts
+   * ignoreRules: ['no-resolution', 'false-cjs']
+   * ```
+   *
+   * @see {@link problemFlags}
+   */
+  ignoreRules?: (typeof problemFlags)[keyof typeof problemFlags][]
 }
 
 /**
@@ -59,7 +102,21 @@ export async function attw(options: ResolvedConfig): Promise<void> {
     options.logger.warn('attw is enabled but package.json is not found')
     return
   }
-  const { profile = 'strict', level = 'warn', ...attwOptions } = options.attw
+  const {
+    profile = 'strict',
+    level = 'warn',
+    ignoreRules = [],
+    ...attwOptions
+  } = options.attw
+
+  const invalidRules = ignoreRules.filter(
+    (rule) => !Object.values(problemFlags).includes(rule),
+  )
+  if (invalidRules.length) {
+    options.logger.warn(
+      `attw config option 'ignoreRules' contains invalid value '${invalidRules.join(', ')}'.`,
+    )
+  }
 
   const t = performance.now()
   debug('Running attw check')
@@ -96,6 +153,11 @@ export async function attw(options: ResolvedConfig): Promise<void> {
   let errorMessage: string | undefined
   if (checkResult.types) {
     const problems = checkResult.problems.filter((problem) => {
+      // Exclude ignored problem kinds
+      if (ignoreRules.includes(problemFlags[problem.kind])) {
+        return false
+      }
+
       // Only apply profile filter to problems that have resolutionKind
       if ('resolutionKind' in problem) {
         return !profiles[profile]?.includes(problem.resolutionKind)
