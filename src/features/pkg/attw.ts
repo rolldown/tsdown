@@ -109,14 +109,12 @@ export async function attw(options: ResolvedConfig): Promise<void> {
     ...attwOptions
   } = options.attw
 
-  const invalid = ignoreRules.find(
+  const invalidRules = ignoreRules.filter(
     (rule) => !Object.values(problemFlags).includes(rule),
   )
-  if (invalid) {
+  if (invalidRules.length) {
     options.logger.warn(
-      `attw config option 'ignoreRules' contains invalid value '${invalid}'. Allowed values are: ${Object.values(
-        problemFlags,
-      ).join(', ')}.`,
+      `attw config option 'ignoreRules' contains invalid value '${invalidRules.join(', ')}'.`,
     )
   }
 
