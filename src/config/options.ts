@@ -175,9 +175,7 @@ export async function resolveUserConfig(
 
   if (envFile) {
     // MARK: -  handling envFile
-    const resolvedPath = path.isAbsolute(envFile)
-      ? envFile
-      : path.resolve(cwd, envFile)
+    const resolvedPath = path.resolve(cwd, envFile)
     const envFromFile = loadEnvFile(resolvedPath, toArray(envPrefix), logger)
     env = { ...envFromFile, ...env }
     logger.info(
