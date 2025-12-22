@@ -41,7 +41,7 @@ describe('css', () => {
     expect(outputFiles).toEqual(['style.css', 'style.js', 'style.d.ts'])
   })
 
-  test('merge css with cssCodeSplit: false', async (context) => {
+  test('merge css with css.splitting: false and css.fileName', async (context) => {
     const { outputFiles, fileMap } = await testBuild({
       context,
       files: {
@@ -54,17 +54,20 @@ describe('css', () => {
         'async.css': `.async { color: blue }`,
       },
       options: {
-        cssCodeSplit: false,
+        css: {
+          splitting: false,
+          fileName: 'index.css',
+        },
       },
     })
 
     // Should have merged all CSS into style.css and removed individual CSS files
-    expect(outputFiles).toContain('style.css')
-    expect(outputFiles).not.toContain('index.css')
+    expect(outputFiles).toContain('index.css')
+    expect(outputFiles).not.toContain('style.css')
     expect(outputFiles.filter((f) => f.endsWith('.css')).length).toBe(1)
 
     // Merged CSS should contain both entry and async CSS
-    expect(fileMap['style.css']).toContain('body { color: red }')
-    expect(fileMap['style.css']).toContain('.async { color: blue }')
+    expect(fileMap['index.css']).toContain('body { color: red }')
+    expect(fileMap['index.css']).toContain('.async { color: blue }')
   })
 })

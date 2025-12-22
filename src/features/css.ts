@@ -1,6 +1,21 @@
 import type { ResolvedConfig } from '../config/index.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
+export interface CssOptions {
+  /**
+   * Enable/disable CSS code splitting.
+   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file.
+   * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
+   * @default true
+   */
+  splitting?: boolean
+  /**
+   * Specify the name of the CSS file.
+   * @default 'style.css'
+   */
+  fileName?: string
+}
+
 // Regular expressions for file matching
 const RE_CSS = /\.css$/
 const RE_CSS_HASH = /-[\w-]+\.css$/
@@ -28,14 +43,16 @@ function normalizeChunkFileName(chunkFileName: string): string {
 /**
  * CSS Code Split Plugin
  *
- * When cssCodeSplit is false, this plugin merges all CSS files into a single file.
- * When cssCodeSplit is true (default), CSS code splitting is preserved.
+ * When css.splitting is false, this plugin merges all CSS files into a single file.
+ * When css.splitting is true (default), CSS code splitting is preserved.
  * Based on Vite's implementation.
  */
 export function CssCodeSplitPlugin(
-  config: Pick<ResolvedConfig, 'cssCodeSplit'>,
+  config: Pick<ResolvedConfig, 'css'>,
 ): Plugin | undefined {
-  if (config.cssCodeSplit) return undefined
+  if (config.css === false || config.css?.splitting) return undefined
+
+  const cssFileName = config.css?.fileName ?? defaultCssBundleName
 
   let hasEmitted = false
 
@@ -148,7 +165,8 @@ export function CssCodeSplitPlugin(
         this.emitFile({
           type: 'asset',
           source: extractedCss,
-          fileName: defaultCssBundleName,
+          fileName: cssFileName,
+          // this file is an implicit entry point, use `style.css` as the original file name
           originalFileName: defaultCssBundleName,
         })
       }

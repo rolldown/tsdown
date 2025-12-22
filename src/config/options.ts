@@ -78,10 +78,10 @@ export async function resolveUserConfig(
     cjsDefault = true,
     globImport = true,
     inlineOnly,
+    css = false,
     fixedExtension = platform === 'node',
     debug = false,
     write = true,
-    cssCodeSplit = true,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -140,6 +140,7 @@ export async function resolveUserConfig(
   unused = resolveFeatureOption(unused, {})
   report = resolveFeatureOption(report, {})
   dts = resolveFeatureOption(dts, {})
+  css = resolveFeatureOption(css, {})
 
   if (!pkg) {
     if (exports) {
@@ -225,7 +226,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
-    cssCodeSplit,
+    css,
     cwd,
     debug,
     dts,

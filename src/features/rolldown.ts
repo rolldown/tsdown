@@ -22,7 +22,7 @@ import type {
   ResolvedConfig,
   TsdownBundle,
 } from '../config/index.ts'
-import { CssCodeSplitPlugin } from './css-code-split.ts'
+import { CssCodeSplitPlugin } from './css.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
@@ -159,7 +159,7 @@ async function resolveInputOptions(
         await LightningCSSPlugin({ target }),
       )
     }
-    // Add CSS code split plugin after LightningCSS to merge generated CSS files when cssCodeSplit is false
+    // Add CSS code split plugin after LightningCSS to merge generated CSS files
     const cssPlugin = CssCodeSplitPlugin(config)
     if (cssPlugin) {
       plugins.push(cssPlugin)

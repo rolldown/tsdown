@@ -4,6 +4,14 @@
 export {  };
 ```
 
+## index.css
+
+```css
+body { color: red }
+.async { color: blue }
+
+```
+
 ## index.mjs
 
 ```mjs
@@ -12,12 +20,4 @@ const loadAsync = () => import("./async-CvIfFAic.mjs");
 
 //#endregion
 export { loadAsync };
-```
-
-## style.css
-
-```css
-body { color: red }
-.async { color: blue }
-
 ```

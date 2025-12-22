@@ -1,4 +1,5 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
+import type { CssOptions } from '../features/css.ts'
 import type { DebugOptions } from '../features/debug.ts'
 import type {
   BuildContext,
@@ -467,12 +468,9 @@ export interface UserConfig {
   exports?: WithEnabled<ExportsOptions>
 
   /**
-   * Enable/disable CSS code splitting.
-   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file.
-   * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
-   * @default true
+   * Configure CSS generation options.
    */
-  cssCodeSplit?: boolean
+  css?: WithEnabled<CssOptions>
 
   /**
    * @deprecated Alias for `copy`, will be removed in the future.
@@ -571,7 +569,7 @@ export type ResolvedConfig = Overwrite<
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
-    cssCodeSplit: boolean
+    css: false | CssOptions
 
     dts: false | DtsOptions
     report: false | ReportOptions
