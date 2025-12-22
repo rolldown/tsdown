@@ -48,17 +48,3 @@ export default defineConfig({
 ```
 
 In this example, the ESM output will target ES2015, while the CJS output will target Node.js 20. This approach gives you fine-grained control over the build process for different module formats.
-
-## CSS Code Splitting
-
-By default, CSS code splitting is preserved (`cssCodeSplit: true`), meaning CSS imported in async JS chunks will be preserved as separate chunks. When set to `false`, all CSS in the project is merged into a single `style.css` file.
-
-```ts
-export default defineConfig({
-  entry: ['src/index.ts'],
-  cssCodeSplit: false, // Merge all CSS into style.css
-})
-```
-
-**Default** (`cssCodeSplit: true`): CSS imported in async JS chunks will be preserved as separate chunks.
-**With `cssCodeSplit: false`**: All CSS is merged into a single `style.css` file, ordered by chunk dependencies.

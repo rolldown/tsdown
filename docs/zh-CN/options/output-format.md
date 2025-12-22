@@ -48,17 +48,3 @@ export default defineConfig({
 ```
 
 在此示例中，ESM 输出将以 ES2015 为目标，CJS 输出将以 Node.js 20 为目标。通过这种方式，您可以对不同模块格式的构建过程进行精细化控制。
-
-## CSS 代码拆分
-
-默认情况下，CSS 代码拆分会被保留（`cssCodeSplit: true`），这意味着异步 JS chunks 中导入的 CSS 会保留为独立的 chunks。当设置为 `false` 时，项目中的所有 CSS 会合并到一个 `style.css` 文件中。
-
-```ts
-export default defineConfig({
-  entry: ['src/index.ts'],
-  cssCodeSplit: false, // 将所有 CSS 合并到 style.css
-})
-```
-
-**默认** (`cssCodeSplit: true`): 异步 JS chunks 中导入的 CSS 会保留为独立的 chunks。
-**启用 `cssCodeSplit: false`**: 所有 CSS 会合并到一个 `style.css` 文件中，按照 chunk 依赖关系排序。
