@@ -57,7 +57,27 @@ export interface AttwOptions extends CheckPackageOptions {
   level?: 'error' | 'warn'
 
   /**
-   * List of problem types to ignore.
+   * List of problem types to ignore by rule name.
+   *
+   * These rule names correspond to the string values in the {@link problemFlags} mapping above.
+   * The available values are:
+   * - `no-resolution`
+   * - `untyped-resolution`
+   * - `false-cjs`
+   * - `false-esm`
+   * - `cjs-resolves-to-esm`
+   * - `fallback-condition`
+   * - `cjs-only-exports-default`
+   * - `named-exports`
+   * - `false-export-default`
+   * - `missing-export-equals`
+   * - `unexpected-module-syntax`
+   * - `internal-resolution-error`
+   *
+   * Example:
+   * ```ts
+   * ignoreRules: ['no-resolution', 'false-cjs']
+   * ```
    *
    * @see {@link problemFlags}
    */
