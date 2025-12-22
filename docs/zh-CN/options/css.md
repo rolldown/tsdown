@@ -35,4 +35,3 @@ export default defineConfig({
 ```
 
 默认情况下（`splitting: true`），CSS 代码拆分会被保留。禁用后，所有 CSS 会合并到一个文件中（默认为 `style.css` 或指定的 `fileName`）。
-

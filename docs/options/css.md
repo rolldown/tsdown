@@ -35,4 +35,3 @@ export default defineConfig({
 ```
 
 By default (`splitting: true`), CSS code splitting is preserved. When disabled, all CSS is merged into a single file (defaults to `style.css` or the specified `fileName`).
-
