@@ -253,7 +253,6 @@ export async function resolveUserConfig(
     dts,
     entry: resolvedEntry,
     env,
-    envPrefix,
     exports,
     external,
     fixedExtension,

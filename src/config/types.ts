@@ -124,9 +124,9 @@ export type WithEnabled<T> =
   | undefined
   | CIOption
   | (T & {
-      /** @default true */
-      enabled?: boolean | CIOption
-    })
+    /** @default true */
+    enabled?: boolean | CIOption
+  })
 
 /**
  * Options for tsdown.
@@ -288,12 +288,12 @@ export interface UserConfig {
    * Use with caution; ensure you understand the implications.
    */
   inputOptions?:
-    | InputOptions
-    | ((
-        options: InputOptions,
-        format: NormalizedFormat,
-        context: { cjsDts: boolean },
-      ) => Awaitable<InputOptions | void | null>)
+  | InputOptions
+  | ((
+    options: InputOptions,
+    format: NormalizedFormat,
+    context: { cjsDts: boolean },
+  ) => Awaitable<InputOptions | void | null>)
 
   //#region Output Options
 
@@ -375,12 +375,12 @@ export interface UserConfig {
    * Use with caution; ensure you understand the implications.
    */
   outputOptions?:
-    | OutputOptions
-    | ((
-        options: OutputOptions,
-        format: NormalizedFormat,
-        context: { cjsDts: boolean },
-      ) => Awaitable<OutputOptions | void | null>)
+  | OutputOptions
+  | ((
+    options: OutputOptions,
+    format: NormalizedFormat,
+    context: { cjsDts: boolean },
+  ) => Awaitable<OutputOptions | void | null>)
 
   //#region CLI Options
 
@@ -451,8 +451,8 @@ export interface UserConfig {
    * You can specify command to be executed after a successful build, specially useful for Watch mode
    */
   onSuccess?:
-    | string
-    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
+  | string
+  | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
   /**
    * Enables generation of TypeScript declaration files (`.d.ts`).
@@ -528,8 +528,8 @@ export interface UserConfig {
   copy?: CopyOptions | CopyOptionsFn
 
   hooks?:
-    | Partial<TsdownHooks>
-    | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
+  | Partial<TsdownHooks>
+  | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
 
   /**
    * **[experimental]** Enable workspace mode.
@@ -577,6 +577,7 @@ export type ResolvedConfig = Overwrite<
       | 'failOnWarn' // merge to `logger`
       | 'customLogger' // merge to `logger`
       | 'envFile' // merged to `env`
+      | 'envPrefix' // merged to `env`
     >,
     | 'globalName'
     | 'inputOptions'
