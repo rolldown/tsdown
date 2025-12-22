@@ -128,12 +128,7 @@ cli
   })
 
 export async function runCLI(): Promise<void> {
-  // prevent CAC from treating '--' as its own option
-  cli.parse(
-    process.argv.filter((arg) => arg !== '--'),
-    { run: false },
-  )
-
+  cli.parse(process.argv, { run: false })
   enableDebugLog(cli.options)
 
   try {
