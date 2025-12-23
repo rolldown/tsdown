@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
-import { parseEnv } from 'node:util'
 import path from 'node:path'
 import process from 'node:process'
+import { parseEnv } from 'node:util'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
@@ -18,11 +18,7 @@ import {
   resolveRegex,
   toArray,
 } from '../utils/general.ts'
-import {
-  createLogger,
-  generateColor,
-  getNameLabel,
-} from '../utils/logger.ts'
+import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
@@ -182,7 +178,7 @@ export async function resolveUserConfig(
 
   if (envFile) {
     const resolvedPath = path.resolve(cwd, envFile)
-    let parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
+    const parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
     const envFromFile = filterEnv(parsed, envPrefix)
     env = { ...envFromFile, ...envFromProcess, ...env } // precedence: explicit CLI option > process > file
     logger.info(
