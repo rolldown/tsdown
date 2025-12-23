@@ -79,7 +79,8 @@ bun add -D rollup-plugin-svelte svelte svelte-preprocess
 
 ::: tip
 tsdown 使用要点：
+
 - 在 `tsdown` 中将 `svelte`/`svelte/*` 标记为 external，并在 `peerDependencies` 中声明 `svelte`。
 - 使用 `rollup-plugin-svelte` 做预处理与打包整合，保持 `.svelte` 以源码形态分发。
 - 配合 `svelte2tsx` 生成 `.d.ts`，并与 `exports` 子路径导出保持一致。
-:::
+  :::

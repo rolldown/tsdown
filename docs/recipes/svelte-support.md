@@ -79,7 +79,8 @@ For detailed packaging configuration (e.g. `exports`, `types`, `files`, `sideEff
 
 ::: tip
 tsdown essentials:
+
 - Mark `svelte`/`svelte/*` as external in `tsdown` and declare `svelte` in `peerDependencies`.
 - Use `rollup-plugin-svelte` for preprocessing/integration and keep `.svelte` in source form for distribution.
 - Use `svelte2tsx` to emit `.d.ts` aligned with your `exports` subpath exports.
-:::
+  :::
