@@ -182,7 +182,7 @@ export async function resolveUserConfig(
 
   if (envFile) {
     const resolvedPath = path.resolve(cwd, envFile)
-    let parsed = parseEnv(await readFile(resolvedPath, 'utf-8'))
+    let parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
     const envFromFile = filterEnv(parsed, envPrefix)
     env = { ...envFromFile, ...envFromProcess, ...env } // precedence: explicit CLI option > process > file
     logger.info(
