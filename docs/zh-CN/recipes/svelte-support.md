@@ -58,3 +58,28 @@ bun add -D rollup-plugin-svelte svelte svelte-preprocess
 为 Svelte 组件生成 `.d.ts` 通常需要集成 [`svelte2tsx`](https://www.npmjs.com/package/svelte2tsx)。推荐使用 Svelte 专用模板，其中包含基于 `svelte2tsx` 的声明文件生成步骤，在打包后输出声明文件。
 
 :::
+
+## 分发建议
+
+综合实践与官方建议（参见 SvelteKit 文档「[Packaging](https://svelte.dev/docs/kit/packaging)」），不推荐将 Svelte 组件库预编译为 JS 分发。推荐直接分发 `.svelte` 源码，由使用者的 Svelte 工具链（如 Vite + `@sveltejs/vite-plugin-svelte`）在其项目内编译。
+
+不推荐“编译为 JS 后分发”的主要原因：
+
+- 版本兼容性：预编译 JS 绑定到特定的编译器与 `svelte/internal` 版本，和使用者项目版本不一致时容易引发运行时或 SSR/Hydration 问题。
+- SSR/Hydration 一致性：库侧的编译选项（`generate`、`hydratable`、`dev` 等）若与应用侧不一致，易出现复水不匹配。
+- 工具链优化与体验：源码形态能获得更好的 HMR、警告定位、样式处理与摇树优化；纯 JS 产物可能会丢失这些能力。
+- 维护成本：Svelte 升级时，不需要频繁重发“已锁死编译器版本”的 JS 产物。
+
+何时可以考虑 JS 分发（例外）：
+
+- 需要提供非 Svelte 环境可直接使用的组件（例如编译为 `customElement` 的 Web Component）。
+- 通过 CDN 直接加载、无构建流程的场景。
+
+更多配置细节（如 `exports`、`types`、`files`、`sideEffects`、子路径导出与类型解析、声明映射等），请直接参考官方文档。
+
+::: tip
+tsdown 使用要点：
+- 在 `tsdown` 中将 `svelte`/`svelte/*` 标记为 external，并在 `peerDependencies` 中声明 `svelte`。
+- 使用 `rollup-plugin-svelte` 做预处理与打包整合，保持 `.svelte` 以源码形态分发。
+- 配合 `svelte2tsx` 生成 `.d.ts`，并与 `exports` 子路径导出保持一致。
+:::
