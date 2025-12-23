@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
+import { parseEnv } from 'node:util'
 import path from 'node:path'
-import process, { loadEnvFile } from 'node:process'
+import process from 'node:process'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
@@ -21,7 +22,6 @@ import {
   createLogger,
   generateColor,
   getNameLabel,
-  type Logger,
 } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
 import type { Awaitable } from '../utils/types.ts'
@@ -172,14 +172,25 @@ export async function resolveUserConfig(
     }
   }
 
+  envPrefix = toArray(envPrefix)
+  if (envPrefix.includes('')) {
+    logger.warn(
+      'envPrefix includes an empty string; filtering is disabled. All environment variables from the env file and process.env will be injected into the build. Ensure this is intended to avoid accidental leakage of sensitive information.',
+    )
+  }
+  const envFromProcess = filterEnv(process.env, envPrefix)
+
   if (envFile) {
     const resolvedPath = path.resolve(cwd, envFile)
-    const envFromFile = await loadEnv(resolvedPath, toArray(envPrefix), logger)
-    env = { ...envFromFile, ...env }
+    let parsed = parseEnv(await readFile(resolvedPath, 'utf-8'))
+    const envFromFile = filterEnv(parsed, envPrefix)
+    env = { ...envFromFile, ...envFromProcess, ...env } // precedence: explicit CLI option > process > file
     logger.info(
       nameLabel,
       `Loaded environment variables from ${color(resolvedPath)}`,
     )
+  } else {
+    env = { ...envFromProcess, ...env } // precedence: explicit CLI option > process
   }
   debugLog(
     `Marged environment variables: %O`,
@@ -300,21 +311,14 @@ export async function resolveUserConfig(
   })
 }
 
-async function loadEnv(filePath: string, envPrefixes: string[], logger: Logger) {
+/** filter env variables by prefixes */
+function filterEnv(envDict: NodeJS.Dict<string>, envPrefixes: string[]) {
   const env: Record<string, string> = {}
-  loadEnvFile(await readFile(filePath, 'utf-8'))
-
-  if (envPrefixes.includes('')) {
-    logger.warn(
-      'envPrefix contains empty string, which could lead to unintentional injection of all variables from env file.',
-    )
-  }
-  // filter env variables by prefixes
-  for (const [key, value] of Object.entries(process.env)) {
+  Object.entries(envDict).forEach(([key, value]) => {
     if (envPrefixes.some((prefix) => key.startsWith(prefix))) {
       value !== undefined && (env[key] = value)
     }
-  }
+  })
 
   return env
 }
