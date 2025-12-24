@@ -181,6 +181,28 @@ tsdown --env.NODE_ENV=production
 
 注意，通过 `--env.VAR_NAME` 定义的环境变量只能通过 `import.meta.env.VAR_NAME` 或 `process.env.VAR_NAME` 访问。
 
+## `--env-file <file>`
+
+从文件加载环境变量。当与 `--env` 一起使用时，`--env` 中的变量优先生效。
+
+:::tip
+为防止敏感信息意外暴露，默认仅注入以 `TSDOWN_` 前缀开头的环境变量。您可以通过 [`--env-prefix`](#env-prefix) 标志自定义此行为。
+:::
+
+```bash
+tsdown --env-file .env.production
+```
+
+## `--env-prefix <prefix>` {#env-prefix}
+
+通过 `--env-file` 加载环境变量时，仅包含以这些前缀开头的变量。
+
+- **默认值：** `TSDOWN_`
+
+```bash
+tsdown --env-file .env --env-prefix APP_ --env-prefix TSDOWN_
+```
+
 ## `--debug-logs [feat]`
 
 显示调试日志。
