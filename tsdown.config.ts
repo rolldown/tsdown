@@ -13,6 +13,7 @@ export default defineConfig([
       oxc: {
         stripInternal: true,
       },
+      resolve: ['pkg-types'],
     },
     unused: {
       level: 'error',

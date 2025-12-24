@@ -59,7 +59,6 @@ export interface AttwOptions extends CheckPackageOptions {
   /**
    * List of problem types to ignore by rule name.
    *
-   * These rule names correspond to the string values in the {@link problemFlags} mapping above.
    * The available values are:
    * - `no-resolution`
    * - `untyped-resolution`
@@ -74,14 +73,12 @@ export interface AttwOptions extends CheckPackageOptions {
    * - `unexpected-module-syntax`
    * - `internal-resolution-error`
    *
-   * Example:
+   * @example
    * ```ts
    * ignoreRules: ['no-resolution', 'false-cjs']
    * ```
-   *
-   * @see {@link problemFlags}
    */
-  ignoreRules?: (typeof problemFlags)[keyof typeof problemFlags][]
+  ignoreRules?: string[]
 }
 
 /**

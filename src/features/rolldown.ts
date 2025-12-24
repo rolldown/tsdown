@@ -16,12 +16,6 @@ import { mergeUserOptions } from '../config/options.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
-import type {
-  DtsOptions,
-  NormalizedFormat,
-  ResolvedConfig,
-  TsdownBundle,
-} from '../config/index.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
@@ -30,6 +24,12 @@ import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
+import type {
+  DtsOptions,
+  NormalizedFormat,
+  ResolvedConfig,
+  TsdownBundle,
+} from '../config/index.ts'
 
 const debug = createDebug('tsdown:rolldown')
 

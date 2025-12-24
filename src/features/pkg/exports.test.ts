@@ -1,8 +1,8 @@
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
-import type { RolldownChunk } from '../../utils/chunks.ts'
 import { generateExports } from './exports.ts'
+import type { RolldownChunk } from '../../utils/chunks.ts'
 
 const cwd = process.cwd()
 const FAKE_PACKAGE_JSON = {

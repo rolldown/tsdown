@@ -1,10 +1,10 @@
 import { formatWithOptions } from 'node:util'
 import { promiseWithResolvers } from '../../utils/general.ts'
-import type { ResolvedConfig } from '../../config/types.ts'
-import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
 import { attw } from './attw.ts'
 import { writeExports } from './exports.ts'
 import { publint } from './publint.ts'
+import type { ResolvedConfig } from '../../config/types.ts'
+import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
 
 export type BundleByPkg = Record<
   string, // pkgPath
