@@ -91,7 +91,7 @@
     "ChunkAddonObject": "interface ChunkAddonObject {\n js?: string\n css?: string\n dts?: string\n}",
     "ChunkAddonFunction": "type ChunkAddonFunction = (_: { format: Format; fileName: string }) => ChunkAddonObject | string | undefined",
     "ChunkAddon": "type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string",
-    "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n}",
+    "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "RolldownChunk": "type RolldownChunk = (OutputChunk | OutputAsset) & { outDir: string }",
     "ChunksByFormat": "type ChunksByFormat = Partial<Record<NormalizedFormat, RolldownChunk[]>>",
     "TsdownBundle": "interface TsdownBundle extends AsyncDisposable {\n chunks: RolldownChunk[]\n config: ResolvedConfig\n}",
