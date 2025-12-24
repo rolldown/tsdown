@@ -63,9 +63,7 @@ cli
   .option(
     '--env-prefix <prefix>',
     'Prefix for env variables to inject into the bundle',
-    {
-      default: 'TSDOWN_',
-    },
+    { default: 'TSDOWN_' },
   )
   .option('--on-success <command>', 'Command to run on success')
   .option('--copy <dir>', 'Copy files to output dir')
@@ -129,6 +127,7 @@ cli
 
 export async function runCLI(): Promise<void> {
   cli.parse(process.argv, { run: false })
+
   enableDebugLog(cli.options)
 
   try {

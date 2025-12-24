@@ -14,6 +14,7 @@ export default defineConfig([
         stripInternal: true,
       },
     },
+    envFile: '.env',
     unused: {
       level: 'error',
       ignore: [
