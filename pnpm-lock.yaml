@@ -131,7 +131,7 @@ catalogs:
       specifier: ^0.18.2
       version: 0.18.2
     '@vitejs/devtools':
-      specifier: ^0.0.0-alpha.20
+      specifier: ^0.0.0-alpha.22
       version: 0.0.0-alpha.22
     publint:
       specifier: ^0.3.16
@@ -192,13 +192,13 @@ catalogs:
       specifier: ^7.4.2
       version: 7.4.2
     unrun:
-      specifier: ^0.2.20
-      version: 0.2.20
+      specifier: ^0.2.21
+      version: 0.2.21
 
 overrides:
-  rolldown: 1.0.0-beta.57
-  vite: ^8.0.0-beta.2
   '@docsearch/react': '-'
+  rolldown: 1.0.0-beta.57
+  vite: ^8.0.0-beta.4
 
 importers:
 
@@ -251,7 +251,7 @@ importers:
         version: 7.4.2
       unrun:
         specifier: catalog:prod
-        version: 0.2.20(synckit@0.11.11)
+        version: 0.2.21(synckit@0.11.11)
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -338,11 +338,11 @@ importers:
         specifier: catalog:peer
         version: 0.5.6
       vite:
-        specifier: ^8.0.0-beta.2
+        specifier: ^8.0.0-beta.4
         version: 8.0.0-beta.4(@types/node@25.0.3)(jiti@2.6.1)(yaml@2.8.2)
       vitest:
         specifier: catalog:dev
-        version: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
+        version: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
 
   docs:
     dependencies:
@@ -369,7 +369,7 @@ importers:
         specifier: catalog:docs
         version: 1.1.2(typedoc-plugin-markdown@4.9.0(typedoc@0.28.15(typescript@5.9.3)))
       vite:
-        specifier: ^8.0.0-beta.2
+        specifier: ^8.0.0-beta.4
         version: 8.0.0-beta.4(@types/node@25.0.3)(jiti@2.6.1)(yaml@2.8.2)
       vitepress:
         specifier: catalog:docs
@@ -749,10 +749,6 @@ packages:
 
   '@napi-rs/wasm-runtime@1.1.0':
     resolution: {integrity: sha512-Fq6DJW+Bb5jaWE69/qOE0D1TUN9+6uWhCeZpdnSBk14pjLcCWR7Q8n49PTSPHazM37JqrsdpEthXy2xn6jWWiA==}
-
-  '@opentelemetry/api@1.9.0':
-    resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
-    engines: {node: '>=8.0.0'}
 
   '@oxc-minify/binding-android-arm64@0.105.0':
     resolution: {integrity: sha512-/jsiC6tiFsv0yexjvnsWTGxzhGDLLB10GIa6pIND4vokpxGRx9VjUM3+3/1BtNIZC9yAXfu4ToCcgUoJl8gyOw==}
@@ -1348,7 +1344,7 @@ packages:
   '@unocss/astro@66.5.10':
     resolution: {integrity: sha512-R1UU8lfIqcuorGpiuU+9pQEmK8uBBk1sf5re1db9kr23924Ia/aBCmfs4W2xyVCwJ0cGBv9C3ywDgOsgkHFCbQ==}
     peerDependencies:
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
     peerDependenciesMeta:
       vite:
         optional: true
@@ -1433,12 +1429,12 @@ packages:
   '@unocss/vite@66.5.10':
     resolution: {integrity: sha512-GegFDmcWe0V2CR/uN1f+iQuDh2R1vA6EAwSvl1nyL+6ue0/zLyF9yhdVnypIVlJnS6RK/xaLPOP6vWJnqRGhZg==}
     peerDependencies:
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
 
   '@vitejs/devtools-kit@0.0.0-alpha.22':
     resolution: {integrity: sha512-2aCwNazr7qM90NBDn4/F8AePLm0/jO/zHeBJg84z2WtB5W7kRpt1Tl8oC1Q71ZoFS7wh+wt6mNHi4TU6q3JBRw==}
     peerDependencies:
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
 
   '@vitejs/devtools-rpc@0.0.0-alpha.22':
     resolution: {integrity: sha512-qokujNSRp1ctnV4KJSeso8dLDdkMt/+P3wt76mHPtBJkTpyZDtFCzoxP32MqnFHlgDRCeoMIcmSyzVHT1Uy0Ng==}
@@ -1455,13 +1451,13 @@ packages:
     resolution: {integrity: sha512-jIBzzSTA+Ne5tTdrUxYrc3Q65uy4gp7YG1nG1x8uEwDJK0djjdDuvd4UfK+EUGpN83XTimxjpoLAxo7e+gsqfg==}
     hasBin: true
     peerDependencies:
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
 
   '@vitejs/plugin-vue@6.0.3':
     resolution: {integrity: sha512-TlGPkLFLVOY3T7fZrwdvKpjprR3s4fxRln0ORDo1VQ7HHyxJwTlrjKU3kpVWTlaAjIEuCTokmjkZnr8Tpc925w==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
       vue: ^3.2.25
 
   '@vitest/coverage-v8@4.0.16':
@@ -1480,7 +1476,7 @@ packages:
     resolution: {integrity: sha512-yb6k4AZxJTB+q9ycAvsoxGn+j/po0UaPgajllBgt1PzoMAAmJGYFdDk0uCcRcxb3BrME34I6u8gHZTQlkqSZpg==}
     peerDependencies:
       msw: ^2.4.9
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
     peerDependenciesMeta:
       msw:
         optional: true
@@ -3528,7 +3524,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       '@unocss/webpack': 66.5.10
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
     peerDependenciesMeta:
       '@unocss/webpack':
         optional: true
@@ -3551,8 +3547,8 @@ packages:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
 
-  unrun@0.2.20:
-    resolution: {integrity: sha512-YhobStTk93HYRN/4iBs3q3/sd7knvju1XrzwwrVVfRujyTG1K88hGONIxCoJN0PWBuO+BX7fFiHH0sVDfE3MWw==}
+  unrun@0.2.21:
+    resolution: {integrity: sha512-VuwI4YKtwBpDvM7hCEop2Im/ezS82dliqJpkh9pvS6ve8HcUsBDvESHxMmUfImXR03GkmfdDynyrh/pUJnlguw==}
     engines: {node: '>=20.19.0'}
     hasBin: true
     peerDependencies:
@@ -3688,7 +3684,7 @@ packages:
   vitepress-plugin-group-icons@1.6.5:
     resolution: {integrity: sha512-+pg4+GKDq2fLqKb1Sat5p1p4SuIZ5tEPxu8HjpwoeecZ/VaXKy6Bdf0wyjedjaTAyZQzXbvyavJegqAcQ+B0VA==}
     peerDependencies:
-      vite: ^8.0.0-beta.2
+      vite: ^8.0.0-beta.4
     peerDependenciesMeta:
       vite:
         optional: true
@@ -4238,9 +4234,6 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@opentelemetry/api@1.9.0':
-    optional: true
-
   '@oxc-minify/binding-android-arm64@0.105.0':
     optional: true
 
@@ -4583,7 +4576,7 @@ snapshots:
     dependencies:
       tinyglobby: 0.2.15
       unplugin-utils: 0.3.1
-      vitest: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
+      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
     optionalDependencies:
       '@volar/typescript': 2.4.27
       '@vue/language-core': 3.2.1
@@ -5067,7 +5060,7 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
+      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -5114,7 +5107,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
+      vitest: 4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2)
 
   '@vitest/utils@4.0.16':
     dependencies:
@@ -7352,7 +7345,7 @@ snapshots:
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
 
-  unrun@0.2.20(synckit@0.11.11):
+  unrun@0.2.21(synckit@0.11.11):
     dependencies:
       rolldown: 1.0.0-beta.57
     optionalDependencies:
@@ -7483,7 +7476,7 @@ snapshots:
       - universal-cookie
       - yaml
 
-  vitest@4.0.16(@opentelemetry/api@1.9.0)(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2):
+  vitest@4.0.16(@types/node@25.0.3)(@vitest/ui@4.0.16)(jiti@2.6.1)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.16
       '@vitest/mocker': 4.0.16(vite@8.0.0-beta.4(@types/node@25.0.3)(jiti@2.6.1)(yaml@2.8.2))
@@ -7506,7 +7499,6 @@ snapshots:
       vite: 8.0.0-beta.4(@types/node@25.0.3)(jiti@2.6.1)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@opentelemetry/api': 1.9.0
       '@types/node': 25.0.3
       '@vitest/ui': 4.0.16(vitest@4.0.16)
     transitivePeerDependencies:
