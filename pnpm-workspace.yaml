@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 overrides:
+  '@docsearch/react': '-'
   rolldown: catalog:prod
   vite: catalog:docs
 
@@ -11,13 +12,13 @@ catalogs:
     '@clack/prompts': ^0.11.0
     giget: ^2.0.0
   dev:
-    '@sxzz/eslint-config': ^7.4.3
+    '@sxzz/eslint-config': ^7.4.4
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.15
     '@types/node': ^25.0.3
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20251221.1
+    '@typescript/native-preview': 7.0.0-dev.20251223.1
     '@vitest/coverage-v8': 4.0.16
     '@vitest/ui': ^4.0.16
     bumpp: ^10.3.2
@@ -27,7 +28,7 @@ catalogs:
     memfs: ^4.51.1
     pkg-types: ^2.3.0
     prettier: ^3.7.4
-    rolldown-plugin-dts-snapshot: ^0.2.0
+    rolldown-plugin-dts-snapshot: ^0.3.0
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
     vitest: ^4.0.16
@@ -35,7 +36,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^3.20.0
     '@unocss/eslint-plugin': ^66.5.10
     '@vueuse/core': ^14.1.0
-    oxc-minify: ^0.104.0
+    oxc-minify: ^0.105.0
     typedoc: ^0.28.15
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
@@ -45,7 +46,7 @@ catalogs:
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.9.3
     vue: ^3.5.26
-    vue-tsc: ^3.2.0
+    vue-tsc: ^3.2.1
   migrate:
     '@antfu/ni': ^28.0.0
     '@ast-grep/napi': ^0.40.3
@@ -55,7 +56,7 @@ catalogs:
     '@arethetypeswrong/core': ^0.18.2
     '@vitejs/devtools': ^0.0.0-alpha.20
     publint: ^0.3.16
-    unplugin-lightningcss: ^0.4.3
+    unplugin-lightningcss: ^0.4.4
     unplugin-unused: ^0.5.6
   prod:
     ansis: ^4.2.0
@@ -68,8 +69,8 @@ catalogs:
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
-    rolldown: 1.0.0-beta.55
-    rolldown-plugin-dts: ^0.19.1
+    rolldown: 1.0.0-beta.57
+    rolldown-plugin-dts: ^0.20.0
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15

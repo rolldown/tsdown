@@ -18,8 +18,8 @@ import {
 } from '../utils/general.ts'
 import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
-import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
+import type { Awaitable } from '../utils/types.ts'
 import type {
   CIOption,
   Format,
