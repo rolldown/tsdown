@@ -208,7 +208,7 @@ export interface UserConfig {
   target?: string | string[] | false
 
   /**
-   * Compile-time env variables.
+   * Compile-time env variables, which can be accessed via `import.meta.env` or `process.env`.
    * @example
    * ```json
    * {
@@ -218,6 +218,17 @@ export interface UserConfig {
    * ```
    */
   env?: Record<string, any>
+  /**
+   * Path to env file providing compile-time env variables.
+   * @example
+   * `.env`, `.env.production`, etc.
+   */
+  envFile?: string
+  /**
+   * When loading env variables from `envFile`, only include variables with these prefixes.
+   * @default 'TSDOWN_'
+   */
+  envPrefix?: string | string[]
   define?: Record<string, string>
 
   /** @default false */
@@ -565,6 +576,8 @@ export type ResolvedConfig = Overwrite<
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'customLogger' // merge to `logger`
+      | 'envFile' // merged to `env`
+      | 'envPrefix' // merged to `env`
     >,
     | 'globalName'
     | 'inputOptions'

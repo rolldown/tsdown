@@ -56,6 +56,15 @@ cli
   .option('--from-vite [vitest]', 'Reuse config from Vite or Vitest')
   .option('--report', 'Size report', { default: true })
   .option('--env.* <value>', 'Define compile-time env variables')
+  .option(
+    '--env-file <file>',
+    'Load environment variables from a file, when used together with --env, variables in --env take precedence',
+  )
+  .option(
+    '--env-prefix <prefix>',
+    'Prefix for env variables to inject into the bundle',
+    { default: 'TSDOWN_' },
+  )
   .option('--on-success <command>', 'Command to run on success')
   .option('--copy <dir>', 'Copy files to output dir')
   .option('--public-dir <dir>', 'Alias for --copy, deprecated')

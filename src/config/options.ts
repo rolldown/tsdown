@@ -1,5 +1,7 @@
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import { parseEnv } from 'node:util'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
@@ -62,6 +64,8 @@ export async function resolveUserConfig(
     report = true,
     target,
     env = {},
+    envFile,
+    envPrefix = 'TSDOWN_',
     copy,
     publicDir,
     hash = true,
@@ -163,6 +167,28 @@ export async function resolveUserConfig(
       )
     }
   }
+
+  envPrefix = toArray(envPrefix)
+  if (envPrefix.includes('')) {
+    logger.warn(
+      '`envPrefix` includes an empty string; filtering is disabled. All environment variables from the env file and process.env will be injected into the build. Ensure this is intended to avoid accidental leakage of sensitive information.',
+    )
+  }
+  const envFromProcess = filterEnv(process.env, envPrefix)
+  if (envFile) {
+    const resolvedPath = path.resolve(cwd, envFile)
+    logger.info(nameLabel, `env file: ${color(resolvedPath)}`)
+
+    const parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
+    const envFromFile = filterEnv(parsed, envPrefix)
+
+    // precedence: env file < process.env < tsdown option
+    env = { ...envFromFile, ...envFromProcess, ...env }
+  } else {
+    // precedence: process.env < tsdown option
+    env = { ...envFromProcess, ...env }
+  }
+  debugLog(`Environment variables: %O`, env)
 
   if (fromVite) {
     const viteUserConfig = await loadViteConfig(
@@ -276,6 +302,23 @@ export async function resolveUserConfig(
       ...overrides,
     }
   })
+}
+
+/** filter env variables by prefixes */
+function filterEnv(
+  envDict: Record<string, string | undefined>,
+  envPrefixes: string[],
+) {
+  const env: Record<string, string> = {}
+  for (const [key, value] of Object.entries(envDict)) {
+    if (
+      envPrefixes.some((prefix) => key.startsWith(prefix)) &&
+      value !== undefined
+    ) {
+      env[key] = value
+    }
+  }
+  return env
 }
 
 const defu = createDefu((obj, key, value) => {
