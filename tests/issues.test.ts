@@ -171,4 +171,24 @@ describe('issues', () => {
       './package.json': './package.json',
     })
   })
+
+  test.fails('#668', async (context) => {
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'shared.css': `.class-shared { color: red; }`,
+        'entry1.css': `@import './shared.css'; .class-entry1 { color: red; }`,
+        'entry2.css': `@import './shared.css'; .class-entry2 { color: red; }`,
+      },
+      options: {
+        entry: ['entry1.css', 'entry2.css'],
+      },
+    })
+    expect(outputFiles).toContain('entry1.css')
+    expect(outputFiles).toContain('entry2.css')
+    expect(fileMap['entry1.css']).toContain('class-entry1')
+    expect(fileMap['entry2.css']).toContain('class-entry2')
+    expect(fileMap['entry1.css']).toContain('class-shared')
+    expect(fileMap['entry2.css']).toContain('class-shared')
+  })
 })
