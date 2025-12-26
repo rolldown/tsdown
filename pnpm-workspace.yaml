@@ -28,7 +28,7 @@ catalogs:
     memfs: ^4.51.1
     pkg-types: ^2.3.0
     prettier: ^3.7.4
-    rolldown-plugin-dts-snapshot: ^0.3.0
+    rolldown-plugin-dts-snapshot: ^0.3.2
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
     vitest: ^4.0.16
