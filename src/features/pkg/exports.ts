@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
@@ -10,6 +10,7 @@ import type {
   RolldownChunk,
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
+import type { Logger } from '../../utils/logger.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -20,6 +21,12 @@ export interface ExportsOptions {
    * - true: all conditions point to source files, and add dist exports to `publishConfig`.
    */
   devExports?: boolean | string
+
+  /**
+   * Exports for package.json file.
+   * @default true
+   */
+  packageJson?: boolean
 
   /**
    * Exports for all files.
@@ -59,6 +66,7 @@ export async function writeExports(
     pkg,
     chunks,
     exports,
+    options.logger,
   )
 
   const updatedPkg = {
@@ -72,11 +80,11 @@ export async function writeExports(
     updatedPkg.publishConfig.exports = publishExports
   }
 
-  const original = await readFile(pkg.packageJsonPath, 'utf8')
+  const original = readFileSync(pkg.packageJsonPath, 'utf8')
   let contents = JSON.stringify(updatedPkg, null, detectIndentation(original))
   if (original.endsWith('\n')) contents += '\n'
   if (contents !== original) {
-    await writeFile(pkg.packageJsonPath, contents, 'utf8')
+    writeFileSync(pkg.packageJsonPath, contents, 'utf8')
   }
 }
 
@@ -93,7 +101,14 @@ function shouldExclude(
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  { devExports, all, exclude, customExports }: ExportsOptions,
+  {
+    devExports,
+    all,
+    packageJson = true,
+    exclude,
+    customExports,
+  }: ExportsOptions,
+  logger: Logger,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -108,6 +123,11 @@ export async function generateExports(
     cjsTypes: string | undefined,
     esmTypes: string | undefined
   const exportsMap: Map<string, SubExport> = new Map()
+
+  const formats = Object.keys(chunks)
+  if (!formats.includes('cjs') && !formats.includes('es')) {
+    logger.warn(`No CJS or ESM formats found in chunks for package ${pkg.name}`)
+  }
 
   for (const [format, chunksByFormat] of Object.entries(chunks) as [
     NormalizedFormat,
@@ -188,7 +208,7 @@ export async function generateExports(
       genSubExport(devExports, subExport),
     ]),
   )
-  exportMeta(exports, all)
+  exportMeta(exports, all, packageJson)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -205,7 +225,7 @@ export async function generateExports(
         genSubExport(false, subExport),
       ]),
     )
-    exportMeta(publishExports, all)
+    exportMeta(publishExports, all, packageJson)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -248,10 +268,14 @@ function genSubExport(
   return value
 }
 
-function exportMeta(exports: Record<string, any>, all?: boolean) {
+function exportMeta(
+  exports: Record<string, any>,
+  all?: boolean,
+  packageJson?: boolean,
+) {
   if (all) {
     exports['./*'] = './*'
-  } else {
+  } else if (packageJson) {
     exports['./package.json'] = './package.json'
   }
 }

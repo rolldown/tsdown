@@ -1,6 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
+import { globalLogger } from '../../utils/logger.ts'
 import { generateExports } from './exports.ts'
 import type { RolldownChunk } from '../../utils/chunks.ts'
 
@@ -11,7 +12,7 @@ const FAKE_PACKAGE_JSON = {
 
 describe.concurrent('generateExports', () => {
   test('no entries', async ({ expect }) => {
-    const results = generateExports(FAKE_PACKAGE_JSON, {}, {})
+    const results = generateExports(FAKE_PACKAGE_JSON, {}, {}, globalLogger)
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
         "exports": {
@@ -30,6 +31,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('main.js'), genChunk('chunk.js', false)] },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -50,6 +52,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js'), genChunk('foo.js')] },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -71,6 +74,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js'), genChunk('foo/index.js')] },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -92,6 +96,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('foo.js'), genChunk('bar.js')] },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -116,6 +121,7 @@ describe.concurrent('generateExports', () => {
         cjs: [genChunk('foo.cjs')],
       },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -142,6 +148,7 @@ describe.concurrent('generateExports', () => {
         cjs: [genChunk('foo.cjs'), genChunk('foo.d.cts')],
       },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -168,6 +175,7 @@ describe.concurrent('generateExports', () => {
         cjs: [genChunk('index.cjs'), genChunk('index.d.cts')],
       },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -191,6 +199,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       { devExports: 'dev' },
+      globalLogger,
     )
     // key order matters
     expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
@@ -221,6 +230,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       { devExports: true },
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -253,6 +263,7 @@ describe.concurrent('generateExports', () => {
           return Promise.resolve(exports)
         },
       },
+      globalLogger,
     )
     // key order matters
     expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
@@ -281,6 +292,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')] },
       { exclude: [/bar/] },
+      globalLogger,
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -305,6 +317,7 @@ describe.concurrent('generateExports', () => {
         es: [genChunk('index.js'), genChunk('foo.js'), genChunk('abc/bar.js')],
       },
       { exclude: ['**/bar.js'] },
+      globalLogger,
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -327,6 +340,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('foo.js'), genChunk('abc/bar.js')] },
       { exclude: ['**/bar.js', /foo/] },
+      globalLogger,
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -347,6 +361,7 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       { all: true },
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -379,6 +394,7 @@ describe.concurrent('generateExports', () => {
         ],
       },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -420,6 +436,7 @@ describe.concurrent('generateExports', () => {
         ],
       },
       {},
+      globalLogger,
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {

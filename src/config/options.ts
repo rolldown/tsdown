@@ -7,6 +7,7 @@ import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
+import { defaultCssBundleName } from '../features/css.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
@@ -82,6 +83,7 @@ export async function resolveUserConfig(
     cjsDefault = true,
     globImport = true,
     inlineOnly,
+    css,
     fixedExtension = platform === 'node',
     debug = false,
     write = true,
@@ -250,6 +252,11 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
+    css: {
+      splitting: true,
+      fileName: defaultCssBundleName,
+      ...css,
+    },
     cwd,
     debug,
     dts,

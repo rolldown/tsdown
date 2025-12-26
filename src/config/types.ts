@@ -1,4 +1,5 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
+import type { CssOptions } from '../features/css.ts'
 import type { DebugOptions } from '../features/debug.ts'
 import type {
   BuildContext,
@@ -75,6 +76,7 @@ export type {
   CopyEntry,
   CopyOptions,
   CopyOptionsFn,
+  CssOptions,
   DebugOptions,
   DtsOptions,
   ExportsOptions,
@@ -508,6 +510,11 @@ export interface UserConfig {
   exports?: WithEnabled<ExportsOptions>
 
   /**
+   * **[experimental]** CSS options.
+   */
+  css?: CssOptions
+
+  /**
    * @deprecated Alias for `copy`, will be removed in the future.
    */
   publicDir?: CopyOptions | CopyOptionsFn
@@ -608,6 +615,7 @@ export type ResolvedConfig = Overwrite<
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
+    css: Required<CssOptions>
 
     dts: false | DtsOptions
     report: false | ReportOptions
