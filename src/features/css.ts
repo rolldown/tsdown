@@ -1,3 +1,4 @@
+import { RE_CSS } from 'rolldown-plugin-dts/filename'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
@@ -9,6 +10,7 @@ export interface CssOptions {
    * @default true
    */
   splitting?: boolean
+
   /**
    * Specify the name of the CSS file.
    * @default 'style.css'
@@ -17,12 +19,11 @@ export interface CssOptions {
 }
 
 // Regular expressions for file matching
-const RE_CSS = /\.css$/
 const RE_CSS_HASH = /-[\w-]+\.css$/
 const RE_CHUNK_HASH = /-[\w-]+\.(m?js|cjs)$/
 const RE_CHUNK_EXT = /\.(m?js|cjs)$/
 
-const defaultCssBundleName = 'style.css'
+export const defaultCssBundleName = 'style.css'
 
 /**
  * Normalize CSS file name by removing hash pattern and extension.
@@ -50,8 +51,8 @@ function normalizeChunkFileName(chunkFileName: string): string {
 export function CssCodeSplitPlugin(
   config: Pick<ResolvedConfig, 'css'>,
 ): Plugin | undefined {
-  const { splitting = true, fileName = defaultCssBundleName } = config.css
-  if (splitting) return undefined
+  const { splitting, fileName } = config.css
+  if (splitting) return
 
   let hasEmitted = false
 
@@ -59,7 +60,7 @@ export function CssCodeSplitPlugin(
     name: 'tsdown:css-code-split',
 
     renderStart() {
-      // Reset state for each build  for watch mode
+      // Reset state for each build for watch mode
       hasEmitted = false
     },
 
@@ -79,7 +80,7 @@ export function CssCodeSplitPlugin(
         }
       }
 
-      if (cssAssets.size === 0) return
+      if (!cssAssets.size) return
 
       // Build a map from chunk fileName to its associated CSS fileName(s)
       // Match CSS assets to chunks by analyzing module IDs and file names

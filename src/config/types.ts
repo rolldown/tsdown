@@ -76,6 +76,7 @@ export type {
   CopyEntry,
   CopyOptions,
   CopyOptionsFn,
+  CssOptions,
   DebugOptions,
   DtsOptions,
   ExportsOptions,
@@ -614,7 +615,7 @@ export type ResolvedConfig = Overwrite<
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
     inlineOnly?: Array<string | RegExp>
-    css: CssOptions
+    css: Required<CssOptions>
 
     dts: false | DtsOptions
     report: false | ReportOptions
