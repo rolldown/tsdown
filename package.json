@@ -126,6 +126,7 @@
     "is-in-ci": "catalog:prod",
     "lightningcss": "catalog:dev",
     "memfs": "catalog:dev",
+    "oxfmt": "catalog:dev",
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",

@@ -1,0 +1,8 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 80,
+  "experimentalSortPackageJson": false,
+  "ignorePatterns": ["**/__snapshots__", "dts.snapshot.json"],
+}

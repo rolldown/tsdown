@@ -26,6 +26,7 @@ catalogs:
     eslint: ^9.39.2
     lightningcss: ^1.31.0
     memfs: ^4.56.2
+    oxfmt: ^0.26.0
     pkg-types: ^2.3.0
     prettier: ^3.8.0
     rolldown-plugin-dts-snapshot: ^0.3.2
