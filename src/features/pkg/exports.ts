@@ -23,6 +23,12 @@ export interface ExportsOptions {
   devExports?: boolean | string
 
   /**
+   * Exports for package.json file.
+   * @default true
+   */
+  packageJson?: boolean
+
+  /**
    * Exports for all files.
    */
   all?: boolean
@@ -95,7 +101,13 @@ function shouldExclude(
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  { devExports, all, exclude, customExports }: ExportsOptions,
+  {
+    devExports,
+    all,
+    packageJson = true,
+    exclude,
+    customExports,
+  }: ExportsOptions,
   logger: Logger,
 ): Promise<{
   main: string | undefined
@@ -196,7 +208,7 @@ export async function generateExports(
       genSubExport(devExports, subExport),
     ]),
   )
-  exportMeta(exports, all)
+  exportMeta(exports, all, packageJson)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -213,7 +225,7 @@ export async function generateExports(
         genSubExport(false, subExport),
       ]),
     )
-    exportMeta(publishExports, all)
+    exportMeta(publishExports, all, packageJson)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -256,10 +268,14 @@ function genSubExport(
   return value
 }
 
-function exportMeta(exports: Record<string, any>, all?: boolean) {
+function exportMeta(
+  exports: Record<string, any>,
+  all?: boolean,
+  packageJson?: boolean,
+) {
   if (all) {
     exports['./*'] = './*'
-  } else {
+  } else if (packageJson) {
     exports['./package.json'] = './package.json'
   }
 }

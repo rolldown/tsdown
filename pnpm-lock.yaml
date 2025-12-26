@@ -62,8 +62,8 @@ catalogs:
       specifier: ^3.7.4
       version: 3.7.4
     rolldown-plugin-dts-snapshot:
-      specifier: ^0.3.0
-      version: 0.3.0
+      specifier: ^0.3.2
+      version: 0.3.2
     rolldown-plugin-require-cjs:
       specifier: ^0.3.3
       version: 0.3.3
@@ -321,7 +321,7 @@ importers:
         version: 0.3.16
       rolldown-plugin-dts-snapshot:
         specifier: catalog:dev
-        version: 0.3.0(rolldown@1.0.0-beta.57)
+        version: 0.3.2(rolldown@1.0.0-beta.57)
       rolldown-plugin-require-cjs:
         specifier: catalog:dev
         version: 0.3.3(rolldown@1.0.0-beta.57)
@@ -555,6 +555,12 @@ packages:
 
   '@docsearch/js@4.4.0':
     resolution: {integrity: sha512-vCiKzjYD54bugUIMZA6YzuLDilkD3TNH/kfbvqsnzxiLTMu8F13psD+hdMSEOn7j+dFJOaf49fZ+gwr+rXctMw==}
+
+  '@dprint/formatter@0.4.1':
+    resolution: {integrity: sha512-IB/GXdlMOvi0UhQQ9mcY15Fxcrc2JPadmo6tqefCNV0bptFq7YBpggzpqYXldBXDa04CbKJ+rDwO2eNRPE2+/g==}
+
+  '@dprint/typescript@0.95.13':
+    resolution: {integrity: sha512-lzhaiENYcsLOo+qJHzwWbZ/Ne+67eDGLwhU52Z0AnW6gHeCN1EZ8DDe5gI/f/Fvk2Jd2wlnmoyrsrYnkg/SDgw==}
 
   '@emnapi/core@1.7.1':
     resolution: {integrity: sha512-o1uhUASyo921r2XtHYOHy7gdkGLge8ghBEQHMWmyJFoXlpU58kIrhhN3w26lpQb6dspetweapMn2CSNwQ8I4wg==}
@@ -1911,11 +1917,6 @@ packages:
   destr@2.0.5:
     resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
 
-  detect-libc@1.0.3:
-    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
-    engines: {node: '>=0.10'}
-    hasBin: true
-
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
@@ -1934,9 +1935,6 @@ packages:
   dotenv@17.2.3:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
     engines: {node: '>=12'}
-
-  dprint-node@1.0.8:
-    resolution: {integrity: sha512-iVKnUtYfGrYcW1ZAlfR/F59cUVL8QIhWoBJoSjkkdua/dkWIgjZfiLMeTjiB06X0ZLkQ0M2C1VbUj/CxkIf1zg==}
 
   dts-resolver@2.1.3:
     resolution: {integrity: sha512-bihc7jPC90VrosXNzK0LTE2cuLP6jr0Ro8jk+kMugHReJVLIpHz/xadeq3MhuwyO4TD4OA3L1Q8pBBFRc08Tsw==}
@@ -3191,8 +3189,8 @@ packages:
   rfdc@1.4.1:
     resolution: {integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==}
 
-  rolldown-plugin-dts-snapshot@0.3.0:
-    resolution: {integrity: sha512-wdq03XCQm5MPT+KBUOggA8/dfOnJNBm+66YROkVagWwU+oVR0qKMflzDw6RSfPaQf32cgjTDCFBBTKGDWd9hLw==}
+  rolldown-plugin-dts-snapshot@0.3.2:
+    resolution: {integrity: sha512-i7YB+4SZg2Tj9NsYGGwFdervgWQfBBGGn7PJqKlzWggG/q13YQ8Y57xg4OAPoBrjaj1H7kDzjK+ByBvj7j7ckg==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       rolldown: 1.0.0-beta.57
@@ -3999,6 +3997,10 @@ snapshots:
   '@docsearch/js@4.4.0':
     dependencies:
       htm: 3.1.1
+
+  '@dprint/formatter@0.4.1': {}
+
+  '@dprint/typescript@0.95.13': {}
 
   '@emnapi/core@1.7.1':
     dependencies:
@@ -5511,8 +5513,6 @@ snapshots:
 
   destr@2.0.5: {}
 
-  detect-libc@1.0.3: {}
-
   detect-libc@2.1.2: {}
 
   devlop@1.1.0:
@@ -5524,10 +5524,6 @@ snapshots:
   diff@8.0.2: {}
 
   dotenv@17.2.3: {}
-
-  dprint-node@1.0.8:
-    dependencies:
-      detect-libc: 1.0.3
 
   dts-resolver@2.1.3: {}
 
@@ -6960,10 +6956,10 @@ snapshots:
 
   rfdc@1.4.1: {}
 
-  rolldown-plugin-dts-snapshot@0.3.0(rolldown@1.0.0-beta.57):
+  rolldown-plugin-dts-snapshot@0.3.2(rolldown@1.0.0-beta.57):
     dependencies:
-      dprint-node: 1.0.8
-      estree-walker: 3.0.3
+      '@dprint/formatter': 0.4.1
+      '@dprint/typescript': 0.95.13
       magic-string: 0.30.21
       rolldown: 1.0.0-beta.57
       unplugin-utils: 0.3.1
