@@ -16,6 +16,7 @@ import { mergeUserOptions } from '../config/options.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
+import { CssCodeSplitPlugin } from './css.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
@@ -153,6 +154,11 @@ async function resolveInputOptions(
         // until Rolldown supports CSS syntax lowering natively.
         await LightningCSSPlugin({ target }),
       )
+    }
+    // Add CSS code split plugin after LightningCSS to merge generated CSS files
+    const cssPlugin = CssCodeSplitPlugin(config)
+    if (cssPlugin) {
+      plugins.push(cssPlugin)
     }
     plugins.push(ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
     if (globImport) {
