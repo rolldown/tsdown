@@ -187,7 +187,7 @@ async function nativeImport(id: string) {
   const importAttributes: Record<string, string> = Object.create(null)
   if (isSupported) {
     importAttributes.cache = 'no'
-    init()
+    init({ skipNodeModules: true })
   } else if (!isBun) {
     url.searchParams.set('no-cache', crypto.randomUUID())
   }

@@ -1,7 +1,8 @@
 import path from 'node:path'
+import picomatch from 'picomatch'
 import { glob, isDynamicPattern } from 'tinyglobby'
-import { fsExists, lowestCommonAncestor } from '../utils/fs.ts'
-import { slash } from '../utils/general.ts'
+import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
+import { slash, toArray } from '../utils/general.ts'
 import type { UserConfig } from '../config/index.ts'
 import type { Logger } from '../utils/logger.ts'
 import type { Ansis } from 'ansis'
@@ -38,14 +39,63 @@ export async function resolveEntry(
 }
 
 export async function toObjectEntry(
-  entry: string | string[] | Record<string, string>,
+  entry: string | string[] | Record<string, string | string[]>,
   cwd: string,
 ): Promise<Record<string, string>> {
   if (typeof entry === 'string') {
     entry = [entry]
   }
   if (!Array.isArray(entry)) {
-    return entry
+    // resolve object entry with globs
+    return Object.fromEntries(
+      (
+        await Promise.all(
+          Object.entries(entry).map(async ([key, value]) => {
+            if (!key.includes('*')) {
+              if (Array.isArray(value)) {
+                throw new TypeError(
+                  `Object entry "${key}" cannot have an array value when the key is not a glob pattern.`,
+                )
+              }
+
+              return [[key, value]]
+            }
+
+            const patterns = toArray(value)
+
+            const positivePatterns = patterns.filter((p) => !p.startsWith('!'))
+            if (positivePatterns.length === 0) {
+              throw new TypeError(
+                `Object entry "${key}" has no positive pattern. At least one positive pattern is required.`,
+              )
+            }
+
+            if (positivePatterns.length > 1) {
+              throw new TypeError(
+                `Object entry "${key}" has multiple positive patterns: ${positivePatterns.join(', ')}. ` +
+                  `Only one positive pattern is allowed. Use negation patterns (prefixed with "!") to exclude files.`,
+              )
+            }
+
+            const valueGlob = picomatch.scan(positivePatterns[0])
+            const files = await glob(patterns, {
+              cwd,
+              expandDirectories: false,
+            })
+
+            return files.map((file) => [
+              slash(
+                key.replaceAll(
+                  '*',
+                  stripExtname(path.relative(valueGlob.base, file)),
+                ),
+              ),
+              path.resolve(cwd, file),
+            ])
+          }),
+        )
+      ).flat(),
+    )
   }
 
   const isGlob = entry.some((e) => isDynamicPattern(e))
@@ -66,12 +116,7 @@ export async function toObjectEntry(
   return Object.fromEntries(
     resolvedEntry.map((file) => {
       const relative = path.relative(base, file)
-      return [
-        slash(
-          relative.slice(0, relative.length - path.extname(relative).length),
-        ),
-        file,
-      ]
+      return [slash(stripExtname(relative)), file]
     }),
   )
 }

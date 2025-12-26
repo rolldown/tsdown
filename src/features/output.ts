@@ -101,13 +101,10 @@ export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string
 export function resolveChunkAddon(
   chunkAddon: ChunkAddon | undefined,
   format: NormalizedFormat,
-  dts?: boolean,
 ): AddonFunction | undefined {
   if (!chunkAddon) return
 
   return (chunk: RenderedChunk) => {
-    if (!dts && RE_DTS.test(chunk.fileName)) return ''
-
     if (typeof chunkAddon === 'function') {
       chunkAddon = chunkAddon({
         format,

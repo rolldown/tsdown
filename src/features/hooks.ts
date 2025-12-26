@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { createHooks as create, type Hookable } from 'hookable'
+import { Hookable } from 'hookable'
 import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
 import type { ResolvedConfig, RolldownChunk } from '../config/index.ts'
@@ -42,7 +42,7 @@ export async function createHooks(options: ResolvedConfig): Promise<{
   hooks: Hookable<TsdownHooks>
   context: BuildContext
 }> {
-  const hooks = create<TsdownHooks>()
+  const hooks = new Hookable<TsdownHooks>()
   if (typeof options.hooks === 'object') {
     hooks.addHooks(options.hooks)
   } else if (typeof options.hooks === 'function') {

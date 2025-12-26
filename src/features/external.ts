@@ -89,12 +89,16 @@ Imported by ${underline(importer)}`,
 
     if (skipNodeModulesBundle) {
       const resolved = await context.resolve(id, importer, extraOptions)
-      if (!resolved) return false
-      return resolved.external || RE_NODE_MODULES.test(resolved.id)
+      if (
+        resolved &&
+        (resolved.external || RE_NODE_MODULES.test(resolved.id))
+      ) {
+        return true
+      }
     }
 
-    if (deps) {
-      return deps.some((dep) => id === dep || id.startsWith(`${dep}/`))
+    if (deps && deps.some((dep) => id === dep || id.startsWith(`${dep}/`))) {
+      return true
     }
 
     return false

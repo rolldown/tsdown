@@ -1,5 +1,7 @@
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import { parseEnv } from 'node:util'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
@@ -18,8 +20,8 @@ import {
 } from '../utils/general.ts'
 import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
-import type { Awaitable } from '../utils/types.ts'
 import { loadViteConfig } from './file.ts'
+import type { Awaitable } from '../utils/types.ts'
 import type {
   CIOption,
   Format,
@@ -62,6 +64,8 @@ export async function resolveUserConfig(
     report = true,
     target,
     env = {},
+    envFile,
+    envPrefix = 'TSDOWN_',
     copy,
     publicDir,
     hash = true,
@@ -121,7 +125,7 @@ export async function resolveUserConfig(
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
 
-  entry = await resolveEntry(logger, entry, cwd, color, nameLabel)
+  const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
   if (dts == null) {
     dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
   }
@@ -164,6 +168,28 @@ export async function resolveUserConfig(
       )
     }
   }
+
+  envPrefix = toArray(envPrefix)
+  if (envPrefix.includes('')) {
+    logger.warn(
+      '`envPrefix` includes an empty string; filtering is disabled. All environment variables from the env file and process.env will be injected into the build. Ensure this is intended to avoid accidental leakage of sensitive information.',
+    )
+  }
+  const envFromProcess = filterEnv(process.env, envPrefix)
+  if (envFile) {
+    const resolvedPath = path.resolve(cwd, envFile)
+    logger.info(nameLabel, `env file: ${color(resolvedPath)}`)
+
+    const parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
+    const envFromFile = filterEnv(parsed, envPrefix)
+
+    // precedence: env file < process.env < tsdown option
+    env = { ...envFromFile, ...envFromProcess, ...env }
+  } else {
+    // precedence: process.env < tsdown option
+    env = { ...envFromProcess, ...env }
+  }
+  debugLog(`Environment variables: %O`, env)
 
   if (fromVite) {
     const viteUserConfig = await loadViteConfig(
@@ -229,7 +255,7 @@ export async function resolveUserConfig(
     cwd,
     debug,
     dts,
-    entry,
+    entry: resolvedEntry,
     env,
     exports,
     external,
@@ -278,6 +304,23 @@ export async function resolveUserConfig(
       ...overrides,
     }
   })
+}
+
+/** filter env variables by prefixes */
+function filterEnv(
+  envDict: Record<string, string | undefined>,
+  envPrefixes: string[],
+) {
+  const env: Record<string, string> = {}
+  for (const [key, value] of Object.entries(envDict)) {
+    if (
+      envPrefixes.some((prefix) => key.startsWith(prefix)) &&
+      value !== undefined
+    ) {
+      env[key] = value
+    }
+  }
+  return env
 }
 
 const defu = createDefu((obj, key, value) => {

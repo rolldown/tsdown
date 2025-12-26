@@ -1,3 +1,5 @@
+import picomatch from 'picomatch'
+
 export function toArray<T>(
   val: T | T[] | null | undefined,
   defaultValue?: T,
@@ -57,7 +59,7 @@ export function matchPattern(
       pattern.lastIndex = 0
       return pattern.test(id)
     }
-    return id === pattern
+    return id === pattern || picomatch(pattern)(id)
   })
 }
 

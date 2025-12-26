@@ -16,12 +16,6 @@ import { mergeUserOptions } from '../config/options.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
 import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
-import type {
-  DtsOptions,
-  NormalizedFormat,
-  ResolvedConfig,
-  TsdownBundle,
-} from '../config/index.ts'
 import { CssCodeSplitPlugin } from './css.ts'
 import { ExternalPlugin } from './external.ts'
 import { LightningCSSPlugin } from './lightningcss.ts'
@@ -31,6 +25,12 @@ import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
+import type {
+  DtsOptions,
+  NormalizedFormat,
+  ResolvedConfig,
+  TsdownBundle,
+} from '../config/index.ts'
 
 const debug = createDebug('tsdown:rolldown')
 
@@ -83,7 +83,6 @@ async function resolveInputOptions(
   /// keep-sorted
   const {
     alias,
-    banner,
     cjsDefault,
     cwd,
     debug,
@@ -91,7 +90,6 @@ async function resolveInputOptions(
     entry,
     env,
     external,
-    footer,
     globImport,
     loader,
     logger,
@@ -122,8 +120,6 @@ async function resolveInputOptions(
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
     const options: DtsOptions = {
       tsconfig,
-      banner: resolveChunkAddon(banner, format, true),
-      footer: resolveChunkAddon(footer, format, true),
       ...dts,
     }
 
@@ -222,6 +218,9 @@ async function resolveInputOptions(
           }
         : undefined,
       debug: debug || undefined,
+      checks: {
+        pluginTimings: false,
+      },
     },
     config.inputOptions,
     [format, { cjsDts }],
@@ -236,15 +235,16 @@ async function resolveOutputOptions(
   format: NormalizedFormat,
   cjsDts: boolean,
 ): Promise<OutputOptions> {
+  /// keep-sorted
   const {
+    banner,
+    cjsDefault,
     entry,
+    footer,
+    minify,
     outDir,
     sourcemap,
-    minify,
     unbundle,
-    banner,
-    footer,
-    cjsDefault,
   } = config
 
   const [entryFileNames, chunkFileNames] = resolveChunkFilename(
@@ -266,8 +266,8 @@ async function resolveOutputOptions(
       preserveModulesRoot: unbundle
         ? lowestCommonAncestor(...Object.values(entry))
         : undefined,
-      banner: resolveChunkAddon(banner, format),
-      footer: resolveChunkAddon(footer, format),
+      postBanner: resolveChunkAddon(banner, format),
+      postFooter: resolveChunkAddon(footer, format),
     },
     config.outputOptions,
     [format, { cjsDts }],

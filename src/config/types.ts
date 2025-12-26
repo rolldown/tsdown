@@ -30,7 +30,6 @@ import type { Hookable } from 'hookable'
 import type { Options as PublintOptions } from 'publint'
 import type {
   ExternalOption,
-  InputOption,
   InputOptions,
   InternalModuleFormat,
   MinifyOptions,
@@ -45,6 +44,29 @@ import type { Options as UnusedOptions } from 'unplugin-unused'
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
 export type NormalizedFormat = InternalModuleFormat
+
+/**
+ * Extended input option that supports glob negation patterns.
+ *
+ * When using object form, values can be:
+ * - A single glob pattern string
+ * - An array of glob patterns, including negation patterns (prefixed with `!`)
+ *
+ * @example
+ * ```ts
+ * entry: {
+ *   // Single pattern
+ *   "utils/*": "./src/utils/*.ts",
+ *   // Array with negation pattern to exclude files
+ *   "hooks/*": ["./src/hooks/*.ts", "!./src/hooks/index.ts"],
+ * }
+ * ```
+ */
+export type TsdownInputOption =
+  | string
+  | string[]
+  | Record<string, string | string[]>
+
 export type {
   AttwOptions,
   BuildContext,
@@ -114,8 +136,16 @@ export interface UserConfig {
   // #region Input Options
   /**
    * Defaults to `'src/index.ts'` if it exists.
+   *
+   * Supports glob patterns with negation to exclude files:
+   * @example
+   * ```ts
+   * entry: {
+   *   "hooks/*": ["./src/hooks/*.ts", "!./src/hooks/index.ts"],
+   * }
+   * ```
    */
-  entry?: InputOption
+  entry?: TsdownInputOption
 
   external?: ExternalOption
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
@@ -179,7 +209,7 @@ export interface UserConfig {
   target?: string | string[] | false
 
   /**
-   * Compile-time env variables.
+   * Compile-time env variables, which can be accessed via `import.meta.env` or `process.env`.
    * @example
    * ```json
    * {
@@ -189,6 +219,17 @@ export interface UserConfig {
    * ```
    */
   env?: Record<string, any>
+  /**
+   * Path to env file providing compile-time env variables.
+   * @example
+   * `.env`, `.env.production`, etc.
+   */
+  envFile?: string
+  /**
+   * When loading env variables from `envFile`, only include variables with these prefixes.
+   * @default 'TSDOWN_'
+   */
+  envPrefix?: string | string[]
   define?: Record<string, string>
 
   /** @default false */
@@ -460,7 +501,7 @@ export interface UserConfig {
   globImport?: boolean
 
   /**
-   * **[experimental]** Generate package exports for `package.json`.
+   * Generate package exports for `package.json`.
    *
    * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
    * to point to the generated files.
@@ -541,6 +582,8 @@ export type ResolvedConfig = Overwrite<
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'customLogger' // merge to `logger`
+      | 'envFile' // merged to `env`
+      | 'envPrefix' // merged to `env`
     >,
     | 'globalName'
     | 'inputOptions'
@@ -559,6 +602,8 @@ export type ResolvedConfig = Overwrite<
     | 'footer'
   >,
   {
+    /** Resolved entry map (after glob expansion) */
+    entry: Record<string, string>
     nameLabel: string | undefined
     format: NormalizedFormat
     target?: string[]

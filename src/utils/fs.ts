@@ -1,5 +1,5 @@
 import { access, cp, rm, stat } from 'node:fs/promises'
-import { dirname, normalize, sep } from 'node:path'
+import { dirname, extname, normalize, sep } from 'node:path'
 import type { Stats } from 'node:fs'
 
 export function fsExists(path: string): Promise<boolean> {
@@ -44,4 +44,10 @@ export function lowestCommonAncestor(...filepaths: string[]): string {
   return ancestor.length <= 1 && ancestor[0] === ''
     ? sep + ancestor[0]
     : ancestor.join(sep)
+}
+
+export function stripExtname(filePath: string): string {
+  const ext = extname(filePath)
+  if (!ext.length) return filePath
+  return filePath.slice(0, -ext.length)
 }

@@ -24,6 +24,7 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
       cwd: config.cwd,
       absolute: true,
       onlyFiles: false,
+      dot: true,
     })
 
     const normalizedOutDir = config.outDir.replace(RE_LAST_SLASH, '')

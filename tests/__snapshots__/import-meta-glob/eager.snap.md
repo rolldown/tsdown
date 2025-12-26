@@ -3,7 +3,7 @@
 ```mjs
 //#region rolldown:runtime
 var __defProp = Object.defineProperty;
-var __export = (all, symbols) => {
+var __exportAll = (all, symbols) => {
 	let target = {};
 	for (var name in all) {
 		__defProp(target, name, {
@@ -19,12 +19,12 @@ var __export = (all, symbols) => {
 
 //#endregion
 //#region modules/a.ts
-var a_exports = /* @__PURE__ */ __export({ a: () => a });
+var a_exports = /* @__PURE__ */ __exportAll({ a: () => a });
 const a = 1;
 
 //#endregion
 //#region modules/b.ts
-var b_exports = /* @__PURE__ */ __export({ b: () => b });
+var b_exports = /* @__PURE__ */ __exportAll({ b: () => b });
 const b = 2;
 
 //#endregion
