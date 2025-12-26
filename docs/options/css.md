@@ -1,15 +1,34 @@
-# CSS
+# CSS Support
 
-Configure CSS generation options for your build output.
+CSS support in `tsdown` is still in a very early, experimental stage. While you can use some basic features, please be aware that the API and behavior may change in future releases.
 
-By default (`splitting: true`), CSS code splitting is preserved. When disabled, all CSS is merged into a single file (defaults to `style.css` or the specified `fileName`).
+> [!WARNING] Experimental Feature
+> CSS support is highly experimental. Please test thoroughly and report any issues you encounter. The API and behavior may change as the feature matures.
+
+## Options
+
+### Disabling CSS Code Splitting
+
+By default, CSS may be split into multiple files based on your entry points. If you want to disable CSS code splitting and generate a single CSS file, you can set `css.splitting` to `false` in your configuration:
 
 ```ts
 export default defineConfig({
-  entry: ['src/index.ts'],
   css: {
-    splitting: false, // Merge all CSS into a single file
-    fileName: 'index.css', // Optional: custom CSS file name
+    splitting: false,
   },
 })
 ```
+
+### Setting the Output CSS File Name
+
+You can customize the name of the merged CSS file using the `css.fileName` option:
+
+```ts
+export default defineConfig({
+  css: {
+    fileName: 'my-library.css',
+  },
+})
+```
+
+This will output your combined CSS as `my-library.css` in the output directory.

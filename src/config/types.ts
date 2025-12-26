@@ -510,7 +510,7 @@ export interface UserConfig {
   exports?: WithEnabled<ExportsOptions>
 
   /**
-   * Configure CSS generation options.
+   * **[experimental]** CSS options.
    */
   css?: CssOptions
 

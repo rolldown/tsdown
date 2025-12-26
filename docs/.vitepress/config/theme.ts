@@ -94,7 +94,6 @@ export function getLocaleConfig(lang: string) {
         { text: t('Output Format'), link: '/output-format.md' },
         { text: t('Output Directory'), link: '/output-directory.md' },
         { text: t('Cleaning'), link: '/cleaning.md' },
-        { text: t('CSS'), link: '/css.md' },
         { text: t('Dependencies'), link: '/dependencies.md' },
         { text: t('Watch Mode'), link: '/watch-mode.md' },
         { text: t('Target'), link: '/target.md' },
@@ -107,6 +106,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Package Exports'), link: '/package-exports.md' },
         { text: t('Unbundle'), link: '/unbundle.md' },
         { text: t('CJS Default Export'), link: '/cjs-default.md' },
+        { text: t('CSS'), link: '/css.md' },
       ],
     },
     {
