@@ -113,10 +113,42 @@ export async function toObjectEntry(
   }
 
   const base = lowestCommonAncestor(...resolvedEntry)
+
+  // First pass: collect all base names to detect conflicts
+  const baseNames = new Map<string, string[]>()
+  for (const file of resolvedEntry) {
+    const relative = path.relative(base, file)
+    const baseName = stripExtname(relative)
+    if (!baseNames.has(baseName)) {
+      baseNames.set(baseName, [])
+    }
+    baseNames.get(baseName)!.push(file)
+  }
+
+  // Second pass: generate entry names, handling conflicts
   return Object.fromEntries(
     resolvedEntry.map((file) => {
       const relative = path.relative(base, file)
-      return [slash(stripExtname(relative)), file]
+      const baseName = stripExtname(relative)
+
+      // Check if there's a naming conflict (multiple files with same base name)
+      const conflictingFiles = baseNames.get(baseName)!
+      const hasConflict = conflictingFiles.length > 1
+
+      // Only keep extension for CSS files when there's a conflict with non-CSS files
+      // e.g., index.js and index.css both exist -> index and index.css
+      let entryName = baseName
+      if (hasConflict && /\.css$/i.test(file)) {
+        // Check if there's a non-CSS file with the same base name
+        const hasNonCssConflict = conflictingFiles.some(
+          (f) => f !== file && !/\.css$/i.test(f),
+        )
+        if (hasNonCssConflict) {
+          entryName = `${baseName}.css`
+        }
+      }
+
+      return [slash(entryName), file]
     }),
   )
 }

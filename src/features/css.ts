@@ -1,4 +1,4 @@
-import { RE_CSS } from 'rolldown-plugin-dts/filename'
+import { RE_CSS, RE_JS } from 'rolldown-plugin-dts/filename'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
@@ -24,6 +24,81 @@ const RE_CHUNK_HASH = /-[\w-]+\.(m?js|cjs)$/
 const RE_CHUNK_EXT = /\.(m?js|cjs)$/
 
 export const defaultCssBundleName = 'style.css'
+
+/**
+ * CSS Entry Plugin
+ *
+ * When a CSS file is used as an entry alongside a JS file with the same base name,
+ * rolldown generates an empty JS file that can overwrite the legitimate JS output.
+ *
+ * This plugin handles this conflict by:
+ * 1. Removing empty JS files generated from CSS-only entries that would conflict
+ *    (but NOT those imported by other JS, and NOT when there's no conflict)
+ * 2. Renaming CSS files to remove double extensions (e.g., index.css.css -> index.css)
+ */
+export function CssEntryPlugin(): Plugin {
+  return {
+    name: 'tsdown:css-entry',
+
+    generateBundle(_outputOptions, bundle) {
+      // First, collect all JS files that are imported by other chunks
+      // These should NOT be deleted even if they are empty CSS-only chunks
+      const importedFiles = new Set<string>()
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type === 'chunk') {
+          for (const imp of chunk.imports) {
+            importedFiles.add(imp)
+          }
+          for (const imp of chunk.dynamicImports) {
+            importedFiles.add(imp)
+          }
+        }
+      }
+
+      // Find empty JS chunks from CSS-only entries with ".css" in the name
+      // These are the ones we added ".css" suffix to avoid conflicts
+      for (const [fileName, chunk] of Object.entries(bundle)) {
+        if (chunk.type !== 'chunk') continue
+        if (!RE_JS.test(fileName)) continue
+        if (!chunk.isEntry) continue
+
+        // Only process chunks whose name contains ".css" (conflict resolution naming)
+        // e.g., "index.css.mjs" from entry "index.css"
+        if (!chunk.name.endsWith('.css')) continue
+
+        // Skip if this file is imported by other chunks
+        if (importedFiles.has(fileName)) continue
+
+        // Check if this chunk only contains CSS modules
+        const moduleIds = Object.keys(chunk.modules)
+        const hasCssModules = moduleIds.some((id) => RE_CSS.test(id))
+        const hasNonCssModules = moduleIds.some((id) => !RE_CSS.test(id))
+
+        // If chunk only has CSS modules and the code is empty, remove it
+        if (hasCssModules && !hasNonCssModules && chunk.code.trim() === '') {
+          delete bundle[fileName]
+        }
+      }
+
+      // Rename CSS files with double extensions (e.g., index.css.css -> index.css)
+      // This only happens for CSS entries that were renamed to avoid conflicts
+      for (const [fileName, asset] of Object.entries(bundle)) {
+        if (asset.type !== 'asset') continue
+        if (!RE_CSS.test(fileName)) continue
+
+        // Check if this is a CSS file with double .css extension (e.g., index.css.css)
+        const doubleCssMatch = fileName.match(/^(.+\.css)\.css$/)
+        if (doubleCssMatch) {
+          const newFileName = doubleCssMatch[1]
+          // Only rename if the new name doesn't conflict with existing files
+          if (!bundle[newFileName]) {
+            asset.fileName = newFileName
+          }
+        }
+      }
+    },
+  }
+}
 
 /**
  * Normalize CSS file name by removing hash pattern and extension.
