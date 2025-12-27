@@ -8,6 +8,7 @@ import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { formatBytes } from '../utils/format.ts'
 import { noop } from '../utils/general.ts'
 import { prettyFormat, type Logger } from '../utils/logger.ts'
+import type { RolldownChunk } from '../utils/chunks.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 const debug = createDebug('tsdown:report')
@@ -63,6 +64,7 @@ export function ReportPlugin(
   cjsDts?: boolean,
   nameLabel?: string,
   isDualFormat?: boolean,
+  extraChunks?: () => RolldownChunk[],
 ): Plugin {
   const options = {
     ...defaultOptions,
@@ -80,9 +82,22 @@ export function ReportPlugin(
       )
 
       const sizes: SizeInfo[] = []
+
+      // Add Rolldown bundle chunks
       for (const chunk of Object.values(bundle)) {
         const size = await calcSize(options, chunk)
         sizes.push(size)
+      }
+
+      // Add extra chunks (e.g., CSS chunks built separately)
+      if (extraChunks) {
+        for (const chunk of extraChunks()) {
+          // Only add CSS chunks that are not already in the bundle
+          if (chunk.type === 'asset' && /\.css$/i.test(chunk.fileName)) {
+            const size = await calcSize(options, chunk)
+            sizes.push(size)
+          }
+        }
       }
 
       const filenameLength = Math.max(

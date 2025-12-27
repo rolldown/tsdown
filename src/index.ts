@@ -1,3 +1,4 @@
+import { watch as fsWatch, type FSWatcher } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { bold, green } from 'ansis'
@@ -17,6 +18,8 @@ import {
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
+import { buildCssEntries } from './features/css-bundle.ts'
+import { separateCssEntries } from './features/entry.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
 import {
@@ -141,11 +144,23 @@ export async function buildSingle(
 
   await clean()
 
+  // Separate CSS entries from JS entries
+  // CSS entries are processed by LightningCSS to avoid empty JS file generation
+  const { jsEntry, cssEntry } = separateCssEntries(config.entry)
+  const hasCssEntries = Object.keys(cssEntry).length > 0
+  const hasJsEntries = Object.keys(jsEntry).length > 0
+
+  // Create a modified config with only JS entries for Rolldown
+  const jsConfig: ResolvedConfig = hasJsEntries
+    ? { ...config, entry: jsEntry }
+    : config
+
   // output rolldown config for debugging
   const debugRolldownConfigDir = await getDebugRolldownDir()
 
   const chunks: RolldownChunk[] = []
   let watcher: RolldownWatcher | undefined
+  const cssWatchers: FSWatcher[] = []
   let ab: AbortController | undefined
 
   let updated = false
@@ -155,17 +170,35 @@ export async function buildSingle(
     async [asyncDispose]() {
       ab?.abort()
       await watcher?.close()
+      // Close CSS file watchers
+      for (const cssWatcher of cssWatchers) {
+        cssWatcher.close()
+      }
     },
   }
 
-  const configs = await initBuildOptions()
-  if (watch) {
-    watcher = rolldownWatch(configs)
-    handleWatcher(watcher)
-  } else {
-    const outputs = await rolldownBuild(configs)
-    for (const { output } of outputs) {
-      chunks.push(...addOutDirToChunks(output, outDir))
+  // Build CSS entries with LightningCSS (if any)
+  if (hasCssEntries) {
+    const cssResult = await buildCssEntries(config, cssEntry)
+    chunks.push(...cssResult.chunks)
+
+    // Setup CSS file watchers in watch mode
+    if (watch) {
+      setupCssWatchers()
+    }
+  }
+
+  // Build JS entries with Rolldown (if any)
+  if (hasJsEntries) {
+    const configs = await initBuildOptions()
+    if (watch) {
+      watcher = rolldownWatch(configs)
+      handleWatcher(watcher)
+    } else {
+      const outputs = await rolldownBuild(configs)
+      for (const { output } of outputs) {
+        chunks.push(...addOutDirToChunks(output, outDir))
+      }
     }
   }
 
@@ -202,6 +235,12 @@ export async function buildSingle(
 
           chunks.length = 0
           hasError = false
+
+          // Re-add CSS chunks in watch mode since they are not part of Rolldown build
+          if (hasCssEntries) {
+            const cssResult = await buildCssEntries(config, cssEntry)
+            chunks.push(...cssResult.chunks)
+          }
           break
         }
 
@@ -239,9 +278,76 @@ export async function buildSingle(
     })
   }
 
+  function setupCssWatchers() {
+    // Track debounce timers for each CSS file
+    const rebuildTimers = new Map<string, NodeJS.Timeout>()
+
+    for (const [name, file] of Object.entries(cssEntry)) {
+      const absolutePath = path.isAbsolute(file)
+        ? file
+        : path.resolve(config.cwd, file)
+
+      const watcher = fsWatch(absolutePath, (eventType) => {
+        if (eventType !== 'change') return
+
+        // Clear existing timer for this file
+        const existingTimer = rebuildTimers.get(absolutePath)
+        if (existingTimer) {
+          clearTimeout(existingTimer)
+        }
+
+        // Debounce: wait 100ms before rebuilding
+        const timer = setTimeout(async () => {
+          rebuildTimers.delete(absolutePath)
+
+          console.info('')
+          logger.info(
+            `Found ${bold(path.relative(config.cwd, absolutePath))} changed, rebuilding CSS...`,
+          )
+
+          const startTime = performance.now()
+          try {
+            // Rebuild only the changed CSS file
+            const singleCssEntry = { [name]: file }
+            const cssResult = await buildCssEntries(config, singleCssEntry)
+
+            // Update chunks: remove old CSS chunk and add new one
+            const cssFileName = `${name}.css`
+            const oldChunkIndex = chunks.findIndex(
+              (chunk) =>
+                chunk.type === 'asset' && chunk.fileName === cssFileName,
+            )
+            if (oldChunkIndex !== -1) {
+              chunks.splice(oldChunkIndex, 1)
+            }
+            chunks.push(...cssResult.chunks)
+
+            logger.success(
+              config.nameLabel,
+              `CSS rebuilt in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
+            )
+          } catch (error) {
+            logger.error(error)
+          }
+        }, 100)
+
+        rebuildTimers.set(absolutePath, timer)
+      })
+
+      watcher.on('error', (error) => {
+        logger.error(
+          `CSS watcher error for ${path.relative(config.cwd, absolutePath)}: ${error}`,
+        )
+      })
+
+      cssWatchers.push(watcher)
+    }
+  }
+
   async function initBuildOptions() {
+    // Use jsConfig (with CSS entries removed) for Rolldown
     const buildOptions = await getBuildOptions(
-      config,
+      jsConfig,
       format,
       configFiles,
       bundle,
@@ -255,7 +361,7 @@ export async function buildSingle(
     if (debugRolldownConfigDir) {
       await debugBuildOptions(
         debugRolldownConfigDir,
-        config.name,
+        jsConfig.name,
         format,
         buildOptions,
       )
@@ -265,7 +371,7 @@ export async function buildSingle(
     if (format === 'cjs' && dts) {
       configs.push(
         await getBuildOptions(
-          config,
+          jsConfig,
           format,
           configFiles,
           bundle,

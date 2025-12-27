@@ -5,11 +5,4 @@
   color: red;
 }
 
-
-```
-
-## index.mjs
-
-```mjs
-export {  };
 ```
