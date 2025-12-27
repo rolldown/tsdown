@@ -7,11 +7,4 @@
   }
 }
 
-
-```
-
-## index.mjs
-
-```mjs
-export {  };
 ```

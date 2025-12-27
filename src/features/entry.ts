@@ -116,7 +116,43 @@ export async function toObjectEntry(
   return Object.fromEntries(
     resolvedEntry.map((file) => {
       const relative = path.relative(base, file)
-      return [slash(stripExtname(relative)), file]
+      // Keep .css extension for CSS files to avoid name conflicts with JS files
+      // e.g., index.js -> "index", index.css -> "index.css"
+      // CSS entries will be processed separately by LightningCSS
+      const isCss = /\.css$/i.test(file)
+      return [slash(isCss ? relative : stripExtname(relative)), file]
     }),
   )
+}
+
+export interface SeparatedEntries {
+  /** Non-CSS entries to be processed by Rolldown */
+  jsEntry: Record<string, string>
+  /** CSS-only entries to be processed by LightningCSS */
+  cssEntry: Record<string, string>
+}
+
+/**
+ * Separate CSS entries from JS entries.
+ * CSS entries will be processed by LightningCSS instead of Rolldown
+ * to avoid generating empty JS files.
+ */
+export function separateCssEntries(
+  entry: Record<string, string>,
+): SeparatedEntries {
+  const jsEntry: Record<string, string> = {}
+  const cssEntry: Record<string, string> = {}
+
+  for (const [name, file] of Object.entries(entry)) {
+    if (/\.css$/i.test(file)) {
+      // CSS entry name includes .css extension (e.g., "index.css")
+      // We strip the .css from the name for the output file
+      const outputName = name.replace(/\.css$/i, '')
+      cssEntry[outputName] = file
+    } else {
+      jsEntry[name] = file
+    }
+  }
+
+  return { jsEntry, cssEntry }
 }

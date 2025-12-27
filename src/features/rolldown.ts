@@ -168,7 +168,15 @@ async function resolveInputOptions(
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
     plugins.push(
-      ReportPlugin(report, logger, cwd, cjsDts, nameLabel, isDualFormat),
+      ReportPlugin(
+        report,
+        logger,
+        cwd,
+        cjsDts,
+        nameLabel,
+        isDualFormat,
+        () => bundle.chunks,
+      ),
     )
   }
 
