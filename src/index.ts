@@ -18,7 +18,11 @@ import {
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
-import { buildCssEntries } from './features/css-bundle.ts'
+import {
+  buildCssEntries,
+  prepareCssEntries,
+  writeCssEntries,
+} from './features/css-bundle.ts'
 import { separateCssEntries } from './features/entry.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
@@ -177,18 +181,24 @@ export async function buildSingle(
     },
   }
 
-  // Build CSS entries with LightningCSS (if any)
-  if (hasCssEntries) {
-    const cssResult = await buildCssEntries(config, cssEntry)
-    chunks.push(...cssResult.chunks)
-
-    // Setup CSS file watchers in watch mode
-    if (watch) {
-      setupCssWatchers()
+  // Prepare CSS entries first (without writing to disk)
+  // This allows ReportPlugin to include CSS in its report
+  let preparedCssEntries: Awaited<ReturnType<typeof prepareCssEntries>> = []
+  if (hasCssEntries && !watch) {
+    preparedCssEntries = await prepareCssEntries(config, cssEntry)
+    // Add CSS chunks to the array so ReportPlugin can see them
+    for (const { name, code, outputName } of preparedCssEntries) {
+      chunks.push({
+        type: 'asset',
+        fileName: outputName,
+        name,
+        source: code,
+      } as unknown as RolldownChunk)
     }
   }
 
   // Build JS entries with Rolldown (if any)
+  // This may generate CSS files from Vue components, etc.
   if (hasJsEntries) {
     const configs = await initBuildOptions()
     if (watch) {
@@ -200,6 +210,45 @@ export async function buildSingle(
         chunks.push(...addOutDirToChunks(output, outDir))
       }
     }
+  }
+
+  // Write CSS entries after Rolldown build (to merge with Vue component styles, etc.)
+  if (hasCssEntries && !watch && preparedCssEntries.length > 0) {
+    // Find CSS chunks from Rolldown build (e.g., from Vue components)
+    // These have 'outDir' property added by addOutDirToChunks
+    const rolldownCssChunks = chunks.filter(
+      (chunk): chunk is RolldownChunk & { outDir: string } =>
+        chunk.type === 'asset' &&
+        /\.css$/i.test(chunk.fileName) &&
+        'outDir' in chunk,
+    )
+
+    const cssResult = await writeCssEntries(
+      config,
+      preparedCssEntries,
+      rolldownCssChunks,
+    )
+
+    // Update chunks: remove old CSS chunks and add merged ones
+    for (const cssChunk of cssResult.chunks) {
+      // Remove all CSS chunks with the same fileName (both prepared and Rolldown-generated)
+      let index: number
+      while (
+        (index = chunks.findIndex(
+          (chunk) =>
+            chunk.type === 'asset' && chunk.fileName === cssChunk.fileName,
+        )) !== -1
+      ) {
+        chunks.splice(index, 1)
+      }
+
+      chunks.push(cssChunk)
+    }
+  }
+
+  // Setup CSS file watchers in watch mode
+  if (hasCssEntries && watch) {
+    setupCssWatchers()
   }
 
   if (!watch) {
@@ -235,12 +284,6 @@ export async function buildSingle(
 
           chunks.length = 0
           hasError = false
-
-          // Re-add CSS chunks in watch mode since they are not part of Rolldown build
-          if (hasCssEntries) {
-            const cssResult = await buildCssEntries(config, cssEntry)
-            chunks.push(...cssResult.chunks)
-          }
           break
         }
 
@@ -264,6 +307,36 @@ export async function buildSingle(
 
         case 'BUNDLE_END': {
           await event.result.close()
+
+          // Build CSS entries after Rolldown completes (to merge with Vue component styles, etc.)
+          if (hasCssEntries) {
+            // Find existing CSS chunks from Rolldown build
+            const existingCssChunks = chunks.filter(
+              (chunk) =>
+                chunk.type === 'asset' && /\.css$/i.test(chunk.fileName),
+            )
+
+            const cssResult = await buildCssEntries(
+              config,
+              cssEntry,
+              existingCssChunks,
+            )
+
+            // Remove existing CSS chunks that were merged
+            for (const cssChunk of cssResult.chunks) {
+              const existingIndex = chunks.findIndex(
+                (chunk) =>
+                  chunk.type === 'asset' &&
+                  chunk.fileName === cssChunk.fileName,
+              )
+              if (existingIndex !== -1) {
+                chunks.splice(existingIndex, 1)
+              }
+            }
+
+            chunks.push(...cssResult.chunks)
+          }
+
           logger.success(config.nameLabel, `Rebuilt in ${event.duration}ms.`)
           break
         }

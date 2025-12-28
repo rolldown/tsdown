@@ -90,10 +90,17 @@ export function ReportPlugin(
       }
 
       // Add extra chunks (e.g., CSS chunks built separately)
+      // Only add CSS chunks that are not already in the bundle
       if (extraChunks) {
+        const bundleFileNames = new Set(
+          Object.values(bundle).map((chunk) => chunk.fileName),
+        )
         for (const chunk of extraChunks()) {
-          // Only add CSS chunks that are not already in the bundle
-          if (chunk.type === 'asset' && /\.css$/i.test(chunk.fileName)) {
+          if (
+            chunk.type === 'asset' &&
+            /\.css$/i.test(chunk.fileName) &&
+            !bundleFileNames.has(chunk.fileName)
+          ) {
             const size = await calcSize(options, chunk)
             sizes.push(size)
           }
