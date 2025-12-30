@@ -335,6 +335,21 @@ const defu = createDefu((obj, key, value) => {
   }
 })
 
+export function mergeConfig(
+  defaults: UserConfig,
+  overrides: UserConfig,
+): UserConfig
+export function mergeConfig(
+  defaults: InlineConfig,
+  overrides: InlineConfig,
+): InlineConfig
+export function mergeConfig(
+  defaults: InlineConfig,
+  overrides: InlineConfig,
+): InlineConfig {
+  return defu(overrides, defaults)
+}
+
 export async function mergeUserOptions<T extends object, A extends unknown[]>(
   defaults: T,
   user:

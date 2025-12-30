@@ -1,6 +1,9 @@
 import isInCi from 'is-in-ci'
 import { describe, expect, test } from 'vitest'
-import { resolveFeatureOption as _resolveFeatureOption } from './options.ts'
+import {
+  resolveFeatureOption as _resolveFeatureOption,
+  mergeConfig,
+} from './options.ts'
 
 const defaultOption = { a: 1 }
 interface DefaultOption {
@@ -54,4 +57,34 @@ describe('resolveFeatureOption', () => {
       )
     }
   })
+})
+
+test('mergeConfig', () => {
+  expect(
+    mergeConfig(
+      {
+        a: 1,
+        obj: { c: 2, d: 3 },
+        arr: [1, 2, 3],
+      } as any,
+      {
+        obj: { c: 42 },
+        arr: [4, 5],
+        e: 5,
+      } as any,
+    ),
+  ).toMatchInlineSnapshot(`
+    {
+      "a": 1,
+      "arr": [
+        4,
+        5,
+      ],
+      "e": 5,
+      "obj": {
+        "c": 42,
+        "d": 3,
+      },
+    }
+  `)
 })

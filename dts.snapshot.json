@@ -1,14 +1,18 @@
 {
-  "config.d.mts": {
+  "config-!~{00e}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
+    "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig"
+  },
+  "config.d.mts": {
     "#exports": [
       "UserConfig",
       "UserConfigExport",
       "UserConfigFn",
-      "defineConfig"
+      "defineConfig",
+      "mergeConfig"
     ]
   },
-  "index-!~{00a}~.d.mts": {
+  "index-!~{00c}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",
@@ -111,7 +115,8 @@
       "Workspace",
       "build",
       "defineConfig",
-      "globalLogger"
+      "globalLogger",
+      "mergeConfig"
     ]
   },
   "plugins.d.mts": {

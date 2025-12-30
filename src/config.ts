@@ -3,7 +3,6 @@ import type {
   UserConfigExport,
   UserConfigFn,
 } from './config/index.ts'
-
 /**
  * Defines the configuration for tsdown.
  */
@@ -16,3 +15,4 @@ export function defineConfig(options: UserConfigExport): UserConfigExport {
 }
 
 export type { UserConfig, UserConfigExport, UserConfigFn }
+export { mergeConfig } from './config/options.ts'
