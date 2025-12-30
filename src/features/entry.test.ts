@@ -134,9 +134,10 @@ describe('toObjectEntry', () => {
     expect(Object.keys(result)).not.toContain('hooks/index')
   })
 
-  test('object entry with multiple negation patterns', async (context) => {
+  test('object entry with multiple patterns', async (context) => {
     const { testDir } = await writeFixtures(context, {
       'src/utils/index.ts': '',
+      'src/utils/tsx.tsx': '',
       'src/utils/internal.ts': '',
       'src/utils/helper.ts': '',
       'src/utils/format.ts': '',
@@ -145,6 +146,7 @@ describe('toObjectEntry', () => {
       {
         'utils/*': [
           'src/utils/*.ts',
+          'src/utils/*.tsx',
           '!src/utils/index.ts',
           '!src/utils/internal.ts',
         ],
@@ -152,12 +154,13 @@ describe('toObjectEntry', () => {
       testDir,
     )
     expect(result).toEqual({
+      'utils/tsx': path.join(testDir, 'src/utils/tsx.tsx'),
       'utils/helper': path.join(testDir, 'src/utils/helper.ts'),
       'utils/format': path.join(testDir, 'src/utils/format.ts'),
     })
   })
 
-  test('object entry with multiple positive patterns should throw', async (context) => {
+  test('object entry with different patterns base should throw', async (context) => {
     const { testDir } = await writeFixtures(context, {
       'src/hooks/useAuth.ts': '',
       'src/utils/helper.ts': '',
@@ -169,7 +172,9 @@ describe('toObjectEntry', () => {
         },
         testDir,
       ),
-    ).rejects.toThrow(/multiple positive patterns/)
+    ).rejects.toThrow(
+      'all value glob patterns must have the same base directory',
+    )
   })
 
   test('object entry with no positive pattern should throw', async (context) => {
@@ -183,6 +188,6 @@ describe('toObjectEntry', () => {
         },
         testDir,
       ),
-    ).rejects.toThrow(/no positive pattern/)
+    ).rejects.toThrow('Cannot find files')
   })
 })

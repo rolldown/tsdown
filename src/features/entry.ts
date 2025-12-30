@@ -62,32 +62,41 @@ export async function toObjectEntry(
             }
 
             const patterns = toArray(value)
-
-            const positivePatterns = patterns.filter((p) => !p.startsWith('!'))
-            if (positivePatterns.length === 0) {
-              throw new TypeError(
-                `Object entry "${key}" has no positive pattern. At least one positive pattern is required.`,
-              )
-            }
-
-            if (positivePatterns.length > 1) {
-              throw new TypeError(
-                `Object entry "${key}" has multiple positive patterns: ${positivePatterns.join(', ')}. ` +
-                  `Only one positive pattern is allowed. Use negation patterns (prefixed with "!") to exclude files.`,
-              )
-            }
-
-            const valueGlob = picomatch.scan(positivePatterns[0])
             const files = await glob(patterns, {
               cwd,
               expandDirectories: false,
             })
+            if (!files.length) {
+              throw new Error(
+                `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(
+                  patterns,
+                )}`,
+              )
+            }
+
+            let valueGlobBase: string | undefined
+            for (const pattern of patterns) {
+              if (pattern.startsWith('!')) continue
+              const base = picomatch.scan(pattern).base
+              if (valueGlobBase === undefined) {
+                valueGlobBase = base
+              } else if (valueGlobBase !== base) {
+                throw new Error(
+                  `When using object entry with glob pattern key "${key}", all value glob patterns must have the same base directory.`,
+                )
+              }
+            }
+            if (valueGlobBase === undefined) {
+              throw new Error(
+                `Cannot determine base directory for value glob patterns of key "${key}".`,
+              )
+            }
 
             return files.map((file) => [
               slash(
                 key.replaceAll(
                   '*',
-                  stripExtname(path.relative(valueGlob.base, file)),
+                  stripExtname(path.relative(valueGlobBase, file)),
                 ),
               ),
               path.resolve(cwd, file),
