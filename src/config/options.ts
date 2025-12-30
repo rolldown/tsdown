@@ -110,9 +110,13 @@ export async function resolveUserConfig(
     logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')
   }
 
-  if (removeNodeProtocol && nodeProtocol) {
-    throw new TypeError(
-      '`removeNodeProtocol` is deprecated. Please only use `nodeProtocol` instead.',
+  if (removeNodeProtocol) {
+    if (nodeProtocol)
+      throw new TypeError(
+        '`removeNodeProtocol` is deprecated. Please only use `nodeProtocol` instead.',
+      )
+    logger.warn(
+      '`removeNodeProtocol` is deprecated. Use `nodeProtocol: "strip"` instead.',
     )
   }
 
