@@ -3,9 +3,15 @@ import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { importWithError } from '../../utils/general.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
+import type { Options } from 'publint'
 
 const debug = createDebug('tsdown:publint')
 const label = dim`[publint]`
+
+export interface PublintOptions extends Options {
+  /** @internal */
+  resolvePaths?: string[]
+}
 
 export async function publint(options: ResolvedConfig): Promise<void> {
   if (!options.publint) return
@@ -19,8 +25,15 @@ export async function publint(options: ResolvedConfig): Promise<void> {
 
   const t = performance.now()
   debug('Running publint')
-  const { publint } = await importWithError<typeof import('publint')>('publint')
-  const { formatMessage } = await import('publint/utils')
+
+  const { publint } = await importWithError<typeof import('publint')>(
+    'publint',
+    options.publint.resolvePaths,
+  )
+  const { formatMessage } = await importWithError<
+    typeof import('publint/utils')
+  >('publint/utils', options.publint.resolvePaths)
+
   const { messages } = await publint({
     ...options.publint,
     pkgDir: path.dirname(options.pkg.packageJsonPath),

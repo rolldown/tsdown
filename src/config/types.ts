@@ -16,6 +16,7 @@ import type {
 } from '../features/output.ts'
 import type { AttwOptions } from '../features/pkg/attw.ts'
 import type { ExportsOptions } from '../features/pkg/exports.ts'
+import type { PublintOptions } from '../features/pkg/publint.ts'
 import type { ReportOptions } from '../features/report.ts'
 import type { RolldownChunk, TsdownBundle } from '../utils/chunks.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
@@ -27,7 +28,6 @@ import type {
   Overwrite,
 } from '../utils/types.ts'
 import type { Hookable } from 'hookable'
-import type { Options as PublintOptions } from 'publint'
 import type {
   ExternalOption,
   InputOptions,

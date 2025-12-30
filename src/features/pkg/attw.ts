@@ -33,6 +33,9 @@ const problemFlags: Record<ProblemKind, string> = {
 }
 
 export interface AttwOptions extends CheckPackageOptions {
+  /** @internal */
+  resolvePaths?: string[]
+
   /**
    * Profiles select a set of resolution modes to require/ignore. All are evaluated but failures outside
    * of those required are ignored.
@@ -122,7 +125,7 @@ export async function attw(options: ResolvedConfig): Promise<void> {
 
   const attwCore = await importWithError<
     typeof import('@arethetypeswrong/core')
-  >('@arethetypeswrong/core')
+  >('@arethetypeswrong/core', options.attw.resolvePaths)
   let checkResult: CheckResult
 
   try {
