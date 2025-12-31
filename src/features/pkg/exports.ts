@@ -4,7 +4,6 @@ import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
-import { defaultCssBundleName } from '../css.ts'
 import type {
   CssOptions,
   NormalizedFormat,
@@ -289,11 +288,10 @@ function exportMeta(
 function exportCss(
   exports: Record<string, any>,
   dir: string,
-  cssOptions: CssOptions,
+  { splitting, fileName }: Required<CssOptions>,
 ) {
-  if (cssOptions.splitting === false) {
-    const cssFileName = cssOptions.fileName || defaultCssBundleName
-    exports[`./${cssFileName}`] = `./${slash(path.join(dir, cssFileName))}`
+  if (!splitting) {
+    exports[`./${fileName}`] = `./${slash(path.join(dir, fileName))}`
   }
 }
 
