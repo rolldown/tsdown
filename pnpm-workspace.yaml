@@ -31,6 +31,7 @@ catalogs:
     rolldown-plugin-dts-snapshot: ^0.3.2
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
+    unplugin-ast: ^0.15.4
     vitest: ^4.0.16
   docs:
     '@shikijs/vitepress-twoslash': ^3.20.0

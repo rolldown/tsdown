@@ -135,6 +135,7 @@
     "rolldown-plugin-require-cjs": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
+    "unplugin-ast": "catalog:dev",
     "unplugin-lightningcss": "catalog:peer",
     "unplugin-unused": "catalog:peer",
     "vite": "catalog:docs",

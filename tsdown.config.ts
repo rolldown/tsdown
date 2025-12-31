@@ -1,5 +1,8 @@
 import { DtsSnapshot } from 'rolldown-plugin-dts-snapshot'
 import { RequireCJS } from 'rolldown-plugin-require-cjs'
+import { isCallOf } from 'unplugin-ast/ast-kit'
+import AST from 'unplugin-ast/rolldown'
+import { RemoveNode } from 'unplugin-ast/transformers'
 import { defineConfig } from './src/config.ts'
 
 export default defineConfig([
@@ -32,7 +35,14 @@ export default defineConfig([
         return exports
       },
     },
-    plugins: [RequireCJS(), DtsSnapshot()],
+    plugins: [
+      RequireCJS(),
+      DtsSnapshot(),
+      AST({
+        exclude: ['**/*.d.ts'],
+        transformer: [RemoveNode((node) => isCallOf(node, 'typeAssert'))],
+      }),
+    ],
     onSuccess() {
       console.info('🙏 Build succeeded!')
     },

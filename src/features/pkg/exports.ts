@@ -3,7 +3,7 @@ import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
-import { matchPattern, slash } from '../../utils/general.ts'
+import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
 import { defaultCssBundleName } from '../css.ts'
 import type {
   CssOptions,
@@ -63,8 +63,9 @@ export async function writeExports(
   options: ResolvedConfig,
   chunks: ChunksByFormat,
 ): Promise<void> {
-  const pkg = options.pkg!
+  typeAssert(options.pkg)
 
+  const { pkg } = options
   const { publishExports, ...generated } = await generateExports(
     pkg,
     chunks,
@@ -111,20 +112,13 @@ export async function generateExports(
   exports: Record<string, any>
   publishExports?: Record<string, any>
 }> {
+  typeAssert(options.exports)
   const {
-    exports: exportsOptions = {},
-    css: cssOptions,
+    exports: { devExports, all, packageJson = true, exclude, customExports },
+    css,
     logger,
     outDir,
   } = options
-
-  const {
-    devExports,
-    all,
-    packageJson = true,
-    exclude,
-    customExports,
-  } = exportsOptions as ExportsOptions
 
   const pkgRoot = path.dirname(pkg.packageJsonPath)
 
@@ -219,7 +213,7 @@ export async function generateExports(
     ]),
   )
   exportMeta(exports, all, packageJson)
-  exportCss(exports, path.relative(pkgRoot, outDir), cssOptions)
+  exportCss(exports, path.relative(pkgRoot, outDir), css)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -237,7 +231,7 @@ export async function generateExports(
       ]),
     )
     exportMeta(publishExports, all, packageJson)
-    exportCss(publishExports, path.relative(pkgRoot, outDir), cssOptions)
+    exportCss(publishExports, path.relative(pkgRoot, outDir), css)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
