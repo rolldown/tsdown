@@ -2,7 +2,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
 import { globalLogger } from '../../utils/logger.ts'
-import { defaultCssBundleName } from '../css.ts'
+import { resolveCssOptions } from '../css.ts'
 import { generateExports } from './exports.ts'
 import type { RolldownChunk } from '../../utils/chunks.ts'
 
@@ -10,10 +10,7 @@ const cwd = process.cwd()
 const FAKE_PACKAGE_JSON = {
   packageJsonPath: path.join(cwd, 'package.json'),
 }
-const DEFAULT_CSS_OPTIONS = {
-  splitting: true,
-  fileName: defaultCssBundleName,
-}
+const DEFAULT_CSS_OPTIONS = resolveCssOptions()
 
 describe.concurrent('generateExports', () => {
   test('no entries', async ({ expect }) => {
@@ -548,7 +545,7 @@ describe.concurrent('generateExports', () => {
       {
         exports: {},
         logger: globalLogger,
-        css: { ...DEFAULT_CSS_OPTIONS, splitting: false },
+        css: resolveCssOptions({ splitting: false }),
         outDir: cwd,
       },
     )
@@ -574,7 +571,7 @@ describe.concurrent('generateExports', () => {
       {
         exports: {},
         logger: globalLogger,
-        css: { splitting: false, fileName: 'custom.css' },
+        css: resolveCssOptions({ splitting: false, fileName: 'custom.css' }),
         outDir: cwd,
       },
     )
@@ -602,7 +599,7 @@ describe.concurrent('generateExports', () => {
           devExports: 'dev',
         },
         logger: globalLogger,
-        css: { ...DEFAULT_CSS_OPTIONS, splitting: false },
+        css: resolveCssOptions({ splitting: false }),
         outDir: cwd,
       },
     )
@@ -635,7 +632,7 @@ describe.concurrent('generateExports', () => {
       {
         exports: {},
         logger: globalLogger,
-        css: { ...DEFAULT_CSS_OPTIONS, splitting: false },
+        css: resolveCssOptions({ splitting: false }),
         outDir: 'dist',
       },
     )
