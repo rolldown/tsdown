@@ -63,6 +63,21 @@ export default defineConfig({
 
 这在结合 TypeScript 的 [`customConditions`](https://www.typescriptlang.org/tsconfig/#customConditions) 选项时尤其有用，可以灵活控制哪些条件下使用源码。
 
+## CSS 导出
+
+当 `css.splitting` 为 `false` 时，打包后的 CSS 文件会自动添加到 `exports` 中：
+
+```ts
+export default defineConfig({
+  css: {
+    splitting: false,
+  },
+  exports: true,
+})
+```
+
+CSS 文件名默认为 `style.css`，可通过 `css.fileName` 自定义。
+
 ## 自定义导出
 
 如果您需要对生成的导出字段进行更细致的控制，可以通过 `exports.customExports` 提供自定义函数：

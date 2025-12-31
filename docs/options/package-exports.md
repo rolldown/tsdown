@@ -63,6 +63,21 @@ export default defineConfig({
 
 This is especially useful when combined with TypeScript's [`customConditions`](https://www.typescriptlang.org/tsconfig/#customConditions) option, allowing you to control which conditions use the source code.
 
+## CSS Exports
+
+When `css.splitting` is `false`, the bundled CSS file is automatically added to `exports`:
+
+```ts
+export default defineConfig({
+  css: {
+    splitting: false,
+  },
+  exports: true,
+})
+```
+
+The CSS filename defaults to `style.css` and can be customized via `css.fileName`.
+
 ## Customizing Exports
 
 If you need more control over the generated exports, you can provide a custom function via `exports.customExports`:
