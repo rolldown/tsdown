@@ -4,13 +4,17 @@ import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash } from '../../utils/general.ts'
-import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
+import { defaultCssBundleName } from '../css.ts'
+import type {
+  CssOptions,
+  NormalizedFormat,
+  ResolvedConfig,
+} from '../../config/types.ts'
 import type {
   ChunksByFormat,
   RolldownChunk,
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
-import type { Logger } from '../../utils/logger.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -60,13 +64,11 @@ export async function writeExports(
   chunks: ChunksByFormat,
 ): Promise<void> {
   const pkg = options.pkg!
-  const exports = options.exports as ExportsOptions
 
   const { publishExports, ...generated } = await generateExports(
     pkg,
     chunks,
-    exports,
-    options.logger,
+    options,
   )
 
   const updatedPkg = {
@@ -101,14 +103,7 @@ function shouldExclude(
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  {
-    devExports,
-    all,
-    packageJson = true,
-    exclude,
-    customExports,
-  }: ExportsOptions,
-  logger: Logger,
+  options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger' | 'outDir'>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -116,6 +111,21 @@ export async function generateExports(
   exports: Record<string, any>
   publishExports?: Record<string, any>
 }> {
+  const {
+    exports: exportsOptions = {},
+    css: cssOptions,
+    logger,
+    outDir,
+  } = options
+
+  const {
+    devExports,
+    all,
+    packageJson = true,
+    exclude,
+    customExports,
+  } = exportsOptions as ExportsOptions
+
   const pkgRoot = path.dirname(pkg.packageJsonPath)
 
   let main: string | undefined,
@@ -209,6 +219,7 @@ export async function generateExports(
     ]),
   )
   exportMeta(exports, all, packageJson)
+  exportCss(exports, path.relative(pkgRoot, outDir), cssOptions)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -226,6 +237,7 @@ export async function generateExports(
       ]),
     )
     exportMeta(publishExports, all, packageJson)
+    exportCss(publishExports, path.relative(pkgRoot, outDir), cssOptions)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -277,6 +289,17 @@ function exportMeta(
     exports['./*'] = './*'
   } else if (packageJson) {
     exports['./package.json'] = './package.json'
+  }
+}
+
+function exportCss(
+  exports: Record<string, any>,
+  dir: string,
+  cssOptions: CssOptions,
+) {
+  if (cssOptions.splitting === false) {
+    const cssFileName = cssOptions.fileName || defaultCssBundleName
+    exports[`./${cssFileName}`] = `./${slash(path.join(dir, cssFileName))}`
   }
 }
 
