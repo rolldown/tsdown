@@ -7,7 +7,7 @@ import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
-import { defaultCssBundleName } from '../features/css.ts'
+import { resolveCssOptions } from '../features/css.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
@@ -256,11 +256,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
-    css: {
-      splitting: true,
-      fileName: defaultCssBundleName,
-      ...css,
-    },
+    css: resolveCssOptions(css),
     cwd,
     debug,
     dts,
