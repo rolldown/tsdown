@@ -18,12 +18,21 @@ export interface CssOptions {
   fileName?: string
 }
 
+const defaultCssBundleName = 'style.css'
+
+export function resolveCssOptions(
+  options: CssOptions = {},
+): Required<CssOptions> {
+  return {
+    splitting: options.splitting ?? true,
+    fileName: options.fileName ?? defaultCssBundleName,
+  }
+}
+
 // Regular expressions for file matching
 const RE_CSS_HASH = /-[\w-]+\.css$/
 const RE_CHUNK_HASH = /-[\w-]+\.(m?js|cjs)$/
 const RE_CHUNK_EXT = /\.(m?js|cjs)$/
-
-export const defaultCssBundleName = 'style.css'
 
 /**
  * Normalize CSS file name by removing hash pattern and extension.
