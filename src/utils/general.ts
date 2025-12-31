@@ -100,5 +100,10 @@ export function promiseWithResolvers<T>(): {
   const promise = new Promise<T>((res) => {
     resolve = res
   })
-  return { promise, resolve: resolve! }
+  typeAssert(resolve!)
+  return { promise, resolve }
 }
+
+export function typeAssert<T>(
+  value: T,
+): asserts value is Exclude<T, false | null | undefined> {}

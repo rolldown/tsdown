@@ -3,7 +3,7 @@ import path from 'node:path'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
-import { matchPattern, slash } from '../../utils/general.ts'
+import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
 import type {
   ChunksByFormat,
@@ -59,9 +59,10 @@ export async function writeExports(
   options: ResolvedConfig,
   chunks: ChunksByFormat,
 ): Promise<void> {
-  const pkg = options.pkg!
-  const exports = options.exports as ExportsOptions
+  typeAssert(options.pkg)
+  typeAssert(options.exports)
 
+  const { pkg, exports } = options
   const { publishExports, ...generated } = await generateExports(
     pkg,
     chunks,
