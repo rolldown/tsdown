@@ -2,7 +2,7 @@
 
 `tsdown` uses [Rolldown](https://rolldown.rs) as its core bundling engine. This allows you to easily pass or override options directly to Rolldown, giving you fine-grained control over the bundling process.
 
-For a full list of available Rolldown options, refer to the [Rolldown Config Options](https://rolldown.rs/reference/config-options) documentation.
+For a full list of available Rolldown options, refer to the [Rolldown Config Options](https://rolldown.rs/options/input) documentation.
 
 > [!WARNING]
 > You should be familiar with the behavior of the Rolldown options you are overriding and ensure you have read the Rolldown documentation.
