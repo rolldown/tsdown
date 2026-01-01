@@ -21,7 +21,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -45,7 +44,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -70,7 +68,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -96,7 +93,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -122,7 +118,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -151,7 +146,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -182,7 +176,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -213,7 +206,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -241,7 +233,6 @@ describe.concurrent('generateExports', () => {
         exports: { devExports: 'dev' },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     // key order matters
@@ -276,7 +267,6 @@ describe.concurrent('generateExports', () => {
         exports: { devExports: true },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -313,7 +303,6 @@ describe.concurrent('generateExports', () => {
         },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     // key order matters
@@ -346,7 +335,6 @@ describe.concurrent('generateExports', () => {
         exports: { exclude: [/bar/] },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
 
@@ -375,7 +363,6 @@ describe.concurrent('generateExports', () => {
         exports: { exclude: ['**/bar.js'] },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
 
@@ -402,7 +389,6 @@ describe.concurrent('generateExports', () => {
         exports: { exclude: ['**/bar.js', /foo/] },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
 
@@ -427,7 +413,6 @@ describe.concurrent('generateExports', () => {
         exports: { all: true },
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -464,7 +449,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -510,7 +494,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: DEFAULT_CSS_OPTIONS,
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -546,7 +529,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: resolveCssOptions({ splitting: false }),
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -574,7 +556,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: resolveCssOptions({ splitting: false }),
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -599,7 +580,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: resolveCssOptions({ splitting: false, fileName: 'custom.css' }),
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -625,7 +605,6 @@ describe.concurrent('generateExports', () => {
         exports: {},
         logger: globalLogger,
         css: resolveCssOptions({ splitting: false }),
-        outDir: 'dist',
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -653,7 +632,6 @@ describe.concurrent('generateExports', () => {
         },
         logger: globalLogger,
         css: resolveCssOptions({ splitting: false }),
-        outDir: cwd,
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -695,6 +673,6 @@ function genAsset(fileName: string, outDir = cwd) {
   return {
     type: 'asset',
     fileName,
-    outDir,
+    outDir: path.resolve(cwd, outDir),
   } as RolldownChunk
 }

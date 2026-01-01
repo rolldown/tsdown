@@ -103,7 +103,7 @@ function shouldExclude(
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger' | 'outDir'>,
+  options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger'>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -116,7 +116,6 @@ export async function generateExports(
     exports: { devExports, all, packageJson = true, exclude, customExports },
     css,
     logger,
-    outDir,
   } = options
 
   const pkgRoot = path.dirname(pkg.packageJsonPath)
@@ -212,7 +211,7 @@ export async function generateExports(
     ]),
   )
   exportMeta(exports, all, packageJson)
-  exportCss(exports, chunks, path.relative(pkgRoot, outDir), css)
+  exportCss(exports, chunks, css, pkgRoot)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -230,7 +229,7 @@ export async function generateExports(
       ]),
     )
     exportMeta(publishExports, all, packageJson)
-    exportCss(publishExports, chunks, path.relative(pkgRoot, outDir), css)
+    exportCss(publishExports, chunks, css, pkgRoot)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -288,21 +287,19 @@ function exportMeta(
 function exportCss(
   exports: Record<string, any>,
   chunks: ChunksByFormat,
-  dir: string,
-  { splitting, fileName: cssFileName }: Required<CssOptions>,
+  { splitting }: Required<CssOptions>,
+  pkgRoot: string,
 ) {
-  if (!splitting) {
-    for (const chunksByFormat of Object.values(chunks)) {
-      for (const chunk of chunksByFormat) {
-        if (
-          chunk.type === 'asset' &&
-          RE_CSS.test(chunk.fileName) &&
-          cssFileName === chunk.fileName
-        ) {
-          exports[`./${cssFileName}`] =
-            `./${slash(path.join(dir, cssFileName))}`
-          return
-        }
+  if (splitting) return
+
+  for (const chunksByFormat of Object.values(chunks)) {
+    for (const chunk of chunksByFormat) {
+      if (chunk.type === 'asset' && RE_CSS.test(chunk.fileName)) {
+        console.log(chunk)
+
+        exports[`./${chunk.fileName}`] =
+          `./${slash(path.join(path.relative(pkgRoot, chunk.outDir), chunk.fileName))}`
+        return
       }
     }
   }
