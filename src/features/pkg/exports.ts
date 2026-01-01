@@ -1,16 +1,19 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { RE_DTS } from 'rolldown-plugin-dts/filename'
+import { RE_CSS, RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
-import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
+import type {
+  CssOptions,
+  NormalizedFormat,
+  ResolvedConfig,
+} from '../../config/types.ts'
 import type {
   ChunksByFormat,
   RolldownChunk,
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
-import type { Logger } from '../../utils/logger.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -60,14 +63,12 @@ export async function writeExports(
   chunks: ChunksByFormat,
 ): Promise<void> {
   typeAssert(options.pkg)
-  typeAssert(options.exports)
 
-  const { pkg, exports } = options
+  const { pkg } = options
   const { publishExports, ...generated } = await generateExports(
     pkg,
     chunks,
-    exports,
-    options.logger,
+    options,
   )
 
   const updatedPkg = {
@@ -102,14 +103,7 @@ function shouldExclude(
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  {
-    devExports,
-    all,
-    packageJson = true,
-    exclude,
-    customExports,
-  }: ExportsOptions,
-  logger: Logger,
+  options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger'>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -117,6 +111,13 @@ export async function generateExports(
   exports: Record<string, any>
   publishExports?: Record<string, any>
 }> {
+  typeAssert(options.exports)
+  const {
+    exports: { devExports, all, packageJson = true, exclude, customExports },
+    css,
+    logger,
+  } = options
+
   const pkgRoot = path.dirname(pkg.packageJsonPath)
 
   let main: string | undefined,
@@ -157,8 +158,7 @@ export async function generateExports(
         name = name.slice(0, -2)
       }
       const isIndex = onlyOneEntry || name === 'index'
-      const outDirRelative = slash(path.relative(pkgRoot, chunk.outDir))
-      const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${normalizedName}`
+      const distFile = join(pkgRoot, chunk.outDir, normalizedName)
 
       if (isIndex) {
         name = '.'
@@ -210,6 +210,7 @@ export async function generateExports(
     ]),
   )
   exportMeta(exports, all, packageJson)
+  exportCss(exports, chunks, css, pkgRoot)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -227,6 +228,7 @@ export async function generateExports(
       ]),
     )
     exportMeta(publishExports, all, packageJson)
+    exportCss(publishExports, chunks, css, pkgRoot)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -281,6 +283,25 @@ function exportMeta(
   }
 }
 
+function exportCss(
+  exports: Record<string, any>,
+  chunks: ChunksByFormat,
+  { splitting }: Required<CssOptions>,
+  pkgRoot: string,
+) {
+  if (splitting) return
+
+  for (const chunksByFormat of Object.values(chunks)) {
+    for (const chunk of chunksByFormat) {
+      if (chunk.type === 'asset' && RE_CSS.test(chunk.fileName)) {
+        const filename = slash(chunk.fileName)
+        exports[`./${filename}`] = join(pkgRoot, chunk.outDir, filename)
+        return
+      }
+    }
+  }
+}
+
 export function hasExportsTypes(pkg?: PackageJson): boolean {
   const exports = pkg?.exports
   if (!exports) return false
@@ -309,4 +330,9 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   }
 
   return false
+}
+
+function join(pkgRoot: string, outDir: string, fileName: string) {
+  const outDirRelative = slash(path.relative(pkgRoot, outDir))
+  return `${outDirRelative ? `./${outDirRelative}` : '.'}/${fileName}`
 }

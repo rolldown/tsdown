@@ -2,6 +2,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
 import { globalLogger } from '../../utils/logger.ts'
+import { resolveCssOptions } from '../css.ts'
 import { generateExports } from './exports.ts'
 import type { RolldownChunk } from '../../utils/chunks.ts'
 
@@ -9,10 +10,19 @@ const cwd = process.cwd()
 const FAKE_PACKAGE_JSON = {
   packageJsonPath: path.join(cwd, 'package.json'),
 }
+const DEFAULT_CSS_OPTIONS = resolveCssOptions()
 
 describe.concurrent('generateExports', () => {
   test('no entries', async ({ expect }) => {
-    const results = generateExports(FAKE_PACKAGE_JSON, {}, {}, globalLogger)
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      {},
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
+    )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
         "exports": {
@@ -30,8 +40,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('main.js'), genChunk('chunk.js', false)] },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -51,8 +64,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js'), genChunk('foo.js')] },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -73,8 +89,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js'), genChunk('foo/index.js')] },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -95,8 +114,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('foo.js'), genChunk('bar.js')] },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -120,8 +142,11 @@ describe.concurrent('generateExports', () => {
         es: [genChunk('foo.js')],
         cjs: [genChunk('foo.cjs')],
       },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -147,8 +172,11 @@ describe.concurrent('generateExports', () => {
         es: [genChunk('foo.js'), genChunk('foo.d.ts')],
         cjs: [genChunk('foo.cjs'), genChunk('foo.d.cts')],
       },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -174,8 +202,11 @@ describe.concurrent('generateExports', () => {
         es: [genChunk('index.mjs'), genChunk('index.d.mts')],
         cjs: [genChunk('index.cjs'), genChunk('index.d.cts')],
       },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -198,8 +229,11 @@ describe.concurrent('generateExports', () => {
     const results = await generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
-      { devExports: 'dev' },
-      globalLogger,
+      {
+        exports: { devExports: 'dev' },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     // key order matters
     expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
@@ -229,8 +263,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
-      { devExports: true },
-      globalLogger,
+      {
+        exports: { devExports: true },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -257,13 +294,16 @@ describe.concurrent('generateExports', () => {
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')] },
       {
-        devExports: 'dev',
-        customExports(exports) {
-          exports['./TEST'] = './TEST'
-          return Promise.resolve(exports)
+        exports: {
+          devExports: 'dev',
+          customExports(exports: Record<string, any>) {
+            exports['./TEST'] = './TEST'
+            return Promise.resolve(exports)
+          },
         },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
       },
-      globalLogger,
     )
     // key order matters
     expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
@@ -291,8 +331,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')] },
-      { exclude: [/bar/] },
-      globalLogger,
+      {
+        exports: { exclude: [/bar/] },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -316,8 +359,11 @@ describe.concurrent('generateExports', () => {
       {
         es: [genChunk('index.js'), genChunk('foo.js'), genChunk('abc/bar.js')],
       },
-      { exclude: ['**/bar.js'] },
-      globalLogger,
+      {
+        exports: { exclude: ['**/bar.js'] },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -339,8 +385,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('foo.js'), genChunk('abc/bar.js')] },
-      { exclude: ['**/bar.js', /foo/] },
-      globalLogger,
+      {
+        exports: { exclude: ['**/bar.js', /foo/] },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
 
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -360,8 +409,11 @@ describe.concurrent('generateExports', () => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
-      { all: true },
-      globalLogger,
+      {
+        exports: { all: true },
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -393,8 +445,11 @@ describe.concurrent('generateExports', () => {
           genChunk(String.raw`bar\baz.d.ts`),
         ],
       },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -435,8 +490,11 @@ describe.concurrent('generateExports', () => {
           genChunk(String.raw`bar\baz.d.cts`),
         ],
       },
-      {},
-      globalLogger,
+      {
+        exports: {},
+        logger: globalLogger,
+        css: DEFAULT_CSS_OPTIONS,
+      },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
@@ -462,6 +520,141 @@ describe.concurrent('generateExports', () => {
       }
     `)
   })
+
+  test('generate css exports', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js'), genAsset('style.css')] },
+      {
+        exports: {},
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false }),
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+          "./style.css": "./style.css",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('should not generate css exports when css chunk not exists', async ({
+    expect,
+  }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js')] },
+      {
+        exports: {},
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false }),
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('generate css exports with custom fileName', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js'), genAsset('custom.css')] },
+      {
+        exports: {},
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false, fileName: 'custom.css' }),
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./custom.css": "./custom.css",
+          "./package.json": "./package.json",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('generate css exports with custom outDir', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js'), genAsset('style.css', 'dist')] },
+      {
+        exports: {},
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false }),
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+          "./style.css": "./dist/style.css",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('generate css publish exports', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js'), genAsset('style.css')] },
+      {
+        exports: {
+          devExports: 'dev',
+        },
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false }),
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": {
+            "default": "./index.js",
+            "dev": "./SRC/index.js",
+          },
+          "./package.json": "./package.json",
+          "./style.css": "./style.css",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+          "./style.css": "./style.css",
+        },
+        "types": undefined,
+      }
+    `)
+  })
 })
 
 function genChunk(fileName: string, isEntry = true) {
@@ -472,5 +665,14 @@ function genChunk(fileName: string, isEntry = true) {
     isEntry,
     facadeModuleId: `./SRC/${fileName}`,
     outDir: cwd,
+  } as RolldownChunk
+}
+
+function genAsset(fileName: string, outDir = cwd) {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return {
+    type: 'asset',
+    fileName,
+    outDir: path.resolve(cwd, outDir),
   } as RolldownChunk
 }
