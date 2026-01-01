@@ -158,8 +158,7 @@ export async function generateExports(
         name = name.slice(0, -2)
       }
       const isIndex = onlyOneEntry || name === 'index'
-      const outDirRelative = slash(path.relative(pkgRoot, chunk.outDir))
-      const distFile = `${outDirRelative ? `./${outDirRelative}` : '.'}/${normalizedName}`
+      const distFile = join(pkgRoot, chunk.outDir, normalizedName)
 
       if (isIndex) {
         name = '.'
@@ -295,10 +294,8 @@ function exportCss(
   for (const chunksByFormat of Object.values(chunks)) {
     for (const chunk of chunksByFormat) {
       if (chunk.type === 'asset' && RE_CSS.test(chunk.fileName)) {
-        console.log(chunk)
-
-        exports[`./${chunk.fileName}`] =
-          `./${slash(path.join(path.relative(pkgRoot, chunk.outDir), chunk.fileName))}`
+        const filename = slash(chunk.fileName)
+        exports[`./${filename}`] = join(pkgRoot, chunk.outDir, filename)
         return
       }
     }
@@ -333,4 +330,9 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   }
 
   return false
+}
+
+function join(pkgRoot: string, outDir: string, fileName: string) {
+  const outDirRelative = slash(path.relative(pkgRoot, outDir))
+  return `${outDirRelative ? `./${outDirRelative}` : '.'}/${fileName}`
 }
