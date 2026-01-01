@@ -212,7 +212,7 @@ export async function generateExports(
     ]),
   )
   exportMeta(exports, all, packageJson)
-  exportCss(exports, chunks, pkgRoot, outDir, css)
+  exportCss(exports, chunks, path.relative(pkgRoot, outDir), css)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -230,7 +230,7 @@ export async function generateExports(
       ]),
     )
     exportMeta(publishExports, all, packageJson)
-    exportCss(publishExports, chunks, pkgRoot, outDir, css)
+    exportCss(publishExports, chunks, path.relative(pkgRoot, outDir), css)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -288,24 +288,19 @@ function exportMeta(
 function exportCss(
   exports: Record<string, any>,
   chunks: ChunksByFormat,
-  pkgRoot: string,
-  outDir: string,
-  { splitting, fileName }: Required<CssOptions>,
+  dir: string,
+  { splitting, fileName: cssFileName }: Required<CssOptions>,
 ) {
-  if (splitting === false) {
-    const cssFileName = fileName
-
+  if (!splitting) {
     for (const chunksByFormat of Object.values(chunks)) {
       for (const chunk of chunksByFormat) {
         if (
           chunk.type === 'asset' &&
-          chunk.outDir === outDir &&
           RE_CSS.test(chunk.fileName) &&
           cssFileName === chunk.fileName
         ) {
-          const relativeDir = path.relative(pkgRoot, outDir)
           exports[`./${cssFileName}`] =
-            `./${slash(path.join(relativeDir, cssFileName))}`
+            `./${slash(path.join(dir, cssFileName))}`
           return
         }
       }
