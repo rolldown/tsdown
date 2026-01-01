@@ -538,10 +538,10 @@ describe.concurrent('generateExports', () => {
     `)
   })
 
-  test('generate css exports with css exports', async ({ expect }) => {
+  test('generate css exports', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      { es: [genChunk('index.js')] },
+      { es: [genChunk('index.js'), genAsset('style.css')] },
       {
         exports: {},
         logger: globalLogger,
@@ -564,10 +564,37 @@ describe.concurrent('generateExports', () => {
     `)
   })
 
-  test('generate css exports with custom fileName', async ({ expect }) => {
+  test('should not generate css exports when css chunk not exists', async ({
+    expect,
+  }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
       { es: [genChunk('index.js')] },
+      {
+        exports: {},
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false }),
+        outDir: cwd,
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('generate css exports with custom fileName', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js'), genAsset('custom.css')] },
       {
         exports: {},
         logger: globalLogger,
@@ -590,10 +617,36 @@ describe.concurrent('generateExports', () => {
     `)
   })
 
-  test('generate publish exports with css exports', async ({ expect }) => {
+  test('generate css exports with custom outDir', async ({ expect }) => {
     const results = generateExports(
       FAKE_PACKAGE_JSON,
-      { es: [genChunk('index.js')] },
+      { es: [genChunk('index.js'), genAsset('style.css', 'dist')] },
+      {
+        exports: {},
+        logger: globalLogger,
+        css: resolveCssOptions({ splitting: false }),
+        outDir: 'dist',
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+          "./style.css": "./dist/style.css",
+        },
+        "main": "./index.js",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('generate css publish exports', async ({ expect }) => {
+    const results = generateExports(
+      FAKE_PACKAGE_JSON,
+      { es: [genChunk('index.js'), genAsset('style.css')] },
       {
         exports: {
           devExports: 'dev',
@@ -624,32 +677,6 @@ describe.concurrent('generateExports', () => {
       }
     `)
   })
-
-  test('generate css exports with custom outDir', async ({ expect }) => {
-    const results = generateExports(
-      FAKE_PACKAGE_JSON,
-      { es: [genChunk('index.js')] },
-      {
-        exports: {},
-        logger: globalLogger,
-        css: resolveCssOptions({ splitting: false }),
-        outDir: 'dist',
-      },
-    )
-    await expect(results).resolves.toMatchInlineSnapshot(`
-      {
-        "exports": {
-          ".": "./index.js",
-          "./package.json": "./package.json",
-          "./style.css": "./dist/style.css",
-        },
-        "main": "./index.js",
-        "module": "./index.js",
-        "publishExports": undefined,
-        "types": undefined,
-      }
-    `)
-  })
 })
 
 function genChunk(fileName: string, isEntry = true) {
@@ -660,5 +687,14 @@ function genChunk(fileName: string, isEntry = true) {
     isEntry,
     facadeModuleId: `./SRC/${fileName}`,
     outDir: cwd,
+  } as RolldownChunk
+}
+
+function genAsset(fileName: string, outDir = cwd) {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  return {
+    type: 'asset',
+    fileName,
+    outDir,
   } as RolldownChunk
 }

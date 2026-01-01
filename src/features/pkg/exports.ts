@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { RE_DTS } from 'rolldown-plugin-dts/filename'
+import { RE_CSS, RE_DTS } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
@@ -212,7 +212,7 @@ export async function generateExports(
     ]),
   )
   exportMeta(exports, all, packageJson)
-  exportCss(exports, path.relative(pkgRoot, outDir), css)
+  exportCss(exports, chunks, pkgRoot, outDir, css)
   if (customExports) {
     exports = await customExports(exports, {
       pkg,
@@ -230,7 +230,7 @@ export async function generateExports(
       ]),
     )
     exportMeta(publishExports, all, packageJson)
-    exportCss(publishExports, path.relative(pkgRoot, outDir), css)
+    exportCss(publishExports, chunks, pkgRoot, outDir, css)
     if (customExports) {
       publishExports = await customExports(publishExports, {
         pkg,
@@ -287,11 +287,29 @@ function exportMeta(
 
 function exportCss(
   exports: Record<string, any>,
-  dir: string,
+  chunks: ChunksByFormat,
+  pkgRoot: string,
+  outDir: string,
   { splitting, fileName }: Required<CssOptions>,
 ) {
-  if (!splitting) {
-    exports[`./${fileName}`] = `./${slash(path.join(dir, fileName))}`
+  if (splitting === false) {
+    const cssFileName = fileName
+
+    for (const chunksByFormat of Object.values(chunks)) {
+      for (const chunk of chunksByFormat) {
+        if (
+          chunk.type === 'asset' &&
+          chunk.outDir === outDir &&
+          RE_CSS.test(chunk.fileName) &&
+          cssFileName === chunk.fileName
+        ) {
+          const relativeDir = path.relative(pkgRoot, outDir)
+          exports[`./${cssFileName}`] =
+            `./${slash(path.join(relativeDir, cssFileName))}`
+          return
+        }
+      }
+    }
   }
 }
 
