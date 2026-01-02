@@ -1,4 +1,5 @@
 import picomatch from 'picomatch'
+import { pathToFileURL } from 'node:url'
 
 export function toArray<T>(
   val: T | T[] | null | undefined,
@@ -77,7 +78,9 @@ export async function importWithError<T>(
 ): Promise<T> {
   let resolved: string | undefined
   if (resolvePaths) {
-    resolved = require.resolve(moduleName, { paths: resolvePaths })
+    resolved = pathToFileURL(
+      require.resolve(moduleName, { paths: resolvePaths }),
+    ).href
   }
 
   try {
