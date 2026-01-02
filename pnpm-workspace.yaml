@@ -18,7 +18,7 @@ catalogs:
     '@types/node': ^25.0.3
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20251230.1
+    '@typescript/native-preview': 7.0.0-dev.20260101.1
     '@vitest/coverage-v8': 4.0.16
     '@vitest/ui': ^4.0.16
     bumpp: ^10.3.2
@@ -70,14 +70,14 @@ catalogs:
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
-    rolldown: 1.0.0-beta.57
+    rolldown: 1.0.0-beta.58
     rolldown-plugin-dts: ^0.20.0
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.2
-    unrun: ^0.2.21
+    unrun: ^0.2.22
 
 ignoreWorkspaceRootCheck: true
 
