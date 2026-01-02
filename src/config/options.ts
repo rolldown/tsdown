@@ -32,7 +32,7 @@ import type {
   WithEnabled,
 } from './types.ts'
 
-const debugLog = createDebug('tsdown:config:options')
+const debug = createDebug('tsdown:config:options')
 
 export async function resolveUserConfig(
   userConfig: UserConfig,
@@ -97,7 +97,7 @@ export async function resolveUserConfig(
   const nameLabel = getNameLabel(color, name)
 
   if (!filterConfig(inlineConfig.filter, cwd, name)) {
-    debugLog('[filter] skipping config %s', cwd)
+    debug('[filter] skipping config %s', cwd)
     return []
   }
 
@@ -194,7 +194,7 @@ export async function resolveUserConfig(
     // precedence: process.env < tsdown option
     env = { ...envFromProcess, ...env }
   }
-  debugLog(`Environment variables: %O`, env)
+  debug(`Environment variables: %O`, env)
 
   if (fromVite) {
     const viteUserConfig = await loadViteConfig(

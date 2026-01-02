@@ -203,7 +203,7 @@ tsdown --env-file .env.production
 tsdown --env-file .env --env-prefix APP_ --env-prefix TSDOWN_
 ```
 
-## `--debug-logs [feat]`
+## `--debug [feat]`
 
 显示调试日志。
 

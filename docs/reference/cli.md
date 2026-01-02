@@ -203,7 +203,7 @@ When loading environment variables from a file via `--env-file`, only include va
 tsdown --env-file .env --env-prefix APP_ --env-prefix TSDOWN_
 ```
 
-## `--debug-logs [feat]`
+## `--debug [feat]`
 
 Show debug logs.
 

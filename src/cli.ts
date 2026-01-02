@@ -4,7 +4,7 @@ import { cac } from 'cac'
 import { VERSION as rolldownVersion } from 'rolldown'
 import { x } from 'tinyexec'
 import pkg from '../package.json' with { type: 'json' }
-import { enableDebugLog } from './features/debug.ts'
+import { enableDebug } from './features/debug.ts'
 import { globalLogger } from './utils/logger.ts'
 import type { UserConfig } from './config.ts'
 
@@ -30,7 +30,7 @@ cli
   .option('--external <module>', 'Mark dependencies as external')
   .option('--minify', 'Minify output')
   .option('--devtools', 'Enable devtools integration')
-  .option('--debug-logs [feat]', 'Show debug logs')
+  .option('--debug [feat]', 'Show debug logs')
   .option('--target <target>', 'Bundle target, e.g "es2015", "esnext"')
   .option('-l, --logLevel <level>', 'Set log level: info, warn, error, silent')
   .option('--fail-on-warn', 'Fail on warnings', { default: true })
@@ -128,7 +128,7 @@ cli
 export async function runCLI(): Promise<void> {
   cli.parse(process.argv, { run: false })
 
-  enableDebugLog(cli.options)
+  enableDebug(cli.options)
 
   try {
     await cli.runMatchedCommand()

@@ -1,18 +1,18 @@
 import { createDebug, enable, namespaces } from 'obug'
 import { resolveComma, toArray } from '../utils/general.ts'
 
-const debug = createDebug('tsdown:debug')
+const debugLog = createDebug('tsdown:debug')
 
-export function enableDebugLog(cliOptions: Record<string, any>): void {
-  const { debugLogs } = cliOptions
-  if (!debugLogs) return
+export function enableDebug(cliOptions: Record<string, any>): void {
+  const { debug } = cliOptions
+  if (!debug) return
 
   let namespace: string
-  if (debugLogs === true) {
+  if (debug === true) {
     namespace = 'tsdown:*'
   } else {
     // support debugging multiple flags with comma-separated list
-    namespace = resolveComma(toArray(debugLogs))
+    namespace = resolveComma(toArray(debug))
       .map((v) => `tsdown:${v}`)
       .join(',')
   }
@@ -21,5 +21,5 @@ export function enableDebugLog(cliOptions: Record<string, any>): void {
   if (ns) namespace += `,${ns}`
 
   enable(namespace)
-  debug('Debugging enabled', namespace)
+  debugLog('Debugging enabled', namespace)
 }
