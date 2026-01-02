@@ -20,7 +20,6 @@
     "./run": "./dist/run.mjs",
     "./package.json": "./package.json"
   },
-  "types": "./dist/index.d.mts",
   "typesVersions": {
     "*": {
       "*": [
