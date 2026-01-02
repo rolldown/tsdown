@@ -1,6 +1,6 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { CssOptions } from '../features/css.ts'
-import type { DebugOptions } from '../features/debug.ts'
+import type { DevtoolsOptions } from '../features/devtools.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -77,7 +77,7 @@ export type {
   CopyOptions,
   CopyOptionsFn,
   CssOptions,
-  DebugOptions,
+  DevtoolsOptions,
   DtsOptions,
   ExportsOptions,
   OutExtensionContext,
@@ -437,15 +437,15 @@ export interface UserConfig {
   ignoreWatch?: Arrayable<string | RegExp>
 
   /**
-   * **[experimental]** Enable debug mode.
+   * **[experimental]** Enable devtools.
    *
-   * Both debug mode and Vite DevTools are still under development, and this is for early testers only.
+   *DevTools is still under development, and this is for early testers only.
    *
    * This may slow down the build process significantly.
    *
    * @default false
    */
-  debug?: WithEnabled<DebugOptions>
+  devtools?: WithEnabled<DevtoolsOptions>
 
   //#region Addons
 
@@ -621,7 +621,7 @@ export type ResolvedConfig = Overwrite<
     report: false | ReportOptions
     tsconfig: false | string
     exports: false | ExportsOptions
-    debug: false | DebugOptions
+    devtools: false | DevtoolsOptions
     publint: false | PublintOptions
     attw: false | AttwOptions
     unused: false | UnusedOptions

@@ -85,7 +85,7 @@ export async function resolveUserConfig(
     inlineOnly,
     css,
     fixedExtension = platform === 'node',
-    debug = false,
+    devtools = false,
     write = true,
   } = userConfig
 
@@ -236,15 +236,15 @@ export async function resolveUserConfig(
     inlineOnly = toArray(inlineOnly)
   }
 
-  debug = resolveFeatureOption(debug, {})
-  if (debug) {
+  devtools = resolveFeatureOption(devtools, {})
+  if (devtools) {
     if (watch) {
-      if (debug.devtools) {
-        logger.warn('Devtools is not supported in watch mode, disabling it.')
+      if (devtools.ui) {
+        logger.warn('Devtools UI is not supported in watch mode, disabling it.')
       }
-      debug.devtools = false
+      devtools.ui = false
     } else {
-      debug.devtools ??= !!pkgExists('@vitejs/devtools/cli')
+      devtools.ui ??= !!pkgExists('@vitejs/devtools/cli')
     }
   }
 
@@ -258,7 +258,7 @@ export async function resolveUserConfig(
     copy: publicDir || copy,
     css: resolveCssOptions(css),
     cwd,
-    debug,
+    devtools,
     dts,
     entry: resolvedEntry,
     env,

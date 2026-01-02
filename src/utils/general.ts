@@ -1,5 +1,5 @@
-import picomatch from 'picomatch'
 import { pathToFileURL } from 'node:url'
+import picomatch from 'picomatch'
 
 export function toArray<T>(
   val: T | T[] | null | undefined,

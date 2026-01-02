@@ -85,7 +85,7 @@ async function resolveInputOptions(
     alias,
     cjsDefault,
     cwd,
-    debug,
+    devtools,
     dts,
     entry,
     env,
@@ -217,7 +217,7 @@ async function resolveInputOptions(
             defaultHandler(level, log)
           }
         : undefined,
-      debug: debug || undefined,
+      devtools: devtools || undefined,
       checks: {
         pluginTimings: false,
       },

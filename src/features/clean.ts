@@ -15,8 +15,8 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
   const removes = new Set<string>()
 
   for (const config of configs) {
-    if (config.debug && (config.debug.clean ?? true)) {
-      config.clean.push('.rolldown')
+    if (config.devtools && (config.devtools.clean ?? true)) {
+      config.clean.push('node_modules/.rolldown')
     }
 
     if (!config.clean.length) continue

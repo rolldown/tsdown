@@ -10,13 +10,13 @@ import {
 } from 'rolldown'
 import {
   resolveConfig,
-  type DebugOptions,
   type InlineConfig,
   type ResolvedConfig,
 } from './config/index.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
+import { startDevtoolsUI } from './features/devtools.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
 import {
@@ -31,7 +31,7 @@ import {
   type RolldownChunk,
   type TsdownBundle,
 } from './utils/chunks.ts'
-import { importWithError } from './utils/general.ts'
+import { typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
@@ -88,7 +88,7 @@ export async function build(
   )
 
   const firstDevtoolsConfig = configs.find(
-    (config) => config.debug && config.debug.devtools,
+    (config) => config.devtools && config.devtools.ui,
   )
 
   const hasWatchConfig = configs.some((config) => config.watch)
@@ -99,17 +99,9 @@ export async function build(
       disposeCbs.push(bundle[asyncDispose])
     }
   } else if (firstDevtoolsConfig) {
+    typeAssert(firstDevtoolsConfig.devtools)
     // build done, start devtools
-    const { start } = await importWithError<
-      typeof import('@vitejs/devtools/cli-commands')
-    >('@vitejs/devtools/cli-commands')
-
-    const devtoolsOptions = (firstDevtoolsConfig.debug as DebugOptions).devtools
-    await start({
-      host: '127.0.0.1',
-      open: true,
-      ...(typeof devtoolsOptions === 'object' ? devtoolsOptions : {}),
-    })
+    startDevtoolsUI(firstDevtoolsConfig.devtools)
   }
 
   return bundles

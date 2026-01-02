@@ -29,7 +29,7 @@ cli
   .option('--clean', 'Clean output directory, --no-clean to disable')
   .option('--external <module>', 'Mark dependencies as external')
   .option('--minify', 'Minify output')
-  .option('--debug', 'Enable debug mode')
+  .option('--devtools', 'Enable devtools integration')
   .option('--debug-logs [feat]', 'Show debug logs')
   .option('--target <target>', 'Bundle target, e.g "es2015", "esnext"')
   .option('-l, --logLevel <level>', 'Set log level: info, warn, error, silent')
