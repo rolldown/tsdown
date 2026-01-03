@@ -111,12 +111,15 @@ export function CssCodeSplitPlugin(
 
       // Build an index of normalized chunk names for faster lookup
       const chunkNameIndex = new Map<string, string[]>()
+      const chunkFileNamesByBaseName = new Map<string, string>()
       for (const chunkFileName of chunkCSSMap.keys()) {
         const chunkBaseName = normalizeChunkFileName(chunkFileName)
         if (!chunkNameIndex.has(chunkBaseName)) {
           chunkNameIndex.set(chunkBaseName, [])
         }
         chunkNameIndex.get(chunkBaseName)!.push(chunkFileName)
+        // Store mapping from chunk file name to base name for prefix matching
+        chunkFileNamesByBaseName.set(chunkFileName, chunkBaseName)
       }
 
       // Match CSS assets to chunks by comparing base names
@@ -130,11 +133,22 @@ export function CssCodeSplitPlugin(
             break
           }
         } else {
-          // Fallback: check for prefix match
-          for (const [chunkFileName] of chunkCSSMap) {
-            if (chunkFileName.startsWith(`${cssBaseName}-`)) {
-              chunkCSSMap.get(chunkFileName)?.push(cssFileName)
-              break
+          // Fallback: check for prefix match by examining the base name index
+          let found = false
+          for (const [baseName, chunkFileNames] of chunkNameIndex) {
+            // Check if CSS file name could be a variant (e.g., with hash)
+            if (
+              baseName.startsWith(cssBaseName) ||
+              cssBaseName.startsWith(baseName)
+            ) {
+              for (const chunkFileName of chunkFileNames) {
+                if (chunkFileName.startsWith(`${cssBaseName}-`)) {
+                  chunkCSSMap.get(chunkFileName)?.push(cssFileName)
+                  found = true
+                  break
+                }
+              }
+              if (found) break
             }
           }
         }

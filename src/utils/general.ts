@@ -52,7 +52,9 @@ export function slash(string: string): string {
 export const noop = <T>(v: T): T => v
 
 // Cache picomatch matchers to avoid recompilation
+// Limit cache size to prevent memory leaks in long-running processes
 const picomatchers = new Map<string, ReturnType<typeof picomatch>>()
+const MAX_PICOMATCH_CACHE_SIZE = 500
 
 export function matchPattern(
   id: string,
@@ -69,6 +71,10 @@ export function matchPattern(
     let matcher = picomatchers.get(pattern)
     if (!matcher) {
       matcher = picomatch(pattern)
+      // Implement simple cache eviction: clear cache when it gets too large
+      if (picomatchers.size >= MAX_PICOMATCH_CACHE_SIZE) {
+        picomatchers.clear()
+      }
       picomatchers.set(pattern, matcher)
     }
     return matcher(id)
