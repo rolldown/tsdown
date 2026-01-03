@@ -261,7 +261,7 @@ export async function generateExports(
   return {
     main: legacy ? main || module || pkg.main : undefined,
     module: legacy ? module || pkg.module : undefined,
-    types: legacy ? cjsTypes || esmTypes || pkg.types : undefined,
+    types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
     publishExports,
   }
