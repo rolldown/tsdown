@@ -391,7 +391,7 @@ describe.concurrent('generateExports', () => {
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
-        "types": "./index.d.ts",
+        "types": undefined,
       }
     `)
   })
