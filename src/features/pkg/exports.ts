@@ -37,14 +37,13 @@ export interface ExportsOptions {
   all?: boolean
 
   /**
-   * Define globs or RegExp patterns to exclude files from exports.
-   * This is useful for excluding files that should not be part of the package exports,
-   * such as bin files or internal utilities.
+   * Specifies file patterns (as glob patterns or regular expressions) to exclude from package exports.
+   * Use this to prevent certain files from being included in the exported package, such as test files, binaries, or internal utilities.
+   *
+   * **Note:** Do not include file extensions, and paths should be relative to the dist directory.
    *
    * @example
-   * ```js
-   * exclude: ['**\/*.test.ts', '**\/*.spec.ts', /internal/]
-   * ```
+   * exclude: ['cli', '**\/*.test', /internal/]
    */
   exclude?: (RegExp | string)[]
 
@@ -159,10 +158,14 @@ export async function generateExports(
 
     // Filter out non-entry chunks and excluded files
     const filteredChunks = chunksByFormat.filter(
-      (chunk): chunk is RolldownCodeChunk =>
-        chunk.type === 'chunk' &&
-        chunk.isEntry &&
-        !shouldExclude(chunk.fileName, exclude),
+      (chunk): chunk is RolldownCodeChunk => {
+        if (chunk.type !== 'chunk' || !chunk.isEntry) {
+          return false
+        }
+
+        const [name] = getExportName(chunk)
+        return !shouldExclude(name, exclude)
+      },
     )
 
     const onlyOneEntry =
@@ -170,13 +173,7 @@ export async function generateExports(
       1
 
     for (const chunk of filteredChunks) {
-      const normalizedName = slash(chunk.fileName)
-      let name = stripExtname(normalizedName)
-
-      const isDts = name.endsWith('.d')
-      if (isDts) {
-        name = name.slice(0, -2)
-      }
+      let [name, normalizedName, isDts] = getExportName(chunk)
       const isIndex = onlyOneEntry || name === 'index'
       const distFile = join(pkgRoot, chunk.outDir, normalizedName)
 
@@ -350,6 +347,20 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   }
 
   return false
+}
+
+function getExportName(
+  chunk: RolldownCodeChunk,
+): [name: string, normalizedName: string, isDts: boolean] {
+  const normalizedName = slash(chunk.fileName)
+  let name = stripExtname(normalizedName)
+
+  const isDts = name.endsWith('.d')
+  if (isDts) {
+    name = name.slice(0, -2)
+  }
+
+  return [name, normalizedName, isDts] as const
 }
 
 function join(pkgRoot: string, outDir: string, fileName: string) {
