@@ -318,10 +318,7 @@ function filterEnv(
 ) {
   const env: Record<string, string> = {}
   for (const [key, value] of Object.entries(envDict)) {
-    if (
-      envPrefixes.some((prefix) => key.startsWith(prefix)) &&
-      value !== undefined
-    ) {
+    if (value != null && envPrefixes.some((prefix) => key.startsWith(prefix))) {
       env[key] = value
     }
   }

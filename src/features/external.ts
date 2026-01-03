@@ -97,7 +97,10 @@ Imported by ${underline(importer)}`,
       }
     }
 
-    if (deps && deps.some((dep) => id === dep || id.startsWith(`${dep}/`))) {
+    if (
+      deps &&
+      (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`)))
+    ) {
       return true
     }
 
