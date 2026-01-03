@@ -17,7 +17,7 @@ export function ExternalPlugin({
   inlineOnly,
   skipNodeModulesBundle,
 }: ResolvedConfig): Plugin {
-  const deps = pkg && Array.from(getProductionDeps(pkg))
+  const depsSet = pkg ? getProductionDeps(pkg) : undefined
 
   return {
     name: 'tsdown:external',
@@ -97,8 +97,15 @@ Imported by ${underline(importer)}`,
       }
     }
 
-    if (deps && deps.some((dep) => id === dep || id.startsWith(`${dep}/`))) {
-      return true
+    if (depsSet) {
+      // Fast path: exact match
+      if (depsSet.has(id)) return true
+      // Check for subpath imports (e.g., 'react/jsx-runtime')
+      const slashIndex = id.indexOf('/')
+      if (slashIndex > 0) {
+        const pkgName = id.slice(0, slashIndex)
+        if (depsSet.has(pkgName)) return true
+      }
     }
 
     return false
