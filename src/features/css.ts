@@ -109,17 +109,33 @@ export function CssCodeSplitPlugin(
         }
       }
 
+      // Build an index of normalized chunk names for faster lookup
+      const chunkNameIndex = new Map<string, string[]>()
+      for (const chunkFileName of chunkCSSMap.keys()) {
+        const chunkBaseName = normalizeChunkFileName(chunkFileName)
+        if (!chunkNameIndex.has(chunkBaseName)) {
+          chunkNameIndex.set(chunkBaseName, [])
+        }
+        chunkNameIndex.get(chunkBaseName)!.push(chunkFileName)
+      }
+
       // Match CSS assets to chunks by comparing base names
       for (const [cssFileName] of cssAssets) {
         const cssBaseName = normalizeCssFileName(cssFileName)
-        for (const [chunkFileName] of chunkCSSMap) {
-          const chunkBaseName = normalizeChunkFileName(chunkFileName)
-          if (
-            chunkBaseName === cssBaseName ||
-            chunkFileName.startsWith(`${cssBaseName}-`)
-          ) {
+        // Direct lookup instead of nested loop
+        const matchingChunks = chunkNameIndex.get(cssBaseName)
+        if (matchingChunks) {
+          for (const chunkFileName of matchingChunks) {
             chunkCSSMap.get(chunkFileName)?.push(cssFileName)
             break
+          }
+        } else {
+          // Fallback: check for prefix match
+          for (const [chunkFileName] of chunkCSSMap) {
+            if (chunkFileName.startsWith(`${cssBaseName}-`)) {
+              chunkCSSMap.get(chunkFileName)?.push(cssFileName)
+              break
+            }
           }
         }
       }

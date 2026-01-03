@@ -34,11 +34,13 @@ export function lowestCommonAncestor(...filepaths: string[]): string {
       if (directory === ancestor[index]) {
         index += 1
       } else {
-        ancestor = ancestor.slice(0, index)
         break
       }
     }
+    // Only slice once after finding the common prefix length
     ancestor = ancestor.slice(0, index)
+    // Early exit if no common ancestor
+    if (ancestor.length === 0) break
   }
 
   return ancestor.length <= 1 && ancestor[0] === ''

@@ -51,6 +51,9 @@ export function slash(string: string): string {
 
 export const noop = <T>(v: T): T => v
 
+// Cache picomatch matchers to avoid recompilation
+const picomatchers = new Map<string, ReturnType<typeof picomatch>>()
+
 export function matchPattern(
   id: string,
   patterns: (string | RegExp)[],
@@ -60,7 +63,15 @@ export function matchPattern(
       pattern.lastIndex = 0
       return pattern.test(id)
     }
-    return id === pattern || picomatch(pattern)(id)
+    // Fast path for exact match
+    if (id === pattern) return true
+    // Use cached matcher or create new one
+    let matcher = picomatchers.get(pattern)
+    if (!matcher) {
+      matcher = picomatch(pattern)
+      picomatchers.set(pattern, matcher)
+    }
+    return matcher(id)
   })
 }
 
