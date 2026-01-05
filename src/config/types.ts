@@ -1,5 +1,5 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
-import type { CssOptions } from '../features/css.ts'
+import type { CssOptions } from '../features/css/index.ts'
 import type { DevtoolsOptions } from '../features/devtools.ts'
 import type {
   BuildContext,

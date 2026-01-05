@@ -1,33 +1,7 @@
 import { RE_CSS } from 'rolldown-plugin-dts/filename'
-import type { ResolvedConfig } from '../config/index.ts'
+import { defaultCssBundleName } from './index.ts'
+import type { ResolvedConfig } from '../../config/index.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
-
-export interface CssOptions {
-  /**
-   * Enable/disable CSS code splitting.
-   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file.
-   * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
-   * @default true
-   */
-  splitting?: boolean
-
-  /**
-   * Specify the name of the CSS file.
-   * @default 'style.css'
-   */
-  fileName?: string
-}
-
-const defaultCssBundleName = 'style.css'
-
-export function resolveCssOptions(
-  options: CssOptions = {},
-): Required<CssOptions> {
-  return {
-    splitting: options.splitting ?? true,
-    fileName: options.fileName ?? defaultCssBundleName,
-  }
-}
 
 // Regular expressions for file matching
 const RE_CSS_HASH = /-[\w-]+\.css$/
