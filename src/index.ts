@@ -206,7 +206,9 @@ export async function buildSingle(
 
         case 'BUNDLE_START': {
           if (changedFile.length > 0) {
-            console.info('')
+            if (logger.level === 'info') {
+              console.info('')
+            }
             logger.info(
               `Found ${bold(changedFile.join(', '))} changed, rebuilding...`,
             )
