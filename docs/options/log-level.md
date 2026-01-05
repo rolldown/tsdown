@@ -18,9 +18,6 @@ tsdown --log-level error
 
 This is useful for CI/CD pipelines or scenarios where you want minimal or no console output.
 
-> [!NOTE] Deprecated Silent Mode
-> The `--silent` option is **deprecated**. Please use `--log-level error` instead for future compatibility.
-
 ## Available Log Levels
 
 - `silent`: No logs are shown, including errors.

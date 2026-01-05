@@ -43,8 +43,7 @@ const asyncDispose: typeof Symbol.asyncDispose =
 export async function build(
   userOptions: InlineConfig = {},
 ): Promise<TsdownBundle[]> {
-  globalLogger.level =
-    userOptions.logLevel || (userOptions.silent ? 'error' : 'info')
+  globalLogger.level = userOptions.logLevel || 'info'
   const { configs, files: configFiles } = await resolveConfig(userOptions)
 
   let cleanPromise: Promise<void> | undefined

@@ -18,9 +18,6 @@ tsdown --log-level error
 
 这对于 CI/CD 流水线或需要极简控制台输出的场景非常有用。
 
-> [!NOTE] 废弃静默模式
-> `--silent` 选项已**废弃**。请使用 `--log-level error` 以获得更好的兼容性。
-
 ## 可用日志级别
 
 - `silent`：不显示任何日志，包括错误。

@@ -142,7 +142,7 @@ export async function testBuild({
     config: false,
     outDir: 'dist',
     dts: false,
-    silent: true,
+    logLevel: 'silent',
     tsconfig: false,
     ...userOptions,
     async inputOptions(options, ...args) {

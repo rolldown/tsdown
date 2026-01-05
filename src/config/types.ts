@@ -401,12 +401,6 @@ export interface UserConfig {
   name?: string
 
   /**
-   * @default false
-   * @deprecated Use `logLevel` instead.
-   */
-  silent?: boolean
-
-  /**
    * Log level.
    * @default 'info'
    */
@@ -577,7 +571,6 @@ export type ResolvedConfig = Overwrite<
       | 'workspace' // merged
       | 'fromVite' // merged
       | 'publicDir' // deprecated
-      | 'silent' // deprecated
       | 'bundle' // deprecated
       | 'removeNodeProtocol' // deprecated
       | 'logLevel' // merge to `logger`
