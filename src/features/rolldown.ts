@@ -1,7 +1,7 @@
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import util, { type InspectOptionsStylized } from 'node:util'
+import path from 'node:path'
+import { formatWithOptions, inspect, type Inspectable } from 'node:util'
 import { createDebug } from 'obug'
 import {
   VERSION as rolldownVersion,
@@ -277,7 +277,7 @@ async function resolveOutputOptions(
 
 export async function getDebugRolldownDir(): Promise<string | undefined> {
   if (!debug.enabled) return
-  return await mkdtemp(join(tmpdir(), 'tsdown-config-'))
+  return await mkdtemp(path.join(tmpdir(), 'tsdown-config-'))
 }
 
 export async function debugBuildOptions(
@@ -286,10 +286,10 @@ export async function debugBuildOptions(
   format: NormalizedFormat,
   buildOptions: BuildOptions,
 ): Promise<void> {
-  const outFile = join(dir, `rolldown.config.${format}.js`)
+  const outFile = path.join(dir, `rolldown.config.${format}.js`)
 
   handlePluginInspect(buildOptions.plugins)
-  const serialized = util.formatWithOptions(
+  const serialized = formatWithOptions(
     {
       depth: null,
       maxArrayLength: null,
@@ -324,10 +324,10 @@ function handlePluginInspect(plugins: RolldownPluginOption) {
     plugins !== null &&
     'name' in plugins
   ) {
-    ;(plugins as any)[util.inspect.custom] = function (
-      depth: number,
-      options: InspectOptionsStylized,
-      inspect: typeof util.inspect,
+    ;(plugins as any as Inspectable)[inspect.custom] = function (
+      depth,
+      options,
+      inspect,
     ) {
       if ('_options' in plugins) {
         return inspect(

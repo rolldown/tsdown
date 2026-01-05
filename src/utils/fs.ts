@@ -1,5 +1,5 @@
 import { access, cp, rm, stat } from 'node:fs/promises'
-import { dirname, extname, normalize, sep } from 'node:path'
+import path from 'node:path'
 import type { Stats } from 'node:fs'
 
 export function fsExists(path: string): Promise<boolean> {
@@ -23,12 +23,12 @@ export function fsCopy(from: string, to: string): Promise<void> {
 
 export function lowestCommonAncestor(...filepaths: string[]): string {
   if (filepaths.length === 0) return ''
-  if (filepaths.length === 1) return dirname(filepaths[0])
-  filepaths = filepaths.map(normalize)
+  if (filepaths.length === 1) return path.dirname(filepaths[0])
+  filepaths = filepaths.map(path.normalize)
   const [first, ...rest] = filepaths
-  let ancestor = first.split(sep)
+  let ancestor = first.split(path.sep)
   for (const filepath of rest) {
-    const directories = filepath.split(sep, ancestor.length)
+    const directories = filepath.split(path.sep, ancestor.length)
     let index = 0
     for (const directory of directories) {
       if (directory === ancestor[index]) {
@@ -42,12 +42,12 @@ export function lowestCommonAncestor(...filepaths: string[]): string {
   }
 
   return ancestor.length <= 1 && ancestor[0] === ''
-    ? sep + ancestor[0]
-    : ancestor.join(sep)
+    ? path.sep + ancestor[0]
+    : ancestor.join(path.sep)
 }
 
 export function stripExtname(filePath: string): string {
-  const ext = extname(filePath)
+  const ext = path.extname(filePath)
   if (!ext.length) return filePath
   return filePath.slice(0, -ext.length)
 }

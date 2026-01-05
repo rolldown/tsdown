@@ -24,6 +24,9 @@ export default defineConfig([
         'typescript', // Yarn PnP
       ],
     },
+    treeshake: {
+      moduleSideEffects: false,
+    },
     publint: 'ci-only',
     attw: {
       enabled: 'ci-only',
