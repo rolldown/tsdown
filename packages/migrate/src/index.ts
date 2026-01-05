@@ -1,4 +1,3 @@
-import path from 'node:path'
 import process from 'node:process'
 import { getCliCommand, parseNi, run } from '@antfu/ni'
 import { green, greenBright, underline } from 'ansis'
@@ -31,9 +30,7 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
 
   const baseCwd = process.cwd()
   let cwds: string[]
-  if (!dirs?.length) {
-    cwds = [baseCwd]
-  } else {
+  if (dirs?.length) {
     cwds = await glob(dirs, {
       cwd: baseCwd,
       onlyDirectories: true,
@@ -45,6 +42,8 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
       process.exitCode = 1
       return
     }
+  } else {
+    cwds = [baseCwd]
   }
 
   let migratedAny = false

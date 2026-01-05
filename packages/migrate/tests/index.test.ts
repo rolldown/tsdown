@@ -1,11 +1,10 @@
 import { realpathSync } from 'node:fs'
 import { join } from 'node:path'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-const packageJsonCwds = vi.hoisted(() => [] as string[])
-const tsupConfigCwds = vi.hoisted(() => [] as string[])
+const packageJsonCwds = vi.hoisted<string[]>(() => [])
+const tsupConfigCwds = vi.hoisted<string[]>(() => [])
 
 vi.mock('../src/helpers/package-json.ts', () => ({
   migratePackageJson: vi.fn(() => {
@@ -21,9 +20,8 @@ vi.mock('../src/helpers/tsup-config.ts', () => ({
   }),
 }))
 
-describe('issue-452', () => {
-  const fixturesDir = fileURLToPath(new URL('.', import.meta.url))
-  const monorepoFixture = join(fixturesDir, 'fixtures/issue-452')
+describe('migrate monorepo', () => {
+  const monorepoFixture = join(import.meta.dirname, 'fixtures/monorepo')
   const originalCwd = process.cwd()
 
   afterEach(() => {
