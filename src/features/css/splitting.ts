@@ -3,27 +3,6 @@ import { defaultCssBundleName } from './index.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
-// Regular expressions for file matching
-const RE_CSS_HASH = /-[\w-]+\.css$/
-const RE_CHUNK_HASH = /-[\w-]+\.(m?js|cjs)$/
-const RE_CHUNK_EXT = /\.(m?js|cjs)$/
-
-/**
- * Normalize CSS file name by removing hash pattern and extension.
- * e.g., "async-DcjEOEdU.css" -> "async"
- */
-function normalizeCssFileName(cssFileName: string): string {
-  return cssFileName.replace(RE_CSS_HASH, '').replace(RE_CSS, '')
-}
-
-/**
- * Normalize chunk file name by removing hash pattern and extension.
- * e.g., "async-CvIfFAic.mjs" -> "async"
- */
-function normalizeChunkFileName(chunkFileName: string): string {
-  return chunkFileName.replace(RE_CHUNK_HASH, '').replace(RE_CHUNK_EXT, '')
-}
-
 /**
  * CSS Code Split Plugin
  *
@@ -37,62 +16,48 @@ export function CssCodeSplitPlugin(
   const { splitting, fileName } = config.css
   if (splitting) return
 
-  let hasEmitted = false
-
   return {
-    name: 'tsdown:css-code-split',
-
-    renderStart() {
-      // Reset state for each build for watch mode
-      hasEmitted = false
-    },
+    name: 'tsdown:css:splitting',
 
     generateBundle(_outputOptions, bundle) {
-      if (hasEmitted) return
+      const chunks = Object.values(bundle)
 
-      // Collect all CSS assets and their content
       const cssAssets = new Map<string, string>()
-
-      for (const [fileName, asset] of Object.entries(bundle)) {
-        if (asset.type === 'asset' && RE_CSS.test(fileName)) {
-          const source =
-            typeof asset.source === 'string'
-              ? asset.source
-              : new TextDecoder('utf-8').decode(asset.source)
-          cssAssets.set(fileName, source)
+      for (const asset of chunks) {
+        if (
+          asset.type === 'asset' &&
+          typeof asset.source === 'string' &&
+          RE_CSS.test(fileName)
+        ) {
+          cssAssets.set(asset.fileName, asset.source)
         }
       }
-
       if (!cssAssets.size) return
 
-      // Build a map from chunk fileName to its associated CSS fileName(s)
-      // Match CSS assets to chunks by analyzing module IDs and file names
       const chunkCSSMap = new Map<string, string[]>()
+      for (const chunk of chunks) {
+        if (chunk.type !== 'chunk') continue
 
-      // Identify which chunks contain CSS modules
-      for (const [chunkFileName, item] of Object.entries(bundle)) {
-        if (item.type === 'chunk') {
-          for (const moduleId of Object.keys(item.modules)) {
-            if (RE_CSS.test(moduleId)) {
-              if (!chunkCSSMap.has(chunkFileName)) {
-                chunkCSSMap.set(chunkFileName, [])
-              }
-              break
+        for (const moduleId of chunk.moduleIds) {
+          if (RE_CSS.test(moduleId)) {
+            if (!chunkCSSMap.has(chunk.fileName)) {
+              chunkCSSMap.set(chunk.fileName, [])
             }
+            break
           }
         }
       }
 
       // Match CSS assets to chunks by comparing base names
-      for (const [cssFileName] of cssAssets) {
+      for (const cssFileName of cssAssets.keys()) {
         const cssBaseName = normalizeCssFileName(cssFileName)
-        for (const [chunkFileName] of chunkCSSMap) {
+        for (const chunkFileName of chunkCSSMap.keys()) {
           const chunkBaseName = normalizeChunkFileName(chunkFileName)
           if (
             chunkBaseName === cssBaseName ||
             chunkFileName.startsWith(`${cssBaseName}-`)
           ) {
-            chunkCSSMap.get(chunkFileName)?.push(cssFileName)
+            chunkCSSMap.get(chunkFileName)!.push(cssFileName)
             break
           }
         }
@@ -126,7 +91,7 @@ export function CssCodeSplitPlugin(
       }
 
       // Collect CSS from all entry chunks first
-      for (const chunk of Object.values(bundle)) {
+      for (const chunk of chunks) {
         if (chunk.type === 'chunk' && chunk.isEntry) {
           collect(chunk)
         }
@@ -138,8 +103,6 @@ export function CssCodeSplitPlugin(
       }
 
       if (extractedCss) {
-        hasEmitted = true
-
         // Remove all individual CSS assets from bundle
         for (const fileName of cssAssets.keys()) {
           delete bundle[fileName]
@@ -155,4 +118,24 @@ export function CssCodeSplitPlugin(
       }
     },
   }
+}
+
+const RE_CSS_HASH = /-[\w-]+\.css$/
+const RE_CHUNK_HASH = /-[\w-]+\.(m?js|cjs)$/
+const RE_CHUNK_EXT = /\.(m?js|cjs)$/
+
+/**
+ * Normalize CSS file name by removing hash pattern and extension.
+ * e.g., "async-DcjEOEdU.css" -> "async"
+ */
+function normalizeCssFileName(cssFileName: string): string {
+  return cssFileName.replace(RE_CSS_HASH, '').replace(RE_CSS, '')
+}
+
+/**
+ * Normalize chunk file name by removing hash pattern and extension.
+ * e.g., "async-CvIfFAic.mjs" -> "async"
+ */
+function normalizeChunkFileName(chunkFileName: string): string {
+  return chunkFileName.replace(RE_CHUNK_HASH, '').replace(RE_CHUNK_EXT, '')
 }

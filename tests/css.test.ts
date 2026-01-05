@@ -61,12 +61,7 @@ describe('css', () => {
       },
     })
 
-    // Should have merged all CSS into style.css and removed individual CSS files
-    expect(outputFiles).toContain('index.css')
-    expect(outputFiles).not.toContain('style.css')
-    expect(outputFiles.filter((f) => f.endsWith('.css'))).lengthOf(1)
-
-    // Merged CSS should contain both entry and async CSS
+    expect(outputFiles.filter((f) => f.endsWith('.css'))).toEqual(['index.css'])
     expect(fileMap['index.css']).toContain('body { color: red }')
     expect(fileMap['index.css']).toContain('.async { color: blue }')
   })
