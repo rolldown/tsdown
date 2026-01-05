@@ -31,7 +31,7 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
 
   const baseCwd = process.cwd()
   let cwds: string[]
-  if (!dirs || dirs.length === 0) {
+  if (!dirs?.length) {
     cwds = [baseCwd]
   } else {
     cwds = await glob(dirs, {
@@ -53,10 +53,8 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
     for (const dir of cwds) {
       process.chdir(dir)
 
-      const relativeDirLabel = greenBright(
-        path.relative(baseCwd, dir) || 'the current directory',
-      )
-      consola.info(`Processing ${relativeDirLabel}`)
+      const dirLabel = greenBright(dir)
+      consola.info(`Processing ${dirLabel}`)
 
       let migrated = await migratePackageJson(dryRun)
       if (await migrateTsupConfig(dryRun)) {
@@ -64,7 +62,7 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
       }
 
       if (!migrated) {
-        consola.info(`No migrations to apply in ${relativeDirLabel}.`)
+        consola.warn(`No migrations to apply in ${dirLabel}.`)
         continue
       }
 
