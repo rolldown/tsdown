@@ -18,7 +18,7 @@ catalogs:
     '@types/node': ^25.0.3
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260101.1
+    '@typescript/native-preview': 7.0.0-dev.20260106.1
     '@vitest/coverage-v8': 4.0.16
     '@vitest/ui': ^4.0.16
     bumpp: ^10.3.2
@@ -37,7 +37,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^3.20.0
     '@unocss/eslint-plugin': ^66.5.12
     '@vueuse/core': ^14.1.0
-    oxc-minify: ^0.106.0
+    oxc-minify: ^0.107.0
     typedoc: ^0.28.15
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
@@ -47,10 +47,10 @@ catalogs:
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.10.0
     vue: ^3.5.26
-    vue-tsc: ^3.2.1
+    vue-tsc: ^3.2.2
   migrate:
-    '@antfu/ni': ^28.0.0
-    '@ast-grep/napi': ^0.40.3
+    '@antfu/ni': ^28.1.0
+    '@ast-grep/napi': ^0.40.4
     consola: ^3.4.2
     diff: ^8.0.2
   peer:
