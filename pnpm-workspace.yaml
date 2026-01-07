@@ -18,7 +18,7 @@ catalogs:
     '@types/node': ^25.0.3
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260106.1
+    '@typescript/native-preview': 7.0.0-dev.20260107.1
     '@vitest/coverage-v8': 4.0.16
     '@vitest/ui': ^4.0.16
     bumpp: ^10.3.2
@@ -34,7 +34,7 @@ catalogs:
     unplugin-ast: ^0.15.4
     vitest: ^4.0.16
   docs:
-    '@shikijs/vitepress-twoslash': ^3.20.0
+    '@shikijs/vitepress-twoslash': ^3.21.0
     '@unocss/eslint-plugin': ^66.5.12
     '@vueuse/core': ^14.1.0
     oxc-minify: ^0.107.0
@@ -42,7 +42,7 @@ catalogs:
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.5.12
-    vite: ^8.0.0-beta.5
+    vite: ^8.0.0-beta.6
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.10.0
@@ -55,7 +55,7 @@ catalogs:
     diff: ^8.0.2
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.0.0-alpha.22
+    '@vitejs/devtools': ^0.0.0-alpha.23
     publint: ^0.3.16
     unplugin-lightningcss: ^0.4.4
     unplugin-unused: ^0.5.6
