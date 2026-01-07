@@ -7,7 +7,7 @@ const pkgRoot: string = path.resolve(dirname, '..')
 /** @internal */
 export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
 
-export { build, buildSingle, buildWithConfigs } from './build.ts'
+export { build, buildWithConfigs } from './build.ts'
 export { defineConfig, mergeConfig } from './config.ts'
 export * from './config/types.ts'
 export { globalLogger, type Logger } from './utils/logger.ts'

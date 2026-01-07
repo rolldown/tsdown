@@ -1,7 +1,9 @@
 {
   "build.d.mts": {
+    "build": "declare function build(_: InlineConfig): Promise<TsdownBundle[]>",
     "buildWithConfigs": "declare function buildWithConfigs(_: ResolvedConfig[], _: string[]): Promise<TsdownBundle[]>",
     "#exports": [
+      "build",
       "buildWithConfigs"
     ]
   },
@@ -19,7 +21,6 @@
     ]
   },
   "index.d.mts": {
-    "build": "declare function build(_: InlineConfig): Promise<TsdownBundle[]>",
     "#exports": [
       "AttwOptions",
       "BuildContext",
@@ -62,6 +63,7 @@
       "WithEnabled",
       "Workspace",
       "build",
+      "buildWithConfigs",
       "defineConfig",
       "globalLogger",
       "mergeConfig"

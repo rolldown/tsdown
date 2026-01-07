@@ -120,13 +120,9 @@ export async function buildWithConfigs(
 
 /**
  * Build a single configuration, without watch and shortcuts features.
- *
- * Internal API, not for public use
- *
- * @internal
  * @param config Resolved options
  */
-export async function buildSingle(
+async function buildSingle(
   config: ResolvedConfig,
   configFiles: string[],
   isDualFormat: boolean,
