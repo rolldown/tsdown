@@ -219,7 +219,7 @@ async function resolveInputOptions(
         : undefined,
       devtools: devtools || undefined,
       checks: {
-        pluginTimings: false,
+        pluginTimings: debug.enabled,
       },
     },
     config.inputOptions,
