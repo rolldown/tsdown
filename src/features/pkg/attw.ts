@@ -131,7 +131,7 @@ export async function attw(options: ResolvedConfig): Promise<void> {
   try {
     const { stdout: tarballInfo } = await exec(
       'npm',
-      ['pack', '--json', '--pack-destination', tempDir],
+      ['pack', '--json', '--ignore-scripts', '--pack-destination', tempDir],
       { nodeOptions: { cwd: options.cwd } },
     )
     const parsed = JSON.parse(tarballInfo)
