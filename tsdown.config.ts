@@ -12,6 +12,9 @@ export default defineConfig([
     inlineOnly: ['is-in-ci'],
     platform: 'node',
     failOnWarn: 'ci-only',
+    define: {
+      'import.meta.TSDOWN_PRODUCTION': 'true',
+    },
     dts: {
       oxc: {
         stripInternal: true,

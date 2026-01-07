@@ -1,5 +1,5 @@
 {
-  "config-!~{00i}~.d.mts": {
+  "config-!~{00m}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
@@ -83,7 +83,7 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00g}~.d.mts": {
+  "types-!~{00k}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",

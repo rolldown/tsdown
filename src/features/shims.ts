@@ -1,5 +1,11 @@
-import { shimFile } from '../build.ts'
+import path from 'node:path'
 import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
+
+export const shimFile: string = path.resolve(
+  import.meta.dirname,
+  import.meta.TSDOWN_PRODUCTION ? '..' : '../..',
+  'esm-shims.js',
+)
 
 export function getShimsInject(
   format: NormalizedFormat,
