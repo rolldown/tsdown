@@ -21,6 +21,7 @@
     ]
   },
   "index.d.mts": {
+    "enableDebug": "declare function enableDebug(_: boolean | Arrayable<string>): void",
     "#exports": [
       "AttwOptions",
       "BuildContext",
@@ -65,6 +66,7 @@
       "build",
       "buildWithConfigs",
       "defineConfig",
+      "enableDebug",
       "globalLogger",
       "mergeConfig"
     ]

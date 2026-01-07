@@ -84,7 +84,7 @@ cli
     globalLogger.info(
       `tsdown ${dim`v${pkg.version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
     )
-    const { build } = await import('./index.ts')
+    const { build } = await import('./build.ts')
     if (input.length > 0) flags.entry = input
     await build(flags)
   })
@@ -128,7 +128,7 @@ cli
 export async function runCLI(): Promise<void> {
   cli.parse(process.argv, { run: false })
 
-  enableDebug(cli.options)
+  enableDebug(cli.options.debug)
 
   try {
     await cli.runMatchedCommand()

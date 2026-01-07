@@ -1,10 +1,10 @@
 import { createDebug, enable, namespaces } from 'obug'
 import { resolveComma, toArray } from '../utils/general.ts'
+import type { Arrayable } from '../utils/types.ts'
 
 const debugLog = createDebug('tsdown:debug')
 
-export function enableDebug(cliOptions: Record<string, any>): void {
-  const { debug } = cliOptions
+export function enableDebug(debug?: boolean | Arrayable<string>): void {
   if (!debug) return
 
   let namespace: string
