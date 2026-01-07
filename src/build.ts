@@ -6,6 +6,11 @@ import {
   type BuildOptions,
   type RolldownWatcher,
 } from 'rolldown'
+import {
+  resolveConfig,
+  type InlineConfig,
+  type ResolvedConfig,
+} from './config/index.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
@@ -26,13 +31,28 @@ import {
 } from './utils/chunks.ts'
 import { typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
-import type { ResolvedConfig } from './config/index.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
 
 /**
- * Build with tsdown ResolvedConfigs.
+ * Build with tsdown.
+ */
+export async function build(
+  userOptions: InlineConfig = {},
+): Promise<TsdownBundle[]> {
+  globalLogger.level = userOptions.logLevel || 'info'
+  const { configs, files: configFiles } = await resolveConfig(userOptions)
+
+  return buildWithConfigs(configs, configFiles)
+}
+
+/**
+ * Build with `ResolvedConfigs`.
+ *
+ * Internal API, not for public use
+ *
+ * @private
  */
 export async function buildWithConfigs(
   configs: ResolvedConfig[],
