@@ -17,7 +17,6 @@
   },
   "exports": {
     ".": "./dist/index.mjs",
-    "./build": "./dist/build.mjs",
     "./config": "./dist/config.mjs",
     "./plugins": "./dist/plugins.mjs",
     "./run": "./dist/run.mjs",

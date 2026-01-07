@@ -1,4 +1,4 @@
-import { shimFile } from '../index.ts'
+import { shimFile } from '../build.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
 
 export function getShimsInject(

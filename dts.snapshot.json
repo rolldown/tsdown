@@ -1,15 +1,8 @@
 {
-  "build.d.mts": {
-    "build": "declare function build(_: InlineConfig): Promise<TsdownBundle[]>",
-    "buildWithConfigs": "declare function buildWithConfigs(_: ResolvedConfig[], _: string[]): Promise<TsdownBundle[]>",
-    "#exports": [
-      "build",
-      "buildWithConfigs"
-    ]
-  },
-  "config-!~{00f}~.d.mts": {
+  "config-!~{00i}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
-    "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig"
+    "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
+    "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
   },
   "config.d.mts": {
     "#exports": [
@@ -21,6 +14,8 @@
     ]
   },
   "index.d.mts": {
+    "build": "declare function build(_: InlineConfig): Promise<TsdownBundle[]>",
+    "buildWithConfigs": "declare function buildWithConfigs(_: ResolvedConfig[], _: string[]): Promise<TsdownBundle[]>",
     "enableDebug": "declare function enableDebug(_: boolean | Arrayable<string>): void",
     "#exports": [
       "AttwOptions",
@@ -68,7 +63,8 @@
       "defineConfig",
       "enableDebug",
       "globalLogger",
-      "mergeConfig"
+      "mergeConfig",
+      "resolveUserConfig"
     ]
   },
   "plugins.d.mts": {
@@ -87,7 +83,7 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00d}~.d.mts": {
+  "types-!~{00g}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",

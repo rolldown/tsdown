@@ -34,6 +34,12 @@ import type {
 
 const debug = createDebug('tsdown:config:options')
 
+/**
+ * Resolve user config into resolved configs
+ *
+ * **Internal API, not for public use**
+ * @private
+ */
 export async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,

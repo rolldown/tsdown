@@ -1,3 +1,5 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { bold, green } from 'ansis'
 import { clearRequireCache } from 'import-without-cache'
 import {
@@ -35,6 +37,10 @@ import { globalLogger } from './utils/logger.ts'
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
 
+const dirname = path.dirname(fileURLToPath(import.meta.url))
+const pkgRoot: string = path.resolve(dirname, '..')
+export const shimFile: string = path.resolve(pkgRoot, 'esm-shims.js')
+
 /**
  * Build with tsdown.
  */
@@ -50,8 +56,7 @@ export async function build(
 /**
  * Build with `ResolvedConfigs`.
  *
- * Internal API, not for public use
- *
+ * **Internal API, not for public use**
  * @private
  */
 export async function buildWithConfigs(
