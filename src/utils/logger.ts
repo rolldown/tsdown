@@ -1,4 +1,5 @@
 import process from 'node:process'
+import readline from 'node:readline'
 import { bgRed, bgYellow, blue, green, rgb, yellow, type Ansis } from 'ansis'
 import { noop } from './general.ts'
 import type { InternalModuleFormat } from 'rolldown'
@@ -7,6 +8,7 @@ export type LogType = 'error' | 'warn' | 'info'
 export type LogLevel = LogType | 'silent'
 
 export interface LoggerOptions {
+  allowClearScreen?: boolean
   customLogger?: Logger
   console?: Console
   failOnWarn?: boolean
@@ -26,10 +28,19 @@ export interface Logger {
   warnOnce: (...args: any[]) => void
   error: (...args: any[]) => void
   success: (...args: any[]) => void
+  clearScreen: (type: LogType) => void
 }
 
 function format(msgs: any[]) {
   return msgs.filter((arg) => arg !== undefined && arg !== false).join(' ')
+}
+
+function clearScreen() {
+  const repeatCount = process.stdout.rows - 2
+  const blank = repeatCount > 0 ? '\n'.repeat(repeatCount) : ''
+  console.info(blank)
+  readline.cursorTo(process.stdout, 0, 0)
+  readline.clearScreenDown(process.stdout)
 }
 
 const warnedMessages = new Set<string>()
@@ -40,6 +51,7 @@ export function createLogger(
     customLogger,
     console = globalThis.console,
     failOnWarn = false,
+    allowClearScreen = true,
   }: LoggerOptions = {},
 ): Logger {
   if (customLogger) {
@@ -53,6 +65,10 @@ export function createLogger(
     const method = type === 'info' ? 'log' : type
     console[method](msg)
   }
+
+  const canClearScreen =
+    allowClearScreen && process.stdout.isTTY && !process.env.CI
+  const clear = canClearScreen ? clearScreen : () => {}
 
   const logger: Logger = {
     level,
@@ -91,6 +107,12 @@ export function createLogger(
 
     success(...msgs: any[]): void {
       output('info', `${green`✔`} ${format(msgs)}`)
+    },
+
+    clearScreen(type) {
+      if (LogLevels[logger.level] >= LogLevels[type]) {
+        clear()
+      }
     },
   }
   return logger
