@@ -57,12 +57,12 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   outputOptions: {
-    comments: 'preserve-legal',
+    legalComments: 'inline',
   },
 })
 ```
 
-在此示例中，`comments: 'preserve-legal'` 选项确保法律注释（例如许可证头部）会保留在输出文件中。
+在此示例中，`legalComments: 'inline'` 选项确保法律注释（例如许可证头部）会保留在输出文件中。
 
 ### 使用函数
 
@@ -74,7 +74,7 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   outputOptions(outputOptions, format) {
     if (format === 'esm') {
-      outputOptions.comments = 'preserve-legal'
+      outputOptions.legalComments = 'inline'
     }
     return outputOptions
   },
