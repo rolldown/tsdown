@@ -12,12 +12,12 @@ export function warnLegacyCJS(config: ResolvedConfig): void {
     return
   }
 
-  const legacy = config.target.some((t) => {
+  const supportRequireESM = config.target.some((t) => {
     const version = coerce(t.split('node')[1])
-    return version && satisfies(version, '>=23.0.0 || >=22.12.0')
+    return version && satisfies(version, '^20.19.0 || >=22.12.0')
   })
 
-  if (legacy) {
+  if (supportRequireESM) {
     config.logger.warnOnce(
       'We recommend using the ESM format instead of CommonJS.\n' +
         'The ESM format is compatible with modern platforms and runtimes, ' +
