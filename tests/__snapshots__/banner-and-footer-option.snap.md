@@ -2,7 +2,10 @@
 
 ```mts
 // dts banner
-export { };
+//#region index.d.ts
+declare const foo: number;
+//#endregion
+export { foo };
 // dts footer
 ```
 
@@ -11,9 +14,9 @@ export { };
 ```mjs
 // js banner
 //#region index.ts
-console.log("Hello, world!");
+const foo = 42;
 
 //#endregion
-export {  };
+export { foo };
 // js footer
 ```

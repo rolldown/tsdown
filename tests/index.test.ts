@@ -536,7 +536,7 @@ test('workspace option', async (context) => {
 })
 
 test('banner and footer option', async (context) => {
-  const content = `console.log("Hello, world!")`
+  const content = `export const foo: number = 42`
   const { fileMap } = await testBuild({
     context,
     files: {

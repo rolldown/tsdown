@@ -9,6 +9,7 @@ import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
 
 const cwd = process.cwd()
 const FAKE_PACKAGE_JSON = {
+  name: 'fake-pkg',
   packageJsonPath: path.join(cwd, 'package.json'),
 }
 const DEFAULT_CSS_OPTIONS = resolveCssOptions()
@@ -42,6 +43,9 @@ describe.concurrent('generateExports', () => {
         "types": undefined,
       }
     `)
+    expect(
+      'No CJS or ESM formats found in chunks for package fake-pkg',
+    ).toHaveBeenWarned()
   })
 
   test('only one entry', async ({ expect }) => {
