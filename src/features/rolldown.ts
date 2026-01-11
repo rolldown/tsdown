@@ -18,7 +18,7 @@ import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { LightningCSSPlugin } from './css/lightningcss.ts'
 import { CssCodeSplitPlugin } from './css/splitting.ts'
-import { ExternalPlugin } from './external.ts'
+import { ExternalPlugin, getProductionDeps } from './external.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
@@ -191,11 +191,19 @@ async function resolveInputOptions(
   }
   const inject = shims && !cjsDts ? getShimsInject(format, platform) : undefined
 
+  let resolvedExternal = external
+  if (dts && !dts.resolve && config.pkg && !external) {
+    const pkgDeps = Array.from(getProductionDeps(config.pkg))
+    resolvedExternal = config.noExternal
+      ? pkgDeps.filter((dep) => !config.noExternal!(dep, undefined))
+      : pkgDeps
+  }
+
   const inputOptions = await mergeUserOptions(
     {
       input: entry,
       cwd,
-      external,
+      external: resolvedExternal,
       resolve: {
         alias,
       },
