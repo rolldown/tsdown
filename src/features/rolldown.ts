@@ -83,6 +83,7 @@ async function resolveInputOptions(
   /// keep-sorted
   const {
     alias,
+    checks: { legacyCjs, ...checks } = {},
     cjsDefault,
     cwd,
     devtools,
@@ -218,9 +219,7 @@ async function resolveInputOptions(
           }
         : undefined,
       devtools: devtools || undefined,
-      checks: {
-        pluginTimings: debug.enabled,
-      },
+      checks,
     },
     config.inputOptions,
     [format, { cjsDts }],

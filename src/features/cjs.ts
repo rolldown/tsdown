@@ -2,13 +2,12 @@ import coerce from 'semver/functions/coerce.js'
 import satisfies from 'semver/functions/satisfies.js'
 import type { ResolvedConfig } from '../config/index.ts'
 
-/**
- * If the config includes the `cjs` format and
- * one of its target >= node 23.0.0 / 22.12.0,
- * warn the user about the deprecation of CommonJS.
- */
 export function warnLegacyCJS(config: ResolvedConfig): void {
-  if (!config.format.includes('cjs') || !config.target) {
+  if (
+    !config.target ||
+    !(config.checks?.legacyCjs ?? true) ||
+    !config.format.includes('cjs')
+  ) {
     return
   }
 

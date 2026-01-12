@@ -29,6 +29,7 @@ import type {
 } from '../utils/types.ts'
 import type { Hookable } from 'hookable'
 import type {
+  ChecksOptions,
   ExternalOption,
   InputOptions,
   InternalModuleFormat,
@@ -283,6 +284,20 @@ export interface UserConfig {
    *
    */
   nodeProtocol?: 'strip' | boolean
+
+  /**
+   * Controls which warnings are emitted during the build process. Each option can be set to `true` (emit warning) or `false` (suppress warning).
+   */
+  checks?: ChecksOptions & {
+    /**
+     * If the config includes the `cjs` format and
+     * one of its target >= node 20.19.0 / 22.12.0,
+     * warn the user about the deprecation of CommonJS.
+     *
+     * @default true
+     */
+    legacyCjs?: boolean
+  }
 
   plugins?: InputOptions['plugins']
 
@@ -594,6 +609,7 @@ export type ResolvedConfig = Overwrite<
     | 'name'
     | 'banner'
     | 'footer'
+    | 'checks'
   >,
   {
     /** Resolved entry map (after glob expansion) */
