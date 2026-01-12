@@ -9,7 +9,11 @@ export default defineConfig([
   {
     entry: ['./src/{index,run,plugins,config}.ts'],
     name: 'tsdown',
-    inlineOnly: ['is-in-ci'],
+    inlineOnly: [
+      'is-in-ci',
+      'pkg-types', // type-only
+      'exsolve', // type-only, removed after tree-shaking
+    ],
     platform: 'node',
     failOnWarn: 'ci-only',
     define: {

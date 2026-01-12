@@ -2,7 +2,7 @@ import { isBuiltin } from 'node:module'
 import path from 'node:path'
 import { blue, underline } from 'ansis'
 import { createDebug } from 'obug'
-import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
+import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { and, id, importerId, include } from 'rolldown/filter'
 import { matchPattern, typeAssert } from '../utils/general.ts'
 import { shimFile } from './shims.ts'
@@ -48,9 +48,7 @@ export function ExternalPlugin({
 
         if (
           inlineOnly &&
-          !RE_DTS.test(importer) && // skip dts files
           !nodeBuiltinModule && // skip node built-in modules
-          id[0] !== '.' && // skip relative imports
           !path.isAbsolute(id) // skip absolute imports
         ) {
           const shouldInline =
