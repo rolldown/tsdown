@@ -3,7 +3,8 @@ import path from 'node:path'
 import { blue, underline } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
-import { matchPattern } from '../utils/general.ts'
+import { and, id, importerId, include } from 'rolldown/filter'
+import { matchPattern, typeAssert } from '../utils/general.ts'
 import { shimFile } from './shims.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { PackageJson } from 'pkg-types'
@@ -21,51 +22,55 @@ export function ExternalPlugin({
 
   return {
     name: 'tsdown:external',
-    async resolveId(id, importer, extraOptions) {
-      if (extraOptions.isEntry || !importer) return
+    resolveId: {
+      filter: [include(and(id(/^[^.]/), importerId(/./)))],
+      async handler(id, importer, extraOptions) {
+        if (extraOptions.isEntry) return
+        typeAssert(importer)
 
-      const shouldExternal = await externalStrategy(
-        this,
-        id,
-        importer,
-        extraOptions,
-      )
-      const nodeBuiltinModule = isBuiltin(id)
-
-      debug('shouldExternal: %s = %s', id, shouldExternal)
-
-      if (shouldExternal === true || shouldExternal === 'absolute') {
-        return {
+        const shouldExternal = await externalStrategy(
+          this,
           id,
-          external: shouldExternal,
-          moduleSideEffects: nodeBuiltinModule ? false : undefined,
+          importer,
+          extraOptions,
+        )
+        const nodeBuiltinModule = isBuiltin(id)
+
+        debug('shouldExternal: %s = %s', id, shouldExternal)
+
+        if (shouldExternal === true || shouldExternal === 'absolute') {
+          return {
+            id,
+            external: shouldExternal,
+            moduleSideEffects: nodeBuiltinModule ? false : undefined,
+          }
         }
-      }
 
-      if (
-        inlineOnly &&
-        !RE_DTS.test(importer) && // skip dts files
-        !nodeBuiltinModule && // skip node built-in modules
-        id[0] !== '.' && // skip relative imports
-        !path.isAbsolute(id) // skip absolute imports
-      ) {
-        const shouldInline =
-          shouldExternal === 'no-external' || // force inline
-          matchPattern(id, inlineOnly)
-        debug('shouldInline: %s = %s', id, shouldInline)
-        if (shouldInline) return
+        if (
+          inlineOnly &&
+          !RE_DTS.test(importer) && // skip dts files
+          !nodeBuiltinModule && // skip node built-in modules
+          id[0] !== '.' && // skip relative imports
+          !path.isAbsolute(id) // skip absolute imports
+        ) {
+          const shouldInline =
+            shouldExternal === 'no-external' || // force inline
+            matchPattern(id, inlineOnly)
+          debug('shouldInline: %s = %s', id, shouldInline)
+          if (shouldInline) return
 
-        const resolved = await this.resolve(id, importer, extraOptions)
-        if (!resolved) return
+          const resolved = await this.resolve(id, importer, extraOptions)
+          if (!resolved) return
 
-        if (RE_NODE_MODULES.test(resolved.id)) {
-          throw new Error(
-            `${underline(id)} is located in node_modules but is not included in ${blue`inlineOnly`} option.
+          if (RE_NODE_MODULES.test(resolved.id)) {
+            throw new Error(
+              `${underline(id)} is located in node_modules but is not included in ${blue`inlineOnly`} option.
 To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.
 Imported by ${underline(importer)}`,
-          )
+            )
+          }
         }
-      }
+      },
     },
   }
 
