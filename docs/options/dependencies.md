@@ -66,23 +66,7 @@ Here, `some-package` will be bundled into your library.
 
 ## Handling Dependencies in Declaration Files
 
-For declaration files, `tsdown` **does not bundle any dependencies by default**. This ensures that your `.d.ts` files remain clean and focused on your library's types.
-
-### Customizing Type Resolution
-
-You can use the `dts.resolve` option to explicitly include type definitions for certain dependencies:
-
-```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
-
-export default defineConfig({
-  dts: {
-    resolve: ['lodash', /^@types\//],
-  },
-})
-```
-
-In this example, type definitions for `lodash` and all packages under the `@types` namespace will be bundled into the `.d.ts` files.
+The bundling logic for declaration files is consistent with JavaScript: dependencies are bundled or marked as external according to the same rules and options.
 
 ### Resolver Option
 
@@ -95,20 +79,6 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   dts: {
-    resolve: ['@babel/generator'],
-    resolver: 'tsc',
-  },
-})
-```
-
-If you want to bundle **all** types, you can set `resolve: true`. However, it is strongly recommended to also set `resolver: 'tsc'` to minimize unexpected issues:
-
-```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
-
-export default defineConfig({
-  dts: {
-    resolve: true,
     resolver: 'tsc',
   },
 })
@@ -124,8 +94,7 @@ export default defineConfig({
   - Use `noExternal` to force specific dependencies to be bundled.
   - Use `skipNodeModulesBundle` to skip resolving and bundling all dependencies from `node_modules`.
 - **Declaration Files**:
-  - Dependencies are not bundled by default.
-  - Use `dts.resolve` to include specific dependency types in `.d.ts` files.
+  - The bundling logic for declaration files is now the same as for JavaScript.
   - Use `resolver: 'tsc'` for better compatibility with complex third-party types.
 
 By understanding and customizing dependency handling, you can ensure your library is optimized for both size and usability.

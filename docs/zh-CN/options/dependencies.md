@@ -66,23 +66,7 @@ export default defineConfig({
 
 ## 声明文件中的依赖处理
 
-对于声明文件，`tsdown` 默认**不会打包任何依赖**。这确保 `.d.ts` 文件保持简洁，仅专注于您的库的类型。
-
-### 自定义类型解析
-
-您可以使用 `dts.resolve` 选项显式包含某些依赖的类型定义：
-
-```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
-
-export default defineConfig({
-  dts: {
-    resolve: ['lodash', /^@types\//],
-  },
-})
-```
-
-在此示例中，`lodash` 及所有 `@types` 命名空间下的包的类型定义会被打包进 `.d.ts` 文件。
+声明文件的打包逻辑与 JavaScript 保持一致：依赖是否被打包或被标记为外部，遵循相同的规则和选项。
 
 ### 解析器选项
 
@@ -95,20 +79,6 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   dts: {
-    resolve: ['@babel/generator'],
-    resolver: 'tsc',
-  },
-})
-```
-
-如果您希望打包**所有**类型，可以将 `resolve: true`，但强烈建议同时设置 `resolver: 'tsc'` 以减少意外问题：
-
-```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
-
-export default defineConfig({
-  dts: {
-    resolve: true,
     resolver: 'tsc',
   },
 })
@@ -124,8 +94,7 @@ export default defineConfig({
   - 使用 `noExternal` 强制将特定依赖打包。
   - 使用 `skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。
 - **声明文件**：
-  - 默认不打包依赖。
-  - 使用 `dts.resolve` 将特定依赖的类型包含进 `.d.ts` 文件。
+  - 声明文件的打包逻辑与 JavaScript 保持一致。
   - 使用 `resolver: 'tsc'` 可提升复杂第三方类型的兼容性。
 
 通过理解和自定义依赖处理，您可以确保您的库在体积和可用性方面都得到优化。
