@@ -19,7 +19,6 @@ export default defineConfig([
       oxc: {
         stripInternal: true,
       },
-      resolve: ['pkg-types'],
     },
     unused: {
       level: 'error',
@@ -63,6 +62,9 @@ export default defineConfig([
     attw: {
       enabled: 'ci-only',
       profile: 'esm-only',
+    },
+    treeshake: {
+      moduleSideEffects: false,
     },
     exports: true,
   },
