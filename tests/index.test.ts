@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { RE_NODE_MODULES } from 'rolldown-plugin-dts'
+import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { describe, expect, test, vi } from 'vitest'
 import { resolveConfig, type UserConfig } from '../src/config/index.ts'
 import { slash } from '../src/utils/general.ts'
@@ -249,16 +249,15 @@ test('fromVite', async (context) => {
   restoreCwd()
 })
 
-test('resolve dependency for dts', async (context) => {
+test('external dependency for dts', async (context) => {
   const files = {
-    'index.ts': `export type { Options } from 'empathic/walk'
-    export type * from 'unconfig-core'`,
+    'index.ts': `export type * from 'unconfig-core'`,
   }
   const { snapshot } = await testBuild({
     context,
     files,
     options: {
-      dts: { resolve: ['empathic/walk'] },
+      dts: true,
       inputOptions: {
         experimental: {
           attachDebugInfo: 'none',
