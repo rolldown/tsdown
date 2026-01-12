@@ -15,12 +15,12 @@ catalogs:
     '@sxzz/eslint-config': ^7.4.4
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.15
-    '@types/node': ^25.0.5
+    '@types/node': ^25.0.6
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260109.1
-    '@vitest/coverage-v8': 4.0.16
-    '@vitest/ui': ^4.0.16
+    '@typescript/native-preview': 7.0.0-dev.20260112.1
+    '@vitest/coverage-v8': 4.0.17
+    '@vitest/ui': ^4.0.17
     bumpp: ^10.3.2
     dedent: ^1.7.1
     eslint: ^9.39.2
@@ -32,17 +32,17 @@ catalogs:
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
     unplugin-ast: ^0.15.4
-    vitest: ^4.0.16
+    vitest: ^4.0.17
   docs:
     '@shikijs/vitepress-twoslash': ^3.21.0
     '@unocss/eslint-plugin': ^66.5.12
     '@vueuse/core': ^14.1.0
-    oxc-minify: ^0.107.0
-    typedoc: ^0.28.15
+    oxc-minify: ^0.108.0
+    typedoc: ^0.28.16
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.5.12
-    vite: ^8.0.0-beta.5
+    vite: ^8.0.0-beta.7
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-group-icons: ^1.6.5
     vitepress-plugin-llms: ^1.10.0
@@ -50,7 +50,7 @@ catalogs:
     vue-tsc: ^3.2.2
   migrate:
     '@antfu/ni': ^28.1.0
-    '@ast-grep/napi': ^0.40.4
+    '@ast-grep/napi': ^0.40.5
     consola: ^3.4.2
     diff: ^8.0.2
   peer:
