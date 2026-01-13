@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { parseEnv } from 'node:util'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
@@ -33,6 +32,7 @@ import type {
 } from './types.ts'
 
 const debug = createDebug('tsdown:config:options')
+const parseEnv = process.getBuiltinModule('node:util').parseEnv
 
 /**
  * Resolve user config into resolved configs
@@ -187,6 +187,11 @@ export async function resolveUserConfig(
   }
   const envFromProcess = filterEnv(process.env, envPrefix)
   if (envFile) {
+    if (!parseEnv) {
+      throw new Error(
+        `Your runtime does not support 'util.parseEnv()'. Please upgrade to Node.js v20.12.0 or later.`,
+      )
+    }
     const resolvedPath = path.resolve(cwd, envFile)
     logger.info(nameLabel, `env file: ${color(resolvedPath)}`)
 
