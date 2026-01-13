@@ -12,7 +12,6 @@ export default defineConfig({
     UnoCSS(),
     groupIconVitePlugin({
       customIcon: {
-        rolldown: localIconLoader(import.meta.url, 'public/lightning-down.svg'),
         tsdown: localIconLoader(import.meta.url, 'public/tsdown.svg'),
       },
     }),

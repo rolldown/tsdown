@@ -50,12 +50,13 @@ onMounted(async () => {
 }
 
 .voidzero {
-  background: url(https://voidzero.dev/logo.svg) no-repeat center;
+  background: url(https://cdn.jsdelivr.net/gh/voidzero-dev/community-design-resources/brand-assets/voidzero/voidzero-logo-dark.svg)
+    no-repeat center;
   background-size: contain;
 }
 
 .dark .voidzero {
-  background-image: url(https://voidzero.dev/logo-white.svg);
+  background-image: url(https://cdn.jsdelivr.net/gh/voidzero-dev/community-design-resources/brand-assets/voidzero/voidzero-logo-light.svg);
 }
 
 :deep(svg) {
