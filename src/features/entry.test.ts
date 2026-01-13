@@ -190,4 +190,28 @@ describe('toObjectEntry', () => {
       ),
     ).rejects.toThrow('Cannot find files')
   })
+
+  test('mixed object and array entry', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'index.ts': '',
+      'src/foo.ts': '',
+      'src/bar.ts': '',
+    })
+    const result = await toObjectEntry(
+      [
+        'src/*',
+        '!src/foo.ts',
+
+        { main: 'index.ts' },
+        { 'lib/*': ['src/*.ts', '!src/bar.ts'] },
+        { bar: 'override by object' },
+      ],
+      testDir,
+    )
+    expect(result).toEqual({
+      main: 'index.ts',
+      bar: 'override by object',
+      'lib/foo': path.join(testDir, 'src/foo.ts'),
+    })
+  })
 })

@@ -63,10 +63,9 @@ export type NormalizedFormat = InternalModuleFormat
  * }
  * ```
  */
-export type TsdownInputOption =
-  | string
-  | string[]
-  | Record<string, string | string[]>
+export type TsdownInputOption = Arrayable<
+  string | Record<string, Arrayable<string>>
+>
 
 export type {
   AttwOptions,
