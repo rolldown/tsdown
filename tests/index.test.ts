@@ -185,6 +185,11 @@ describe('inlineOnly', () => {
         noExternal: ['cac'],
         inlineOnly: ['bumpp'],
         plugins: [pluginMockDepCode],
+        inputOptions: {
+          experimental: {
+            attachDebugInfo: 'none',
+          },
+        },
       },
     })
   })

@@ -105,7 +105,7 @@
     "Logger": "interface Logger {\n level: LogLevel\n info: (...args: any[]) => void\n warn: (...args: any[]) => void\n warnOnce: (...args: any[]) => void\n error: (...args: any[]) => void\n success: (...args: any[]) => void\n clearScreen: (_: LogType) => void\n}",
     "LogLevel": "type LogLevel = LogType | 'silent'",
     "LogType": "type LogType = 'error' | 'warn' | 'info'",
-    "MarkPartial": "type MarkPartial<T, K$1 extends keyof T> = Omit<Required<T>, K$1> & Partial<Pick<T, K$1>>",
+    "MarkPartial": "type MarkPartial<T, K extends keyof T> = Omit<Required<T>, K> & Partial<Pick<T, K>>",
     "NoExternalFn": "type NoExternalFn = (_: string, _: string | undefined) => boolean | null | undefined | void",
     "NormalizedFormat": "type NormalizedFormat = InternalModuleFormat",
     "OutExtensionContext": "interface OutExtensionContext {\n options: InputOptions\n format: NormalizedFormat\n pkgType?: PackageType\n}",
