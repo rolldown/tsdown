@@ -2,9 +2,13 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"],
     "declaration": false,
     "noEmit": true,
-    "isolatedDeclarations": false
+    "isolatedDeclarations": false,
+    "verbatimModuleSyntax": false
   },
   "include": ["**/*", ".*/**/*"]
 }

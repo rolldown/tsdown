@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@shikijs/vitepress-twoslash": "catalog:docs",
+    "@voidzero-dev/vitepress-theme": "catalog:docs",
     "oxc-minify": "catalog:docs",
     "typedoc": "catalog:docs",
     "typedoc-plugin-markdown": "catalog:docs",

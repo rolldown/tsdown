@@ -1,10 +1,11 @@
 ---
 # https://vitepress.dev/reference/default-theme-home-page
 layout: home
+theme: dark
 
 hero:
   name: 'tsdown'
-  text: 'The Elegant<br>Library Bundler'
+  text: 'The Elegant <br> Library Bundler'
   tagline: Powered by Rolldown
   image:
     src: /tsdown.svg
@@ -39,3 +40,9 @@ features:
     details: |
       Compatible with tsup's main options and features, ensuring a smooth transition.
 ---
+
+<script setup>
+import Home from './.vitepress/theme/Home.vue'
+</script>
+
+<Home />

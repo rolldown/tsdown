@@ -155,21 +155,10 @@ export function getLocaleConfig(lang: string) {
   ]
 
   const themeConfig: DefaultTheme.Config = {
-    logo: { src: '/tsdown.svg', width: 24, height: 24 },
     nav,
     sidebar: {
       '/reference/api/rolldown': rolldownSidebar,
       '/': sidebar,
-    },
-    outline: 'deep',
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/rolldown/tsdown' },
-      { icon: 'npm', link: 'https://npmjs.com/package/tsdown' },
-      // { icon: 'jsr', link: 'https://jsr.io/@sxzz/tsdown' },
-    ],
-    footer: {
-      message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2025-present VoidZero Inc. & Contributors',
     },
   }
 

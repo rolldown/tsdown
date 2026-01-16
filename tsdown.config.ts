@@ -20,9 +20,7 @@ export default defineConfig([
       'import.meta.TSDOWN_PRODUCTION': 'true',
     },
     dts: {
-      oxc: {
-        stripInternal: true,
-      },
+      oxc: true,
     },
     unused: {
       level: 'error',

@@ -3,5 +3,6 @@
   "cSpell.words": ["rolldown", "tsdown"],
   "files.readonlyInclude": {
     "docs/**/reference/api/**": true
-  }
+  },
+  "typescript.experimental.useTsgo": false
 }

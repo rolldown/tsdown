@@ -36,6 +36,7 @@ catalogs:
   docs:
     '@shikijs/vitepress-twoslash': ^3.21.0
     '@unocss/eslint-plugin': ^66.6.0
+    '@voidzero-dev/vitepress-theme': ^4.2.1
     '@vueuse/core': ^14.1.0
     oxc-minify: ^0.108.0
     typedoc: ^0.28.16
@@ -78,6 +79,9 @@ catalogs:
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.2
     unrun: ^0.2.25
+
+allowBuilds:
+  vue-demi: false
 
 ignoreWorkspaceRootCheck: true
 
