@@ -11,14 +11,14 @@ hero:
     src: /tsdown.svg
     alt: tsdown
   actions:
-    - text: What is tsdown?
-      openVideoModal: true
+    # - text: What is tsdown?
+    #   openVideoModal: true
     - theme: brand
       text: Get Started
       link: /guide/
     - theme: alt
       text: API Reference
-      link: /reference/api/Interface.UserConfig.md
+      link: /reference/api/Interface.UserConfig
 
 features:
   - icon: 🚀

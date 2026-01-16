@@ -7,7 +7,7 @@ import type { Theme } from 'vitepress'
 import 'virtual:group-icons.css'
 import '@voidzero-dev/vitepress-theme/src/styles/index.css'
 import '@shikijs/vitepress-twoslash/style.css'
-// import 'uno.css'
+import 'uno.css'
 
 export default {
   extends: BaseTheme,

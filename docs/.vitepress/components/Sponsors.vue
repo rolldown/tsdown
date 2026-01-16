@@ -3,7 +3,6 @@ import { useData } from 'vitepress'
 import { onMounted, ref } from 'vue'
 
 const { lang } = useData()
-
 const sponsors = ref<string>()
 
 onMounted(async () => {
