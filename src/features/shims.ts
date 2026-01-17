@@ -1,8 +1,11 @@
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
 
+const dirname = path.dirname(fileURLToPath(import.meta.url))
+
 export const shimFile: string = path.resolve(
-  import.meta.dirname,
+  dirname,
   import.meta.TSDOWN_PRODUCTION ? '..' : '../..',
   'esm-shims.js',
 )
