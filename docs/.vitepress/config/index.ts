@@ -11,7 +11,7 @@ export default defineConfig({
     'zh-CN': getLocaleConfig('zh-CN'),
     ru: {
       label: 'Русский (community)',
-      link: 'https://github.com/teplostanski/tsdown.ru#',
+      link: 'https://github.com/teplostanski/tsdown.ru',
     },
   },
 

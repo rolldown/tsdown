@@ -14,6 +14,7 @@
     "vue": "catalog:docs"
   },
   "devDependencies": {
+    "@iconify-json/logos": "catalog:docs",
     "@shikijs/vitepress-twoslash": "catalog:docs",
     "oxc-minify": "catalog:docs",
     "typedoc": "catalog:docs",

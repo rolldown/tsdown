@@ -77,6 +77,9 @@ catalogs:
       specifier: ^4.0.17
       version: 4.0.17
   docs:
+    '@iconify-json/logos':
+      specifier: ^1.2.10
+      version: 1.2.10
     '@shikijs/vitepress-twoslash':
       specifier: ^3.21.0
       version: 3.21.0
@@ -359,6 +362,9 @@ importers:
         specifier: catalog:docs
         version: 3.5.26(typescript@5.9.3)
     devDependencies:
+      '@iconify-json/logos':
+        specifier: catalog:docs
+        version: 1.2.10
       '@shikijs/vitepress-twoslash':
         specifier: catalog:docs
         version: 3.21.0(typescript@5.9.3)

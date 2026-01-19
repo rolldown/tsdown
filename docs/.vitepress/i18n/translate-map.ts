@@ -51,6 +51,8 @@ const zhCN = {
 
   English: '简体中文',
   en: 'zh-CN',
+
+  'Who uses tsdown?': '谁在使用 tsdown？',
 }
 
 export const translateMap: Record<string, Record<string, string>> = {

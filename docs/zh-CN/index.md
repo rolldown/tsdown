@@ -36,3 +36,9 @@ features:
     title: 无缝迁移
     details: 兼容 tsup 的主要选项和功能，确保平滑过渡。
 ---
+
+<script setup>
+import HomePage from '../.vitepress/components/HomePage.vue'
+</script>
+
+<HomePage />
