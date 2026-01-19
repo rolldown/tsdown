@@ -23,12 +23,14 @@ function getTypedocSidebar() {
 
 const typedocSidebar = getTypedocSidebar()
 const rolldownSidebar: { items: DefaultTheme.SidebarItem[]; base: string } = {
-  items: typedocSidebar[0]
-    .items![0].items!.filter(
-      (item) => item.text === 'Interfaces' || item.text === 'Type Aliases',
-    )!
-    .flatMap((item) => item.items!)
-    .toSorted((a, b) => a.text!.localeCompare(b.text!)),
+  items: typedocSidebar[0]?.items?.[0]
+    ? typedocSidebar[0].items[0]
+        .items!.filter(
+          (item) => item.text === 'Interfaces' || item.text === 'Type Aliases',
+        )!
+        .flatMap((item) => item.items!)
+        .toSorted((a, b) => a.text!.localeCompare(b.text!))
+    : [],
   base: '/reference',
 }
 
