@@ -15,7 +15,7 @@
   },
   "index.d.mts": {
     "build": "declare function build(_: InlineConfig): Promise<TsdownBundle[]>",
-    "buildWithConfigs": "declare function buildWithConfigs(_: ResolvedConfig[], _: string[]): Promise<TsdownBundle[]>",
+    "buildWithConfigs": "declare function buildWithConfigs(_: ResolvedConfig[], _: string[], _: () => void): Promise<TsdownBundle[]>",
     "enableDebug": "declare function enableDebug(_: boolean | Arrayable<string>): void",
     "#exports": [
       "AttwOptions",
