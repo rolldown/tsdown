@@ -2,7 +2,7 @@
 
 `tsdown` 使用 [Rolldown](https://rolldown.rs) 作为其核心打包引擎。这使您可以轻松地直接向 Rolldown 传递或覆盖选项，从而对打包过程进行细粒度的控制。
 
-有关可用 Rolldown 选项的完整列表，请参阅 [Rolldown 配置选项](https://rolldown.rs/reference/config-options) 文档。
+有关可用 Rolldown 选项的完整列表，请参阅 [Rolldown 配置选项](https://rolldown.rs/options/input) 文档。
 
 > [!WARNING]
 > 您应当熟悉您所覆盖的 Rolldown 选项的行为，并确保已阅读 Rolldown 的相关文档。
