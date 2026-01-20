@@ -127,12 +127,13 @@ export function ReportPlugin(
 
       for (const size of sizes) {
         const filenameColor = size.dts ? green : noop
+        const filename = path.normalize(size.filename)
 
         logger.info(
           nameLabel,
           formatLabel,
           dim(outDir + path.sep) +
-            filenameColor((size.isEntry ? bold : noop)(size.filename)),
+            filenameColor((size.isEntry ? bold : noop)(filename)),
           ` `.repeat(filenameLength - size.filename.length),
           dim(size.rawText),
           options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,
