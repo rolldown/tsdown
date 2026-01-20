@@ -1,6 +1,7 @@
 import { addOutDirToChunks } from '../utils/chunks.ts'
-import { resolveComma, toArray } from '../utils/general.ts'
+import { resolveComma, resolveFilePatterns, toArray } from '../utils/general.ts'
 import type { TsdownBundle } from '../config/types.ts'
+import type { CopyOptions } from './copy.ts'
 import type { Plugin } from 'rolldown'
 
 export const endsWithConfig: RegExp =
@@ -19,7 +20,7 @@ export function WatchPlugin(
           inputOptions.watch.exclude.push(...config.ignoreWatch)
         }
       : undefined,
-    buildStart() {
+    async buildStart() {
       config.tsconfig && this.addWatchFile(config.tsconfig)
       for (const file of configFiles) {
         this.addWatchFile(file)
@@ -31,6 +32,29 @@ export function WatchPlugin(
       }
       if (config.pkg) {
         this.addWatchFile(config.pkg.packageJsonPath)
+      }
+
+      // Watch copy source files
+      if (config.copy) {
+        const copyOptions: CopyOptions =
+          typeof config.copy === 'function'
+            ? await config.copy(config)
+            : config.copy
+
+        const copyFiles = (
+          await Promise.all(
+            toArray(copyOptions).map((entry) => {
+              if (typeof entry === 'string') {
+                return resolveFilePatterns(entry, config.cwd)
+              }
+              return resolveFilePatterns(entry.from, config.cwd)
+            }),
+          )
+        ).flat()
+
+        for (const file of copyFiles) {
+          this.addWatchFile(file)
+        }
       }
     },
     generateBundle: {
