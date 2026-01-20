@@ -12,20 +12,20 @@ catalogs:
     '@clack/prompts': ^0.11.0
     giget: ^2.0.0
   dev:
-    '@sxzz/eslint-config': ^7.4.5
+    '@sxzz/eslint-config': ^7.5.0
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.15
     '@types/node': ^25.0.9
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260118.1
+    '@typescript/native-preview': 7.0.0-dev.20260119.1
     '@vitest/coverage-v8': 4.0.17
     '@vitest/ui': ^4.0.17
     bumpp: ^10.4.0
     dedent: ^1.7.1
     eslint: ^9.39.2
-    lightningcss: ^1.30.2
-    memfs: ^4.54.0
+    lightningcss: ^1.31.0
+    memfs: ^4.56.2
     pkg-types: ^2.3.0
     prettier: ^3.8.0
     rolldown-plugin-dts-snapshot: ^0.3.2
@@ -38,7 +38,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^3.21.0
     '@unocss/eslint-plugin': ^66.6.0
     '@vueuse/core': ^14.1.0
-    oxc-minify: ^0.108.0
+    oxc-minify: ^0.110.0
     typedoc: ^0.28.16
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
@@ -47,7 +47,7 @@ catalogs:
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-group-icons: ^1.7.1
     vitepress-plugin-llms: ^1.10.0
-    vue: ^3.5.26
+    vue: ^3.5.27
     vue-tsc: ^3.2.2
   migrate:
     '@antfu/ni': ^28.2.0
@@ -72,7 +72,7 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
     rolldown: 1.0.0-beta.60
-    rolldown-plugin-dts: ^0.21.2
+    rolldown-plugin-dts: ^0.21.3
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
@@ -84,5 +84,4 @@ ignoreWorkspaceRootCheck: true
 
 trustPolicy: no-downgrade
 trustPolicyExclude:
-  - chokidar@4.0.3
-  - ts-api-utils@2.3.0
+  - memfs@4.56.2
