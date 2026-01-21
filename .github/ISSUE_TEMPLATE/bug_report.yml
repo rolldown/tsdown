@@ -16,16 +16,33 @@ body:
         Also try to search for your issue - it may have already been answered or even fixed in the development branch.
         However, if you find that an old, closed issue still persists in the latest version,
         you should open a new issue using the form below instead of commenting on the old issue.
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 📋 Show us the bug
+
+        > [!CAUTION]
+        > **This is the most important part.**
+        > A **minimal reproduction** is required to investigate and fix the issue, or it will be closed.
+
+         - Use [StackBlitz](https://stackblitz.com/github/rolldown/tsdown-starter-stackblitz) to create a minimal reproduction and share the link.
+        - Or provide a minimal repository on GitHub that can reproduce the issue. You could use [this template](https://github.com/rolldown/tsdown-starter-stackblitz).
+
   - type: textarea
     id: reproduction-link-or-steps
     attributes:
       label: Reproduction link or steps
-      description: |
-        - Use [StackBlitz](https://stackblitz.com/github/rolldown/tsdown-starter-stackblitz) to create a minimal reproduction and share the link.
-        - Or provide a minimal repository on GitHub that can reproduce the issue. You could use [this template](https://github.com/rolldown/tsdown-starter-stackblitz).
-      placeholder: Reproduction link or steps
+      placeholder: https://github.com/... or https://stackblitz.com/...
     validations:
       required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        > [!TIP]
+        > **🙋 Need help?** Use [_Priority Support_](https://github.com/sponsors/sxzz) for debugging help and implementation!
+
   - type: textarea
     id: expected
     attributes:

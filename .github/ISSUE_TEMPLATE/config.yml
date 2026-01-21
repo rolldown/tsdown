@@ -1,3 +1,4 @@
+blank_issues_enabled: false
 contact_links:
   - name: ⁉️ Why and How to make a reproduction?
     url: https://antfu.me/posts/why-reproductions-are-required
