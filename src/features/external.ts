@@ -1,10 +1,9 @@
 import { isBuiltin } from 'node:module'
-import path from 'node:path'
-import { blue, underline } from 'ansis'
+import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { and, id, importerId, include } from 'rolldown/filter'
-import { matchPattern, typeAssert } from '../utils/general.ts'
+import { matchPattern, slash, typeAssert } from '../utils/general.ts'
 import { shimFile } from './shims.ts'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { PackageJson } from 'pkg-types'
@@ -45,31 +44,67 @@ export function ExternalPlugin({
             moduleSideEffects: nodeBuiltinModule ? false : undefined,
           }
         }
-
-        if (
-          inlineOnly &&
-          !nodeBuiltinModule && // skip node built-in modules
-          !path.isAbsolute(id) // skip absolute imports
-        ) {
-          const shouldInline =
-            shouldExternal === 'no-external' || // force inline
-            matchPattern(id, inlineOnly)
-          debug('shouldInline: %s = %s', id, shouldInline)
-          if (shouldInline) return
-
-          const resolved = await this.resolve(id, importer, extraOptions)
-          if (!resolved) return
-
-          if (RE_NODE_MODULES.test(resolved.id)) {
-            throw new Error(
-              `${underline(id)} is located in node_modules but is not included in ${blue`inlineOnly`} option.
-To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.
-Imported by ${underline(importer)}`,
-            )
-          }
-        }
       },
     },
+
+    generateBundle: inlineOnly
+      ? {
+          order: 'post',
+          handler(options, bundle) {
+            const deps = new Set<string>()
+            const importers = new Map<string, Set<string>>()
+
+            for (const chunk of Object.values(bundle)) {
+              if (chunk.type === 'asset') continue
+
+              for (const id of chunk.moduleIds) {
+                if (!RE_NODE_MODULES.test(id)) continue
+
+                const parts = slash(id)
+                  .split('/node_modules/')
+                  .at(-1)
+                  ?.split('/')
+                if (!parts) continue
+
+                let dep: string
+                if (parts[0][0] === '@') {
+                  dep = `${parts[0]}/${parts[1]}`
+                } else {
+                  dep = parts[0]
+                }
+                deps.add(dep)
+
+                const module = this.getModuleInfo(id)
+                if (module) {
+                  importers.set(
+                    dep,
+                    new Set([
+                      ...module.importers,
+                      ...(importers.get(dep) || []),
+                    ]),
+                  )
+                }
+              }
+            }
+
+            debug('found deps in bundle: %O', deps)
+            const errors = Array.from(deps)
+              .filter((dep) => !matchPattern(dep, inlineOnly))
+              .map(
+                (
+                  dep,
+                ) => `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`inlineOnly`} option.
+To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.
+Imported by
+${[...(importers.get(dep) || [])].map((s) => `- ${underline(s)}`).join('\n')}
+          `,
+              )
+            if (errors.length) {
+              this.error(errors.join('\n\n'))
+            }
+          },
+        }
+      : undefined,
   }
 
   /**

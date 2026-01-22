@@ -183,7 +183,7 @@ describe('inlineOnly', () => {
       files,
       options: {
         noExternal: ['cac'],
-        inlineOnly: ['bumpp'],
+        inlineOnly: ['cac', 'bumpp'],
         plugins: [pluginMockDepCode],
         inputOptions: {
           experimental: {

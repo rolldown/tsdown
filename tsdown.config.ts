@@ -12,7 +12,6 @@ export default defineConfig([
     inlineOnly: [
       'is-in-ci',
       'pkg-types', // type-only
-      'exsolve', // type-only, removed after tree-shaking
     ],
     platform: 'node',
     failOnWarn: 'ci-only',
