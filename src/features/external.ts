@@ -16,6 +16,8 @@ export function ExternalPlugin({
   noExternal,
   inlineOnly,
   skipNodeModulesBundle,
+  logger,
+  nameLabel,
 }: ResolvedConfig): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
 
@@ -47,64 +49,75 @@ export function ExternalPlugin({
       },
     },
 
-    generateBundle: inlineOnly
-      ? {
-          order: 'post',
-          handler(options, bundle) {
-            const deps = new Set<string>()
-            const importers = new Map<string, Set<string>>()
+    generateBundle:
+      inlineOnly === false
+        ? undefined
+        : {
+            order: 'post',
+            handler(options, bundle) {
+              const deps = new Set<string>()
+              const importers = new Map<string, Set<string>>()
 
-            for (const chunk of Object.values(bundle)) {
-              if (chunk.type === 'asset') continue
+              for (const chunk of Object.values(bundle)) {
+                if (chunk.type === 'asset') continue
 
-              for (const id of chunk.moduleIds) {
-                if (!RE_NODE_MODULES.test(id)) continue
+                for (const id of chunk.moduleIds) {
+                  if (!RE_NODE_MODULES.test(id)) continue
 
-                const parts = slash(id)
-                  .split('/node_modules/')
-                  .at(-1)
-                  ?.split('/')
-                if (!parts) continue
+                  const parts = slash(id)
+                    .split('/node_modules/')
+                    .at(-1)
+                    ?.split('/')
+                  if (!parts) continue
 
-                let dep: string
-                if (parts[0][0] === '@') {
-                  dep = `${parts[0]}/${parts[1]}`
-                } else {
-                  dep = parts[0]
-                }
-                deps.add(dep)
+                  let dep: string
+                  if (parts[0][0] === '@') {
+                    dep = `${parts[0]}/${parts[1]}`
+                  } else {
+                    dep = parts[0]
+                  }
+                  deps.add(dep)
 
-                const module = this.getModuleInfo(id)
-                if (module) {
-                  importers.set(
-                    dep,
-                    new Set([
-                      ...module.importers,
-                      ...(importers.get(dep) || []),
-                    ]),
-                  )
+                  const module = this.getModuleInfo(id)
+                  if (module) {
+                    importers.set(
+                      dep,
+                      new Set([
+                        ...module.importers,
+                        ...(importers.get(dep) || []),
+                      ]),
+                    )
+                  }
                 }
               }
-            }
 
-            debug('found deps in bundle: %O', deps)
-            const errors = Array.from(deps)
-              .filter((dep) => !matchPattern(dep, inlineOnly))
-              .map(
-                (
-                  dep,
-                ) => `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`inlineOnly`} option.
-To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.
-Imported by
-${[...(importers.get(dep) || [])].map((s) => `- ${underline(s)}`).join('\n')}
-          `,
-              )
-            if (errors.length) {
-              this.error(errors.join('\n\n'))
-            }
+              debug('found deps in bundle: %O', deps)
+
+              if (inlineOnly) {
+                const errors = Array.from(deps)
+                  .filter((dep) => !matchPattern(dep, inlineOnly))
+                  .map(
+                    (dep) =>
+                      `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`inlineOnly`} option.\n` +
+                      `To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
+                      `Imported by\n${[...(importers.get(dep) || [])]
+                        .map((s) => `- ${underline(s)}`)
+                        .join('\n')}`,
+                  )
+                if (errors.length) {
+                  this.error(errors.join('\n\n'))
+                }
+              } else if (deps.size) {
+                logger.warn(
+                  nameLabel,
+                  `Consider adding ${blue`inlineOnly`} option to avoid unintended bundling of dependencies, or set ${blue`inlineOnly: false`} to disable this warning.\n` +
+                    `Detected dependencies in bundle:\n${Array.from(deps)
+                      .map((dep) => `- ${yellow(dep)}`)
+                      .join('\n')}`,
+                )
+              }
+            },
           },
-        }
-      : undefined,
   }
 
   /**

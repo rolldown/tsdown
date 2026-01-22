@@ -242,7 +242,7 @@ export async function resolveUserConfig(
     const noExternalPatterns = toArray(noExternal)
     noExternal = (id) => matchPattern(id, noExternalPatterns)
   }
-  if (inlineOnly != null) {
+  if (inlineOnly != null && inlineOnly !== false) {
     inlineOnly = toArray(inlineOnly)
   }
 
