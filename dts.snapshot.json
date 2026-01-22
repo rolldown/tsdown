@@ -68,12 +68,12 @@
     ]
   },
   "plugins.d.mts": {
-    "ExternalPlugin": "declare function ExternalPlugin(_: ResolvedConfig): Plugin",
+    "DepPlugin": "declare function DepPlugin(_: ResolvedConfig): Plugin",
     "NodeProtocolPlugin": "declare function NodeProtocolPlugin(_: 'strip' | true): Plugin",
     "ShebangPlugin": "declare function ShebangPlugin(_: Logger, _: string, _: string, _: boolean): Plugin",
     "WatchPlugin": "declare function WatchPlugin(_: string[], _: TsdownBundle): Plugin",
     "#exports": [
-      "ExternalPlugin",
+      "DepPlugin",
       "NodeProtocolPlugin",
       "ReportPlugin",
       "ShebangPlugin",

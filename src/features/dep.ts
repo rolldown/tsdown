@@ -9,9 +9,9 @@ import type { ResolvedConfig } from '../config/index.ts'
 import type { PackageJson } from 'pkg-types'
 import type { Plugin, PluginContext, ResolveIdExtraOptions } from 'rolldown'
 
-const debug = createDebug('tsdown:external')
+const debug = createDebug('tsdown:dep')
 
-export function ExternalPlugin({
+export function DepPlugin({
   pkg,
   noExternal,
   inlineOnly,
@@ -37,7 +37,7 @@ export function ExternalPlugin({
         )
         const nodeBuiltinModule = isBuiltin(id)
 
-        debug('shouldExternal: %s = %s', id, shouldExternal)
+        debug('shouldExternal: %o = %o', id, shouldExternal)
 
         if (shouldExternal === true || shouldExternal === 'absolute') {
           return {
@@ -91,7 +91,7 @@ export function ExternalPlugin({
                 }
               }
 
-              debug('found deps in bundle: %O', deps)
+              debug('found deps in bundle: %o', deps)
 
               if (inlineOnly) {
                 const errors = Array.from(deps)
