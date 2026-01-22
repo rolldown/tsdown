@@ -29,7 +29,7 @@ function generateExports(
   })
 }
 
-describe.concurrent('generateExports', () => {
+describe('generateExports', () => {
   test('no entries', async ({ expect }) => {
     const results = generateExports()
     await expect(results).resolves.toMatchInlineSnapshot(`
