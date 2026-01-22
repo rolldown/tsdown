@@ -19,8 +19,8 @@ catalogs:
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
     '@typescript/native-preview': 7.0.0-dev.20260122.3
-    '@vitest/coverage-v8': 4.0.17
-    '@vitest/ui': ^4.0.17
+    '@vitest/coverage-v8': ^4.0.18
+    '@vitest/ui': ^4.0.18
     bumpp: ^10.4.0
     dedent: ^1.7.1
     eslint: ^9.39.2
@@ -31,8 +31,8 @@ catalogs:
     rolldown-plugin-dts-snapshot: ^0.3.2
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
-    unplugin-ast: ^0.15.4
-    vitest: ^4.0.17
+    unplugin-ast: ^0.16.0
+    vitest: ^4.0.18
   docs:
     '@iconify-json/logos': ^1.2.10
     '@shikijs/vitepress-twoslash': ^3.21.0
@@ -58,8 +58,8 @@ catalogs:
     '@arethetypeswrong/core': ^0.18.2
     '@vitejs/devtools': ^0.0.0-alpha.26
     publint: ^0.3.17
-    unplugin-lightningcss: ^0.4.4
-    unplugin-unused: ^0.5.6
+    unplugin-lightningcss: ^0.4.5
+    unplugin-unused: ^0.5.7
   prod:
     ansis: ^4.2.0
     cac: ^6.7.14

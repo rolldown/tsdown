@@ -1,5 +1,5 @@
 {
-  "config-!~{00m}~.d.mts": {
+  "config-!~{00i}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
@@ -83,7 +83,7 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00k}~.d.mts": {
+  "types-!~{00g}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",
@@ -114,14 +114,14 @@
     "Overwrite": "type Overwrite<T, U> = Omit<T, keyof U> & U",
     "PackageJson": "interface PackageJson {\n name?: string\n version?: string\n description?: string\n keywords?: string[]\n homepage?: string\n bugs?: string | { url?: string; email?: string }\n license?: string\n repository?: string | { type: string; url: string; directory?: string }\n scripts?: PackageJsonScripts\n private?: boolean\n author?: PackageJsonPerson\n contributors?: PackageJsonPerson[]\n funding?: PackageJsonFunding | PackageJsonFunding[]\n files?: string[]\n main?: string\n browser?: string | Record<string, string | false>\n unpkg?: string\n bin?: string | Record<string, string>\n man?: string | string[]\n dependencies?: Record<string, string>\n devDependencies?: Record<string, string>\n optionalDependencies?: Record<string, string>\n peerDependencies?: Record<string, string>\n types?: string\n typings?: string\n module?: string\n type?: 'module' | 'commonjs'\n exports?: PackageJsonExports\n imports?: Record<string, string | Record<string, string>>\n workspaces?: string[] | { packages?: string[]; nohoist?: string[] }\n typesVersions?: Record<string, Record<string, string[]>>\n os?: string[]\n cpu?: string[]\n publishConfig?: { registry?: string; tag?: string; access?: 'public' | 'restricted'; executableFiles?: string[]; directory?: string; linkDirectory?: boolean } & Pick<PackageJson, 'bin' | 'main' | 'exports' | 'types' | 'typings' | 'module' | 'browser' | 'unpkg' | 'typesVersions' | 'os' | 'cpu'>\n packageManager?: string\n [key: string]: any\n}",
     "PackageJsonCommonScripts": "type PackageJsonCommonScripts = 'build' | 'coverage' | 'deploy' | 'dev' | 'format' | 'lint' | 'preview' | 'release' | 'typecheck' | 'watch'",
-    "PackageJsonExportKey": "type PackageJsonExportKey = '.' | 'import' | 'require' | 'types' | 'node' | 'browser' | 'default' | string & {}",
+    "PackageJsonExportKey": "type PackageJsonExportKey = '.' | 'import' | 'require' | 'types' | 'node' | 'browser' | 'default' | (string & {})",
     "PackageJsonExports": "type PackageJsonExports = string | PackageJsonExportsObject | Array<string | PackageJsonExportsObject>",
     "PackageJsonExportsObject": "type PackageJsonExportsObject = { [P in PackageJsonExportKey]?: string | PackageJsonExportsObject | Array<string | PackageJsonExportsObject> }",
     "PackageJsonFunding": "type PackageJsonFunding = string | { url: string; type?: string }",
     "PackageJsonNpmLifeCycleScripts": "type PackageJsonNpmLifeCycleScripts = 'dependencies' | 'prepublishOnly' | PackageJsonScriptWithPreAndPost<'install' | 'pack' | 'prepare' | 'publish' | 'restart' | 'start' | 'stop' | 'test' | 'version'>",
     "PackageJsonPerson": "type PackageJsonPerson = string | { name: string; email?: string; url?: string }",
     "PackageJsonPnpmLifeCycleScripts": "type PackageJsonPnpmLifeCycleScripts = 'pnpm:devPreinstall'",
-    "PackageJsonScriptName": "type PackageJsonScriptName = PackageJsonCommonScripts | PackageJsonNpmLifeCycleScripts | PackageJsonPnpmLifeCycleScripts | string & {}",
+    "PackageJsonScriptName": "type PackageJsonScriptName = PackageJsonCommonScripts | PackageJsonNpmLifeCycleScripts | PackageJsonPnpmLifeCycleScripts | (string & {})",
     "PackageJsonScripts": "type PackageJsonScripts = { [P in PackageJsonScriptName]?: string }",
     "PackageJsonScriptWithPreAndPost": "type PackageJsonScriptWithPreAndPost<S extends string> = S | `${'pre' | 'post'}${S}`",
     "PackageJsonWithPath": "interface PackageJsonWithPath extends PackageJson {\n packageJsonPath: string\n}",
@@ -139,7 +139,7 @@
     "UserConfig": "interface UserConfig {\n entry?: TsdownInputOption\n external?: ExternalOption\n noExternal?: Arrayable<string | RegExp> | NoExternalFn\n inlineOnly?: Arrayable<string | RegExp>\n skipNodeModulesBundle?: boolean\n alias?: Record<string, string>\n tsconfig?: string | boolean\n platform?: 'node' | 'neutral' | 'browser'\n target?: string | string[] | false\n env?: Record<string, any>\n envFile?: string\n envPrefix?: string | string[]\n define?: Record<string, string>\n shims?: boolean\n treeshake?: boolean | TreeshakingOptions\n loader?: ModuleTypes\n removeNodeProtocol?: boolean\n nodeProtocol?: 'strip' | boolean\n checks?: ChecksOptions & { legacyCjs?: boolean }\n plugins?: InputOptions['plugins']\n inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: { cjsDts: boolean }) => Awaitable<InputOptions | void | null>)\n format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>\n globalName?: string\n outDir?: string\n write?: boolean\n sourcemap?: Sourcemap\n clean?: boolean | string[]\n minify?: boolean | 'dce-only' | MinifyOptions\n footer?: ChunkAddon\n banner?: ChunkAddon\n unbundle?: boolean\n bundle?: boolean\n fixedExtension?: boolean\n outExtensions?: OutExtensionFactory\n hash?: boolean\n cjsDefault?: boolean\n outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: { cjsDts: boolean }) => Awaitable<OutputOptions | void | null>)\n cwd?: string\n name?: string\n logLevel?: LogLevel\n failOnWarn?: boolean | CIOption\n customLogger?: Logger\n fromVite?: boolean | 'vitest'\n watch?: boolean | Arrayable<string>\n ignoreWatch?: Arrayable<string | RegExp>\n devtools?: WithEnabled<DevtoolsOptions>\n onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>)\n dts?: WithEnabled<DtsOptions>\n unused?: WithEnabled<UnusedOptions>\n publint?: WithEnabled<PublintOptions>\n attw?: WithEnabled<AttwOptions>\n report?: WithEnabled<ReportOptions>\n globImport?: boolean\n exports?: WithEnabled<ExportsOptions>\n css?: CssOptions\n publicDir?: CopyOptions | CopyOptionsFn\n copy?: CopyOptions | CopyOptionsFn\n hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>)\n workspace?: Workspace | Arrayable<string> | true\n}",
     "UserConfigExport": "type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>",
     "UserConfigFn": "type UserConfigFn = (_: InlineConfig, _: { ci: boolean }) => Awaitable<Arrayable<UserConfig>>",
-    "WithEnabled": "type WithEnabled<T> = boolean | undefined | CIOption | T & { enabled?: boolean | CIOption }",
+    "WithEnabled": "type WithEnabled<T> = boolean | undefined | CIOption | (T & { enabled?: boolean | CIOption })",
     "Workspace": "interface Workspace {\n include?: Arrayable<string> | 'auto'\n exclude?: Arrayable<string>\n config?: boolean | string\n}"
   }
 }
