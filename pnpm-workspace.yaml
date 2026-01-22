@@ -10,24 +10,24 @@ overrides:
 catalogs:
   create:
     '@clack/prompts': ^0.11.0
-    giget: ^2.0.0
+    giget: ^3.1.1
   dev:
     '@sxzz/eslint-config': ^7.5.0
     '@sxzz/prettier-config': ^2.2.6
     '@sxzz/test-utils': ^0.5.15
-    '@types/node': ^25.0.9
+    '@types/node': ^25.0.10
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260119.1
+    '@typescript/native-preview': 7.0.0-dev.20260122.3
     '@vitest/coverage-v8': 4.0.17
     '@vitest/ui': ^4.0.17
     bumpp: ^10.4.0
     dedent: ^1.7.1
     eslint: ^9.39.2
-    lightningcss: ^1.31.0
-    memfs: ^4.56.2
+    lightningcss: ^1.31.1
+    memfs: ^4.56.9
     pkg-types: ^2.3.0
-    prettier: ^3.8.0
+    prettier: ^3.8.1
     rolldown-plugin-dts-snapshot: ^0.3.2
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
@@ -43,7 +43,7 @@ catalogs:
     typedoc-plugin-markdown: ^4.9.0
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.6.0
-    vite: ^8.0.0-beta.8
+    vite: ^8.0.0-beta.9
     vitepress: ^2.0.0-alpha.15
     vitepress-plugin-group-icons: ^1.7.1
     vitepress-plugin-llms: ^1.10.0
@@ -57,7 +57,7 @@ catalogs:
   peer:
     '@arethetypeswrong/core': ^0.18.2
     '@vitejs/devtools': ^0.0.0-alpha.26
-    publint: ^0.3.16
+    publint: ^0.3.17
     unplugin-lightningcss: ^0.4.4
     unplugin-unused: ^0.5.6
   prod:
@@ -71,14 +71,14 @@ catalogs:
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
-    rolldown: 1.0.0-beta.60
-    rolldown-plugin-dts: ^0.21.3
+    rolldown: 1.0.0-rc.1
+    rolldown-plugin-dts: ^0.21.5
     semver: ^7.7.3
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.4.2
-    unrun: ^0.2.25
+    unrun: ^0.2.26
 
 ignoreWorkspaceRootCheck: true
 
