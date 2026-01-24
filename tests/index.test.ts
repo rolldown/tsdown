@@ -211,6 +211,32 @@ describe('inlineOnly', () => {
       'declare it as a production or peer dependency in your package.json',
     )
   })
+
+  test('warn for unused inlineOnly patterns', async (context) => {
+    const warn = vi.fn()
+    await testBuild({
+      context,
+      files: { 'index.ts': `export * from 'cac'` },
+      options: {
+        noExternal: ['cac'],
+        inlineOnly: ['cac', 'unused-dep'],
+        plugins: [pluginMockDepCode],
+        customLogger: {
+          level: 'info',
+          info: vi.fn(),
+          warn,
+          warnOnce: vi.fn(),
+          error: vi.fn(),
+          success: vi.fn(),
+          clearScreen: vi.fn(),
+        },
+        inputOptions: { experimental: { attachDebugInfo: 'none' } },
+      },
+    })
+    const message = warn.mock.calls[0]?.find((arg) => typeof arg === 'string')
+    expect(message).toContain('not used in the bundle')
+    expect(message).toContain('unused-dep')
+  })
 })
 
 test('fromVite', async (context) => {

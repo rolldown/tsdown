@@ -107,6 +107,23 @@ export function DepPlugin({
                 if (errors.length) {
                   this.error(errors.join('\n\n'))
                 }
+
+                const unusedPatterns = inlineOnly.filter(
+                  (pattern) =>
+                    !Array.from(deps).some((dep) =>
+                      matchPattern(dep, [pattern]),
+                    ),
+                )
+                if (unusedPatterns.length) {
+                  logger.warn(
+                    nameLabel,
+                    `The following entries in ${blue`inlineOnly`} are not used in the bundle:\n${unusedPatterns
+                      .map((pattern) => `- ${yellow(pattern.toString())}`)
+                      .join(
+                        '\n',
+                      )}\nConsider removing them to keep your configuration clean.`,
+                  )
+                }
               } else if (deps.size) {
                 logger.warn(
                   nameLabel,
