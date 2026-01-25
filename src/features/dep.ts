@@ -115,10 +115,10 @@ export function DepPlugin({
                     ),
                 )
                 if (unusedPatterns.length) {
-                  logger.warn(
+                  logger.info(
                     nameLabel,
                     `The following entries in ${blue`inlineOnly`} are not used in the bundle:\n${unusedPatterns
-                      .map((pattern) => `- ${yellow(pattern.toString())}`)
+                      .map((pattern) => `- ${yellow(pattern)}`)
                       .join(
                         '\n',
                       )}\nConsider removing them to keep your configuration clean.`,

@@ -213,18 +213,20 @@ describe('inlineOnly', () => {
   })
 
   test('warn for unused inlineOnly patterns', async (context) => {
-    const warn = vi.fn()
+    const info = vi.fn()
     await testBuild({
       context,
-      files: { 'index.ts': `export * from 'cac'` },
+      files: {
+        'index.ts': `export * from 'cac'`,
+      },
       options: {
         noExternal: ['cac'],
         inlineOnly: ['cac', 'unused-dep'],
         plugins: [pluginMockDepCode],
         customLogger: {
           level: 'info',
-          info: vi.fn(),
-          warn,
+          info,
+          warn: vi.fn(),
           warnOnce: vi.fn(),
           error: vi.fn(),
           success: vi.fn(),
@@ -233,7 +235,14 @@ describe('inlineOnly', () => {
         inputOptions: { experimental: { attachDebugInfo: 'none' } },
       },
     })
-    const message = warn.mock.calls[0]?.find((arg) => typeof arg === 'string')
+    const message = info.mock.calls?.find(
+      ([, arg]) =>
+        typeof arg === 'string' &&
+        arg.includes(
+          'Consider removing them to keep your configuration clean.',
+        ),
+    )?.[1]
+
     expect(message).toContain('not used in the bundle')
     expect(message).toContain('unused-dep')
   })
