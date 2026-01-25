@@ -204,15 +204,15 @@ describe('generateExports', () => {
         "exports": {
           ".": {
             "dev": "./SRC/index.js",
-            "require": "./index.cjs",
-            "import": "./index.js"
+            "import": "./index.js",
+            "require": "./index.cjs"
           },
           "./package.json": "./package.json"
         },
         "publishExports": {
           ".": {
-            "require": "./index.cjs",
-            "import": "./index.js"
+            "import": "./index.js",
+            "require": "./index.cjs"
           },
           "./package.json": "./package.json"
         }
