@@ -18,7 +18,7 @@ import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { LightningCSSPlugin } from './css/lightningcss.ts'
 import { CssCodeSplitPlugin } from './css/splitting.ts'
-import { ExternalPlugin } from './external.ts'
+import { DepPlugin } from './dep.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
@@ -114,7 +114,7 @@ async function resolveInputOptions(
   }
 
   if (config.pkg || config.skipNodeModulesBundle) {
-    plugins.push(ExternalPlugin(config))
+    plugins.push(DepPlugin(config))
   }
 
   if (dts) {

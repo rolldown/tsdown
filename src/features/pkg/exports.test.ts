@@ -29,7 +29,7 @@ function generateExports(
   })
 }
 
-describe.concurrent('generateExports', () => {
+describe('generateExports', () => {
   test('no entries', async ({ expect }) => {
     const results = generateExports()
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -204,15 +204,15 @@ describe.concurrent('generateExports', () => {
         "exports": {
           ".": {
             "dev": "./SRC/index.js",
-            "require": "./index.cjs",
-            "import": "./index.js"
+            "import": "./index.js",
+            "require": "./index.cjs"
           },
           "./package.json": "./package.json"
         },
         "publishExports": {
           ".": {
-            "require": "./index.cjs",
-            "import": "./index.js"
+            "import": "./index.js",
+            "require": "./index.cjs"
           },
           "./package.json": "./package.json"
         }

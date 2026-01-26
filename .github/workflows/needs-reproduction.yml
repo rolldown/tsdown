@@ -1,0 +1,60 @@
+name: Needs Reproduction
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  comment:
+    if: github.event.label.name == 'needs reproduction'
+    runs-on: ubuntu-slim
+    permissions:
+      issues: write
+    steps:
+      - name: Comment on issue
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const message = [
+              `Hello @${context.payload.issue.user.login}! 👋`,
+              '',
+              'Thank you for raising an issue. However, we need a **minimal reproduction** to investigate the problem effectively.',
+              '',
+              '### 📋 What is a Minimal Reproduction?',
+              '',
+              'A minimal reproduction is the smallest possible project that demonstrates your issue. It should:',
+              '- Include **only** the code necessary to reproduce the issue',
+              '- Remove all unrelated dependencies and code',
+              '- Be as simple as possible while still showing the problem',
+              '',
+              'Learn more about why reproductions are required: **[Why Reproductions are Required](https://antfu.me/posts/why-reproductions-are-required)**',
+              '',
+              '### 🔧 How to Provide a Reproduction',
+              '',
+              'Choose one of the following options:',
+              '',
+              '1. **Use StackBlitz** (Recommended for quick sharing)',
+              '   - Open the [tsdown starter template](https://stackblitz.com/github/rolldown/tsdown-starter-stackblitz)',
+              '   - Modify it to reproduce your issue',
+              '   - Share the StackBlitz link',
+              '',
+              '2. **Use a GitHub Repository**',
+              '   - Fork [this template](https://github.com/rolldown/tsdown-starter-stackblitz)',
+              '   - Create a minimal reproduction',
+              '   - Share your repository link',
+              '',
+              '### 💡 Need Help?',
+              '',
+              'If you\'re having trouble creating a reproduction or need debugging assistance, consider using **[Priority Support](https://github.com/sponsors/sxzz)** for dedicated help!',
+              '',
+              '---',
+              '',
+              'Once you\'ve provided a minimal reproduction, please comment here with the link. We\'ll be happy to investigate further. Thank you for your understanding! 🙏'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });

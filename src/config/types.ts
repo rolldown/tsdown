@@ -153,9 +153,12 @@ export interface UserConfig {
   /**
    * Bundle only the dependencies listed here; throw an error if any others are missing.
    *
+   * - `undefined` (default): Show warnings for bundled dependencies.
+   * - `false`: Suppress all warnings about `inlineOnly` option.
+   *
    * Note: Be sure to include all required sub-dependencies as well.
    */
-  inlineOnly?: Arrayable<string | RegExp>
+  inlineOnly?: Arrayable<string | RegExp> | false
   /**
    * Skip bundling `node_modules`.
    * @default false
@@ -622,7 +625,7 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     noExternal?: NoExternalFn
-    inlineOnly?: Array<string | RegExp>
+    inlineOnly?: Array<string | RegExp> | false
     css: Required<CssOptions>
 
     dts: false | DtsOptions

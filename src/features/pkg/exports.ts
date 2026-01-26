@@ -281,8 +281,8 @@ function genSubExport(
     if (typeof devExports === 'string') {
       value[devExports] = src
     }
-    if (cjs) value[dualFormat ? 'require' : 'default'] = cjs
     if (es) value[dualFormat ? 'import' : 'default'] = es
+    if (cjs) value[dualFormat ? 'require' : 'default'] = cjs
   }
 
   return value

@@ -31,7 +31,7 @@ export async function loadViteConfig(
     sources: [
       {
         files: [`${prefix}.config`],
-        extensions: ['js', 'mjs', 'ts', 'cjs', 'mts', 'mts'],
+        extensions: ['js', 'mjs', 'ts', 'cjs', 'mts', 'cts'],
         parser,
       },
     ],

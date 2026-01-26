@@ -39,12 +39,12 @@ const asyncDispose: typeof Symbol.asyncDispose =
  * Build with tsdown.
  */
 export async function build(
-  userOptions: InlineConfig = {},
+  inlineConfig: InlineConfig = {},
 ): Promise<TsdownBundle[]> {
-  globalLogger.level = userOptions.logLevel || 'info'
-  const { configs, files: configFiles } = await resolveConfig(userOptions)
+  globalLogger.level = inlineConfig.logLevel || 'info'
+  const { configs, files: configFiles } = await resolveConfig(inlineConfig)
 
-  return buildWithConfigs(configs, configFiles)
+  return buildWithConfigs(configs, configFiles, () => build(inlineConfig))
 }
 
 /**
@@ -56,6 +56,7 @@ export async function build(
 export async function buildWithConfigs(
   configs: ResolvedConfig[],
   configFiles: string[],
+  _restart: () => void,
 ): Promise<TsdownBundle[]> {
   let cleanPromise: Promise<void> | undefined
   const clean = () => {
@@ -71,7 +72,7 @@ export async function buildWithConfigs(
 
     await Promise.all(disposeCbs.map((cb) => cb()))
     clearRequireCache()
-    buildWithConfigs(configs, configFiles)
+    _restart()
   }
 
   const configChunksByPkg = initBundleByPkg(configs)
