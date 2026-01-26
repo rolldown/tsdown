@@ -1,42 +1,5 @@
-import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 import picomatch from 'picomatch'
-import { glob, isDynamicPattern } from 'tinyglobby'
-
-/**
- * Resolve file patterns (strings or globs) to absolute file paths.
- * If patterns contain globs, they will be expanded.
- * Otherwise, paths are resolved relative to cwd.
- *
- * @param patterns - String or array of file patterns/globs
- * @param cwd - Working directory for resolving paths
- * @param globOptions - Optional glob options
- * @param globOptions.onlyFiles - Only return files (default: true)
- * @param globOptions.expandDirectories - Expand directories (default: false)
- * @returns Array of absolute file paths
- */
-export async function resolveFilePatterns(
-  patterns: string | string[],
-  cwd: string,
-  globOptions?: { onlyFiles?: boolean; expandDirectories?: boolean },
-): Promise<string[]> {
-  const patternsArray = toArray(patterns)
-  if (!patternsArray.length) return []
-
-  const hasGlob = patternsArray.some((p) => isDynamicPattern(p))
-
-  if (hasGlob) {
-    return await glob(patternsArray, {
-      cwd,
-      onlyFiles: globOptions?.onlyFiles ?? true,
-      expandDirectories: globOptions?.expandDirectories ?? false,
-      absolute: true,
-    })
-  }
-
-  // No globs, just resolve paths
-  return patternsArray.map((p) => path.resolve(cwd, p))
-}
 
 export function toArray<T>(
   val: T | T[] | null | undefined,
