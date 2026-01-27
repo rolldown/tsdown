@@ -1,6 +1,7 @@
 import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import process from 'node:process'
 import { formatWithOptions, inspect, type Inspectable } from 'node:util'
 import { createDebug } from 'obug'
 import {
@@ -119,9 +120,12 @@ async function resolveInputOptions(
 
   if (dts) {
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
+    const tsgoPath = process.env.TSGO_PATH
     const options: DtsOptions = {
       tsconfig,
       ...dts,
+      // Allow setting tsgo path via environment variable
+      ...(tsgoPath && !dts.tsgo && { tsgo: { path: tsgoPath } }),
     }
 
     if (format === 'es') {
