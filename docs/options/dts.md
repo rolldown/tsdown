@@ -95,6 +95,54 @@ If `isolatedDeclarations` is not enabled, `tsdown` will fall back to using the T
 - **For ESM Output**: Both `.js` and `.d.ts` files are generated in the **same build process**. If you encounter compatibility issues, please report them.
 - **For CJS Output**: A **separate build process** is used exclusively for `.d.ts` generation to ensure compatibility.
 
+## Using tsgo (Experimental)
+
+`tsdown` supports generating `.d.ts` files using [tsgo](https://github.com/nicholasdly/tsgo), the native TypeScript port written in Go. This is an experimental feature that can provide faster declaration file generation.
+
+### Enabling tsgo
+
+You can enable tsgo in your configuration file:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    tsgo: true,
+  },
+})
+```
+
+### Custom tsgo Path
+
+If you have tsgo installed in a custom location (e.g., managed by Nix), you can specify the path:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    tsgo: {
+      path: '/path/to/tsgo',
+    },
+  },
+})
+```
+
+### Environment Variable
+
+You can also set the tsgo path via the `TSGO_PATH` environment variable. This is useful for CI environments or when you don't want to modify the configuration file:
+
+```bash
+TSGO_PATH=/path/to/tsgo tsdown
+```
+
+> [!NOTE]
+> The `dts.tsgo` option in the configuration file takes precedence over the `TSGO_PATH` environment variable.
+
+> [!WARNING]
+> tsgo support is experimental and not yet recommended for production environments.
+
 ## Advanced Options
 
 `rolldown-plugin-dts` provides several advanced options to customize `.d.ts` generation. For a detailed explanation of these options, refer to the [plugin's documentation](https://github.com/sxzz/rolldown-plugin-dts#options).

@@ -95,6 +95,54 @@ export default defineConfig({
 - **ESM 输出**：`.js` 和 `.d.ts` 文件在**同一个构建流程**中生成。如果遇到兼容性问题，请反馈。
 - **CJS 输出**：会使用**单独的构建流程**专门生成 `.d.ts` 文件，以确保兼容性。
 
+## 使用 tsgo（实验性）
+
+`tsdown` 支持使用 [tsgo](https://github.com/nicholasdly/tsgo)（用 Go 编写的原生 TypeScript 移植版）生成 `.d.ts` 文件。这是一个实验性功能，可以提供更快的声明文件生成速度。
+
+### 启用 tsgo
+
+您可以在配置文件中启用 tsgo：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    tsgo: true,
+  },
+})
+```
+
+### 自定义 tsgo 路径
+
+如果您的 tsgo 安装在自定义位置（例如通过 Nix 管理），可以指定路径：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  dts: {
+    tsgo: {
+      path: '/path/to/tsgo',
+    },
+  },
+})
+```
+
+### 环境变量
+
+您也可以通过 `TSGO_PATH` 环境变量设置 tsgo 路径。这在 CI 环境或不想修改配置文件时非常有用：
+
+```bash
+TSGO_PATH=/path/to/tsgo tsdown
+```
+
+> [!NOTE]
+> 配置文件中的 `dts.tsgo` 选项优先于 `TSGO_PATH` 环境变量。
+
+> [!WARNING]
+> tsgo 支持是实验性的，尚不建议在生产环境中使用。
+
 ## 高级选项
 
 `rolldown-plugin-dts` 提供了多个高级选项用于自定义 `.d.ts` 文件的生成。详细说明请参阅 [插件文档](https://github.com/sxzz/rolldown-plugin-dts#options)。
