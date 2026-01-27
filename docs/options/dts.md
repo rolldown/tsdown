@@ -97,7 +97,7 @@ If `isolatedDeclarations` is not enabled, `tsdown` will fall back to using the T
 
 ## Using tsgo (Experimental)
 
-`tsdown` supports generating `.d.ts` files using [tsgo](https://github.com/nicholasdly/tsgo), the native TypeScript port written in Go. This is an experimental feature that can provide faster declaration file generation.
+`tsdown` supports generating `.d.ts` files using [tsgo](https://github.com/microsoft/typescript-go), the native TypeScript port written in Go. This is an experimental feature that can provide faster declaration file generation.
 
 ### Enabling tsgo
 
