@@ -748,3 +748,117 @@ describe('import.meta.glob', () => {
     expect(outputFiles.length).toBe(1)
   })
 })
+
+test('dts.tsgo: true', async (context) => {
+  const { outputFiles } = await testBuild({
+    context,
+    files: {
+      'index.ts': `export const hello: string = "world"`,
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          declaration: true,
+          strict: true,
+        },
+      }),
+    },
+    options: {
+      dts: {
+        tsgo: true,
+      },
+      tsconfig: 'tsconfig.json',
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+})
+
+test('dts.tsgo with custom path', async (context) => {
+  const tsgoPkg = import.meta.resolve('@typescript/native-preview/package.json')
+  const { default: getExePath } = await import(
+    new URL('lib/getExePath.js', tsgoPkg).href
+  )
+  const tsgoPath: string = getExePath()
+
+  const { outputFiles } = await testBuild({
+    context,
+    files: {
+      'index.ts': `export const hello: string = "world"`,
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          declaration: true,
+          strict: true,
+        },
+      }),
+    },
+    options: {
+      dts: {
+        tsgo: { path: tsgoPath },
+      },
+      tsconfig: 'tsconfig.json',
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+})
+
+test('TSGO_PATH env is used when dts.tsgo is not set', async (context) => {
+  const tsgoPkg = import.meta.resolve('@typescript/native-preview/package.json')
+  const { default: getExePath } = await import(
+    new URL('lib/getExePath.js', tsgoPkg).href
+  )
+  const tsgoPath: string = getExePath()
+
+  vi.stubEnv('TSGO_PATH', tsgoPath)
+
+  const { outputFiles } = await testBuild({
+    context,
+    files: {
+      'index.ts': `export const hello: string = "world"`,
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          declaration: true,
+          strict: true,
+        },
+      }),
+    },
+    options: {
+      dts: true,
+      tsconfig: 'tsconfig.json',
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+  vi.unstubAllEnvs()
+})
+
+test('dts.tsgo option takes precedence over TSGO_PATH env', async (context) => {
+  const tsgoPkg = import.meta.resolve('@typescript/native-preview/package.json')
+  const { default: getExePath } = await import(
+    new URL('lib/getExePath.js', tsgoPkg).href
+  )
+  const tsgoPath: string = getExePath()
+
+  vi.stubEnv('TSGO_PATH', '/invalid/path/to/tsgo')
+
+  const { outputFiles } = await testBuild({
+    context,
+    files: {
+      'index.ts': `export const hello: string = "world"`,
+      'tsconfig.json': JSON.stringify({
+        compilerOptions: {
+          declaration: true,
+          strict: true,
+        },
+      }),
+    },
+    options: {
+      dts: {
+        tsgo: { path: tsgoPath },
+      },
+      tsconfig: 'tsconfig.json',
+    },
+  })
+
+  expect(outputFiles).toContain('index.d.mts')
+  vi.unstubAllEnvs()
+})

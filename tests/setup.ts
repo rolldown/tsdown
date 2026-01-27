@@ -12,6 +12,7 @@ const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
 beforeEach(() => {
   asserted.clear()
+  asserted.add('tsgo')
 })
 
 afterEach(() => {
