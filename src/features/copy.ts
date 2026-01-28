@@ -36,8 +36,12 @@ export interface CopyEntry {
 export type CopyOptions = Arrayable<string | CopyEntry>
 export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
 
-export async function copy(options: ResolvedConfig): Promise<void> {
-  if (!options.copy) return
+type ResolvedCopyEntry = CopyEntry & { from: string; to: string }
+
+export async function resolveCopyEntries(
+  options: ResolvedConfig,
+): Promise<ResolvedCopyEntry[]> {
+  if (!options.copy) return []
 
   const copy: CopyOptions =
     typeof options.copy === 'function'
@@ -61,10 +65,24 @@ export async function copy(options: ResolvedConfig): Promise<void> {
           })
         }
 
-        return from.map((file) => resolveCopyEntry({ ...entry, from: file }))
+        return from.map((file) =>
+          resolveCopyEntry(
+            { ...entry, from: file },
+            options.cwd,
+            options.outDir,
+          ),
+        )
       }),
     )
   ).flat()
+
+  return resolved
+}
+
+export async function copy(options: ResolvedConfig): Promise<void> {
+  if (!options.copy) return
+
+  const resolved = await resolveCopyEntries(options)
 
   if (!resolved.length) {
     options.logger.warn(options.nameLabel, `No files matched for copying.`)
@@ -85,28 +103,28 @@ export async function copy(options: ResolvedConfig): Promise<void> {
       return fsCopy(from, to)
     }),
   )
+}
 
-  // https://github.com/vladshcherbin/rollup-plugin-copy/blob/master/src/index.js
-  // MIT License
-  function resolveCopyEntry(
-    entry: CopyEntry & { from: string },
-  ): CopyEntry & { from: string; to: string } {
-    const { flatten = true, rename } = entry
-    const from = path.resolve(options.cwd, entry.from)
-    const to = entry.to ? path.resolve(options.cwd, entry.to) : options.outDir
+// https://github.com/vladshcherbin/rollup-plugin-copy/blob/master/src/index.js
+// MIT License
+function resolveCopyEntry(
+  entry: CopyEntry & { from: string },
+  cwd: string,
+  outDir: string,
+): CopyEntry & { from: string; to: string } {
+  const { flatten = true, rename } = entry
+  const from = path.resolve(cwd, entry.from)
+  const to = entry.to ? path.resolve(cwd, entry.to) : outDir
 
-    const { base, dir } = path.parse(path.relative(options.cwd, from))
-    const destFolder =
-      flatten || (!flatten && !dir)
-        ? to
-        : dir.replace(dir.split(path.sep)[0], to)
-    const dest = path.join(
-      destFolder,
-      rename ? renameTarget(base, rename, from) : base,
-    )
+  const { base, dir } = path.parse(path.relative(cwd, from))
+  const destFolder =
+    flatten || (!flatten && !dir) ? to : dir.replace(dir.split(path.sep)[0], to)
+  const dest = path.join(
+    destFolder,
+    rename ? renameTarget(base, rename, from) : base,
+  )
 
-    return { ...entry, from, to: dest }
-  }
+  return { ...entry, from, to: dest }
 }
 
 function renameTarget(
