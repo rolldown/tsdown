@@ -12,4 +12,4 @@ You can instruct `tsdown` to generate source maps by using the `--sourcemap` opt
 tsdown --sourcemap
 ```
 
-Note that source map will always be enabled if you have [`declarationMap`](https://www.typescriptlang.org/tsconfig/#declarationMap) option enabled in your `tsconfig.json`.
+Note that source maps will always be enabled if you have [`declarationMap`](https://www.typescriptlang.org/tsconfig/#declarationMap) option enabled in your `tsconfig.json`.

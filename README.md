@@ -32,21 +32,6 @@ npm i -D tsdown
 npx tsdown
 ```
 
-## Migrate from tsup
-
-```bash
-npx tsdown migrate
-```
-
-Please make sure to commit your changes before migrating. For more details, see the [Migration Guide](https://tsdown.dev/guide/migrate-from-tsup).
-
-## Credits
-
-This project also partially contains code derived or copied from the following projects:
-
-- [tsup](https://github.com/egoist/tsup)
-- [pkgroll](https://github.com/privatenumber/pkgroll)
-
 ## Sponsors
 
 <p align="center">

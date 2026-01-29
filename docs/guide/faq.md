@@ -13,7 +13,7 @@
 
 Instead of stub mode, we recommend more reliable and flexible approaches:
 
-1. **Use Watch Mode:**
+1. **Use [Watch Mode](../options/watch-mode.md):**
    The simplest solution is to run `tsdown` in watch mode. This keeps your build up-to-date automatically as you make changes, though it requires you to keep the process running in the background.
 
 2. **Use [`exports.devExports`](../options/package-exports.md#dev-exports) for Dev/Prod Separation:**

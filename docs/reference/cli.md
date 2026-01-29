@@ -11,6 +11,8 @@ The mapping between CLI flags and configuration options follows these rules:
 - `--foo.bar` sets `foo: { bar: true }`
 - `--format esm --format cjs` sets `format: ['esm', 'cjs']`
 
+CLI flags support both camelCase and kebab-case. For example, `--outDir` and `--out-dir` are equivalent.
+
 This flexible pattern allows you to easily control and override configuration options directly from the command line.
 
 ## `[...files]`
@@ -232,6 +234,6 @@ An alias for `--copy`.
 
 ## `--exports`
 
-generate the `exports`, `main`, `module`, and `types` fields in your `package.json`.
+Generate the `exports`, `main`, `module`, and `types` fields in your `package.json`.
 
 See also [Package Exports](../options/package-exports.md).

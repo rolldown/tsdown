@@ -11,6 +11,8 @@ CLI 参数与配置选项之间的映射遵循以下规则：
 - `--foo.bar` 等价于设置 `foo: { bar: true }`
 - `--format esm --format cjs` 等价于设置 `format: ['esm', 'cjs']`
 
+CLI 参数同时支持 camelCase 和 kebab-case 两种写法，例如 `--outDir` 和 `--out-dir` 等价。
+
 这种灵活的模式使您能够直接通过命令行方便地控制并覆盖配置选项。
 
 ## `[...files]`

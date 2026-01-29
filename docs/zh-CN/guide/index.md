@@ -10,7 +10,7 @@
 
 - **简化的配置**：`tsdown` 提供了针对库开发的合理默认配置，减少了复杂配置的需求。它提供了简洁的使用体验，让您专注于代码，而不是打包过程。
 - **面向库的特性**：与作为通用打包器的 Rolldown 不同，`tsdown` 专为构建库而优化。它包括自动生成 TypeScript 声明文件和支持多种输出格式等功能。
-- **前瞻准备**：作为 **Rolldown 的官方项目**，`tsdown` 深度融入于其生态系统体系，并将随着 Rolldown 的发展不断演进。依托 Rolldown 的技术前沿突破，`tsdown` 致力于探索库开发的新可能性。此外，`tsdown` 被定位为 **[Rolldown Vite](https://github.com/vitejs/rolldown-vite) 库模式** 的核心基座，为库开发者提供长期稳定、功能完备的开发体验。
+- **面向未来**：作为 **Rolldown 官方项目**，`tsdown` 深度融入 Rolldown 生态，并将随其持续演进。借助 Rolldown 的前沿技术，`tsdown` 致力于探索库开发的新可能。此外，`tsdown` 将成为 **[Rolldown Vite](https://github.com/vitejs/rolldown-vite) 库模式** 的基础，为库开发者提供长期稳定的开发体验。
 
 ## 插件生态系统
 

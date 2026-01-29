@@ -7,7 +7,7 @@ const zhCN = {
   // sidebar
   Introduction: '介绍',
   'Getting Started': '快速上手',
-  'Migrate from tsup': ' 从 tsup 迁移',
+  'Migrate from tsup': '从 tsup 迁移',
 
   Options: '选项',
   Entry: '入口文件',
@@ -42,6 +42,7 @@ const zhCN = {
   'Programmatic Usage': '编程使用',
   Benchmark: '性能基准',
   FAQ: '常见问题',
+  'Work with AI': '与 AI 协作',
 
   'Command Line Interface': '命令行接口',
   'Config Options': '配置选项',

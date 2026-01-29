@@ -84,6 +84,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Getting Started'), link: '/getting-started.md' },
         { text: t('Migrate from tsup'), link: '/migrate-from-tsup.md' },
         { text: t('FAQ'), link: `/faq.md` },
+        { text: t('Work with AI'), link: '/skills.md' },
       ],
     },
     {
