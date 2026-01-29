@@ -10,9 +10,9 @@ export default defineConfig([
     entry: ['./src/{index,run,plugins,config}.ts'],
     name: 'tsdown',
     inlineOnly: [
+      '@publint/pack',
       'is-in-ci',
       'package-manager-detector',
-      '@publint/pack',
       'pkg-types', // type-only
     ],
     platform: 'node',
