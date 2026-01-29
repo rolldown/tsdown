@@ -17,21 +17,27 @@ describe('lowestCommonAncestor', () => {
   })
 
   test('returns dirname for single path', () => {
-    expect(lowestCommonAncestor('/foo/bar/baz.ts')).toBe('/foo/bar')
+    expect(lowestCommonAncestor('/foo/bar/baz.ts')).toBe(
+      path.normalize('/foo/bar'),
+    )
   })
 
   test('finds common ancestor of sibling files', () => {
-    expect(lowestCommonAncestor('/src/a.ts', '/src/b.ts')).toBe('/src')
+    expect(lowestCommonAncestor('/src/a.ts', '/src/b.ts')).toBe(
+      path.normalize('/src'),
+    )
   })
 
   test('finds common ancestor of nested paths', () => {
     expect(lowestCommonAncestor('/src/utils/a.ts', '/src/config/b.ts')).toBe(
-      '/src',
+      path.normalize('/src'),
     )
   })
 
   test('handles paths with no common ancestor beyond root', () => {
-    expect(lowestCommonAncestor('/foo/a.ts', '/bar/b.ts')).toBe('/')
+    expect(lowestCommonAncestor('/foo/a.ts', '/bar/b.ts')).toBe(
+      path.normalize('/'),
+    )
   })
 
   test('handles multiple paths', () => {
@@ -41,13 +47,13 @@ describe('lowestCommonAncestor', () => {
         '/project/src/b.ts',
         '/project/src/c.ts',
       ),
-    ).toBe('/project/src')
+    ).toBe(path.normalize('/project/src'))
   })
 
   test('handles paths at different depths', () => {
     expect(
       lowestCommonAncestor('/project/src/a.ts', '/project/lib/deep/b.ts'),
-    ).toBe('/project')
+    ).toBe(path.normalize('/project'))
   })
 })
 
