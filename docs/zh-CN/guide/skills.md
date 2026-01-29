@@ -1,6 +1,6 @@
 # 与 AI 协作
 
-tsdown 为 AI 编程助手提供了官方 [skills](https://github.com/anthropics/claude-code/blob/main/docs/skills.md)，帮助 AI 理解 tsdown 的配置、功能和最佳实践，从而更好地协助你构建库。
+tsdown 为 AI 编程助手提供了官方 [skills](https://agentskills.io/)，帮助 AI 理解 tsdown 的配置、功能和最佳实践，从而更好地协助你构建库。
 
 ## 安装
 

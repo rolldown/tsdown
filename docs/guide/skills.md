@@ -1,6 +1,6 @@
 # Work with AI
 
-tsdown provides official [skills](https://github.com/anthropics/claude-code/blob/main/docs/skills.md) for AI coding agents, enabling them to understand tsdown's configuration, features, and best practices when helping you build libraries.
+tsdown provides official [skills](https://agentskills.io/) for AI coding agents, enabling them to understand tsdown's configuration, features, and best practices when helping you build libraries.
 
 ## Installation
 
