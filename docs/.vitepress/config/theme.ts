@@ -121,6 +121,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('React Support'), link: '/react-support.md' },
         { text: t('Solid Support'), link: '/solid-support.md' },
         { text: t('Svelte Support'), link: '/svelte-support.md' },
+        { text: t('WASM Support'), link: '/wasm-support.md' },
       ],
     },
     {
