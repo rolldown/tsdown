@@ -18,7 +18,7 @@ describe('lowestCommonAncestor', () => {
 
   test('returns dirname for single path', () => {
     expect(lowestCommonAncestor('/foo/bar/baz.ts')).toBe(
-      path.normalize('/foo/bar'),
+      path.dirname('/foo/bar/baz.ts'),
     )
   })
 
