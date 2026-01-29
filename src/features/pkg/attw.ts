@@ -5,7 +5,6 @@ import { importWithError, slash } from '../../utils/general.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type {
   CheckPackageOptions,
-  CheckResult,
   Problem,
   ProblemKind,
 } from '@arethetypeswrong/core'
@@ -123,15 +122,9 @@ export async function attw(
   const attwCore = await importWithError<
     typeof import('@arethetypeswrong/core')
   >('@arethetypeswrong/core', options.attw.resolvePaths)
-  let checkResult: CheckResult
 
-  try {
-    const pkg = attwCore.createPackageFromTarballData(tarball)
-    checkResult = await attwCore.checkPackage(pkg, attwOptions)
-  } catch (error) {
-    options.logger.error('ATTW check failed:', error)
-    return
-  }
+  const pkg = attwCore.createPackageFromTarballData(tarball)
+  const checkResult = await attwCore.checkPackage(pkg, attwOptions)
 
   let errorMessage: string | undefined
   if (checkResult.types) {
