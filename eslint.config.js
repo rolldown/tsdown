@@ -9,6 +9,9 @@ export default sxzz(
     },
   },
   {
+    ignores: ['skills/**/*.md'],
+  },
+  {
     files: ['templates/**'],
     rules: {
       'pnpm/json-enforce-catalog': 'off',
