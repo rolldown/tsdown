@@ -14,6 +14,8 @@ CLI flag mapping rules:
 - `--foo.bar` sets `foo: { bar: true }`
 - `--format esm --format cjs` sets `format: ['esm', 'cjs']`
 
+CLI flags support both camelCase and kebab-case. For example, `--outDir` and `--out-dir` are equivalent.
+
 ## Basic Commands
 
 ### Build
@@ -260,6 +262,14 @@ Enable package validation:
 
 ```bash
 tsdown --publint
+```
+
+### `--attw`
+
+Enable "Are the types wrong" validation:
+
+```bash
+tsdown --attw
 ```
 
 ### `--unused`

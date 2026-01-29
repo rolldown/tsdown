@@ -2,13 +2,13 @@
 
 This directory contains detailed reference documentation for the tsdown skill.
 
-## Created Files (28 total)
+## Created Files (31 total)
 
 ### Core Guides (2)
 - ✅ `guide-getting-started.md` - Installation, first bundle, CLI basics
 - ✅ `guide-migrate-from-tsup.md` - Migration guide from tsup
 
-### Configuration Options (19)
+### Configuration Options (20)
 - ✅ `option-config-file.md` - Config file formats, loaders, workspace
 - ✅ `option-entry.md` - Entry point configuration with globs
 - ✅ `option-output-format.md` - Output formats (ESM, CJS, IIFE, UMD)
@@ -28,23 +28,26 @@ This directory contains detailed reference documentation for the tsdown skill.
 - ✅ `option-unbundle.md` - Preserve directory structure
 - ✅ `option-cjs-default.md` - CommonJS default export handling
 - ✅ `option-log-level.md` - Logging configuration
+- ✅ `option-lint.md` - Package validation (publint & attw)
 
-### Advanced Topics (4)
+### Advanced Topics (5)
 - ✅ `advanced-plugins.md` - Rolldown, Rollup, Unplugin support
 - ✅ `advanced-hooks.md` - Lifecycle hooks system
 - ✅ `advanced-programmatic.md` - Node.js API usage
 - ✅ `advanced-rolldown-options.md` - Pass options to Rolldown
+- ✅ `advanced-ci.md` - CI environment detection and CI-aware options
 
-### Framework Recipes (2)
+### Framework Recipes (3)
 - ✅ `recipe-react.md` - React library setup with JSX
 - ✅ `recipe-vue.md` - Vue library setup with SFC
+- ✅ `recipe-wasm.md` - WASM module support
 
 ### Reference (1)
 - ✅ `reference-cli.md` - Complete CLI command reference
 
 ## Coverage Status
 
-**Created:** 28 files (93% complete)
+**Created:** 31 files (97% complete)
 **Remaining:** 3 files (low priority, not referenced from SKILL.md)
 
 ### Remaining Files (Lower Priority)
@@ -82,16 +85,19 @@ The tsdown skill now includes comprehensive coverage of:
 - Lifecycle hooks
 - ESM/CJS shims
 - Package exports generation
+- Package validation (publint, attw)
 - Programmatic API (Node.js)
 - Output directory customization
 - CSS handling and modules
 - Unbundle mode
+- CI environment detection and CI-aware options
 
-### ✅ Framework Support
+### ✅ Framework & Runtime Support
 - React with JSX/TSX
 - React Compiler integration
 - Vue with SFC support
 - Vue type generation (vue-tsc)
+- WASM module bundling (rolldown-plugin-wasm)
 
 ### ✅ Migration
 - Complete migration guide from tsup
