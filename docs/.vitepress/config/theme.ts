@@ -23,8 +23,8 @@ function getTypedocSidebar() {
 
 const typedocSidebar = getTypedocSidebar()
 const rolldownSidebar: { items: DefaultTheme.SidebarItem[]; base: string } = {
-  items: typedocSidebar[0]?.items?.[0]
-    ? typedocSidebar[0].items[0]
+  items: typedocSidebar[0]
+    ? typedocSidebar[0]
         .items!.filter(
           (item) => item.text === 'Interfaces' || item.text === 'Type Aliases',
         )!
@@ -135,23 +135,28 @@ export function getLocaleConfig(lang: string) {
     },
     {
       text: t('API Reference'),
-      base: `${urlPrefix}/reference`,
       items: [
-        { text: t('Command Line Interface'), link: '/cli.md' },
+        {
+          text: t('Command Line Interface'),
+          link: `${urlPrefix}/reference/cli.md`,
+        },
         {
           text: t('Config Options'),
-          link: '/api/Interface.UserConfig.md',
+          link: `${urlPrefix}/reference/api/Interface.UserConfig.md`,
         },
         {
           text: t('Type Definitions'),
-          items: [
-            { text: 'Rolldown', link: '/api/rolldown.md' },
-            ...typedocSidebar
-              .flatMap((i) => i.items!)
-              .filter((i) => i.text !== 'Options' && i.text !== 'rolldown')
-              .toSorted((a, b) => a.text!.localeCompare(b.text!)),
-          ],
+          base: `${urlPrefix}/reference`,
+          items: typedocSidebar
+            .flatMap((i) => i.items!)
+            .filter((i) => i.text !== 'Options' && i.text !== 'rolldown')
+            .toSorted((a, b) => a.text!.localeCompare(b.text!)),
           collapsed: true,
+        },
+        {
+          text: 'Rolldown',
+          link: 'https://rolldown.rs/reference/',
+          target: '_blank',
         },
       ],
     },

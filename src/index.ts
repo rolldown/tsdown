@@ -4,4 +4,7 @@ export { resolveUserConfig } from './config/options.ts'
 export * from './config/types.ts'
 export { enableDebug } from './features/debug.ts'
 export { globalLogger, type Logger } from './utils/logger.ts'
+/**
+ * @ignore
+ */
 export * as Rolldown from 'rolldown'
