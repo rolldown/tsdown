@@ -250,6 +250,10 @@ export default defineConfig({
 
 Config file changes trigger full restart automatically.
 
+### Why Not Stub Mode?
+
+tsdown does not support stub mode. Watch mode is the recommended alternative for rapid development, providing instant rebuilds without the drawbacks of stub mode.
+
 ## Related Options
 
 - [On Success](reference-cli.md#on-success-command) - Post-build commands

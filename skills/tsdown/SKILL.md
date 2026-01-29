@@ -60,6 +60,7 @@ export default defineConfig({
 | Hooks | Lifecycle hooks for custom logic | [advanced-hooks](references/advanced-hooks.md) |
 | Programmatic API | Build from Node.js scripts | [advanced-programmatic](references/advanced-programmatic.md) |
 | Rolldown Options | Pass options directly to Rolldown | [advanced-rolldown-options](references/advanced-rolldown-options.md) |
+| CI Environment | CI detection, `'ci-only'` / `'local-only'` values | [advanced-ci](references/advanced-ci.md) |
 
 ## Build Options
 
@@ -73,9 +74,10 @@ export default defineConfig({
 | Platform | `platform: 'node'`, `platform: 'browser'` | [option-platform](references/option-platform.md) |
 | Tree shaking | `treeshake: true`, custom options | [option-tree-shaking](references/option-tree-shaking.md) |
 | Minification | `minify: true`, `minify: 'dce-only'` | [option-minification](references/option-minification.md) |
-| Source maps | `sourcemap: true`, `sourcemap: 'inline'` | [option-sourcemap](references/option-sourcemap.md) |
+| Source maps | `sourcemap: true`, `'inline'`, `'hidden'` | [option-sourcemap](references/option-sourcemap.md) |
 | Watch mode | `watch: true`, watch options | [option-watch-mode](references/option-watch-mode.md) |
 | Cleaning | `clean: true`, clean patterns | [option-cleaning](references/option-cleaning.md) |
+| Log level | `logLevel: 'silent'`, `failOnWarn: 'ci-only'` | [option-log-level](references/option-log-level.md) |
 
 ## Dependency Handling
 
@@ -94,13 +96,15 @@ export default defineConfig({
 | Package exports | `exports: true` - Auto-generate exports field | [option-package-exports](references/option-package-exports.md) |
 | CSS handling | **[experimental]** Still in development | [option-css](references/option-css.md) |
 | Unbundle mode | `unbundle: true` - Preserve directory structure | [option-unbundle](references/option-unbundle.md) |
+| Package validation | `publint: true`, `attw: true` - Validate package | [option-lint](references/option-lint.md) |
 
-## Framework Support
+## Framework & Runtime Support
 
 | Framework | Guide | Reference |
 |-----------|-------|-----------|
 | React | JSX transform, Fast Refresh | [recipe-react](references/recipe-react.md) |
 | Vue | SFC support, JSX | [recipe-vue](references/recipe-vue.md) |
+| WASM | WebAssembly modules via `rolldown-plugin-wasm` | [recipe-wasm](references/recipe-wasm.md) |
 
 ## Common Patterns
 
@@ -163,6 +167,31 @@ export default defineConfig({
   unbundle: true, // Preserve file structure
   format: ['esm'],
   dts: true,
+})
+```
+
+### CI-Aware Configuration
+
+```ts
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['esm', 'cjs'],
+  dts: true,
+  failOnWarn: 'ci-only',
+  publint: 'ci-only',
+  attw: 'ci-only',
+})
+```
+
+### WASM Support
+
+```ts
+import { wasm } from 'rolldown-plugin-wasm'
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  plugins: [wasm()],
 })
 ```
 
@@ -300,6 +329,11 @@ tsdown --clean                 # Clean output directory
 8. **Preserve structure** for utilities with many files:
    ```ts
    { unbundle: true }  // Keep directory structure
+   ```
+
+9. **Validate packages** in CI before publishing:
+   ```ts
+   { publint: 'ci-only', attw: 'ci-only' }
    ```
 
 ## Resources

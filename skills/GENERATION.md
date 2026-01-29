@@ -5,17 +5,17 @@ This document contains information about how these skills were generated and how
 ## Generation Details
 
 **Generated from documentation at:**
-- **Commit SHA**: `0bf92cf5c1bcb1ce33d26508c7365e930e9ca6e2`
-- **Short SHA**: `0bf92cf`
-- **Date**: 2026-01-29
-- **Commit**: docs: add CLAUDE.md for AI assistant guidance
+- **Commit SHA**: `301bcd140d180536a1aab922391cafe8843fd1e8`
+- **Short SHA**: `301bcd1`
+- **Date**: 2026-01-30
+- **Commit**: docs: add WASM support guide [ci skip] (#739)
 
 **Source documentation:**
 - Main docs: `/docs` folder
 - Project README: `/README.md`
 - CLAUDE.md: `/CLAUDE.md`
 
-**Generation date**: 2026-01-29
+**Generation date**: 2026-01-30
 
 ## Structure
 
@@ -72,13 +72,13 @@ When tsdown documentation changes, follow these steps to update the skills:
 
 ```bash
 # Get changes in docs since generation
-git diff 0bf92cf..HEAD -- docs/
+git diff 301bcd1..HEAD -- docs/
 
 # List changed files
-git diff --name-only 0bf92cf..HEAD -- docs/
+git diff --name-only 301bcd1..HEAD -- docs/
 
 # Get summary of changes
-git log --oneline 0bf92cf..HEAD -- docs/
+git log --oneline 301bcd1..HEAD -- docs/
 ```
 
 ### 2. Identify What Changed
@@ -116,7 +116,7 @@ Focus on these documentation areas:
 
 ```bash
 # 1. Check what docs changed
-git diff 0bf92cf..HEAD -- docs/ > docs_changes.patch
+git diff 301bcd1..HEAD -- docs/ > docs_changes.patch
 
 # 2. Review the changes
 cat docs_changes.patch
@@ -158,7 +158,7 @@ Based on the documentation structure, these reference files should be created:
 - `guide-faq.md` - Frequently asked questions
 - `guide-introduction.md` - Why tsdown, key features
 
-### Configuration Options (17 files)
+### Configuration Options (18 files)
 - `option-entry.md` - Entry point configuration
 - `option-output-format.md` - Output formats (ESM, CJS, IIFE, UMD)
 - `option-output-directory.md` - Output directory and extensions
@@ -178,19 +178,22 @@ Based on the documentation structure, these reference files should be created:
 - `option-css.md` - CSS handling and modules
 - `option-unbundle.md` - Preserve directory structure
 - `option-log-level.md` - Logging configuration
+- `option-lint.md` - Package validation (publint, attw)
 
-### Advanced Topics (5 files)
+### Advanced Topics (6 files)
 - `advanced-plugins.md` - Rolldown, Rollup, Unplugin support
 - `advanced-hooks.md` - Lifecycle hooks
 - `advanced-programmatic.md` - Node.js API usage
 - `advanced-rolldown-options.md` - Pass options to Rolldown
 - `advanced-benchmark.md` - Performance benchmarks
+- `advanced-ci.md` - CI environment detection and CI-aware options
 
-### Framework Recipes (4 files)
+### Framework Recipes (5 files)
 - `recipe-react.md` - React library setup
 - `recipe-vue.md` - Vue library setup
 - `recipe-solid.md` - Solid library setup
 - `recipe-svelte.md` - Svelte library setup
+- `recipe-wasm.md` - WASM module support
 
 ### Reference (1 file)
 - `reference-cli.md` - CLI commands and options
@@ -226,13 +229,14 @@ When updating, maintain style:
 
 | Date       | SHA      | Changes |
 |------------|----------|---------|
+| 2026-01-30 | 301bcd1  | Add CI environment, package validation (publint/attw), WASM support, update entry globs, sourcemap modes, failOnWarn |
 | 2026-01-29 | 0bf92cf  | Initial generation from docs |
 
 ## Agent Instructions Summary
 
 **For future agents updating these skills:**
 
-1. Run `git diff 0bf92cf..HEAD -- docs/` to see all documentation changes
+1. Run `git diff 301bcd1..HEAD -- docs/` to see all documentation changes
 2. Read changed files to understand what's new or modified
 3. Update `SKILL.md` by:
    - Adding new options to appropriate tables
@@ -256,5 +260,5 @@ If you're unsure about whether changes warrant updates:
 
 ---
 
-Last updated: 2026-01-29
-Current SHA: 0bf92cf
+Last updated: 2026-01-30
+Current SHA: 301bcd1

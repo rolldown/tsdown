@@ -72,17 +72,68 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  entry: ['src/**/*.ts', '!**/*.test.ts', '!**/*.spec.ts'],
+  entry: ['src/*.ts', '!src/*.test.ts'],
 })
 ```
 
-### Specific Subdirectories
+### Object Entries with Glob Patterns
+
+Use glob wildcards (`*`) in both keys and values. The `*` in the key acts as a placeholder replaced with the matched file name (without extension):
 
 ```ts
 export default defineConfig({
-  entry: 'src/{utils,helpers}/*.ts',
+  entry: {
+    // Maps src/foo.ts → dist/lib/foo.js, src/bar.ts → dist/lib/bar.js
+    'lib/*': 'src/*.ts',
+  },
 })
 ```
+
+#### Negation Patterns in Object Entries
+
+Values can be an array with negation patterns (`!`):
+
+```ts
+export default defineConfig({
+  entry: {
+    'hooks/*': ['src/hooks/*.ts', '!src/hooks/index.ts'],
+  },
+})
+```
+
+Multiple positive and negation patterns:
+
+```ts
+export default defineConfig({
+  entry: {
+    'utils/*': [
+      'src/utils/*.ts',
+      'src/utils/*.tsx',
+      '!src/utils/index.ts',
+      '!src/utils/internal.ts',
+    ],
+  },
+})
+```
+
+**Warning:** Multiple positive patterns in an array value must share the same base directory.
+
+### Mixed Entries
+
+Mix strings, glob patterns, and object entries in an array:
+
+```ts
+export default defineConfig({
+  entry: [
+    'src/*',
+    '!src/foo.ts',
+    { main: 'index.ts' },
+    { 'lib/*': ['src/*.ts', '!src/bar.ts'] },
+  ],
+})
+```
+
+Object entries take precedence when output names conflict.
 
 ### Windows Compatibility
 
