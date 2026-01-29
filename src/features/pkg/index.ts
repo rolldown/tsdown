@@ -96,12 +96,16 @@ export async function bundleDone(
     )
   }
 
-  if (publintConfigs.length || attwConfigs.length) {
-    const tarball = await packTarball(pkg.packageJsonPath)
-    await Promise.all([
-      ...publintConfigs.map((config) => publint(config, tarball)),
-      ...attwConfigs.map((config) => attw(config, tarball)),
-    ])
+  try {
+    if (publintConfigs.length || attwConfigs.length) {
+      const tarball = await packTarball(pkg.packageJsonPath)
+      await Promise.all([
+        ...publintConfigs.map((config) => publint(config, tarball)),
+        ...attwConfigs.map((config) => attw(config, tarball)),
+      ])
+    }
+  } catch (error) {
+    configs[0].logger.error('Pack failed:', error)
   }
 
   ctx.resolve()
