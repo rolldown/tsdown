@@ -126,7 +126,7 @@
     "PackageJsonScriptWithPreAndPost": "type PackageJsonScriptWithPreAndPost<S extends string> = S | `${'pre' | 'post'}${S}`",
     "PackageJsonWithPath": "interface PackageJsonWithPath extends PackageJson {\n packageJsonPath: string\n}",
     "PackageType": "type PackageType = 'module' | 'commonjs' | undefined",
-    "PublintOptions": "interface PublintOptions extends Options {}",
+    "PublintOptions": "interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {}",
     "ReportOptions": "interface ReportOptions {\n gzip?: boolean\n brotli?: boolean\n maxCompressSize?: number\n}",
     "ReportPlugin": "declare function ReportPlugin(_: ReportOptions, _: Logger, _: string, _: boolean, _: string, _: boolean): Plugin",
     "ResolvedConfig": "type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, 'workspace' | 'fromVite' | 'publicDir' | 'bundle' | 'removeNodeProtocol' | 'logLevel' | 'failOnWarn' | 'customLogger' | 'envFile' | 'envPrefix'>, 'globalName' | 'inputOptions' | 'outputOptions' | 'minify' | 'define' | 'alias' | 'external' | 'onSuccess' | 'outExtensions' | 'hooks' | 'copy' | 'loader' | 'name' | 'banner' | 'footer' | 'checks'>, { entry: Record<string, string>; nameLabel: string | undefined; format: NormalizedFormat; target?: string[]; clean: string[]; pkg?: PackageJsonWithPath; nodeProtocol: 'strip' | boolean; logger: Logger; ignoreWatch: Array<string | RegExp>; noExternal?: NoExternalFn; inlineOnly?: Array<string | RegExp> | false; css: Required<CssOptions>; dts: false | DtsOptions; report: false | ReportOptions; tsconfig: false | string; exports: false | ExportsOptions; devtools: false | DevtoolsOptions; publint: false | PublintOptions; attw: false | AttwOptions; unused: false | UnusedOptions }>",

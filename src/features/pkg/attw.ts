@@ -1,10 +1,6 @@
-import { mkdtemp, readFile } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
-import { exec } from 'tinyexec'
-import { fsRemove } from '../../utils/fs.ts'
 import { importWithError, slash } from '../../utils/general.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type {
@@ -96,7 +92,10 @@ const profiles: Record<Required<AttwOptions>['profile'], string[]> = {
   'esm-only': ['node10', 'node16-cjs'],
 }
 
-export async function attw(options: ResolvedConfig): Promise<void> {
+export async function attw(
+  options: ResolvedConfig,
+  tarball: Uint8Array,
+): Promise<void> {
   if (!options.attw) return
   if (!options.pkg) {
     options.logger.warn('attw is enabled but package.json is not found')
@@ -121,33 +120,17 @@ export async function attw(options: ResolvedConfig): Promise<void> {
   const t = performance.now()
   debug('Running attw check')
 
-  const tempDir = await mkdtemp(path.join(tmpdir(), 'tsdown-attw-'))
-
   const attwCore = await importWithError<
     typeof import('@arethetypeswrong/core')
   >('@arethetypeswrong/core', options.attw.resolvePaths)
   let checkResult: CheckResult
 
   try {
-    const { stdout: tarballInfo } = await exec(
-      'npm',
-      ['pack', '--json', '--ignore-scripts', '--pack-destination', tempDir],
-      { nodeOptions: { cwd: options.cwd } },
-    )
-    const parsed = JSON.parse(tarballInfo)
-    if (!Array.isArray(parsed) || !parsed[0]?.filename) {
-      throw new Error('Invalid npm pack output format')
-    }
-    const tarballPath = path.join(tempDir, parsed[0].filename as string)
-    const tarball = await readFile(tarballPath)
-
     const pkg = attwCore.createPackageFromTarballData(tarball)
     checkResult = await attwCore.checkPackage(pkg, attwOptions)
   } catch (error) {
     options.logger.error('ATTW check failed:', error)
     return
-  } finally {
-    await fsRemove(tempDir)
   }
 
   let errorMessage: string | undefined

@@ -1,10 +1,15 @@
+import { mkdtemp, readFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import { formatWithOptions } from 'node:util'
+import { fsRemove } from '../../utils/fs.ts'
 import { promiseWithResolvers } from '../../utils/general.ts'
 import { attw } from './attw.ts'
 import { writeExports } from './exports.ts'
 import { publint } from './publint.ts'
 import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
+import type { Buffer } from 'node:buffer'
 
 export type BundleByPkg = Record<
   string, // pkgPath
@@ -91,12 +96,39 @@ export async function bundleDone(
     )
   }
 
-  await Promise.all([
-    ...publintConfigs.map((config) => publint(config)),
-    ...attwConfigs.map((config) => attw(config)),
-  ])
+  if (publintConfigs.length || attwConfigs.length) {
+    const tarball = await packTarball(pkg.packageJsonPath)
+    await Promise.all([
+      ...publintConfigs.map((config) => publint(config, tarball)),
+      ...attwConfigs.map((config) => attw(config, tarball)),
+    ])
+  }
 
   ctx.resolve()
+}
+
+async function packTarball(
+  packageJsonPath: string,
+): Promise<Buffer<ArrayBuffer>> {
+  const pkgDir = path.dirname(packageJsonPath)
+  const destination = await mkdtemp(path.join(tmpdir(), 'tsdown-pack-'))
+  const [{ detect }, { pack }] = await Promise.all([
+    import('package-manager-detector/detect'),
+    import('@publint/pack'),
+  ])
+  try {
+    const detected = await detect({ cwd: pkgDir })
+    if (detected?.name === 'deno') {
+      throw new Error(`Cannot pack tarball for Deno projects at ${pkgDir}`)
+    }
+    const tarballPath = await pack(pkgDir, {
+      destination,
+      packageManager: detected?.name,
+    })
+    return readFile(tarballPath)
+  } finally {
+    await fsRemove(destination)
+  }
 }
 
 function dedupeConfigs<K extends 'publint' | 'attw' | 'exports'>(

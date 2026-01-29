@@ -11,6 +11,8 @@ export default defineConfig([
     name: 'tsdown',
     inlineOnly: [
       'is-in-ci',
+      'package-manager-detector',
+      '@publint/pack',
       'pkg-types', // type-only
     ],
     platform: 'node',
