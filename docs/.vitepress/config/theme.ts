@@ -110,6 +110,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Unbundle'), link: '/unbundle.md' },
         { text: t('CJS Default Export'), link: '/cjs-default.md' },
         { text: t('CSS'), link: '/css.md' },
+        { text: t('Package Validation'), link: '/lint.md' },
       ],
     },
     {
@@ -130,6 +131,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Hooks'), link: '/hooks.md' },
         { text: t('Rolldown Options'), link: '/rolldown-options.md' },
         { text: t('Programmatic Usage'), link: '/programmatic-usage.md' },
+        { text: t('CI Environment'), link: '/ci.md' },
         { text: t('Benchmark'), link: '/benchmark.md' },
       ],
     },
