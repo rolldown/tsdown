@@ -1,5 +1,5 @@
 {
-  "config-!~{00i}~.d.mts": {
+  "config-!~{00m}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
@@ -83,7 +83,7 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00g}~.d.mts": {
+  "types-!~{00k}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",
@@ -126,7 +126,7 @@
     "PackageJsonScriptWithPreAndPost": "type PackageJsonScriptWithPreAndPost<S extends string> = S | `${'pre' | 'post'}${S}`",
     "PackageJsonWithPath": "interface PackageJsonWithPath extends PackageJson {\n packageJsonPath: string\n}",
     "PackageType": "type PackageType = 'module' | 'commonjs' | undefined",
-    "PublintOptions": "interface PublintOptions extends Options {}",
+    "PublintOptions": "interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {}",
     "ReportOptions": "interface ReportOptions {\n gzip?: boolean\n brotli?: boolean\n maxCompressSize?: number\n}",
     "ReportPlugin": "declare function ReportPlugin(_: ReportOptions, _: Logger, _: string, _: boolean, _: string, _: boolean): Plugin",
     "ResolvedConfig": "type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, 'workspace' | 'fromVite' | 'publicDir' | 'bundle' | 'removeNodeProtocol' | 'logLevel' | 'failOnWarn' | 'customLogger' | 'envFile' | 'envPrefix'>, 'globalName' | 'inputOptions' | 'outputOptions' | 'minify' | 'define' | 'alias' | 'external' | 'onSuccess' | 'outExtensions' | 'hooks' | 'copy' | 'loader' | 'name' | 'banner' | 'footer' | 'checks'>, { entry: Record<string, string>; nameLabel: string | undefined; format: NormalizedFormat; target?: string[]; clean: string[]; pkg?: PackageJsonWithPath; nodeProtocol: 'strip' | boolean; logger: Logger; ignoreWatch: Array<string | RegExp>; noExternal?: NoExternalFn; inlineOnly?: Array<string | RegExp> | false; css: Required<CssOptions>; dts: false | DtsOptions; report: false | ReportOptions; tsconfig: false | string; exports: false | ExportsOptions; devtools: false | DevtoolsOptions; publint: false | PublintOptions; attw: false | AttwOptions; unused: false | UnusedOptions }>",

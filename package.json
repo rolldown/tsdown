@@ -108,6 +108,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
+    "@publint/pack": "catalog:dev",
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",
@@ -126,6 +127,7 @@
     "is-in-ci": "catalog:prod",
     "lightningcss": "catalog:dev",
     "memfs": "catalog:dev",
+    "package-manager-detector": "catalog:prod",
     "pkg-types": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",
