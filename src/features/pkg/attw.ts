@@ -8,6 +8,7 @@ import type {
   Problem,
   ProblemKind,
 } from '@arethetypeswrong/core'
+import type { Buffer } from 'node:buffer'
 
 const debug = createDebug('tsdown:attw')
 const label = dim`[attw]`
@@ -93,7 +94,7 @@ const profiles: Record<Required<AttwOptions>['profile'], string[]> = {
 
 export async function attw(
   options: ResolvedConfig,
-  tarball: Uint8Array,
+  tarball: Buffer<ArrayBuffer>,
 ): Promise<void> {
   if (!options.attw) return
   if (!options.pkg) {
