@@ -1,7 +1,7 @@
 ## index.mjs
 
 ```mjs
-//#region rolldown:runtime
+//#region \0rolldown/runtime.js
 var __toBinaryNode = (base64) => new Uint8Array(Buffer.from(base64, "base64"));
 
 //#endregion

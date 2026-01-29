@@ -1,9 +1,9 @@
 ## index.mjs
 
 ```mjs
-//#region rolldown:runtime
+//#region \0rolldown/runtime.js
 var __defProp = Object.defineProperty;
-var __exportAll = (all, symbols) => {
+var __exportAll = (all, no_symbols) => {
 	let target = {};
 	for (var name in all) {
 		__defProp(target, name, {
@@ -11,7 +11,7 @@ var __exportAll = (all, symbols) => {
 			enumerable: true
 		});
 	}
-	if (symbols) {
+	if (!no_symbols) {
 		__defProp(target, Symbol.toStringTag, { value: "Module" });
 	}
 	return target;
@@ -29,10 +29,10 @@ const b = 2;
 
 //#endregion
 //#region index.ts
-const modules = {
+const modules = /* @__PURE__ */ Object.assign({
 	"./modules/a.ts": a_exports,
 	"./modules/b.ts": b_exports
-};
+});
 
 //#endregion
 export { modules };
