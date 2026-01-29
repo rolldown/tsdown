@@ -28,6 +28,7 @@ const zhCN = {
   'Package Exports': '包导出（Package Exports）',
   Unbundle: '非打包模式（Unbundle）',
   'CJS Default Export': 'CJS 默认导出',
+  'Package Validation': '包校验',
 
   Recipes: '实践指南',
   'Vue Support': 'Vue 支持',
@@ -40,6 +41,7 @@ const zhCN = {
   Plugins: '插件',
   Hooks: '钩子（Hooks）',
   'Programmatic Usage': '编程使用',
+  'CI Environment': 'CI 环境',
   Benchmark: '性能基准',
   FAQ: '常见问题',
   'Work with AI': '与 AI 协作',
