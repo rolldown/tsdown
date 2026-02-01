@@ -242,6 +242,11 @@ export async function resolveUserConfig(
     const noExternalPatterns = toArray(noExternal)
     noExternal = (id) => matchPattern(id, noExternalPatterns)
   }
+  if (skipNodeModulesBundle && noExternal != null) {
+    throw new TypeError(
+      '`skipNodeModulesBundle` and `noExternal` are mutually exclusive options and cannot be used together.',
+    )
+  }
   if (inlineOnly != null && inlineOnly !== false) {
     inlineOnly = toArray(inlineOnly)
   }
