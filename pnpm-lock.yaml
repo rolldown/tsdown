@@ -108,7 +108,7 @@ catalogs:
       specifier: ^66.6.0
       version: 66.6.0
     vitepress:
-      specifier: ^2.0.0-alpha.15
+      specifier: ^2.0.0-alpha.16
       version: 2.0.0-alpha.16
     vitepress-plugin-group-icons:
       specifier: ^1.7.1
@@ -207,7 +207,7 @@ catalogs:
 overrides:
   '@docsearch/react': '-'
   rolldown: 1.0.0-rc.2
-  vite: ^8.0.0-beta.10
+  vite: ^8.0.0-beta.12
 
 importers:
 
@@ -356,7 +356,7 @@ importers:
         specifier: catalog:peer
         version: 0.5.7
       vite:
-        specifier: ^8.0.0-beta.10
+        specifier: ^8.0.0-beta.12
         version: 8.0.0-beta.12(@types/node@25.2.0)(jiti@2.6.1)(yaml@2.8.2)
       vitest:
         specifier: catalog:dev
@@ -390,7 +390,7 @@ importers:
         specifier: catalog:docs
         version: 1.1.2(typedoc-plugin-markdown@4.9.0(typedoc@0.28.16(typescript@5.9.3)))
       vite:
-        specifier: ^8.0.0-beta.10
+        specifier: ^8.0.0-beta.12
         version: 8.0.0-beta.12(@types/node@25.2.0)(jiti@2.6.1)(yaml@2.8.2)
       vitepress:
         specifier: catalog:docs
@@ -1538,7 +1538,7 @@ packages:
   '@unocss/astro@66.6.0':
     resolution: {integrity: sha512-HCDgZnoXv6pZGUK9N4ko7ZeBP1YTIP8IFj0Vr7pXVdv9sGR9CofoueFbclTvPQ065UHSsG+WI+JO5z9/BGd5fw==}
     peerDependencies:
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
     peerDependenciesMeta:
       vite:
         optional: true
@@ -1623,12 +1623,12 @@ packages:
   '@unocss/vite@66.6.0':
     resolution: {integrity: sha512-SC0/rX0xSjdu8Jaj98XztHOuvXHWDVk0YaHKRAQks2Oj3yyqAOrhzhDUH0zzFaQWf5bsKVYK40H+h4rMk9vm5Q==}
     peerDependencies:
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
 
   '@vitejs/devtools-kit@0.0.0-alpha.26':
     resolution: {integrity: sha512-uM03WRBPFrSDFlAMUglTHDfI6vEBJJFOMt12RRDqHdaV2hBnBaWZnn8CgD2qnLeaHzcz7IcMTMocJpVRM7i/GQ==}
     peerDependencies:
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
 
   '@vitejs/devtools-rpc@0.0.0-alpha.26':
     resolution: {integrity: sha512-gCkoHHqhgw9FBjoPMlNPGX/E6LvzDQtpnRp2mF31aNmzBd9dAxobq7NfslggBxDyJ5DgzqtMCSVz1N60JuFP4Q==}
@@ -1645,13 +1645,13 @@ packages:
     resolution: {integrity: sha512-xf4IJoVinpOFvJw1JyzMkgW0CVUZ4SrMFD1O3BAd1ismc4lbc+ip1T5QZk86UBYda20WXQfgUw3oo/HNpqV/Fw==}
     hasBin: true
     peerDependencies:
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
 
   '@vitejs/plugin-vue@6.0.4':
     resolution: {integrity: sha512-uM5iXipgYIn13UUQCZNdWkYk+sysBeA97d5mHsAoAt1u/wpN3+zxOmsVJWosuzX+IMGRzeYUNytztrYznboIkQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
       vue: ^3.2.25
 
   '@vitest/coverage-v8@4.0.18':
@@ -1670,7 +1670,7 @@ packages:
     resolution: {integrity: sha512-HhVd0MDnzzsgevnOWCBj5Otnzobjy5wLBe4EdeeFGv8luMsGcYqDuFRMcttKWZA5vVO8RFjexVovXvAM4JoJDQ==}
     peerDependencies:
       msw: ^2.4.9
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
     peerDependenciesMeta:
       msw:
         optional: true
@@ -3678,7 +3678,7 @@ packages:
     engines: {node: '>=14'}
     peerDependencies:
       '@unocss/webpack': 66.6.0
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
     peerDependenciesMeta:
       '@unocss/webpack':
         optional: true
@@ -3842,7 +3842,7 @@ packages:
   vitepress-plugin-group-icons@1.7.1:
     resolution: {integrity: sha512-3ZPcIqwHNBg1btrOOSecOqv8yJxHdu3W2ugxE5LusclDF005LAm60URMEmBQrkgl4JvM32AqJirqghK6lGIk8g==}
     peerDependencies:
-      vite: ^8.0.0-beta.10
+      vite: ^8.0.0-beta.12
     peerDependenciesMeta:
       vite:
         optional: true
@@ -4141,7 +4141,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.29.0
       '@babel/generator': 7.29.0
-      '@babel/parser': 7.27.7
+      '@babel/parser': 7.29.0
       '@babel/template': 7.28.6
       '@babel/types': 7.29.0
       debug: 4.4.3
