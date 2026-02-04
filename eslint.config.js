@@ -5,7 +5,7 @@ export default sxzz(
   {
     pnpm: true,
     baseline: {
-      ignoreFeatures: ['explicit-resource-management'],
+      ignoreFeatures: ['explicit-resource-management', 'top-level-await'],
     },
   },
   {
