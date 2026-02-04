@@ -748,3 +748,40 @@ describe('import.meta.glob', () => {
     expect(outputFiles.length).toBe(1)
   })
 })
+
+test('externalize @types/foo', async (context) => {
+  const node_modules = {
+    'node_modules/foo/index.js': `export const version = "1.0.0"`,
+    'node_modules/foo/package.json': JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      main: 'index.js',
+    }),
+
+    'node_modules/@types/foo/index.d.ts': `export const version: string`,
+    'node_modules/@types/foo/package.json': JSON.stringify({
+      name: '@types/foo',
+      version: '1.0.0',
+      types: 'index.d.ts',
+    }),
+  }
+
+  const { fileMap } = await testBuild({
+    context,
+    files: {
+      ...node_modules,
+      'index.ts': `export { version } from 'foo'`,
+      'package.json': JSON.stringify({
+        name: 'test-pkg',
+        version: '1.0.0',
+        dependencies: {
+          '@types/foo': '^1.0.0',
+        },
+      }),
+    },
+    options: { dts: true },
+  })
+
+  expect(fileMap['index.mjs']).toContain('1.0.0')
+  expect(fileMap['index.d.mts']).toContain('from "foo"')
+})

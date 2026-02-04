@@ -1,7 +1,7 @@
 import { isBuiltin } from 'node:module'
 import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
-import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
+import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { and, id, importerId, include } from 'rolldown/filter'
 import { matchPattern, slash, typeAssert } from '../utils/general.ts'
 import { shimFile } from './shims.ts'
@@ -165,11 +165,17 @@ export function DepPlugin({
       }
     }
 
-    if (
-      deps &&
-      (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`)))
-    ) {
-      return true
+    if (deps) {
+      if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
+        return true
+      }
+
+      if (importer && RE_DTS.test(importer) && !id.startsWith('@types/')) {
+        const typesName = `@types/${id.replace(/^@/, '').replaceAll('/', '__')}`
+        if (deps.includes(typesName)) {
+          return true
+        }
+      }
     }
 
     return false
