@@ -20,6 +20,7 @@ export function DepPlugin({
   nameLabel,
 }: ResolvedConfig): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
+  const devDeps = pkg && new Set(Object.keys(pkg.devDependencies || {}))
 
   return {
     name: 'tsdown:external',
@@ -165,11 +166,15 @@ export function DepPlugin({
       }
     }
 
-    if (
-      deps &&
-      (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`)))
-    ) {
-      return true
+    if (deps) {
+      if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
+        return true
+      }
+      // Externalize when @types/{id} is a prod/peer dep (e.g., @types/json-schema for "json-schema")
+      // but not when the runtime package is a devDependency
+      if (deps.includes(`@types/${id}`) && !devDeps?.has(id)) {
+        return true
+      }
     }
 
     return false

@@ -4,6 +4,140 @@ import { exec } from 'tinyexec'
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
+describe('@types/* externalization', () => {
+  const mockJsonSchemaTypes = `
+    export interface JSONSchema7 {
+      type?: string;
+      properties?: Record<string, JSONSchema7>;
+    }
+  `
+
+  test('externalizes imports when @types/{id} is a peer dependency', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `
+          import type { JSONSchema7 } from 'json-schema';
+          export type MySchema = JSONSchema7;
+        `,
+        'node_modules/@types/json-schema/index.d.ts': mockJsonSchemaTypes,
+        'node_modules/@types/json-schema/package.json': JSON.stringify({
+          name: '@types/json-schema',
+          version: '7.0.0',
+          types: 'index.d.ts',
+        }),
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          peerDependencies: {
+            '@types/json-schema': '^7.0.0',
+          },
+        }),
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {
+            moduleResolution: 'bundler',
+            strict: true,
+          },
+        }),
+      },
+      options: {
+        entry: 'index.ts',
+        dts: { emitDtsOnly: true },
+        tsconfig: 'tsconfig.json',
+      },
+    })
+
+    const dtsContent = fileMap['index.d.mts']
+    expect(dtsContent).toContain('from "json-schema"')
+  })
+
+  test('externalizes imports when @types/{id} is a production dependency', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `
+          import type { JSONSchema7 } from 'json-schema';
+          export type MySchema = JSONSchema7;
+        `,
+        'node_modules/@types/json-schema/index.d.ts': mockJsonSchemaTypes,
+        'node_modules/@types/json-schema/package.json': JSON.stringify({
+          name: '@types/json-schema',
+          version: '7.0.0',
+          types: 'index.d.ts',
+        }),
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          dependencies: {
+            '@types/json-schema': '^7.0.0',
+          },
+        }),
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {
+            moduleResolution: 'bundler',
+            strict: true,
+          },
+        }),
+      },
+      options: {
+        entry: 'index.ts',
+        dts: { emitDtsOnly: true },
+        tsconfig: 'tsconfig.json',
+      },
+    })
+
+    const dtsContent = fileMap['index.d.mts']
+    expect(dtsContent).toContain('from "json-schema"')
+  })
+
+  test('does NOT externalize @types/{id} when runtime package is a devDependency', async (context) => {
+    // lodash has both a runtime package and @types/lodash
+    const mockLodashTypes = `
+      export function debounce<T extends (...args: any) => any>(func: T, wait?: number): T;
+    `
+
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `
+          import type { debounce } from 'lodash';
+          export type Debounce = typeof debounce;
+        `,
+        'node_modules/@types/lodash/index.d.ts': mockLodashTypes,
+        'node_modules/@types/lodash/package.json': JSON.stringify({
+          name: '@types/lodash',
+          version: '4.14.0',
+          types: 'index.d.ts',
+        }),
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          devDependencies: {
+            lodash: '^4.17.0',
+          },
+          peerDependencies: {
+            '@types/lodash': '^4.14.0',
+          },
+        }),
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {
+            moduleResolution: 'bundler',
+            strict: true,
+          },
+        }),
+      },
+      options: {
+        entry: 'index.ts',
+        dts: { emitDtsOnly: true },
+        tsconfig: 'tsconfig.json',
+      },
+    })
+
+    const dtsContent = fileMap['index.d.mts']
+    expect(dtsContent).not.toContain('from "lodash"')
+  })
+})
+
 describe('issues', () => {
   test('#61', async (context) => {
     await testBuild({
