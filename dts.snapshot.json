@@ -1,10 +1,6 @@
 {
-  "config-!~{00m}~.d.mts": {
-    "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
-    "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
-    "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
-  },
   "config.d.mts": {
+    "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "#exports": [
       "UserConfig",
       "UserConfigExport",
@@ -66,6 +62,10 @@
       "mergeConfig",
       "resolveUserConfig"
     ]
+  },
+  "options-!~{00m}~.d.mts": {
+    "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
+    "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
   },
   "plugins.d.mts": {
     "DepPlugin": "declare function DepPlugin(_: ResolvedConfig): Plugin",
