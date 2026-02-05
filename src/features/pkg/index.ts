@@ -128,6 +128,7 @@ async function packTarball(
     const tarballPath = await pack(pkgDir, {
       destination,
       packageManager: detected?.name,
+      ignoreScripts: true,
     })
     return readFile(tarballPath)
   } finally {
