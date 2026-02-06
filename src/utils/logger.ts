@@ -23,6 +23,7 @@ export const LogLevels: Record<LogLevel, number> = {
 
 export interface Logger {
   level: LogLevel
+  options?: LoggerOptions
   info: (...args: any[]) => void
   warn: (...args: any[]) => void
   warnOnce: (...args: any[]) => void
@@ -47,13 +48,18 @@ const warnedMessages = new Set<string>()
 
 export function createLogger(
   level: LogLevel = 'info',
-  {
-    customLogger,
-    console = globalThis.console,
-    failOnWarn = false,
-    allowClearScreen = true,
-  }: LoggerOptions = {},
+  options: LoggerOptions = {},
 ): Logger {
+  const resolvedOptions = {
+    allowClearScreen: true,
+    failOnWarn: false,
+    console: globalThis.console,
+    ...options,
+  }
+  /// keep-sorted
+  const { allowClearScreen, console, customLogger, failOnWarn } =
+    resolvedOptions
+
   if (customLogger) {
     return customLogger
   }
@@ -72,6 +78,7 @@ export function createLogger(
 
   const logger: Logger = {
     level,
+    options: resolvedOptions,
 
     info(...msgs: any[]): void {
       output('info', `${blue`ℹ`} ${format(msgs)}`)

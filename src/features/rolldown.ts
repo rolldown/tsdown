@@ -211,13 +211,14 @@ async function resolveInputOptions(
       plugins,
       moduleTypes: loader,
       logLevel: logger.level === 'error' ? 'silent' : logger.level,
-      onLog: cjsDefault
-        ? (level, log, defaultHandler) => {
-            // suppress mixed export warnings if cjsDefault is enabled
-            if (log.code === 'MIXED_EXPORT') return
-            defaultHandler(level, log)
-          }
-        : undefined,
+      onLog(level, log, defaultHandler) {
+        // suppress mixed export warnings if cjsDefault is enabled
+        if (cjsDefault && log.code === 'MIXED_EXPORT') return
+        if (logger.options?.failOnWarn && level === 'warn') {
+          defaultHandler('error', log)
+        }
+        defaultHandler(level, log)
+      },
       devtools: devtools || undefined,
       checks,
     },

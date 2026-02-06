@@ -785,3 +785,19 @@ test('externalize @types/foo', async (context) => {
   expect(fileMap['index.mjs']).toContain('1.0.0')
   expect(fileMap['index.d.mts']).toContain('from "foo"')
 })
+
+test('failOnWarn', async (context) => {
+  const files = {
+    'index.ts': `import 'unresolved'`,
+  }
+
+  await expect(
+    testBuild({
+      context,
+      files,
+      options: {
+        failOnWarn: true,
+      },
+    }),
+  ).rejects.toThrow('Module not found')
+})

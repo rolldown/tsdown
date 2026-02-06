@@ -7,7 +7,7 @@ import { glob } from 'tinyglobby'
 import { mergeUserOptions } from '../src/config/options.ts'
 import { build } from '../src/index.ts'
 import type { InlineConfig, TsdownBundle } from '../src/config/index.ts'
-import type { RollupLog } from 'rolldown'
+import type { LogOrStringHandler, RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -144,17 +144,26 @@ export async function testBuild({
     dts: false,
     logLevel: 'silent',
     tsconfig: false,
+    failOnWarn: false,
     ...userOptions,
     async inputOptions(options, ...args) {
+      const originalOnLog = options.onLog
       options = await mergeUserOptions(
         {
           ...options,
           onLog(level, log, defaultHandler) {
             if (level === 'warn') {
               warnings.push(log)
-              return
             }
-            defaultHandler(level, log)
+            const _defaultHandler: LogOrStringHandler = (level, ...args) => {
+              if (level !== 'error') return
+              defaultHandler(level, ...args)
+            }
+            if (originalOnLog) {
+              originalOnLog(level, log, _defaultHandler)
+            } else {
+              _defaultHandler(level, log)
+            }
           },
           logLevel: 'info',
         },
