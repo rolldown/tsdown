@@ -85,6 +85,7 @@ export default defineConfig({
 |---------|-------|-----------|
 | External deps | `external: ['react', /^@myorg\//]` | [option-dependencies](references/option-dependencies.md) |
 | Inline deps | `noExternal: ['dep-to-bundle']` | [option-dependencies](references/option-dependencies.md) |
+| Inline only | `inlineOnly: ['cac', 'bumpp']` - Whitelist bundled deps | [option-dependencies](references/option-dependencies.md) |
 | Auto external | Automatic peer/dependency externalization | [option-dependencies](references/option-dependencies.md) |
 
 ## Output Enhancement

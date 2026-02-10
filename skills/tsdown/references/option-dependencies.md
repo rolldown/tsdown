@@ -54,6 +54,28 @@ export default defineConfig({
 })
 ```
 
+### `inlineOnly`
+
+Whitelist of dependencies allowed to be bundled from node_modules. Throws an error if any unlisted dependency is bundled:
+
+```ts
+export default defineConfig({
+  entry: ['src/index.ts'],
+  inlineOnly: [
+    'cac',               // Allow bundling cac
+    'bumpp',             // Allow bundling bumpp
+    /^my-utils/,         // Regex patterns supported
+  ],
+})
+```
+
+**Behavior:**
+- **Array** (`['cac', /^my-/]`): Only matching dependencies can be bundled. Error for others.
+- **`false`**: Suppress all warnings about bundled dependencies.
+- **Not set** (default): Warns if any node_modules dependencies are bundled.
+
+**Note:** Include all sub-dependencies in the list, not just top-level imports.
+
 ### `skipNodeModulesBundle`
 
 Skip resolving and bundling ALL node_modules:

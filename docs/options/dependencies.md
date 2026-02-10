@@ -32,6 +32,30 @@ export default defineConfig({
 
 This will prevent `tsdown` from parsing and bundling any dependencies from `node_modules`, regardless of how they are referenced in your code.
 
+## Strict Inline Control with `inlineOnly`
+
+The `inlineOnly` option acts as a whitelist for dependencies that are allowed to be bundled from `node_modules`. If any dependency not in the list is found in the bundle, tsdown will throw an error. This is useful for preventing unexpected dependencies from being silently inlined into your output, especially in large projects.
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  inlineOnly: ['cac', 'bumpp'],
+})
+```
+
+In this example, only `cac` and `bumpp` are allowed to be bundled. If any other `node_modules` dependency is imported, tsdown will throw an error with a message indicating which dependency was unexpectedly bundled and which files imported it.
+
+### Behavior
+
+- **`inlineOnly` is an array** (e.g., `['cac', /^my-/]`): Only dependencies matching the list are allowed to be bundled. An error is thrown for any others. Unused patterns in the list will also be reported.
+- **`inlineOnly` is `false`**: All warnings and checks about bundled dependencies are suppressed.
+- **`inlineOnly` is not set** (default): A warning is shown if any `node_modules` dependencies are bundled, suggesting you add the `inlineOnly` option or set it to `false` to suppress warnings.
+
+::: tip
+Make sure to include all required sub-dependencies in the `inlineOnly` list as well, not just the top-level packages you directly import.
+:::
+
 ## Customizing Dependency Handling
 
 `tsdown` provides two options to override the default behavior:
@@ -90,6 +114,7 @@ export default defineConfig({
   - `dependencies` and `peerDependencies` are treated as external and not bundled.
   - `devDependencies` and phantom dependencies are only bundled if they are actually used in your code.
 - **Customization**:
+  - Use `inlineOnly` to whitelist dependencies allowed to be bundled, and throw an error for any others.
   - Use `external` to mark specific dependencies as external.
   - Use `noExternal` to force specific dependencies to be bundled.
   - Use `skipNodeModulesBundle` to skip resolving and bundling all dependencies from `node_modules`.
