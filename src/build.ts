@@ -29,7 +29,7 @@ import {
   type RolldownChunk,
   type TsdownBundle,
 } from './utils/chunks.ts'
-import { typeAssert } from './utils/general.ts'
+import { debounce, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
@@ -146,12 +146,16 @@ async function buildSingle(
   const chunks: RolldownChunk[] = []
   let watcher: RolldownWatcher | undefined
   let ab: AbortController | undefined
+  const debouncedPostBuild = debounce(() => {
+    postBuild().catch((error) => logger.error(error))
+  }, 100)
 
   let updated = false
   const bundle: TsdownBundle = {
     chunks,
     config,
     async [asyncDispose]() {
+      debouncedPostBuild.cancel()
       ab?.abort()
       await watcher?.close()
     },
@@ -185,6 +189,12 @@ async function buildSingle(
     watcher.on('change', (id, event) => {
       if (event.event === 'update') {
         changedFile.push(id)
+        // Cancel pending postBuild immediately on file change,
+        // before the new build cycle starts. This prevents duplicate
+        // onSuccess execution when rapid file changes (e.g. VS Code
+        // auto-save) trigger multiple build cycles.
+        debouncedPostBuild.cancel()
+        ab?.abort()
       }
       if (configFiles.includes(id) || endsWithConfig.test(id)) {
         globalLogger.info(`Reload config: ${id}, restarting...`)
@@ -195,6 +205,8 @@ async function buildSingle(
     watcher.on('event', async (event) => {
       switch (event.code) {
         case 'START': {
+          debouncedPostBuild.cancel()
+
           if (config.clean.length) {
             await cleanChunks(config.outDir, chunks)
           }
@@ -206,7 +218,7 @@ async function buildSingle(
 
         case 'END': {
           if (!hasError) {
-            await postBuild()
+            debouncedPostBuild()
           }
           break
         }

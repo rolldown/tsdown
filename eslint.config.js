@@ -9,7 +9,7 @@ export default sxzz(
     },
   },
   {
-    ignores: ['skills/**/*.md'],
+    ignores: ['skills/**/*.md', 'reproduction/**'],
   },
   {
     files: ['templates/**'],
