@@ -32,6 +32,30 @@ export default defineConfig({
 
 这样，无论您的代码如何引用，`tsdown` 都不会解析或打包任何来自 `node_modules` 的依赖。
 
+## 使用 `inlineOnly` 严格控制内联依赖
+
+`inlineOnly` 选项作为允许从 `node_modules` 中打包的依赖白名单。如果有任何不在列表中的依赖被打包，tsdown 将抛出错误。这对于防止意外的依赖被静默内联到输出文件中非常有用，尤其是在大型项目中可能存在许多依赖的情况下。
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  inlineOnly: ['cac', 'bumpp'],
+})
+```
+
+在此示例中，只有 `cac` 和 `bumpp` 允许被打包。如果引入了任何其他 `node_modules` 依赖，tsdown 将抛出错误，指出哪个依赖被意外打包以及哪些文件引用了它。
+
+### 行为
+
+- **`inlineOnly` 为数组**（例如 `['cac', /^my-/]`）：只有匹配列表的依赖才允许被打包，其他依赖会触发错误。列表中未使用的模式也会被报告。
+- **`inlineOnly` 为 `false`**：抑制所有关于打包依赖的警告和检查。
+- **`inlineOnly` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `inlineOnly` 选项或将其设置为 `false` 来抑制警告。
+
+::: tip
+请确保在 `inlineOnly` 列表中包含所有必需的子依赖，而不仅仅是您直接导入的顶层包。
+:::
+
 ## 自定义依赖处理
 
 `tsdown` 提供了两个选项来覆盖默认行为：
@@ -90,6 +114,7 @@ export default defineConfig({
   - `dependencies` 和 `peerDependencies` 被视为外部依赖，不会被打包。
   - `devDependencies` 和幻影依赖只有在代码中实际使用时才会被打包。
 - **自定义**：
+  - 使用 `inlineOnly` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
   - 使用 `external` 将特定依赖标记为外部依赖。
   - 使用 `noExternal` 强制将特定依赖打包。
   - 使用 `skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。
