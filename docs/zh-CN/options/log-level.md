@@ -29,20 +29,18 @@ tsdown --log-level error
 
 ## 警告时失败
 
-`failOnWarn` 选项控制警告是否会导致构建以非零退出码退出。默认值为 `'ci-only'`，这意味着**在 CI 环境中，警告会导致构建失败**，但在本地开发时不会。
-
-这种默认行为确保 CI 流水线能够发现潜在问题，同时不会影响本地开发体验。
+`failOnWarn` 选项控制警告是否会导致构建以非零退出码退出。默认值为 `false`，这意味着**警告不会导致构建失败**。
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  // 默认：仅在 CI 中遇警告时失败
-  failOnWarn: 'ci-only',
+  // 默认：从不在遇到警告时失败
+  failOnWarn: false,
   // 始终在遇到警告时失败
   // failOnWarn: true,
-  // 从不在遇到警告时失败
-  // failOnWarn: false,
+  // 仅在 CI 中遇警告时失败
+  // failOnWarn: 'ci-only',
 })
 ```
 

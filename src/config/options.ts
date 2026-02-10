@@ -51,7 +51,7 @@ export async function resolveUserConfig(
     plugins = [],
     clean = true,
     logLevel = 'info',
-    failOnWarn = 'ci-only',
+    failOnWarn = false,
     customLogger,
     treeshake = true,
     platform = 'node',

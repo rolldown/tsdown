@@ -28,7 +28,7 @@ tsdown 使用 [`is-in-ci`](https://www.npmjs.com/package/is-in-ci) 包来检测 
 - [`exports`](/zh-CN/options/package-exports) — 自动生成 `package.json` exports 字段
 - `unused` — 未使用依赖检查
 - `devtools` — DevTools 集成
-- `failOnWarn` — 遇警告时失败（默认值为 `'ci-only'`）
+- `failOnWarn` — 遇警告时失败（默认值为 `false`）
 
 ### 基本用法
 
@@ -42,7 +42,7 @@ export default defineConfig({
   dts: 'local-only',
   // 仅在 CI 中运行 publint
   publint: 'ci-only',
-  // 仅在 CI 中遇警告时失败（这是默认行为）
+  // 仅在 CI 中遇警告时失败（默认值为 false）
   failOnWarn: 'ci-only',
 })
 ```
@@ -90,7 +90,7 @@ export default defineConfig({
   entry: 'src/index.ts',
   format: ['esm', 'cjs'],
   dts: true,
-  // 在 CI 中遇警告时失败
+  // 在 CI 中遇警告时失败（默认值为 false）
   failOnWarn: 'ci-only',
   // 在 CI 中运行包校验工具
   publint: 'ci-only',

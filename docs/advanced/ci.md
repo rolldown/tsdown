@@ -28,7 +28,7 @@ The following options accept CI-aware values:
 - [`exports`](/options/package-exports) — Auto-generate `package.json` exports
 - `unused` — Unused dependency check
 - `devtools` — DevTools integration
-- `failOnWarn` — Fail on warnings (defaults to `'ci-only'`)
+- `failOnWarn` — Fail on warnings (defaults to `false`)
 
 ### Basic Usage
 
@@ -42,7 +42,7 @@ export default defineConfig({
   dts: 'local-only',
   // Only run publint in CI
   publint: 'ci-only',
-  // Fail on warnings in CI only (this is the default)
+  // Fail on warnings in CI only (default is false)
   failOnWarn: 'ci-only',
 })
 ```
@@ -90,7 +90,7 @@ export default defineConfig({
   entry: 'src/index.ts',
   format: ['esm', 'cjs'],
   dts: true,
-  // Fail on warnings in CI
+  // Fail on warnings in CI (default is false)
   failOnWarn: 'ci-only',
   // Run package validators in CI
   publint: 'ci-only',
