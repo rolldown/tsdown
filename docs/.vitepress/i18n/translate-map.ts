@@ -1,6 +1,8 @@
 const zhCN = {
   // nav
   Home: '首页',
+  'Release Notes': '发布说明',
+  unreleased: '未发布版本',
   Guide: '指南',
   'API Reference': 'API 参考',
 

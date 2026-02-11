@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import module from 'node:module'
 import path from 'node:path'
+import pkg from '../../../package.json' with { type: 'json' }
 import { createTranslate } from '../i18n/utils.ts'
 import type { DefaultTheme, HeadConfig, LocaleConfig } from 'vitepress'
 
@@ -73,6 +74,31 @@ export function getLocaleConfig(lang: string) {
       link: `${urlPrefix}/reference/api/Interface.UserConfig.md`,
     },
     { text: t('FAQ'), link: `${urlPrefix}/guide/faq.md` },
+    {
+      text: `v${pkg.version}`,
+      items: [
+        {
+          items: [
+            {
+              text: `v${pkg.version}`,
+              link: `https://github.com/rolldown/tsdown/releases/tag/v${pkg.version}`,
+            },
+            {
+              text: t('Release Notes'),
+              link: 'https://github.com/rolldown/tsdown/releases',
+            },
+          ],
+        },
+        {
+          items: [
+            {
+              text: t('unreleased'),
+              link: 'https://main.tsdown.dev',
+            },
+          ],
+        },
+      ],
+    },
   ]
 
   const sidebar: DefaultTheme.SidebarItem[] = [
