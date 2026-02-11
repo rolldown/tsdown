@@ -1,5 +1,10 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { CssOptions } from '../features/css/index.ts'
+import type {
+  DepsConfig,
+  NoExternalFn,
+  ResolvedDepsConfig,
+} from '../features/deps.ts'
 import type { DevtoolsOptions } from '../features/devtools.ts'
 import type {
   BuildContext,
@@ -77,9 +82,11 @@ export type {
   CopyOptions,
   CopyOptionsFn,
   CssOptions,
+  DepsConfig,
   DevtoolsOptions,
   DtsOptions,
   ExportsOptions,
+  NoExternalFn,
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
@@ -87,6 +94,7 @@ export type {
   PackageType,
   PublintOptions,
   ReportOptions,
+  ResolvedDepsConfig,
   RolldownChunk,
   RolldownContext,
   TreeshakingOptions,
@@ -112,41 +120,6 @@ export interface Workspace {
    * Path to the workspace configuration file.
    */
   config?: boolean | string
-}
-
-export type NoExternalFn = (
-  id: string,
-  importer: string | undefined,
-) => boolean | null | undefined | void
-
-export interface DepsConfig {
-  /**
-   * Mark dependencies as external (not bundled).
-   * Accepts strings, regular expressions, or Rolldown's `ExternalOption`.
-   */
-  neverBundle?: ExternalOption
-  /**
-   * Force dependencies to be bundled, even if they are in `dependencies` or `peerDependencies`.
-   */
-  alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn
-  /**
-   * Whitelist of dependencies allowed to be bundled from `node_modules`.
-   * Throws an error if any unlisted dependency is bundled.
-   *
-   * - `undefined` (default): Show warnings for bundled dependencies.
-   * - `false`: Suppress all warnings about bundled dependencies.
-   *
-   * Note: Be sure to include all required sub-dependencies as well.
-   */
-  onlyAllowBundle?: Arrayable<string | RegExp> | false
-  /**
-   * Skip bundling all `node_modules` dependencies.
-   *
-   * **Note:** This option cannot be used together with `alwaysBundle`.
-   *
-   * @default false
-   */
-  skipNodeModulesBundle?: boolean
 }
 
 export type CIOption = 'ci-only' | 'local-only'
@@ -616,13 +589,6 @@ export type UserConfigFn = (
 ) => Awaitable<Arrayable<UserConfig>>
 
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>
-
-export interface ResolvedDepsConfig {
-  neverBundle?: ExternalOption
-  alwaysBundle?: NoExternalFn
-  onlyAllowBundle?: Array<string | RegExp> | false
-  skipNodeModulesBundle: boolean
-}
 
 export type ResolvedConfig = Overwrite<
   MarkPartial<

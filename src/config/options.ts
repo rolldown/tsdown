@@ -7,12 +7,12 @@ import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
 import { resolveCssOptions } from '../features/css/index.ts'
+import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
-  matchPattern,
   pkgExists,
   resolveComma,
   resolveRegex,
@@ -27,7 +27,6 @@ import type {
   Format,
   InlineConfig,
   ResolvedConfig,
-  ResolvedDepsConfig,
   UserConfig,
   WithEnabled,
 } from './types.ts'
@@ -89,12 +88,6 @@ export async function resolveUserConfig(
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
-    deps,
-    // deprecated options
-    external: legacyExternal,
-    noExternal: legacyNoExternal,
-    inlineOnly: legacyInlineOnly,
-    skipNodeModulesBundle: legacySkipNodeModulesBundle,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -144,57 +137,6 @@ export async function resolveUserConfig(
   }
   target = resolveTarget(logger, target, color, pkg, nameLabel)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
-  // Resolve deps options with backward compat for deprecated top-level options
-  let {
-    neverBundle: depsNeverBundle,
-    alwaysBundle: depsAlwaysBundle,
-    onlyAllowBundle: depsOnlyAllowBundle,
-    skipNodeModulesBundle: depsSkipNodeModulesBundle = false,
-  } = deps || {}
-
-  if (legacyExternal != null) {
-    if (depsNeverBundle != null)
-      throw new TypeError(
-        '`external` is deprecated. Cannot be used with `deps.neverBundle`.',
-      )
-    logger.warn('`external` is deprecated. Use `deps.neverBundle` instead.')
-    depsNeverBundle = legacyExternal
-  }
-  if (legacyNoExternal != null) {
-    if (depsAlwaysBundle != null)
-      throw new TypeError(
-        '`noExternal` is deprecated. Cannot be used with `deps.alwaysBundle`.',
-      )
-    logger.warn('`noExternal` is deprecated. Use `deps.alwaysBundle` instead.')
-    depsAlwaysBundle = legacyNoExternal
-  }
-  if (legacyInlineOnly != null) {
-    if (depsOnlyAllowBundle != null)
-      throw new TypeError(
-        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyAllowBundle`.',
-      )
-    logger.warn(
-      '`inlineOnly` is deprecated. Use `deps.onlyAllowBundle` instead.',
-    )
-    depsOnlyAllowBundle = legacyInlineOnly
-  }
-  if (legacySkipNodeModulesBundle != null) {
-    if (deps?.skipNodeModulesBundle != null)
-      throw new TypeError(
-        '`skipNodeModulesBundle` is deprecated. Cannot be used with `deps.skipNodeModulesBundle`.',
-      )
-    logger.warn(
-      '`skipNodeModulesBundle` is deprecated. Use `deps.skipNodeModulesBundle` instead.',
-    )
-    depsSkipNodeModulesBundle = legacySkipNodeModulesBundle
-  }
-
-  if (typeof depsNeverBundle === 'string') {
-    depsNeverBundle = resolveRegex(depsNeverBundle)
-  }
-  if (typeof depsAlwaysBundle === 'string') {
-    depsAlwaysBundle = resolveRegex(depsAlwaysBundle)
-  }
 
   publint = resolveFeatureOption(publint, {})
   attw = resolveFeatureOption(attw, {})
@@ -286,26 +228,7 @@ export async function resolveUserConfig(
     return ignore
   })
 
-  if (depsAlwaysBundle != null && typeof depsAlwaysBundle !== 'function') {
-    const alwaysBundlePatterns = toArray(depsAlwaysBundle)
-    depsAlwaysBundle = (id) => matchPattern(id, alwaysBundlePatterns)
-  }
-  if (depsSkipNodeModulesBundle && depsAlwaysBundle != null) {
-    throw new TypeError(
-      '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
-    )
-  }
-  if (depsOnlyAllowBundle != null && depsOnlyAllowBundle !== false) {
-    depsOnlyAllowBundle = toArray(depsOnlyAllowBundle)
-  }
-
-  const resolvedDeps: ResolvedDepsConfig = {
-    neverBundle: depsNeverBundle,
-    alwaysBundle: depsAlwaysBundle as ResolvedDepsConfig['alwaysBundle'],
-    onlyAllowBundle:
-      depsOnlyAllowBundle as ResolvedDepsConfig['onlyAllowBundle'],
-    skipNodeModulesBundle: depsSkipNodeModulesBundle,
-  }
+  const depsConfig = resolveDepsConfig(userConfig, logger)
 
   devtools = resolveFeatureOption(devtools, {})
   if (devtools) {
@@ -329,7 +252,7 @@ export async function resolveUserConfig(
     copy: publicDir || copy,
     css: resolveCssOptions(css),
     cwd,
-    deps: resolvedDeps,
+    deps: depsConfig,
     devtools,
     dts,
     entry: resolvedEntry,

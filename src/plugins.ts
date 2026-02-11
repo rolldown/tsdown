@@ -1,4 +1,4 @@
-export { DepPlugin } from './features/dep.ts'
+export { DepPlugin } from './features/deps.ts'
 export { NodeProtocolPlugin } from './features/node-protocol.ts'
 export { ReportPlugin } from './features/report.ts'
 export { ShebangPlugin } from './features/shebang.ts'
