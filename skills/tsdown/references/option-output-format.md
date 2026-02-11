@@ -132,7 +132,9 @@ export default defineConfig({
 export default defineConfig({
   entry: ['src/index.tsx'],
   format: ['esm', 'cjs'],
-  external: ['react', 'react-dom'], // Don't bundle dependencies
+  deps: {
+    neverBundle: ['react', 'react-dom'], // Don't bundle dependencies
+  },
   dts: true,
 })
 ```

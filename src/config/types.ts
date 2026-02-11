@@ -119,6 +119,36 @@ export type NoExternalFn = (
   importer: string | undefined,
 ) => boolean | null | undefined | void
 
+export interface DepsConfig {
+  /**
+   * Mark dependencies as external (not bundled).
+   * Accepts strings, regular expressions, or Rolldown's `ExternalOption`.
+   */
+  neverBundle?: ExternalOption
+  /**
+   * Force dependencies to be bundled, even if they are in `dependencies` or `peerDependencies`.
+   */
+  alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn
+  /**
+   * Whitelist of dependencies allowed to be bundled from `node_modules`.
+   * Throws an error if any unlisted dependency is bundled.
+   *
+   * - `undefined` (default): Show warnings for bundled dependencies.
+   * - `false`: Suppress all warnings about bundled dependencies.
+   *
+   * Note: Be sure to include all required sub-dependencies as well.
+   */
+  onlyAllowBundle?: Arrayable<string | RegExp> | false
+  /**
+   * Skip bundling all `node_modules` dependencies.
+   *
+   * **Note:** This option cannot be used together with `alwaysBundle`.
+   *
+   * @default false
+   */
+  skipNodeModulesBundle?: boolean
+}
+
 export type CIOption = 'ci-only' | 'local-only'
 
 export type WithEnabled<T> =
@@ -148,19 +178,25 @@ export interface UserConfig {
    */
   entry?: TsdownInputOption
 
+  /**
+   * Dependency handling options.
+   */
+  deps?: DepsConfig
+
+  /**
+   * @deprecated Use `deps.neverBundle` instead.
+   */
   external?: ExternalOption
+  /**
+   * @deprecated Use `deps.alwaysBundle` instead.
+   */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
-   * Bundle only the dependencies listed here; throw an error if any others are missing.
-   *
-   * - `undefined` (default): Show warnings for bundled dependencies.
-   * - `false`: Suppress all warnings about `inlineOnly` option.
-   *
-   * Note: Be sure to include all required sub-dependencies as well.
+   * @deprecated Use `deps.onlyAllowBundle` instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**
-   * Skip bundling `node_modules`.
+   * @deprecated Use `deps.skipNodeModulesBundle` instead.
    * @default false
    */
   skipNodeModulesBundle?: boolean
@@ -581,6 +617,13 @@ export type UserConfigFn = (
 
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>
 
+export interface ResolvedDepsConfig {
+  neverBundle?: ExternalOption
+  alwaysBundle?: NoExternalFn
+  onlyAllowBundle?: Array<string | RegExp> | false
+  skipNodeModulesBundle: boolean
+}
+
 export type ResolvedConfig = Overwrite<
   MarkPartial<
     Omit<
@@ -590,6 +633,10 @@ export type ResolvedConfig = Overwrite<
       | 'publicDir' // deprecated
       | 'bundle' // deprecated
       | 'removeNodeProtocol' // deprecated
+      | 'external' // deprecated, merged to `deps`
+      | 'noExternal' // deprecated, merged to `deps`
+      | 'inlineOnly' // deprecated, merged to `deps`
+      | 'skipNodeModulesBundle' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'customLogger' // merge to `logger`
@@ -602,7 +649,6 @@ export type ResolvedConfig = Overwrite<
     | 'minify'
     | 'define'
     | 'alias'
-    | 'external'
     | 'onSuccess'
     | 'outExtensions'
     | 'hooks'
@@ -624,8 +670,7 @@ export type ResolvedConfig = Overwrite<
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>
-    noExternal?: NoExternalFn
-    inlineOnly?: Array<string | RegExp> | false
+    deps: ResolvedDepsConfig
     css: Required<CssOptions>
 
     dts: false | DtsOptions

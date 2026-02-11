@@ -13,9 +13,7 @@ const debug = createDebug('tsdown:dep')
 
 export function DepPlugin({
   pkg,
-  noExternal,
-  inlineOnly,
-  skipNodeModulesBundle,
+  deps: { alwaysBundle, onlyAllowBundle: inlineOnly, skipNodeModulesBundle },
   logger,
   nameLabel,
 }: ResolvedConfig): Plugin {
@@ -98,8 +96,8 @@ export function DepPlugin({
                   .filter((dep) => !matchPattern(dep, inlineOnly))
                   .map(
                     (dep) =>
-                      `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`inlineOnly`} option.\n` +
-                      `To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
+                      `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyAllowBundle`} option.\n` +
+                      `To fix this, either add it to ${blue`deps.onlyAllowBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
                       `Imported by\n${[...(importers.get(dep) || [])]
                         .map((s) => `- ${underline(s)}`)
                         .join('\n')}`,
@@ -117,7 +115,7 @@ export function DepPlugin({
                 if (unusedPatterns.length) {
                   logger.info(
                     nameLabel,
-                    `The following entries in ${blue`inlineOnly`} are not used in the bundle:\n${unusedPatterns
+                    `The following entries in ${blue`deps.onlyAllowBundle`} are not used in the bundle:\n${unusedPatterns
                       .map((pattern) => `- ${yellow(pattern)}`)
                       .join(
                         '\n',
@@ -127,7 +125,7 @@ export function DepPlugin({
               } else if (deps.size) {
                 logger.warn(
                   nameLabel,
-                  `Consider adding ${blue`inlineOnly`} option to avoid unintended bundling of dependencies, or set ${blue`inlineOnly: false`} to disable this warning.\n` +
+                  `Consider adding ${blue`deps.onlyAllowBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyAllowBundle: false`} to disable this warning.\n` +
                     `Detected dependencies in bundle:\n${Array.from(deps)
                       .map((dep) => `- ${yellow(dep)}`)
                       .join('\n')}`,
@@ -151,7 +149,7 @@ export function DepPlugin({
   ): Promise<boolean | 'absolute' | 'no-external'> {
     if (id === shimFile) return false
 
-    if (noExternal?.(id, importer)) {
+    if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }
 

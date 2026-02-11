@@ -70,7 +70,9 @@ const config = defineConfig({
   dts: true,
   minify: true,
   sourcemap: true,
-  external: ['react', 'react-dom'],
+  deps: {
+    neverBundle: ['react', 'react-dom'],
+  },
   plugins: [/* plugins */],
   hooks: {
     'build:done': async () => {

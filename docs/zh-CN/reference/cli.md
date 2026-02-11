@@ -68,11 +68,25 @@ tsdown --tsconfig tsconfig.build.json
 
 另请参阅 [清理](../options/cleaning.md)。
 
-## `--external <module>`
+## `--deps.never-bundle <module>`
 
 将模块标记为外部依赖。这会阻止指定的模块被包含在打包文件中。
 
 另请参阅 [依赖处理](../options/dependencies.md)。
+
+## `--deps.skip-node-modules-bundle`
+
+跳过解析和打包所有来自 `node_modules` 的依赖。
+
+另请参阅 [依赖处理](../options/dependencies.md)。
+
+## `--external <module>` {#external}
+
+::: warning 已废弃
+请使用 `--deps.never-bundle` 代替。
+:::
+
+`--deps.never-bundle` 的别名。
 
 ## `--minify`
 

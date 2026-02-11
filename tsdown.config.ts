@@ -9,12 +9,14 @@ export default defineConfig([
   {
     entry: ['./src/{index,run,plugins,config}.ts'],
     name: 'tsdown',
-    inlineOnly: [
-      '@publint/pack',
-      'is-in-ci',
-      'package-manager-detector',
-      'pkg-types', // type-only
-    ],
+    deps: {
+      onlyAllowBundle: [
+        '@publint/pack',
+        'is-in-ci',
+        'package-manager-detector',
+        'pkg-types', // type-only
+      ],
+    },
     platform: 'node',
     failOnWarn: 'ci-only',
     define: {
@@ -57,7 +59,7 @@ export default defineConfig([
     workspace: {
       include: ['packages/*'],
     },
-    inlineOnly: [],
+    deps: { onlyAllowBundle: [] },
     failOnWarn: 'ci-only',
     publint: 'ci-only',
     attw: {

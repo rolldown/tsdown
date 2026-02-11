@@ -150,101 +150,109 @@ test('custom extension with empty string', async (context) => {
   `)
 })
 
-test('noExternal', async (context) => {
-  const files = {
-    'index.ts': `export * from 'cac'`,
-  }
-  await testBuild({
-    context,
-    files,
-    options: {
-      noExternal: ['cac'],
-      plugins: [
-        {
-          name: 'remove-code',
-          load(id) {
-            if (id.replaceAll('\\', '/').includes('/node_modules/cac')) {
-              return 'export const cac = "[CAC CODE]"'
-            }
-          },
-        },
-      ],
-    },
-  })
-})
-
-describe('inlineOnly', () => {
-  test('work', async (context) => {
-    const files = {
-      'index.ts': `export * from 'cac'; export * from 'bumpp'`,
-    }
-    await testBuild({
-      context,
-      files,
-      options: {
-        noExternal: ['cac'],
-        inlineOnly: ['cac', 'bumpp'],
-        plugins: [pluginMockDepCode],
-        inputOptions: {
-          experimental: {
-            attachDebugInfo: 'none',
-          },
-        },
-      },
-    })
-  })
-
-  test('throw error', async (context) => {
-    const files = {
-      'index.ts': `export * from 'bumpp'`,
-    }
-    await expect(() =>
-      testBuild({
+describe('deps', () => {
+  describe('alwaysBundle', () => {
+    test('should bundle dependencies listed in alwaysBundle', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'`,
+      }
+      await testBuild({
         context,
         files,
         options: {
-          inlineOnly: [],
-          plugins: [pluginMockDepCode],
+          deps: { alwaysBundle: ['cac'] },
+          plugins: [
+            {
+              name: 'remove-code',
+              load(id) {
+                if (id.replaceAll('\\', '/').includes('/node_modules/cac')) {
+                  return 'export const cac = "[CAC CODE]"'
+                }
+              },
+            },
+          ],
         },
-      }),
-    ).rejects.toThrow(
-      'declare it as a production or peer dependency in your package.json',
-    )
+      })
+    })
   })
 
-  test('warn for unused inlineOnly patterns', async (context) => {
-    const info = vi.fn()
-    await testBuild({
-      context,
-      files: {
-        'index.ts': `export * from 'cac'`,
-      },
-      options: {
-        noExternal: ['cac'],
-        inlineOnly: ['cac', 'unused-dep'],
-        plugins: [pluginMockDepCode],
-        customLogger: {
-          level: 'info',
-          info,
-          warn: vi.fn(),
-          warnOnce: vi.fn(),
-          error: vi.fn(),
-          success: vi.fn(),
-          clearScreen: vi.fn(),
+  describe('onlyAllowBundle', () => {
+    test('should allow whitelisted dependencies to be bundled', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'; export * from 'bumpp'`,
+      }
+      await testBuild({
+        context,
+        files,
+        options: {
+          deps: {
+            alwaysBundle: ['cac'],
+            onlyAllowBundle: ['cac', 'bumpp'],
+          },
+          plugins: [pluginMockDepCode],
+          inputOptions: {
+            experimental: {
+              attachDebugInfo: 'none',
+            },
+          },
         },
-        inputOptions: { experimental: { attachDebugInfo: 'none' } },
-      },
+      })
     })
-    const message = info.mock.calls?.find(
-      ([, arg]) =>
-        typeof arg === 'string' &&
-        arg.includes(
-          'Consider removing them to keep your configuration clean.',
-        ),
-    )?.[1]
 
-    expect(message).toContain('not used in the bundle')
-    expect(message).toContain('unused-dep')
+    test('should throw error for unlisted dependencies', async (context) => {
+      const files = {
+        'index.ts': `export * from 'bumpp'`,
+      }
+      await expect(() =>
+        testBuild({
+          context,
+          files,
+          options: {
+            deps: { onlyAllowBundle: [] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).rejects.toThrow(
+        'declare it as a production or peer dependency in your package.json',
+      )
+    })
+
+    test('should warn for unused patterns', async (context) => {
+      const info = vi.fn()
+      await testBuild({
+        context,
+        files: {
+          'index.ts': `export * from 'cac'`,
+        },
+        options: {
+          deps: {
+            alwaysBundle: ['cac'],
+            onlyAllowBundle: ['cac', 'unused-dep'],
+          },
+          plugins: [pluginMockDepCode],
+          customLogger: {
+            level: 'info',
+            info,
+            warn: vi.fn(),
+            warnOnce: vi.fn(),
+            error: vi.fn(),
+            success: vi.fn(),
+            clearScreen: vi.fn(),
+          },
+          inputOptions: { experimental: { attachDebugInfo: 'none' } },
+        },
+      })
+      const message = info.mock.calls?.find(
+        ([, arg]) =>
+          typeof arg === 'string' &&
+          arg.includes(
+            'Consider removing them to keep your configuration clean.',
+          ),
+      )?.[1]
+
+      expect(message).toContain('not used in the bundle')
+      expect(message).toContain('unused-dep')
+    })
   })
 })
 
