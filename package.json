@@ -54,7 +54,7 @@
     "test": "vitest",
     "typecheck": "tsgo --noEmit",
     "format": "prettier --cache --write .",
-    "release": "bumpp -r",
+    "release": "node ./scripts/release.ts",
     "docs:dev": "pnpm -C docs run dev",
     "docs:build": "pnpm -C docs run build",
     "docs:preview": "pnpm -C docs run preview",
