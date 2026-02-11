@@ -137,11 +137,11 @@ export default defineConfig({
 
 以下顶层选项已被废弃，请迁移到 `deps` 命名空间：
 
-| 废弃选项 | 新选项 |
-|---|---|
-| `external` | `deps.neverBundle` |
-| `noExternal` | `deps.alwaysBundle` |
-| `inlineOnly` | `deps.onlyAllowBundle` |
+| 废弃选项                | 新选项                       |
+| ----------------------- | ---------------------------- |
+| `external`              | `deps.neverBundle`           |
+| `noExternal`            | `deps.alwaysBundle`          |
+| `inlineOnly`            | `deps.onlyAllowBundle`       |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## 总结

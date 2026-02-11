@@ -137,11 +137,11 @@ export default defineConfig({
 
 The following top-level options are deprecated. Please migrate to the `deps` namespace:
 
-| Deprecated Option | New Option |
-|---|---|
-| `external` | `deps.neverBundle` |
-| `noExternal` | `deps.alwaysBundle` |
-| `inlineOnly` | `deps.onlyAllowBundle` |
+| Deprecated Option       | New Option                   |
+| ----------------------- | ---------------------------- |
+| `external`              | `deps.neverBundle`           |
+| `noExternal`            | `deps.alwaysBundle`          |
+| `inlineOnly`            | `deps.onlyAllowBundle`       |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## Summary
