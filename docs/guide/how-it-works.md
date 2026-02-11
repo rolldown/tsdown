@@ -14,12 +14,12 @@ When you publish a library, your consumers install its `dependencies` and `peerD
 
 **Key options:**
 
-| Option | What it does |
-| --- | --- |
-| [`inlineOnly`](../options/dependencies.md#strict-inline-control-with-inlineonly) | Whitelist of dependencies allowed to be bundled. Any unlisted dependency that ends up in the bundle causes an error. Useful for catching accidental inlining in large projects. |
-| [`external`](../options/dependencies.md#external) | Explicitly mark additional packages as external (never bundled). |
-| [`noExternal`](../options/dependencies.md#noexternal) | Force specific packages to be bundled, even if they're in `dependencies`. |
-| [`skipNodeModulesBundle`](../options/dependencies.md#skipping-node-modules-bundling) | Skip resolving and bundling everything from `node_modules`. |
+| Option                                                                               | What it does                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`inlineOnly`](../options/dependencies.md#strict-inline-control-with-inlineonly)     | Whitelist of dependencies allowed to be bundled. Any unlisted dependency that ends up in the bundle causes an error. Useful for catching accidental inlining in large projects. |
+| [`external`](../options/dependencies.md#external)                                    | Explicitly mark additional packages as external (never bundled).                                                                                                                |
+| [`noExternal`](../options/dependencies.md#noexternal)                                | Force specific packages to be bundled, even if they're in `dependencies`.                                                                                                       |
+| [`skipNodeModulesBundle`](../options/dependencies.md#skipping-node-modules-bundling) | Skip resolving and bundling everything from `node_modules`.                                                                                                                     |
 
 See [Dependencies](../options/dependencies.md) for details.
 
@@ -29,10 +29,10 @@ tsdown produces **ESM** output by default. You can generate multiple formats in 
 
 **Key options:**
 
-| Option | What it does |
-| --- | --- |
+| Option                                  | What it does                                                                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | [`format`](../options/output-format.md) | Set to `esm`, `cjs`, `iife`, or `umd`. Pass multiple values (e.g. `format: ['esm', 'cjs']`) for dual-format builds. |
-| [`shims`](../options/shims.md) | Inject compatibility shims (e.g. `__dirname` for ESM, `import.meta` for CJS). |
+| [`shims`](../options/shims.md)          | Inject compatibility shims (e.g. `__dirname` for ESM, `import.meta` for CJS).                                       |
 
 See [Output Format](../options/output-format.md) for details.
 
@@ -47,8 +47,8 @@ tsdown generates `.d.ts` files so consumers get full TypeScript support.
 
 **Key options:**
 
-| Option | What it does |
-| --- | --- |
+| Option                     | What it does                                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------- |
 | [`dts`](../options/dts.md) | Enable/disable dts, or pass an object for advanced settings like `resolver` and `sourcemap`. |
 
 See [Declaration Files](../options/dts.md) for details.
@@ -68,12 +68,12 @@ When publishing a library, the `exports` field in `package.json` tells consumers
 
 **Key options:**
 
-| Option | What it does |
-| --- | --- |
-| [`exports`](../options/package-exports.md) | Set to `true` to enable auto-generation, or pass an object for fine-tuning. |
-| [`exports.all`](../options/package-exports.md#exporting-all-files) | Export all output files, not just entry points. |
-| [`exports.devExports`](../options/package-exports.md#dev-exports) | Point exports to source files during development for better editor support. |
-| [`exports.customExports`](../options/package-exports.md#customizing-exports) | A function that lets you modify or extend the generated exports. |
+| Option                                                                       | What it does                                                                |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [`exports`](../options/package-exports.md)                                   | Set to `true` to enable auto-generation, or pass an object for fine-tuning. |
+| [`exports.all`](../options/package-exports.md#exporting-all-files)           | Export all output files, not just entry points.                             |
+| [`exports.devExports`](../options/package-exports.md#dev-exports)            | Point exports to source files during development for better editor support. |
+| [`exports.customExports`](../options/package-exports.md#customizing-exports) | A function that lets you modify or extend the generated exports.            |
 
 See [Package Exports](../options/package-exports.md) for details.
 
@@ -92,9 +92,9 @@ tsdown integrates with [publint](https://publint.dev/) and [attw](https://arethe
 
 **Key options:**
 
-| Option | What it does |
-| --- | --- |
-| [`publint`](../options/lint.md#publint) | Set to `true` or `'ci-only'` to enable. |
+| Option                                                | What it does                                                                |
+| ----------------------------------------------------- | --------------------------------------------------------------------------- |
+| [`publint`](../options/lint.md#publint)               | Set to `true` or `'ci-only'` to enable.                                     |
 | [`attw`](../options/lint.md#attw-are-the-types-wrong) | Set to `true` or pass an object with `profile`, `level`, and `ignoreRules`. |
 
 See [Package Validation](../options/lint.md) for details.

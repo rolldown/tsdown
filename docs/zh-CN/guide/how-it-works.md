@@ -14,12 +14,12 @@
 
 **主要选项：**
 
-| 选项 | 说明 |
-| --- | --- |
-| [`inlineOnly`](../options/dependencies.md#strict-inline-control-with-inlineonly) | 允许打包的依赖白名单。任何不在列表中的依赖如果出现在 bundle 中将触发错误。适用于防止大型项目中的意外内联。 |
-| [`external`](../options/dependencies.md#external) | 显式将额外的包标记为外部依赖（不打包）。 |
-| [`noExternal`](../options/dependencies.md#noexternal) | 强制打包特定的包，即使它们在 `dependencies` 中。 |
-| [`skipNodeModulesBundle`](../options/dependencies.md#skipping-node-modules-bundling) | 跳过解析和打包所有来自 `node_modules` 的内容。 |
+| 选项                                                                                 | 说明                                                                                                       |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| [`inlineOnly`](../options/dependencies.md#strict-inline-control-with-inlineonly)     | 允许打包的依赖白名单。任何不在列表中的依赖如果出现在 bundle 中将触发错误。适用于防止大型项目中的意外内联。 |
+| [`external`](../options/dependencies.md#external)                                    | 显式将额外的包标记为外部依赖（不打包）。                                                                   |
+| [`noExternal`](../options/dependencies.md#noexternal)                                | 强制打包特定的包，即使它们在 `dependencies` 中。                                                           |
+| [`skipNodeModulesBundle`](../options/dependencies.md#skipping-node-modules-bundling) | 跳过解析和打包所有来自 `node_modules` 的内容。                                                             |
 
 详见[依赖](../options/dependencies.md)。
 
@@ -29,10 +29,10 @@ tsdown 默认生成 **ESM** 输出。你可以在单次构建中生成多种格�
 
 **主要选项：**
 
-| 选项 | 说明 |
-| --- | --- |
+| 选项                                    | 说明                                                                                          |
+| --------------------------------------- | --------------------------------------------------------------------------------------------- |
 | [`format`](../options/output-format.md) | 设为 `esm`、`cjs`、`iife` 或 `umd`。传递多个值（如 `format: ['esm', 'cjs']`）实现双格式构建。 |
-| [`shims`](../options/shims.md) | 注入兼容代码（如为 ESM 注入 `__dirname`，为 CJS 注入 `import.meta`）。 |
+| [`shims`](../options/shims.md)          | 注入兼容代码（如为 ESM 注入 `__dirname`，为 CJS 注入 `import.meta`）。                        |
 
 详见[输出格式](../options/output-format.md)。
 
@@ -47,8 +47,8 @@ tsdown 生成 `.d.ts` 文件，使使用者获得完整的 TypeScript 支持。
 
 **主要选项：**
 
-| 选项 | 说明 |
-| --- | --- |
+| 选项                       | 说明                                                                |
+| -------------------------- | ------------------------------------------------------------------- |
 | [`dts`](../options/dts.md) | 启用/禁用 dts，或传入对象进行高级设置如 `resolver` 和 `sourcemap`。 |
 
 详见[声明文件](../options/dts.md)。
@@ -68,12 +68,12 @@ tsdown 生成 `.d.ts` 文件，使使用者获得完整的 TypeScript 支持。
 
 **主要选项：**
 
-| 选项 | 说明 |
-| --- | --- |
-| [`exports`](../options/package-exports.md) | 设为 `true` 启用自动生成，或传入对象进行细调。 |
-| [`exports.all`](../options/package-exports.md#exporting-all-files) | 导出所有输出文件，而不仅仅是入口点。 |
-| [`exports.devExports`](../options/package-exports.md#dev-exports) | 开发时将导出指向源文件，获得更好的编辑器支持。 |
-| [`exports.customExports`](../options/package-exports.md#customizing-exports) | 一个函数，用于修改或扩展生成的导出。 |
+| 选项                                                                         | 说明                                           |
+| ---------------------------------------------------------------------------- | ---------------------------------------------- |
+| [`exports`](../options/package-exports.md)                                   | 设为 `true` 启用自动生成，或传入对象进行细调。 |
+| [`exports.all`](../options/package-exports.md#exporting-all-files)           | 导出所有输出文件，而不仅仅是入口点。           |
+| [`exports.devExports`](../options/package-exports.md#dev-exports)            | 开发时将导出指向源文件，获得更好的编辑器支持。 |
+| [`exports.customExports`](../options/package-exports.md#customizing-exports) | 一个函数，用于修改或扩展生成的导出。           |
 
 详见[包导出](../options/package-exports.md)。
 
@@ -92,9 +92,9 @@ tsdown 集成了 [publint](https://publint.dev/) 和 [attw](https://arethetypesw
 
 **主要选项：**
 
-| 选项 | 说明 |
-| --- | --- |
-| [`publint`](../options/lint.md#publint) | 设为 `true` 或 `'ci-only'` 启用。 |
+| 选项                                                  | 说明                                                                |
+| ----------------------------------------------------- | ------------------------------------------------------------------- |
+| [`publint`](../options/lint.md#publint)               | 设为 `true` 或 `'ci-only'` 启用。                                   |
 | [`attw`](../options/lint.md#attw-are-the-types-wrong) | 设为 `true` 或传入带有 `profile`、`level` 和 `ignoreRules` 的对象。 |
 
 详见[包校验](../options/lint.md)。
