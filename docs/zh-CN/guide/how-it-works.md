@@ -2,6 +2,25 @@
 
 本页面概述了 tsdown 的默认行为以及用于调整各项行为的主要选项。如需了解完整细节，请点击链接查看相应的选项页面。
 
+## 智能默认值一览 {#smart-defaults}
+
+tsdown 读取你的 `package.json` 和 `tsconfig.json` 来推断合理的默认值。以下是自动执行的行为：
+
+| 当 tsdown 检测到... | 它会... |
+| --- | --- |
+| package.json 中的 `dependencies` / `peerDependencies` | 将其外部化（不打包） |
+| 代码中导入了 `devDependency` | 将其打包到输出中 |
+| package.json 中的 `types` 或 `typings` 字段 | 启用 `.d.ts` 生成 |
+| tsconfig.json 中的 `isolatedDeclarations` | 使用快速的 **oxc-transform** 路径生成 dts |
+| package.json 中的 `engines.node` | 从中推断编译[目标](../options/target.md) |
+| package.json 中的 `type: "module"` | ESM 输出使用 `.js` 扩展名（而非 `.mjs`） |
+| 未指定 `entry`，但存在 `src/index.ts` | 将其作为默认入口点 |
+| `platform: "node"`（默认值） | 启用 [`fixedExtension`](../options/output-format.md)（`.mjs`/`.cjs`） |
+| 双格式构建且 `exports: true` | 在 package.json 中生成 `main`/`module` 传统字段 |
+| [监听模式](../options/watch-mode.md)下配置文件变更 | 重启整个构建 |
+
+以下各节将详细介绍每个领域。
+
 ## 依赖处理 {#dependencies}
 
 当你发布一个库时，使用者会自动安装其 `dependencies` 和 `peerDependencies`。因此无需将这些包打包到输出中——它们在运行时已经存在。
