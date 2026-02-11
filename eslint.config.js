@@ -3,6 +3,7 @@ import { sxzz } from '@sxzz/eslint-config'
 
 export default sxzz(
   {
+    vue: true,
     pnpm: true,
     baseline: {
       ignoreFeatures: ['explicit-resource-management', 'top-level-await'],
