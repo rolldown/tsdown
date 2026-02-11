@@ -36,9 +36,8 @@ export default defineConfig([
       profile: 'esm-only',
     },
     exports: {
-      customExports(exports) {
-        exports['./client'] = './client.d.ts'
-        return exports
+      customExports: {
+        './client': './client.d.ts',
       },
     },
     plugins: [
