@@ -36,6 +36,12 @@ const PROPERTY_RENAMES: Record<string, string> = {
   cjsInterop: 'cjsDefault',
 }
 
+// Properties to move under `deps` namespace: oldName -> newNameUnderDeps
+const DEPS_NAMESPACE_RENAMES: Record<string, string> = {
+  external: 'neverBundle',
+  noExternal: 'alwaysBundle',
+}
+
 /**
  * Transform tsup config code to tsdown config code.
  * This function applies all migration rules and returns the transformed code
@@ -194,7 +200,20 @@ export function transformTsupConfig(
     edits.push(node.replace("nodeProtocol: 'strip'"))
   }
 
-  // 7. Transform tsup/TSUP identifiers
+  // 7. Move properties into deps namespace
+  const depsProperties: { name: string; value: string }[] = []
+  for (const [oldName, newName] of Object.entries(DEPS_NAMESPACE_RENAMES)) {
+    const pair = findPropertyPair(oldName)
+    if (pair) {
+      const valueNode = pair.field('value')
+      if (valueNode) {
+        depsProperties.push({ name: newName, value: valueNode.text() })
+      }
+      edits.push(pair.replace(''))
+    }
+  }
+
+  // 8. Transform tsup/TSUP identifiers
   const tsupIdentifiers = root.findAll({
     rule: {
       kind: 'identifier',
@@ -287,6 +306,13 @@ export function transformTsupConfig(
 
   const missingDefaults: string[] = []
   if (configObjectNode) {
+    if (depsProperties.length > 0) {
+      const depsEntries = depsProperties
+        .map((p) => `${p.name}: ${p.value}`)
+        .join(',\n    ')
+      missingDefaults.push(`deps: {\n    ${depsEntries},\n  }`)
+    }
+
     if (!hasOption('format')) missingDefaults.push("format: 'cjs'")
     if (!hasOption('clean')) missingDefaults.push('clean: false')
     if (!hasOption('dts')) missingDefaults.push('dts: false')

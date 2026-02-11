@@ -74,6 +74,43 @@ exports[`default values > should not add format when present > code 1`] = `
 }"
 `;
 
+exports[`deps namespace migrations > external should move to deps.neverBundle > code 1`] = `
+"export default {
+  deps: {
+    neverBundle: ['foo', 'bar'],
+  },
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
+exports[`deps namespace migrations > multiple deps options should merge into single deps object > code 1`] = `
+"export default {
+  deps: {
+    neverBundle: ['foo'],
+    alwaysBundle: ['bar'],
+  },
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
+exports[`deps namespace migrations > noExternal should move to deps.alwaysBundle > code 1`] = `
+"export default {
+  deps: {
+    alwaysBundle: ['foo'],
+  },
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
 exports[`option transformations > bundle: false should transform to unbundle: true > code 1`] = `
 "export default {
   unbundle: true,
