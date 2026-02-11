@@ -80,7 +80,17 @@ CSS 文件名默认为 `style.css`，可通过 `css.fileName` 自定义。
 
 ## 自定义导出
 
-如果您需要对生成的导出字段进行更细致的控制，可以通过 `exports.customExports` 提供自定义函数：
+如果您需要对生成的导出字段进行更细致的控制，可以通过 `exports.customExports` 提供对象或自定义函数：
+
+```ts
+export default defineConfig({
+  exports: {
+    customExports: {
+      './foo': './foo.js',
+    },
+  },
+})
+```
 
 ```ts
 export default defineConfig({
