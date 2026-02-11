@@ -68,11 +68,25 @@ Clean the output directory before building. This removes all files in the output
 
 See also [Cleaning](../options/cleaning.md).
 
-## `--external <module>`
+## `--deps.never-bundle <module>`
 
 Mark a module as external. This prevents the specified module from being included in the bundle.
 
 See also [Dependencies](../options/dependencies.md).
+
+## `--deps.skip-node-modules-bundle`
+
+Skip resolving and bundling all dependencies from `node_modules`.
+
+See also [Dependencies](../options/dependencies.md).
+
+## `--external <module>` {#external}
+
+::: warning Deprecated
+Use `--deps.never-bundle` instead.
+:::
+
+Alias for `--deps.never-bundle`.
 
 ## `--minify`
 

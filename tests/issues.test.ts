@@ -22,8 +22,10 @@ describe('issues', () => {
         }),
       },
       options: {
-        external: ['hono/compress', 'hono', 'hono/pretty-json'],
-        skipNodeModulesBundle: true,
+        deps: {
+          neverBundle: ['hono/compress', 'hono', 'hono/pretty-json'],
+          skipNodeModulesBundle: true,
+        },
         target: 'es2022',
         platform: 'node',
         tsconfig: 'tsconfig.json',
@@ -75,7 +77,7 @@ describe('issues', () => {
       },
       options: {
         removeNodeProtocol: true,
-        skipNodeModulesBundle: true,
+        deps: { skipNodeModulesBundle: true },
       },
     })
   })

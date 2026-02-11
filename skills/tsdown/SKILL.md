@@ -83,9 +83,10 @@ export default defineConfig({
 
 | Feature | Usage | Reference |
 |---------|-------|-----------|
-| External deps | `external: ['react', /^@myorg\//]` | [option-dependencies](references/option-dependencies.md) |
-| Inline deps | `noExternal: ['dep-to-bundle']` | [option-dependencies](references/option-dependencies.md) |
-| Inline only | `inlineOnly: ['cac', 'bumpp']` - Whitelist bundled deps | [option-dependencies](references/option-dependencies.md) |
+| Never bundle | `deps: { neverBundle: ['react', /^@myorg\//] }` | [option-dependencies](references/option-dependencies.md) |
+| Always bundle | `deps: { alwaysBundle: ['dep-to-bundle'] }` | [option-dependencies](references/option-dependencies.md) |
+| Only allow bundle | `deps: { onlyAllowBundle: ['cac', 'bumpp'] }` - Whitelist | [option-dependencies](references/option-dependencies.md) |
+| Skip node_modules | `deps: { skipNodeModulesBundle: true }` | [option-dependencies](references/option-dependencies.md) |
 | Auto external | Automatic peer/dependency externalization | [option-dependencies](references/option-dependencies.md) |
 
 ## Output Enhancement
@@ -153,7 +154,9 @@ export default defineConfig({
   entry: ['src/index.tsx'],
   format: ['esm', 'cjs'],
   dts: true,
-  external: ['react', 'react-dom'],
+  deps: {
+    neverBundle: ['react', 'react-dom'],
+  },
   plugins: [
     // React Fast Refresh support
   ],
@@ -299,7 +302,7 @@ tsdown --clean                 # Clean output directory
 
 2. **Externalize dependencies** to avoid bundling unnecessary code:
    ```ts
-   { external: [/^react/, /^@myorg\//] }
+   { deps: { neverBundle: [/^react/, /^@myorg\//] } }
    ```
 
 3. **Use tree shaking** for optimal bundle size:

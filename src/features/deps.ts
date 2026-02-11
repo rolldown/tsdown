@@ -3,19 +3,152 @@ import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { and, id, importerId, include } from 'rolldown/filter'
-import { matchPattern, slash, typeAssert } from '../utils/general.ts'
+import {
+  matchPattern,
+  resolveRegex,
+  slash,
+  toArray,
+  typeAssert,
+} from '../utils/general.ts'
 import { shimFile } from './shims.ts'
-import type { ResolvedConfig } from '../config/index.ts'
+import type { ResolvedConfig, UserConfig } from '../config/types.ts'
+import type { Logger } from '../utils/logger.ts'
+import type { Arrayable } from '../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
-import type { Plugin, PluginContext, ResolveIdExtraOptions } from 'rolldown'
+import type {
+  ExternalOption,
+  Plugin,
+  PluginContext,
+  ResolveIdExtraOptions,
+} from 'rolldown'
 
 const debug = createDebug('tsdown:dep')
 
+export type NoExternalFn = (
+  id: string,
+  importer: string | undefined,
+) => boolean | null | undefined | void
+
+export interface DepsConfig {
+  /**
+   * Mark dependencies as external (not bundled).
+   * Accepts strings, regular expressions, or Rolldown's `ExternalOption`.
+   */
+  neverBundle?: ExternalOption
+  /**
+   * Force dependencies to be bundled, even if they are in `dependencies` or `peerDependencies`.
+   */
+  alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn
+  /**
+   * Whitelist of dependencies allowed to be bundled from `node_modules`.
+   * Throws an error if any unlisted dependency is bundled.
+   *
+   * - `undefined` (default): Show warnings for bundled dependencies.
+   * - `false`: Suppress all warnings about bundled dependencies.
+   *
+   * Note: Be sure to include all required sub-dependencies as well.
+   */
+  onlyAllowBundle?: Arrayable<string | RegExp> | false
+  /**
+   * Skip bundling all `node_modules` dependencies.
+   *
+   * **Note:** This option cannot be used together with `alwaysBundle`.
+   *
+   * @default false
+   */
+  skipNodeModulesBundle?: boolean
+}
+
+export interface ResolvedDepsConfig {
+  neverBundle?: ExternalOption
+  alwaysBundle?: NoExternalFn
+  onlyAllowBundle?: Array<string | RegExp> | false
+  skipNodeModulesBundle: boolean
+}
+
+export function resolveDepsConfig(
+  config: UserConfig,
+  logger?: Logger,
+): ResolvedDepsConfig {
+  let {
+    neverBundle,
+    alwaysBundle,
+    onlyAllowBundle,
+    skipNodeModulesBundle = false,
+  } = config.deps || {}
+
+  if (config.external != null) {
+    if (neverBundle != null) {
+      throw new TypeError(
+        '`external` is deprecated. Cannot be used with `deps.neverBundle`.',
+      )
+    }
+    logger?.warn('`external` is deprecated. Use `deps.neverBundle` instead.')
+    neverBundle = config.external
+  }
+  if (config.noExternal != null) {
+    if (alwaysBundle != null) {
+      throw new TypeError(
+        '`noExternal` is deprecated. Cannot be used with `deps.alwaysBundle`.',
+      )
+    }
+    logger?.warn('`noExternal` is deprecated. Use `deps.alwaysBundle` instead.')
+    alwaysBundle = config.noExternal
+  }
+  if (config.inlineOnly != null) {
+    if (onlyAllowBundle != null) {
+      throw new TypeError(
+        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyAllowBundle`.',
+      )
+    }
+    logger?.warn(
+      '`inlineOnly` is deprecated. Use `deps.onlyAllowBundle` instead.',
+    )
+    onlyAllowBundle = config.inlineOnly
+  }
+  if (config.skipNodeModulesBundle != null) {
+    if (config.deps?.skipNodeModulesBundle != null) {
+      throw new TypeError(
+        '`skipNodeModulesBundle` is deprecated. Cannot be used with `deps.skipNodeModulesBundle`.',
+      )
+    }
+    logger?.warn(
+      '`skipNodeModulesBundle` is deprecated. Use `deps.skipNodeModulesBundle` instead.',
+    )
+    skipNodeModulesBundle = config.skipNodeModulesBundle
+  }
+
+  if (typeof neverBundle === 'string') {
+    neverBundle = resolveRegex(neverBundle)
+  }
+  if (typeof alwaysBundle === 'string') {
+    alwaysBundle = resolveRegex(alwaysBundle)
+  }
+
+  if (alwaysBundle != null && typeof alwaysBundle !== 'function') {
+    const alwaysBundlePatterns = toArray(alwaysBundle)
+    alwaysBundle = (id) => matchPattern(id, alwaysBundlePatterns)
+  }
+  if (skipNodeModulesBundle && alwaysBundle != null) {
+    throw new TypeError(
+      '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
+    )
+  }
+  if (onlyAllowBundle != null && onlyAllowBundle !== false) {
+    onlyAllowBundle = toArray(onlyAllowBundle)
+  }
+
+  return {
+    neverBundle,
+    alwaysBundle,
+    onlyAllowBundle,
+    skipNodeModulesBundle,
+  }
+}
+
 export function DepPlugin({
   pkg,
-  noExternal,
-  inlineOnly,
-  skipNodeModulesBundle,
+  deps: { alwaysBundle, onlyAllowBundle: inlineOnly, skipNodeModulesBundle },
   logger,
   nameLabel,
 }: ResolvedConfig): Plugin {
@@ -98,8 +231,8 @@ export function DepPlugin({
                   .filter((dep) => !matchPattern(dep, inlineOnly))
                   .map(
                     (dep) =>
-                      `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`inlineOnly`} option.\n` +
-                      `To fix this, either add it to ${blue`inlineOnly`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
+                      `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyAllowBundle`} option.\n` +
+                      `To fix this, either add it to ${blue`deps.onlyAllowBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
                       `Imported by\n${[...(importers.get(dep) || [])]
                         .map((s) => `- ${underline(s)}`)
                         .join('\n')}`,
@@ -117,7 +250,7 @@ export function DepPlugin({
                 if (unusedPatterns.length) {
                   logger.info(
                     nameLabel,
-                    `The following entries in ${blue`inlineOnly`} are not used in the bundle:\n${unusedPatterns
+                    `The following entries in ${blue`deps.onlyAllowBundle`} are not used in the bundle:\n${unusedPatterns
                       .map((pattern) => `- ${yellow(pattern)}`)
                       .join(
                         '\n',
@@ -125,11 +258,12 @@ export function DepPlugin({
                   )
                 }
               } else if (deps.size) {
-                logger.warn(
+                logger.info(
                   nameLabel,
-                  `Consider adding ${blue`inlineOnly`} option to avoid unintended bundling of dependencies, or set ${blue`inlineOnly: false`} to disable this warning.\n` +
+                  `Hint: consider adding ${blue`deps.onlyAllowBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyAllowBundle: false`} to disable this hint.\n` +
+                    `See more at ${underline`https://tsdown.dev/options/dependencies#deps-onlyallowbundle`}\n` +
                     `Detected dependencies in bundle:\n${Array.from(deps)
-                      .map((dep) => `- ${yellow(dep)}`)
+                      .map((dep) => `- ${blue(dep)}`)
                       .join('\n')}`,
                 )
               }
@@ -151,7 +285,7 @@ export function DepPlugin({
   ): Promise<boolean | 'absolute' | 'no-external'> {
     if (id === shimFile) return false
 
-    if (noExternal?.(id, importer)) {
+    if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }
 

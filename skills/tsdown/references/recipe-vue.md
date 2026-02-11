@@ -33,7 +33,9 @@ export default defineConfig({
   entry: ['./src/index.ts'],
   format: ['esm', 'cjs'],
   platform: 'neutral',
-  external: ['vue'],
+  deps: {
+    neverBundle: ['vue'],
+  },
   plugins: [
     Vue({ isProduction: true }),
   ],
@@ -122,7 +124,9 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
   platform: 'neutral',
-  external: ['vue'],
+  deps: {
+    neverBundle: ['vue'],
+  },
   plugins: [
     Vue({
       isProduction: true,
@@ -149,7 +153,9 @@ export default defineConfig({
     Modal: 'src/Modal.vue',
   },
   format: ['esm', 'cjs'],
-  external: ['vue'],
+  deps: {
+    neverBundle: ['vue'],
+  },
   plugins: [Vue({ isProduction: true })],
   dts: { vue: true },
 })
@@ -173,7 +179,9 @@ export function useCounter(initial = 0) {
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
-  external: ['vue'],
+  deps: {
+    neverBundle: ['vue'],
+  },
   plugins: [Vue({ isProduction: true })],
   dts: { vue: true },
 })
@@ -243,7 +251,9 @@ import Components from 'unplugin-vue-components/rolldown'
 
 export default defineConfig({
   entry: ['src/index.ts'],
-  external: ['vue'],
+  deps: {
+    neverBundle: ['vue'],
+  },
   plugins: [
     Vue({ isProduction: true }),
     Components({
@@ -260,7 +270,9 @@ export default defineConfig({
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
-  external: ['vue'],
+  deps: {
+    neverBundle: ['vue'],
+  },
   plugins: [
     Vue({
       isProduction: true,
@@ -286,7 +298,9 @@ export default defineConfig({
   workspace: 'packages/*',
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
-  external: ['vue', /^@mycompany\//],
+  deps: {
+    neverBundle: ['vue', /^@mycompany\//],
+  },
   plugins: [Vue({ isProduction: true })],
   dts: { vue: true },
 })
@@ -351,9 +365,11 @@ Check TypeScript config:
 
 ### Vue Not Externalized
 
-Add to external:
+Add to deps.neverBundle:
 ```ts
-external: ['vue']
+deps: {
+  neverBundle: ['vue'],
+}
 ```
 
 ### SFC Compilation Errors

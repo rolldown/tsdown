@@ -1,5 +1,10 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { CssOptions } from '../features/css/index.ts'
+import type {
+  DepsConfig,
+  NoExternalFn,
+  ResolvedDepsConfig,
+} from '../features/deps.ts'
 import type { DevtoolsOptions } from '../features/devtools.ts'
 import type {
   BuildContext,
@@ -77,9 +82,11 @@ export type {
   CopyOptions,
   CopyOptionsFn,
   CssOptions,
+  DepsConfig,
   DevtoolsOptions,
   DtsOptions,
   ExportsOptions,
+  NoExternalFn,
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
@@ -87,6 +94,7 @@ export type {
   PackageType,
   PublintOptions,
   ReportOptions,
+  ResolvedDepsConfig,
   RolldownChunk,
   RolldownContext,
   TreeshakingOptions,
@@ -113,11 +121,6 @@ export interface Workspace {
    */
   config?: boolean | string
 }
-
-export type NoExternalFn = (
-  id: string,
-  importer: string | undefined,
-) => boolean | null | undefined | void
 
 export type CIOption = 'ci-only' | 'local-only'
 
@@ -148,19 +151,25 @@ export interface UserConfig {
    */
   entry?: TsdownInputOption
 
+  /**
+   * Dependency handling options.
+   */
+  deps?: DepsConfig
+
+  /**
+   * @deprecated Use `deps.neverBundle` instead.
+   */
   external?: ExternalOption
+  /**
+   * @deprecated Use `deps.alwaysBundle` instead.
+   */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
-   * Bundle only the dependencies listed here; throw an error if any others are missing.
-   *
-   * - `undefined` (default): Show warnings for bundled dependencies.
-   * - `false`: Suppress all warnings about `inlineOnly` option.
-   *
-   * Note: Be sure to include all required sub-dependencies as well.
+   * @deprecated Use `deps.onlyAllowBundle` instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**
-   * Skip bundling `node_modules`.
+   * @deprecated Use `deps.skipNodeModulesBundle` instead.
    * @default false
    */
   skipNodeModulesBundle?: boolean
@@ -590,6 +599,10 @@ export type ResolvedConfig = Overwrite<
       | 'publicDir' // deprecated
       | 'bundle' // deprecated
       | 'removeNodeProtocol' // deprecated
+      | 'external' // deprecated, merged to `deps`
+      | 'noExternal' // deprecated, merged to `deps`
+      | 'inlineOnly' // deprecated, merged to `deps`
+      | 'skipNodeModulesBundle' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'customLogger' // merge to `logger`
@@ -602,7 +615,6 @@ export type ResolvedConfig = Overwrite<
     | 'minify'
     | 'define'
     | 'alias'
-    | 'external'
     | 'onSuccess'
     | 'outExtensions'
     | 'hooks'
@@ -624,8 +636,7 @@ export type ResolvedConfig = Overwrite<
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>
-    noExternal?: NoExternalFn
-    inlineOnly?: Array<string | RegExp> | false
+    deps: ResolvedDepsConfig
     css: Required<CssOptions>
 
     dts: false | DtsOptions

@@ -7,12 +7,12 @@ import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
 import { resolveCssOptions } from '../features/css/index.ts'
+import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
-  matchPattern,
   pkgExists,
   resolveComma,
   resolveRegex,
@@ -61,7 +61,6 @@ export async function resolveUserConfig(
     watch = false,
     ignoreWatch,
     shims = false,
-    skipNodeModulesBundle = false,
     publint = false,
     attw = false,
     fromVite,
@@ -78,8 +77,6 @@ export async function resolveUserConfig(
     cwd = process.cwd(),
     name,
     workspace,
-    external,
-    noExternal,
     exports = false,
     bundle,
     unbundle = typeof bundle === 'boolean' ? !bundle : false,
@@ -87,7 +84,6 @@ export async function resolveUserConfig(
     nodeProtocol,
     cjsDefault = true,
     globImport = true,
-    inlineOnly,
     css,
     fixedExtension = platform === 'node',
     devtools = false,
@@ -141,12 +137,6 @@ export async function resolveUserConfig(
   }
   target = resolveTarget(logger, target, color, pkg, nameLabel)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
-  if (typeof external === 'string') {
-    external = resolveRegex(external)
-  }
-  if (typeof noExternal === 'string') {
-    noExternal = resolveRegex(noExternal)
-  }
 
   publint = resolveFeatureOption(publint, {})
   attw = resolveFeatureOption(attw, {})
@@ -238,18 +228,7 @@ export async function resolveUserConfig(
     return ignore
   })
 
-  if (noExternal != null && typeof noExternal !== 'function') {
-    const noExternalPatterns = toArray(noExternal)
-    noExternal = (id) => matchPattern(id, noExternalPatterns)
-  }
-  if (skipNodeModulesBundle && noExternal != null) {
-    throw new TypeError(
-      '`skipNodeModulesBundle` and `noExternal` are mutually exclusive options and cannot be used together.',
-    )
-  }
-  if (inlineOnly != null && inlineOnly !== false) {
-    inlineOnly = toArray(inlineOnly)
-  }
+  const depsConfig = resolveDepsConfig(userConfig, logger)
 
   devtools = resolveFeatureOption(devtools, {})
   if (devtools) {
@@ -273,22 +252,20 @@ export async function resolveUserConfig(
     copy: publicDir || copy,
     css: resolveCssOptions(css),
     cwd,
+    deps: depsConfig,
     devtools,
     dts,
     entry: resolvedEntry,
     env,
     exports,
-    external,
     fixedExtension,
     globImport,
     hash,
     ignoreWatch,
-    inlineOnly,
     logger,
     name,
     nameLabel,
     nodeProtocol,
-    noExternal,
     outDir,
     pkg,
     platform,
@@ -296,7 +273,6 @@ export async function resolveUserConfig(
     publint,
     report,
     shims,
-    skipNodeModulesBundle,
     sourcemap,
     target,
     treeshake,

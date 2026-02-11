@@ -18,71 +18,96 @@
 
 换句话说，只有项目中实际引用的 `devDependencies` 和幻影依赖才会被包含进打包文件。
 
-## 跳过 `node_modules` 打包
+## `deps` 选项
 
-如果您希望**跳过解析和打包所有来自 `node_modules` 的依赖**，可以在配置中启用 `skipNodeModulesBundle` 选项：
+所有依赖相关的选项都在 `deps` 字段下配置：
 
-```ts
+```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  skipNodeModulesBundle: true,
+  deps: {
+    neverBundle: ['lodash', /^@my-scope\//],
+    alwaysBundle: ['some-package'],
+    onlyAllowBundle: ['cac', 'bumpp'],
+    skipNodeModulesBundle: true,
+  },
+})
+```
+
+### `deps.skipNodeModulesBundle`
+
+如果您希望**跳过解析和打包所有来自 `node_modules` 的依赖**，可以启用 `skipNodeModulesBundle`：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    skipNodeModulesBundle: true,
+  },
 })
 ```
 
 这样，无论您的代码如何引用，`tsdown` 都不会解析或打包任何来自 `node_modules` 的依赖。
 
-## 使用 `inlineOnly` 严格控制内联依赖
+::: warning
+`skipNodeModulesBundle` 不能与 `alwaysBundle` 一起使用，这两个选项互斥。
+:::
 
-`inlineOnly` 选项作为允许从 `node_modules` 中打包的依赖白名单。如果有任何不在列表中的依赖被打包，tsdown 将抛出错误。这对于防止意外的依赖被静默内联到输出文件中非常有用，尤其是在大型项目中可能存在许多依赖的情况下。
+### `deps.onlyAllowBundle`
+
+`onlyAllowBundle` 选项作为允许从 `node_modules` 中打包的依赖白名单。如果有任何不在列表中的依赖被打包，tsdown 将抛出错误。这对于防止意外的依赖被静默内联到输出文件中非常有用，尤其是在大型项目中可能存在许多依赖的情况下。
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  inlineOnly: ['cac', 'bumpp'],
+  deps: {
+    onlyAllowBundle: ['cac', 'bumpp'],
+  },
 })
 ```
 
 在此示例中，只有 `cac` 和 `bumpp` 允许被打包。如果引入了任何其他 `node_modules` 依赖，tsdown 将抛出错误，指出哪个依赖被意外打包以及哪些文件引用了它。
 
-### 行为
+#### 行为
 
-- **`inlineOnly` 为数组**（例如 `['cac', /^my-/]`）：只有匹配列表的依赖才允许被打包，其他依赖会触发错误。列表中未使用的模式也会被报告。
-- **`inlineOnly` 为 `false`**：抑制所有关于打包依赖的警告和检查。
-- **`inlineOnly` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `inlineOnly` 选项或将其设置为 `false` 来抑制警告。
+- **`onlyAllowBundle` 为数组**（例如 `['cac', /^my-/]`）：只有匹配列表的依赖才允许被打包，其他依赖会触发错误。列表中未使用的模式也会被报告。
+- **`onlyAllowBundle` 为 `false`**：抑制所有关于打包依赖的警告和检查。
+- **`onlyAllowBundle` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `onlyAllowBundle` 选项或将其设置为 `false` 来抑制警告。
 
 ::: tip
-请确保在 `inlineOnly` 列表中包含所有必需的子依赖，而不仅仅是您直接导入的顶层包。
+请确保在 `onlyAllowBundle` 列表中包含所有必需的子依赖，而不仅仅是您直接导入的顶层包。
 :::
 
-## 自定义依赖处理
+### `deps.neverBundle`
 
-`tsdown` 提供了两个选项来覆盖默认行为：
-
-### `external`
-
-`external` 选项允许您显式将某些依赖标记为外部依赖，确保它们不会被打包进您的库。例如：
+`neverBundle` 选项允许您显式将某些依赖标记为外部依赖，确保它们不会被打包进您的库。例如：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  external: ['lodash', /^@my-scope\//],
+  deps: {
+    neverBundle: ['lodash', /^@my-scope\//],
+  },
 })
 ```
 
 在此示例中，`lodash` 和所有 `@my-scope` 命名空间下的包都将被视为外部依赖。
 
-### `noExternal`
+### `deps.alwaysBundle`
 
-`noExternal` 选项允许您强制将某些依赖打包，即使它们被列为 `dependencies` 或 `peerDependencies`。例如：
+`alwaysBundle` 选项允许您强制将某些依赖打包，即使它们被列为 `dependencies` 或 `peerDependencies`。例如：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  noExternal: ['some-package'],
+  deps: {
+    alwaysBundle: ['some-package'],
+  },
 })
 ```
 
@@ -108,16 +133,27 @@ export default defineConfig({
 })
 ```
 
+## 从旧版选项迁移
+
+以下顶层选项已被废弃，请迁移到 `deps` 命名空间：
+
+| 废弃选项 | 新选项 |
+|---|---|
+| `external` | `deps.neverBundle` |
+| `noExternal` | `deps.alwaysBundle` |
+| `inlineOnly` | `deps.onlyAllowBundle` |
+| `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
+
 ## 总结
 
 - **默认行为**：
   - `dependencies` 和 `peerDependencies` 被视为外部依赖，不会被打包。
   - `devDependencies` 和幻影依赖只有在代码中实际使用时才会被打包。
 - **自定义**：
-  - 使用 `inlineOnly` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
-  - 使用 `external` 将特定依赖标记为外部依赖。
-  - 使用 `noExternal` 强制将特定依赖打包。
-  - 使用 `skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。
+  - 使用 `deps.onlyAllowBundle` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
+  - 使用 `deps.neverBundle` 将特定依赖标记为外部依赖。
+  - 使用 `deps.alwaysBundle` 强制将特定依赖打包。
+  - 使用 `deps.skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。
 - **声明文件**：
   - 声明文件的打包逻辑与 JavaScript 保持一致。
   - 使用 `resolver: 'tsc'` 可提升复杂第三方类型的兼容性。

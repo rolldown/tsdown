@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useData } from 'vitepress'
+import { computed } from 'vue'
 import { useTranslate } from '../i18n/composable.ts'
 import Marquee from './Marquee.vue'
-import { computed } from 'vue'
 
 const { isDark } = useData()
 const t = useTranslate()
@@ -140,15 +140,16 @@ const users = computed(() => {
 
     <Marquee
       :velocity="40"
-      w-full
-      dark:bg-zinc:30
-      py-6
       class="dark-zebra-pattern"
+      w-full
       rounded-xl
+      py-6
+      dark:bg-zinc:30
     >
-      <div flex gap10 items-center min-w-full px>
+      <div min-w-full flex items-center gap10 px>
         <a
           v-for="user of users"
+          :key="user.name"
           :href="user.url"
           target="_blank"
           rel="noopener noreferrer"
