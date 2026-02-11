@@ -123,11 +123,12 @@ export function DepPlugin({
                   )
                 }
               } else if (deps.size) {
-                logger.warn(
+                logger.info(
                   nameLabel,
-                  `Consider adding ${blue`deps.onlyAllowBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyAllowBundle: false`} to disable this warning.\n` +
+                  `Hint: consider adding ${blue`deps.onlyAllowBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyAllowBundle: false`} to disable this hint.\n` +
+                    `See more at ${underline`https://tsdown.dev/options/dependencies#deps-onlyallowbundle`}\n` +
                     `Detected dependencies in bundle:\n${Array.from(deps)
-                      .map((dep) => `- ${yellow(dep)}`)
+                      .map((dep) => `- ${blue(dep)}`)
                       .join('\n')}`,
                 )
               }
