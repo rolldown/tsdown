@@ -6,18 +6,18 @@ This page gives a high-level overview of what tsdown does out of the box and whi
 
 tsdown reads your `package.json` and `tsconfig.json` to infer sensible defaults. Here's what happens automatically:
 
-| When tsdown detects... | It will... |
-| --- | --- |
-| `dependencies` / `peerDependencies` in package.json | Externalize them (not bundled) |
-| A `devDependency` imported in your code | Bundle it into the output |
-| `types` or `typings` field in package.json | Enable `.d.ts` generation |
-| `isolatedDeclarations` in tsconfig.json | Use the fast **oxc-transform** path for dts |
-| `engines.node` in package.json | Infer the compilation [target](../options/target.md) from it |
-| `type: "module"` in package.json | Use `.js` extension for ESM output (instead of `.mjs`) |
-| No `entry` specified, but `src/index.ts` exists | Use it as the default entry point |
-| `platform: "node"` (the default) | Enable [`fixedExtension`](../options/output-format.md) (`.mjs`/`.cjs`) |
-| Dual-format build with `exports: true` | Generate `main`/`module` legacy fields in package.json |
-| Config file changes in [watch mode](../options/watch-mode.md) | Restart the entire build |
+| When tsdown detects...                                        | It will...                                                             |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `dependencies` / `peerDependencies` in package.json           | Externalize them (not bundled)                                         |
+| A `devDependency` imported in your code                       | Bundle it into the output                                              |
+| `types` or `typings` field in package.json                    | Enable `.d.ts` generation                                              |
+| `isolatedDeclarations` in tsconfig.json                       | Use the fast **oxc-transform** path for dts                            |
+| `engines.node` in package.json                                | Infer the compilation [target](../options/target.md) from it           |
+| `type: "module"` in package.json                              | Use `.js` extension for ESM output (instead of `.mjs`)                 |
+| No `entry` specified, but `src/index.ts` exists               | Use it as the default entry point                                      |
+| `platform: "node"` (the default)                              | Enable [`fixedExtension`](../options/output-format.md) (`.mjs`/`.cjs`) |
+| Dual-format build with `exports: true`                        | Generate `main`/`module` legacy fields in package.json                 |
+| Config file changes in [watch mode](../options/watch-mode.md) | Restart the entire build                                               |
 
 The sections below explain each area in more detail.
 
