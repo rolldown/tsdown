@@ -7,6 +7,7 @@ const zhCN = {
   // sidebar
   Introduction: '介绍',
   'Getting Started': '快速上手',
+  'How It Works': '工作原理',
   'Migrate from tsup': '从 tsup 迁移',
 
   Options: '选项',
