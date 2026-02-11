@@ -33,12 +33,12 @@ When you publish a library, your consumers install its `dependencies` and `peerD
 
 **Key options:**
 
-| Option                                                                                           | What it does                                                                                                                                                                    |
-| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`deps.onlyAllowBundle`](../options/dependencies.md#deps-onlyallowbundle)                        | Whitelist of dependencies allowed to be bundled. Any unlisted dependency that ends up in the bundle causes an error. Useful for catching accidental inlining in large projects. |
-| [`deps.neverBundle`](../options/dependencies.md#deps-neverbundle)                                 | Explicitly mark additional packages as external (never bundled).                                                                                                                |
-| [`deps.alwaysBundle`](../options/dependencies.md#deps-alwaysbundle)                               | Force specific packages to be bundled, even if they're in `dependencies`.                                                                                                       |
-| [`deps.skipNodeModulesBundle`](../options/dependencies.md#deps-skipnodemodulebundle)              | Skip resolving and bundling everything from `node_modules`.                                                                                                                     |
+| Option                                                                               | What it does                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`deps.onlyAllowBundle`](../options/dependencies.md#deps-onlyallowbundle)            | Whitelist of dependencies allowed to be bundled. Any unlisted dependency that ends up in the bundle causes an error. Useful for catching accidental inlining in large projects. |
+| [`deps.neverBundle`](../options/dependencies.md#deps-neverbundle)                    | Explicitly mark additional packages as external (never bundled).                                                                                                                |
+| [`deps.alwaysBundle`](../options/dependencies.md#deps-alwaysbundle)                  | Force specific packages to be bundled, even if they're in `dependencies`.                                                                                                       |
+| [`deps.skipNodeModulesBundle`](../options/dependencies.md#deps-skipnodemodulebundle) | Skip resolving and bundling everything from `node_modules`.                                                                                                                     |
 
 See [Dependencies](../options/dependencies.md) for details.
 
