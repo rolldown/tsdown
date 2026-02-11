@@ -15,25 +15,18 @@ import type {
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
 import type { Awaitable } from '../../utils/types.ts'
-import type { PackageJson, PackageJsonExports } from 'pkg-types'
-
-// Get the type `PackageJsonExportsObject` from pkg-types by extracting it from the `PackageJsonExports` union.
-// If in the future `PackageJsonExportsObject` is exported by pkg-types, this can be removed.
-type PackageJsonExportsObject = Extract<
-  PackageJsonExports,
-  Record<string, unknown>
->
+import type { PackageJson } from 'pkg-types'
 
 type CustomExportsOption =
-  | PackageJsonExportsObject
+  | Record<string, any>
   | ((
-      exports: PackageJsonExportsObject,
+      exports: Record<string, any>,
       context: {
         pkg: PackageJson
         chunks: ChunksByFormat
         isPublish: boolean
       },
-    ) => Awaitable<PackageJsonExportsObject>)
+    ) => Awaitable<Record<string, any>>)
 
 export interface ExportsOptions {
   /**
