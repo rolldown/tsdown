@@ -33,12 +33,12 @@ tsdown 读取你的 `package.json` 和 `tsconfig.json` 来推断合理的默认�
 
 **主要选项：**
 
-| 选项                                                                                              | 说明                                                                                                       |
-| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [`deps.onlyAllowBundle`](../options/dependencies.md#deps-onlyallowbundle)                         | 允许打包的依赖白名单。任何不在列表中的依赖如果出现在 bundle 中将触发错误。适用于防止大型项目中的意外内联。 |
-| [`deps.neverBundle`](../options/dependencies.md#deps-neverbundle)                                  | 显式将额外的包标记为外部依赖（不打包）。                                                                   |
-| [`deps.alwaysBundle`](../options/dependencies.md#deps-alwaysbundle)                                | 强制打包特定的包，即使它们在 `dependencies` 中。                                                           |
-| [`deps.skipNodeModulesBundle`](../options/dependencies.md#deps-skipnodemodulebundle)               | 跳过解析和打包所有来自 `node_modules` 的内容。                                                             |
+| 选项                                                                                 | 说明                                                                                                       |
+| ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| [`deps.onlyAllowBundle`](../options/dependencies.md#deps-onlyallowbundle)            | 允许打包的依赖白名单。任何不在列表中的依赖如果出现在 bundle 中将触发错误。适用于防止大型项目中的意外内联。 |
+| [`deps.neverBundle`](../options/dependencies.md#deps-neverbundle)                    | 显式将额外的包标记为外部依赖（不打包）。                                                                   |
+| [`deps.alwaysBundle`](../options/dependencies.md#deps-alwaysbundle)                  | 强制打包特定的包，即使它们在 `dependencies` 中。                                                           |
+| [`deps.skipNodeModulesBundle`](../options/dependencies.md#deps-skipnodemodulebundle) | 跳过解析和打包所有来自 `node_modules` 的内容。                                                             |
 
 详见[依赖](../options/dependencies.md)。
 
