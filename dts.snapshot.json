@@ -70,7 +70,6 @@
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
   },
   "plugins.d.mts": {
-    "DepPlugin": "declare function DepPlugin(_: ResolvedConfig): Plugin",
     "NodeProtocolPlugin": "declare function NodeProtocolPlugin(_: 'strip' | true): Plugin",
     "ShebangPlugin": "declare function ShebangPlugin(_: Logger, _: string, _: string, _: boolean): Plugin",
     "WatchPlugin": "declare function WatchPlugin(_: string[], _: TsdownBundle): Plugin",
@@ -99,9 +98,10 @@
     "CopyOptions": "type CopyOptions = Arrayable<string | CopyEntry>",
     "CopyOptionsFn": "type CopyOptionsFn = (_: ResolvedConfig) => Awaitable<CopyOptions>",
     "CssOptions": "interface CssOptions {\n splitting?: boolean\n fileName?: string\n}",
+    "DepPlugin": "declare function DepPlugin(_: ResolvedConfig): Plugin",
     "DepsConfig": "interface DepsConfig {\n neverBundle?: ExternalOption\n alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn\n onlyAllowBundle?: Arrayable<string | RegExp> | false\n skipNodeModulesBundle?: boolean\n}",
     "DevtoolsOptions": "interface DevtoolsOptions extends NonNullable<InputOptions['devtools']> {\n ui?: boolean | Partial<StartOptions>\n clean?: boolean\n}",
-    "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: (_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>\n}",
+    "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: Record<string, any> | ((_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>)\n}",
     "Format": "type Format = ModuleFormat",
     "globalLogger": "Logger",
     "InlineConfig": "interface InlineConfig extends UserConfig {\n config?: boolean | string\n configLoader?: 'auto' | 'native' | 'unrun'\n filter?: RegExp | Arrayable<string>\n}",

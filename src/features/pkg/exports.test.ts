@@ -280,6 +280,38 @@ describe('generateExports', () => {
     `)
   })
 
+  test('customExports via object', async ({ expect }) => {
+    const results = await generateExports(
+      { es: [genChunk('index.js')] },
+      {
+        exports: {
+          devExports: 'dev',
+          customExports: {
+            './TEST': './TEST',
+          },
+        },
+      },
+    )
+    // key order matters
+    expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
+      "{
+        "exports": {
+          ".": {
+            "dev": "./SRC/index.js",
+            "default": "./index.js"
+          },
+          "./package.json": "./package.json",
+          "./TEST": "./TEST"
+        },
+        "publishExports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+          "./TEST": "./TEST"
+        }
+      }"
+    `)
+  })
+
   test('exclude via regex', async ({ expect }) => {
     const results = generateExports(
       { es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')] },
