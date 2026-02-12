@@ -17,17 +17,6 @@ import type {
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
-type CustomExportsOption =
-  | Record<string, any>
-  | ((
-      exports: Record<string, any>,
-      context: {
-        pkg: PackageJson
-        chunks: ChunksByFormat
-        isPublish: boolean
-      },
-    ) => Awaitable<Record<string, any>>)
-
 export interface ExportsOptions {
   /**
    * Generate exports that link to source code during development.
@@ -90,7 +79,16 @@ export interface ExportsOptions {
    * }
    * ```
    */
-  customExports?: CustomExportsOption
+  customExports?:
+    | Record<string, any>
+    | ((
+        exports: Record<string, any>,
+        context: {
+          pkg: PackageJson
+          chunks: ChunksByFormat
+          isPublish: boolean
+        },
+      ) => Awaitable<Record<string, any>>)
 }
 
 export async function writeExports(
