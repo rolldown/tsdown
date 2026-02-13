@@ -202,9 +202,20 @@ async function nativeImport(id: string) {
         { cause: error },
       )
       throw configError
-    } else {
-      throw error
     }
+
+    const nodeInternalBug =
+      typeof error?.stack === 'string' &&
+      error.stack.includes('node:internal/modules/esm/translators')
+    if (nodeInternalBug) {
+      const configError = new Error(
+        `Failed to load the config file due to a known Node.js bug. Try setting the --config-loader CLI flag to \`unrun\` or upgrading Node.js to v24.11.1 or later.\n\n${error.message}`,
+        { cause: error },
+      )
+      throw configError
+    }
+
+    throw error
   })
   const config = mod.default || mod
   return config
