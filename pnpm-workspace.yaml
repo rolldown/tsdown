@@ -57,7 +57,7 @@ catalogs:
     diff: ^8.0.3
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.0.0-alpha.26
+    '@vitejs/devtools': ^0.0.0-alpha.31
     publint: ^0.3.17
     unplugin-lightningcss: ^0.4.5
     unplugin-unused: ^0.5.7
@@ -72,7 +72,7 @@ catalogs:
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
-    rolldown: 1.0.0-rc.3
+    rolldown: 1.0.0-rc.4
     rolldown-plugin-dts: ^0.22.1
     semver: ^7.7.4
     tinyexec: ^1.0.2
