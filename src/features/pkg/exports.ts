@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { RE_CSS, RE_DTS } from 'rolldown-plugin-dts/filename'
+import { RE_CSS, RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
@@ -183,8 +183,19 @@ export async function generateExports(
     // Filter out non-entry chunks and excluded files
     const filteredChunks = chunksByFormat.filter(
       (chunk): chunk is RolldownCodeChunk => {
-        if (chunk.type !== 'chunk' || !chunk.isEntry) {
+        if (chunk.type !== 'chunk') {
           return false
+        }
+
+        if (!chunk.isEntry) {
+          if (!all) return false
+
+          if (
+            chunk.facadeModuleId?.[0] === '\0' ||
+            (chunk.facadeModuleId && RE_NODE_MODULES.test(chunk.facadeModuleId))
+          ) {
+            return false
+          }
         }
 
         const [name] = getExportName(chunk)
