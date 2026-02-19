@@ -195,9 +195,9 @@ describe('issues', () => {
     })
     expect(outputFiles).toContain('index.mjs')
     expect(fileMap['index.mjs']).toContain('args.join')
-    expect(fileMap['index.mjs']).not.toContain('require("path")')
+    expect(fileMap['index.mjs']).not.toMatch(/from ['"]path['"]/)
     expect(fileMap['index.mjs']).toContain('polyfill-uuid')
-    expect(fileMap['index.mjs']).not.toContain('require("crypto")')
+    expect(fileMap['index.mjs']).not.toMatch(/from ['"]crypto['"]/)
   })
 
   test.fails('#668', async (context) => {
