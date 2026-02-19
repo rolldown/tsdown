@@ -174,6 +174,32 @@ describe('issues', () => {
     })
   })
 
+  test('#772', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import { randomUUID } from 'node:crypto'\nimport { resolve } from 'node:path'\nexport const id = randomUUID()\nexport const dir = resolve('.')`,
+        'crypto-polyfill.ts': `export function randomUUID() { return 'polyfill-uuid' }`,
+        'path-polyfill.ts': `export function resolve(...args: string[]) { return args.join('/') }`,
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {
+            paths: { crypto: ['./crypto-polyfill'] },
+          },
+        }),
+      },
+      options: {
+        nodeProtocol: 'strip',
+        alias: { path: './path-polyfill' },
+        tsconfig: 'tsconfig.json',
+      },
+    })
+    expect(outputFiles).toContain('index.mjs')
+    expect(fileMap['index.mjs']).toContain('args.join')
+    expect(fileMap['index.mjs']).not.toContain('require("path")')
+    expect(fileMap['index.mjs']).toContain('polyfill-uuid')
+    expect(fileMap['index.mjs']).not.toContain('require("crypto")')
+  })
+
   test.fails('#668', async (context) => {
     const { outputFiles, fileMap } = await testBuild({
       context,
