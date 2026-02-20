@@ -6,6 +6,7 @@ import type {
   ResolvedDepsConfig,
 } from '../features/deps.ts'
 import type { DevtoolsOptions } from '../features/devtools.ts'
+import type { ExeOptions } from '../features/exe.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -48,7 +49,7 @@ import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 import type { Options as UnusedOptions } from 'unplugin-unused'
 
 export type Sourcemap = boolean | 'inline' | 'hidden'
-export type Format = ModuleFormat
+export type Format = ModuleFormat | 'exe'
 export type NormalizedFormat = InternalModuleFormat
 
 /**
@@ -85,6 +86,7 @@ export type {
   DepsConfig,
   DevtoolsOptions,
   DtsOptions,
+  ExeOptions,
   ExportsOptions,
   NoExternalFn,
   OutExtensionContext,
@@ -554,6 +556,18 @@ export interface UserConfig {
    */
   copy?: CopyOptions | CopyOptionsFn
 
+  /**
+   * Options for `exe` format (Node.js Single Executable Application).
+   * Only used when format includes `'exe'`.
+   */
+  exe?: ExeOptions
+
+  /**
+   * Output file name for `exe` format.
+   * Overrides the entry-key-derived name.
+   */
+  outFile?: string
+
   hooks?:
     | Partial<TsdownHooks>
     | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
@@ -624,6 +638,7 @@ export type ResolvedConfig = Overwrite<
     | 'banner'
     | 'footer'
     | 'checks'
+    | 'outFile'
   >,
   {
     /** Resolved entry map (after glob expansion) */
@@ -647,5 +662,6 @@ export type ResolvedConfig = Overwrite<
     publint: false | PublintOptions
     attw: false | AttwOptions
     unused: false | UnusedOptions
+    exe: false | ExeOptions
   }
 >

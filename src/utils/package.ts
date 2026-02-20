@@ -42,7 +42,13 @@ export function normalizeFormat(format: Format): NormalizedFormat {
     case 'cjs':
     case 'commonjs':
       return 'cjs'
+    case 'exe':
+      return 'cjs'
     default:
       return format
   }
+}
+
+export function isExeFormat(format: Format): boolean {
+  return format === 'exe'
 }
