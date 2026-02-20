@@ -80,7 +80,7 @@ describe('exe format', () => {
           .replace(/\d+ms/, '<t>ms')
           .replace(/\d+\.\d+ [kM]B/, '<size>')
           .replace(/node\d+\.\d+\.\d+/, 'node<version>')
-          .replace(/index\.exe/g, 'index'),
+          .replaceAll('index.exe', 'index'),
       )
       expect(output).toMatchInlineSnapshot(`
         [
