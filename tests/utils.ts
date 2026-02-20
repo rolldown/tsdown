@@ -137,6 +137,12 @@ export async function testBuild({
   const warnings: RollupLog[] = []
   const userOptions =
     typeof options === 'function' ? options(workingDir) : options
+
+  const resolvedFormat = userOptions?.format
+  const isExe =
+    resolvedFormat === 'exe' ||
+    (Array.isArray(resolvedFormat) && resolvedFormat.includes('exe'))
+
   const resolvedOptions: InlineConfig = {
     entry: 'index.ts',
     config: false,
@@ -185,15 +191,22 @@ export async function testBuild({
   restoreCwd()
 
   const outputDir = path.resolve(workingDir, resolvedOptions.outDir!)
-  const {
-    files: outputFiles,
-    snapshot,
-    fileMap,
-  } = await expectFilesSnapshot(
-    path.resolve(outputDir, expectDir),
-    path.resolve(snapshotsDir, `${testName}.snap.md`),
-    { pattern: expectPattern, expect },
-  )
+
+  let outputFiles: string[] = []
+  let snapshot = ''
+  let fileMap: Record<string, string> = {}
+
+  if (!isExe) {
+    ;({
+      files: outputFiles,
+      snapshot,
+      fileMap,
+    } = await expectFilesSnapshot(
+      path.resolve(outputDir, expectDir),
+      path.resolve(snapshotsDir, `${testName}.snap.md`),
+      { pattern: expectPattern, expect },
+    ))
+  }
 
   return {
     testName,

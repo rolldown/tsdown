@@ -268,6 +268,7 @@ async function resolveOutputOptions(
         : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
+      codeSplitting: config.exe ? false : undefined,
     },
     config.outputOptions,
     [format, { cjsDts }],

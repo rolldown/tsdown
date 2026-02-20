@@ -19,7 +19,11 @@ import {
   toArray,
 } from '../utils/general.ts'
 import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
-import { normalizeFormat, readPackageJson } from '../utils/package.ts'
+import {
+  isExeFormat,
+  normalizeFormat,
+  readPackageJson,
+} from '../utils/package.ts'
 import { loadViteConfig } from './file.ts'
 import type { Awaitable } from '../utils/types.ts'
 import type {
@@ -88,6 +92,8 @@ export async function resolveUserConfig(
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
+    exe,
+    outFile,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -257,6 +263,7 @@ export async function resolveUserConfig(
     dts,
     entry: resolvedEntry,
     env,
+    exe: false as false | import('../features/exe.ts').ExeOptions,
     exports,
     fixedExtension,
     globImport,
@@ -267,6 +274,7 @@ export async function resolveUserConfig(
     nameLabel,
     nodeProtocol,
     outDir,
+    outFile,
     pkg,
     platform,
     plugins,
@@ -287,9 +295,18 @@ export async function resolveUserConfig(
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
     : resolveComma(toArray<Format>(format, 'es'))
+  const entryCount = Object.keys(resolvedEntry).length
+  if (formats.some(isExeFormat) && entryCount > 1) {
+    throw new Error(
+      `\`exe\` format requires exactly one entry point, but found ${entryCount}: ${Object.keys(resolvedEntry).join(', ')}`,
+    )
+  }
+
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
     const overrides = objectFormat ? format[fmt] : undefined
+    const isSea = isExeFormat(fmt)
+
     return {
       ...config,
       // only copy once
@@ -298,6 +315,23 @@ export async function resolveUserConfig(
       onSuccess: once ? config.onSuccess : undefined,
       format: normalizeFormat(fmt),
       ...overrides,
+      // SEA-specific overrides (applied after user overrides to enforce invariants)
+      ...(isSea && {
+        exe: exe || {},
+        pkg: undefined,
+        dts: false,
+        exports: false,
+        publint: false,
+        attw: false,
+        sourcemap: false,
+        unbundle: false,
+        report: false,
+        deps: {
+          ...config.deps,
+          skipNodeModulesBundle: false,
+          neverBundle: undefined,
+        },
+      }),
     }
   })
 }

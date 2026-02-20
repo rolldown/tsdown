@@ -23,7 +23,7 @@ cli
     { default: 'auto' },
   )
   .option('--no-config', 'Disable config file')
-  .option('-f, --format <format>', 'Bundle format: esm, cjs, iife, umd', {
+  .option('-f, --format <format>', 'Bundle format: esm, cjs, iife, umd, exe', {
     default: 'esm',
   })
   .option('--clean', 'Clean output directory, --no-clean to disable')
@@ -39,6 +39,7 @@ cli
     'Disable writing files to disk, incompatible with watch mode',
   )
   .option('-d, --out-dir <dir>', 'Output directory', { default: 'dist' })
+  .option('-o, --out-file <name>', 'Output file name (for exe format)')
   .option('--treeshake', 'Tree-shake bundle', { default: true })
   .option('--sourcemap', 'Generate source map', { default: false })
   .option('--shims', 'Enable cjs and esm shims ', { default: false })

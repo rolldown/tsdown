@@ -162,7 +162,14 @@ async function buildSingle(
   }
 
   const configs = await initBuildOptions()
-  if (watch) {
+  const effectiveWatch = watch && !config.exe
+  if (watch && config.exe) {
+    logger.warn(
+      config.nameLabel,
+      'Watch mode is not supported with `exe` format, building once.',
+    )
+  }
+  if (effectiveWatch) {
     watcher = rolldownWatch(configs)
     handleWatcher(watcher)
   } else {
@@ -172,11 +179,18 @@ async function buildSingle(
     }
   }
 
-  if (!watch) {
+  if (!effectiveWatch) {
     logger.success(
       config.nameLabel,
       `Build complete in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
     )
+
+    // SEA post-processing
+    if (config.exe) {
+      const { buildExe } = await import('./features/exe.ts')
+      await buildExe(config, chunks)
+    }
+
     await postBuild()
   }
 
