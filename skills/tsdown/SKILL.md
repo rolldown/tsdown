@@ -98,6 +98,7 @@ export default defineConfig({
 | Package exports | `exports: true` - Auto-generate exports field | [option-package-exports](references/option-package-exports.md) |
 | CSS handling | **[experimental]** Still in development | [option-css](references/option-css.md) |
 | Unbundle mode | `unbundle: true` - Preserve directory structure | [option-unbundle](references/option-unbundle.md) |
+| Executable (SEA) | **[experimental]** `exe: true` - Bundle as Node.js SEA executable | [option-exe](references/option-exe.md) |
 | Package validation | `publint: true`, `attw: true` - Validate package | [option-lint](references/option-lint.md) |
 
 ## Framework & Runtime Support
@@ -199,6 +200,15 @@ export default defineConfig({
 })
 ```
 
+### Node.js Executable (SEA)
+
+```ts
+export default defineConfig({
+  entry: ['src/cli.ts'],
+  exe: true,
+})
+```
+
 ### Advanced with Hooks
 
 ```ts
@@ -281,6 +291,7 @@ tsdown --format esm,cjs        # Multiple formats
 tsdown --outDir lib            # Custom output directory
 tsdown --minify                # Enable minification
 tsdown --dts                   # Generate declarations
+tsdown --exe                   # Bundle as executable (SEA)
 
 # Entry options
 tsdown src/index.ts            # Single entry
