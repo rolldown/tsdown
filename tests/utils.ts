@@ -108,6 +108,8 @@ export interface TestBuildOptions {
 
   expectDir?: string
   expectPattern?: string
+
+  snapshot?: boolean
 }
 
 export async function testBuild({
@@ -119,6 +121,7 @@ export async function testBuild({
   expectDir = '.',
   expectPattern,
   beforeBuild,
+  snapshot: shouldSnapshot = true,
 }: TestBuildOptions): Promise<{
   testName: string
   testDir: string
@@ -185,15 +188,20 @@ export async function testBuild({
   restoreCwd()
 
   const outputDir = path.resolve(workingDir, resolvedOptions.outDir!)
-  const {
-    files: outputFiles,
-    snapshot,
-    fileMap,
-  } = await expectFilesSnapshot(
-    path.resolve(outputDir, expectDir),
-    path.resolve(snapshotsDir, `${testName}.snap.md`),
-    { pattern: expectPattern, expect },
-  )
+  let outputFiles: string[] = []
+  let snapshot = ''
+  let fileMap: Record<string, string> = {}
+  if (shouldSnapshot) {
+    ;({
+      files: outputFiles,
+      snapshot,
+      fileMap,
+    } = await expectFilesSnapshot(
+      path.resolve(outputDir, expectDir),
+      path.resolve(snapshotsDir, `${testName}.snap.md`),
+      { pattern: expectPattern, expect },
+    ))
+  }
 
   return {
     testName,

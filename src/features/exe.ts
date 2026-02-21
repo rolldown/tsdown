@@ -48,25 +48,21 @@ export function validateSea({
   nameLabel,
 }: Omit<ResolvedConfig, 'format'>): void {
   if (process.versions.bun || process.versions.deno) {
-    logger.error(
+    throw new Error(
       'The `exe` option is not supported in Bun and Deno environments.',
     )
-    process.exit(1)
   }
 
   if (!satisfies(process.version, '>=25.5.0')) {
-    logger.error(
+    throw new Error(
       `Node.js version ${process.version} does not support \`exe\` option. Please upgrade to Node.js 25.5.0 or later.`,
     )
-    process.exit(1)
   }
 
   if (Object.keys(entry).length > 1) {
-    logger.error(
-      nameLabel,
+    throw new Error(
       `The \`exe\` feature currently only supports single entry points. Found entries:\n${JSON.stringify(entry, undefined, 2)}`,
     )
-    process.exit(1)
   }
 
   if (dts) {
