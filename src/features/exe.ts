@@ -2,7 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
-import { bold, dim, green } from 'ansis'
+import { bold, dim, red } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import satisfies from 'semver/functions/satisfies.js'
@@ -168,7 +168,7 @@ export async function buildExe(
 
   config.logger.success(
     config.nameLabel,
-    `Built executable: ${green(path.relative(config.cwd, outputPath))}`,
+    `Built executable: ${red(path.relative(config.cwd, outputPath))}`,
     dim`(${Math.round(performance.now() - t)}ms)`,
   )
 }
