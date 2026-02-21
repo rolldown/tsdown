@@ -168,7 +168,7 @@ export async function buildExe(
 
   config.logger.success(
     config.nameLabel,
-    `SEA executable: ${green(path.relative(config.cwd, outputPath))}`,
+    `Built executable: ${green(path.relative(config.cwd, outputPath))}`,
     dim`(${Math.round(performance.now() - t)}ms)`,
   )
 }
