@@ -5,17 +5,17 @@ This document contains information about how these skills were generated and how
 ## Generation Details
 
 **Generated from documentation at:**
-- **Commit SHA**: `301bcd140d180536a1aab922391cafe8843fd1e8`
-- **Short SHA**: `301bcd1`
-- **Date**: 2026-01-30
-- **Commit**: docs: add WASM support guide [ci skip] (#739)
+- **Commit SHA**: `7949216eb518f4c83b876f808991cf4b0cbc1561`
+- **Short SHA**: `7949216`
+- **Date**: 2026-02-22
+- **Commit**: feat(sea): add exe option for Node.js SEA executable bundling
 
 **Source documentation:**
 - Main docs: `/docs` folder
 - Project README: `/README.md`
 - CLAUDE.md: `/CLAUDE.md`
 
-**Generation date**: 2026-01-30
+**Generation date**: 2026-02-22
 
 ## Structure
 
@@ -72,7 +72,7 @@ When tsdown documentation changes, follow these steps to update the skills:
 
 ```bash
 # Get changes in docs since generation
-git diff 301bcd1..HEAD -- docs/
+git diff 7949216..HEAD -- docs/
 
 # List changed files
 git diff --name-only 301bcd1..HEAD -- docs/
@@ -116,7 +116,7 @@ Focus on these documentation areas:
 
 ```bash
 # 1. Check what docs changed
-git diff 301bcd1..HEAD -- docs/ > docs_changes.patch
+git diff 7949216..HEAD -- docs/ > docs_changes.patch
 
 # 2. Review the changes
 cat docs_changes.patch
@@ -179,6 +179,7 @@ Based on the documentation structure, these reference files should be created:
 - `option-unbundle.md` - Preserve directory structure
 - `option-log-level.md` - Logging configuration
 - `option-lint.md` - Package validation (publint, attw)
+- `option-exe.md` - Executable bundling (Node.js SEA)
 
 ### Advanced Topics (6 files)
 - `advanced-plugins.md` - Rolldown, Rollup, Unplugin support
@@ -229,6 +230,7 @@ When updating, maintain style:
 
 | Date       | SHA      | Changes |
 |------------|----------|---------|
+| 2026-02-22 | 7949216  | Add `exe` option for Node.js SEA executable bundling |
 | 2026-01-30 | 301bcd1  | Add CI environment, package validation (publint/attw), WASM support, update entry globs, sourcemap modes, failOnWarn |
 | 2026-01-29 | 0bf92cf  | Initial generation from docs |
 
@@ -236,7 +238,7 @@ When updating, maintain style:
 
 **For future agents updating these skills:**
 
-1. Run `git diff 301bcd1..HEAD -- docs/` to see all documentation changes
+1. Run `git diff 7949216..HEAD -- docs/` to see all documentation changes
 2. Read changed files to understand what's new or modified
 3. Update `SKILL.md` by:
    - Adding new options to appropriate tables
@@ -260,5 +262,5 @@ If you're unsure about whether changes warrant updates:
 
 ---
 
-Last updated: 2026-01-30
-Current SHA: 301bcd1
+Last updated: 2026-02-22
+Current SHA: 7949216

@@ -6,6 +6,7 @@ import type {
   ResolvedDepsConfig,
 } from '../features/deps.ts'
 import type { DevtoolsOptions } from '../features/devtools.ts'
+import type { ExeOptions, SeaConfig } from '../features/exe.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -85,6 +86,7 @@ export type {
   DepsConfig,
   DevtoolsOptions,
   DtsOptions,
+  ExeOptions,
   ExportsOptions,
   NoExternalFn,
   OutExtensionContext,
@@ -97,6 +99,7 @@ export type {
   ResolvedDepsConfig,
   RolldownChunk,
   RolldownContext,
+  SeaConfig,
   TreeshakingOptions,
   TsdownBundle,
   TsdownHooks,
@@ -325,7 +328,14 @@ export interface UserConfig {
 
   //#region Output Options
 
-  /** @default 'es' */
+  /**
+   * Output format(s). Defaults to ESM.
+   *
+   * ### Usage with {@link exe}
+   * If `exe` is enabled, the default format will depend on support level of SEA in the target Node.js version:
+   * - If ESM SEA is supported, the default format will be ESM.
+   * - If only CJS SEA is supported, the default format will be CJS.
+   */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
   /** @default 'dist' */
@@ -480,6 +490,7 @@ export interface UserConfig {
    * Enables generation of TypeScript declaration files (`.d.ts`).
    *
    * By default, this option is auto-detected based on your project's `package.json`:
+   * - If {@link exe} is enabled, declaration file generation is disabled by default.
    * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
    * - Otherwise, declaration file generation is disabled by default.
    */
@@ -557,6 +568,14 @@ export interface UserConfig {
   hooks?:
     | Partial<TsdownHooks>
     | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
+
+  /**
+   * **[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
+   *
+   * This will bundle the output into a single executable file using Node.js SEA.
+   * Note that this is only supported on Node.js 25.5.0 and later, and is not supported in Bun or Deno.
+   */
+  exe?: WithEnabled<ExeOptions>
 
   /**
    * **[experimental]** Enable workspace mode.
@@ -647,5 +666,6 @@ export type ResolvedConfig = Overwrite<
     publint: false | PublintOptions
     attw: false | AttwOptions
     unused: false | UnusedOptions
+    exe: false | ExeOptions
   }
 >

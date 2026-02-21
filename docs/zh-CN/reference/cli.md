@@ -246,6 +246,19 @@ tsdown --copy public
 `--copy` 的别名。
 **已废弃：** 为了更清晰和一致，建议使用 `--copy` 选项。
 
+## `--exe`
+
+**[实验性]** 使用 Node.js SEA（单可执行应用）将输出打包为可执行文件。
+
+此选项会使用 Node.js SEA 将输出打包为单个可执行文件。需要 Node.js 25.5.0 或更高版本，不支持 Bun 和 Deno 环境。
+
+启用 `exe` 时：
+
+- 默认输出格式从 `esm` 变更为 `cjs`（除非支持 ESM SEA）。
+- 默认禁用声明文件生成（`dts`）。
+- 禁用代码分割。
+- 仅支持单入口。
+
 ## `--exports`
 
 自动生成 `package.json` 中的 `exports`、`main`、`module` 和 `types` 字段。
