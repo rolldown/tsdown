@@ -22,10 +22,18 @@ export function NodeProtocolPlugin(nodeProtocolOption: 'strip' | true): Plugin {
       },
       handler:
         nodeProtocolOption === 'strip'
-          ? (id) => {
+          ? async function (id, ...args) {
+              // strip the `node:` prefix
+              const strippedId = id.slice(5 /* "node:".length */)
+
+              // check if another resolver (e.g., tsconfig paths, alias) handles the stripped id
+              const resolved = await this.resolve(strippedId, ...args)
+              if (resolved && !resolved.external) {
+                return resolved
+              }
+
               return {
-                // strip the `node:` prefix
-                id: id.slice(5),
+                id: strippedId,
                 external: true,
                 moduleSideEffects: false,
               }
