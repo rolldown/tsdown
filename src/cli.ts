@@ -70,6 +70,7 @@ cli
   .option('--public-dir <dir>', 'Alias for --copy, deprecated')
   .option('--tsconfig <tsconfig>', 'Set tsconfig path')
   .option('--unbundle', 'Unbundle mode')
+  .option('--exe', 'Bundle as executable')
   .option('-W, --workspace [dir]', 'Enable workspace mode')
   .option(
     '-F, --filter <pattern>',

@@ -15,6 +15,7 @@ import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import { startDevtoolsUI } from './features/devtools.ts'
+import { buildExe } from './features/exe.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
 import {
@@ -150,7 +151,7 @@ async function buildSingle(
     postBuild().catch((error) => logger.error(error))
   }, 100)
 
-  let updated = false
+  let hasBuilt = false
   const bundle: TsdownBundle = {
     chunks,
     config,
@@ -291,12 +292,13 @@ async function buildSingle(
 
   async function postBuild() {
     await copy(config)
-    if (!updated) {
+    await buildExe(config, chunks)
+    if (!hasBuilt) {
       await done(bundle)
     }
 
     await hooks.callHook('build:done', { ...context, chunks })
-    updated = true
+    hasBuilt = true
 
     ab?.abort()
     ab = executeOnSuccess(config)

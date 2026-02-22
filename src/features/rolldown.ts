@@ -168,9 +168,7 @@ async function resolveInputOptions(
   }
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
-    plugins.push(
-      ReportPlugin(report, logger, cwd, cjsDts, nameLabel, isDualFormat),
-    )
+    plugins.push(ReportPlugin(config, cjsDts, isDualFormat))
   }
 
   if (watch) {
@@ -268,6 +266,7 @@ async function resolveOutputOptions(
         : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
+      codeSplitting: config.exe ? false : undefined,
     },
     config.outputOptions,
     [format, { cjsDts }],

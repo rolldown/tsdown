@@ -9,6 +9,7 @@ import { resolveClean } from '../features/clean.ts'
 import { resolveCssOptions } from '../features/css/index.ts'
 import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
+import { validateSea } from '../features/exe.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
@@ -46,7 +47,7 @@ export async function resolveUserConfig(
 ): Promise<ResolvedConfig[]> {
   let {
     entry,
-    format = ['es'],
+    format,
     plugins = [],
     clean = true,
     logLevel = 'info',
@@ -88,6 +89,7 @@ export async function resolveUserConfig(
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
+    exe = false,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -132,9 +134,7 @@ export async function resolveUserConfig(
   clean = resolveClean(clean, outDir, cwd)
 
   const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
-  if (dts == null) {
-    dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
-  }
+
   target = resolveTarget(logger, target, color, pkg, nameLabel)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
 
@@ -143,6 +143,12 @@ export async function resolveUserConfig(
   exports = resolveFeatureOption(exports, {})
   unused = resolveFeatureOption(unused, {})
   report = resolveFeatureOption(report, {})
+
+  exe = resolveFeatureOption(exe, {})
+
+  if (dts == null) {
+    dts = exe ? false : !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
+  }
   dts = resolveFeatureOption(dts, {})
 
   if (!pkg) {
@@ -257,6 +263,7 @@ export async function resolveUserConfig(
     dts,
     entry: resolvedEntry,
     env,
+    exe,
     exports,
     fixedExtension,
     globImport,
@@ -283,10 +290,15 @@ export async function resolveUserConfig(
     write,
   }
 
+  if (exe) {
+    validateSea(config)
+  }
+
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
-    : resolveComma(toArray<Format>(format, 'es'))
+    : resolveComma(toArray<Format>(format, exe ? 'cjs' : 'es'))
+
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
     const overrides = objectFormat ? format[fmt] : undefined

@@ -246,6 +246,19 @@ All contents of the `public` directory will be copied to your output directory (
 An alias for `--copy`.
 **Deprecated:** Please use `--copy` instead for better clarity and consistency.
 
+## `--exe`
+
+**[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
+
+This will bundle the output into a single executable file using Node.js SEA. Requires Node.js 25.5.0 or later, and is not supported in Bun or Deno.
+
+When `exe` is enabled:
+
+- The default output format changes from `esm` to `cjs` (unless ESM SEA is supported).
+- Declaration file generation (`dts`) is disabled by default.
+- Code splitting is disabled.
+- Only single entry points are supported.
+
 ## `--exports`
 
 Generate the `exports`, `main`, `module`, and `types` fields in your `package.json`.

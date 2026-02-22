@@ -4,6 +4,7 @@ import type { ResolvedConfig } from '../config/index.ts'
 
 export function warnLegacyCJS(config: ResolvedConfig): void {
   if (
+    config.exe ||
     !config.target ||
     !(config.checks?.legacyCjs ?? true) ||
     !config.format.includes('cjs')

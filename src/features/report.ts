@@ -7,7 +7,8 @@ import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/filename'
 import { formatBytes } from '../utils/format.ts'
 import { noop } from '../utils/general.ts'
-import { prettyFormat, type Logger } from '../utils/logger.ts'
+import { prettyFormat } from '../utils/logger.ts'
+import type { ResolvedConfig } from '../config/types.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 const debug = createDebug('tsdown:report')
@@ -57,100 +58,101 @@ const defaultOptions = {
 }
 
 export function ReportPlugin(
-  userOptions: ReportOptions,
-  logger: Logger,
-  cwd: string,
+  config: ResolvedConfig,
   cjsDts?: boolean,
-  nameLabel?: string,
   isDualFormat?: boolean,
 ): Plugin {
-  const options = {
-    ...defaultOptions,
-    ...userOptions,
-  }
-
   return {
     name: 'tsdown:report',
     async writeBundle(outputOptions, bundle) {
-      const outDir = path.relative(
-        cwd,
-        outputOptions.file
-          ? path.resolve(cwd, outputOptions.file, '..')
-          : path.resolve(cwd, outputOptions.dir!),
-      )
+      const outDir = outputOptions.file
+        ? path.resolve(config.cwd, outputOptions.file, '..')
+        : path.resolve(config.cwd, outputOptions.dir!)
 
-      const sizes: SizeInfo[] = []
-      for (const chunk of Object.values(bundle)) {
-        const size = await calcSize(options, chunk)
-        sizes.push(size)
-      }
-
-      const filenameLength = Math.max(
-        ...sizes.map((size) => size.filename.length),
-      )
-
-      // padding rawText, gzipText, brotliText to the same length
-      const rawTextLength = Math.max(
-        ...sizes.map((size) => size.rawText.length),
-      )
-      const gzipTextLength = Math.max(
-        ...sizes.map((size) =>
-          size.gzipText == null ? 0 : size.gzipText.length,
-        ),
-      )
-      const brotliTextLength = Math.max(
-        ...sizes.map((size) =>
-          size.brotliText == null ? 0 : size.brotliText.length,
-        ),
-      )
-
-      let totalRaw = 0
-      for (const size of sizes) {
-        size.rawText = size.rawText.padStart(rawTextLength)
-        size.gzipText = size.gzipText?.padStart(gzipTextLength)
-        size.brotliText = size.brotliText?.padStart(brotliTextLength)
-        totalRaw += size.raw
-      }
-
-      // sort
-      sizes.sort((a, b) => {
-        // dts last
-        if (a.dts !== b.dts) return a.dts ? 1 : -1
-        // entry first
-        if (a.isEntry !== b.isEntry) return a.isEntry ? -1 : 1
-        // otherwise, sort by raw size descending
-        return b.raw - a.raw
-      })
-
-      const formatLabel =
-        isDualFormat && prettyFormat(cjsDts ? 'cjs' : outputOptions.format)
-
-      for (const size of sizes) {
-        const filenameColor = size.dts ? green : noop
-        const filename = path.normalize(size.filename)
-
-        logger.info(
-          nameLabel,
-          formatLabel,
-          dim(outDir + path.sep) +
-            filenameColor((size.isEntry ? bold : noop)(filename)),
-          ` `.repeat(filenameLength - size.filename.length),
-          dim(size.rawText),
-          options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,
-          options.brotli &&
-            size.brotliText &&
-            dim`│ brotli: ${size.brotliText}`,
-        )
-      }
-
-      const totalSizeText = formatBytes(totalRaw)
-      logger.info(
-        nameLabel,
-        formatLabel,
-        `${sizes.length} files, total: ${totalSizeText}`,
+      await outputReport(
+        config,
+        Object.values(bundle),
+        outDir,
+        cjsDts,
+        isDualFormat,
       )
     },
   }
+}
+
+export async function outputReport(
+  config: ResolvedConfig,
+  chunks: Array<OutputAsset | OutputChunk>,
+  outDir: string,
+  cjsDts?: boolean,
+  isDualFormat?: boolean,
+): Promise<void> {
+  outDir = path.relative(config.cwd, outDir)
+
+  const options = { ...defaultOptions, ...config.report }
+
+  const sizes: SizeInfo[] = []
+  for (const chunk of chunks) {
+    const size = await calcSize(options, chunk)
+    sizes.push(size)
+  }
+
+  const filenameLength = Math.max(...sizes.map((size) => size.filename.length))
+
+  // padding rawText, gzipText, brotliText to the same length
+  const rawTextLength = Math.max(...sizes.map((size) => size.rawText.length))
+  const gzipTextLength = Math.max(
+    ...sizes.map((size) => (size.gzipText == null ? 0 : size.gzipText.length)),
+  )
+  const brotliTextLength = Math.max(
+    ...sizes.map((size) =>
+      size.brotliText == null ? 0 : size.brotliText.length,
+    ),
+  )
+
+  let totalRaw = 0
+  for (const size of sizes) {
+    size.rawText = size.rawText.padStart(rawTextLength)
+    size.gzipText = size.gzipText?.padStart(gzipTextLength)
+    size.brotliText = size.brotliText?.padStart(brotliTextLength)
+    totalRaw += size.raw
+  }
+
+  // sort
+  sizes.sort((a, b) => {
+    // dts last
+    if (a.dts !== b.dts) return a.dts ? 1 : -1
+    // entry first
+    if (a.isEntry !== b.isEntry) return a.isEntry ? -1 : 1
+    // otherwise, sort by raw size descending
+    return b.raw - a.raw
+  })
+
+  const formatLabel =
+    isDualFormat && prettyFormat(cjsDts ? 'cjs' : config.format)
+
+  for (const size of sizes) {
+    const filenameColor = size.dts ? green : noop
+    const filename = path.normalize(size.filename)
+
+    config.logger.info(
+      config.nameLabel,
+      formatLabel,
+      dim(outDir + path.sep) +
+        filenameColor((size.isEntry ? bold : noop)(filename)),
+      ` `.repeat(filenameLength - size.filename.length),
+      dim(size.rawText),
+      options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,
+      options.brotli && size.brotliText && dim`│ brotli: ${size.brotliText}`,
+    )
+  }
+
+  const totalSizeText = formatBytes(totalRaw)
+  config.logger.info(
+    config.nameLabel,
+    formatLabel,
+    `${sizes.length} files, total: ${totalSizeText}`,
+  )
 }
 
 async function calcSize(
