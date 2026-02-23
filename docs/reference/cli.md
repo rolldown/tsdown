@@ -11,6 +11,8 @@ The mapping between CLI flags and configuration options follows these rules:
 - `--foo.bar` sets `foo: { bar: true }`
 - `--format esm --format cjs` sets `format: ['esm', 'cjs']`
 
+CLI flags support both camelCase and kebab-case. For example, `--outDir` and `--out-dir` are equivalent.
+
 This flexible pattern allows you to easily control and override configuration options directly from the command line.
 
 ## `[...files]`
@@ -66,11 +68,25 @@ Clean the output directory before building. This removes all files in the output
 
 See also [Cleaning](../options/cleaning.md).
 
-## `--external <module>`
+## `--deps.never-bundle <module>`
 
 Mark a module as external. This prevents the specified module from being included in the bundle.
 
 See also [Dependencies](../options/dependencies.md).
+
+## `--deps.skip-node-modules-bundle`
+
+Skip resolving and bundling all dependencies from `node_modules`.
+
+See also [Dependencies](../options/dependencies.md).
+
+## `--external <module>` {#external}
+
+::: warning Deprecated
+Use `--deps.never-bundle` instead.
+:::
+
+Alias for `--deps.never-bundle`.
 
 ## `--minify`
 
@@ -230,8 +246,21 @@ All contents of the `public` directory will be copied to your output directory (
 An alias for `--copy`.
 **Deprecated:** Please use `--copy` instead for better clarity and consistency.
 
+## `--exe`
+
+**[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
+
+This will bundle the output into a single executable file using Node.js SEA. Requires Node.js 25.5.0 or later, and is not supported in Bun or Deno.
+
+When `exe` is enabled:
+
+- The default output format changes from `esm` to `cjs` (unless ESM SEA is supported).
+- Declaration file generation (`dts`) is disabled by default.
+- Code splitting is disabled.
+- Only single entry points are supported.
+
 ## `--exports`
 
-generate the `exports`, `main`, `module`, and `types` fields in your `package.json`.
+Generate the `exports`, `main`, `module`, and `types` fields in your `package.json`.
 
 See also [Package Exports](../options/package-exports.md).

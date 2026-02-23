@@ -9,3 +9,5 @@ jobs:
     with:
       compact: true
       packages: ". './packages/*'"
+      comment-package-manager: pnpm,npm,yarn
+      comment-with-dev: true

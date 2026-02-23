@@ -18,7 +18,7 @@ import { importWithError } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { LightningCSSPlugin } from './css/lightningcss.ts'
 import { CssCodeSplitPlugin } from './css/splitting.ts'
-import { DepPlugin } from './dep.ts'
+import { DepPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
@@ -86,11 +86,11 @@ async function resolveInputOptions(
     checks: { legacyCjs, ...checks } = {},
     cjsDefault,
     cwd,
+    deps: { neverBundle },
     devtools,
     dts,
     entry,
     env,
-    external,
     globImport,
     loader,
     logger,
@@ -113,7 +113,7 @@ async function resolveInputOptions(
     plugins.push(NodeProtocolPlugin(nodeProtocol))
   }
 
-  if (config.pkg || config.skipNodeModulesBundle) {
+  if (config.pkg || config.deps.skipNodeModulesBundle) {
     plugins.push(DepPlugin(config))
   }
 
@@ -168,9 +168,7 @@ async function resolveInputOptions(
   }
 
   if (report && LogLevels[logger.level] >= 3 /* info */) {
-    plugins.push(
-      ReportPlugin(report, logger, cwd, cjsDts, nameLabel, isDualFormat),
-    )
+    plugins.push(ReportPlugin(config, cjsDts, isDualFormat))
   }
 
   if (watch) {
@@ -196,7 +194,7 @@ async function resolveInputOptions(
     {
       input: entry,
       cwd,
-      external,
+      external: neverBundle,
       resolve: {
         alias,
       },
@@ -211,13 +209,14 @@ async function resolveInputOptions(
       plugins,
       moduleTypes: loader,
       logLevel: logger.level === 'error' ? 'silent' : logger.level,
-      onLog: cjsDefault
-        ? (level, log, defaultHandler) => {
-            // suppress mixed export warnings if cjsDefault is enabled
-            if (log.code === 'MIXED_EXPORT') return
-            defaultHandler(level, log)
-          }
-        : undefined,
+      onLog(level, log, defaultHandler) {
+        // suppress mixed export warnings if cjsDefault is enabled
+        if (cjsDefault && log.code === 'MIXED_EXPORT') return
+        if (logger.options?.failOnWarn && level === 'warn') {
+          defaultHandler('error', log)
+        }
+        defaultHandler(level, log)
+      },
       devtools: devtools || undefined,
       checks,
     },
@@ -267,6 +266,7 @@ async function resolveOutputOptions(
         : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
+      codeSplitting: config.exe ? false : undefined,
     },
     config.outputOptions,
     [format, { cjsDts }],

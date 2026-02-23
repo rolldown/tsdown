@@ -33,3 +33,5 @@ tsdown --watch ./src/index.ts
 
 > [!TIP]
 > 监听模式非常适合开发工作流，因为它无需在每次更改后手动重新构建项目。
+
+另请参阅[为什么 tsdown 不支持 Stub 模式](../guide/faq.md#stub-mode)，了解监听模式作为 stub 模式替代方案的背景。

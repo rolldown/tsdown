@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import module from 'node:module'
 import path from 'node:path'
+import pkg from '../../../package.json' with { type: 'json' }
 import { createTranslate } from '../i18n/utils.ts'
 import type { DefaultTheme, HeadConfig, LocaleConfig } from 'vitepress'
 
@@ -23,8 +24,8 @@ function getTypedocSidebar() {
 
 const typedocSidebar = getTypedocSidebar()
 const rolldownSidebar: { items: DefaultTheme.SidebarItem[]; base: string } = {
-  items: typedocSidebar[0]?.items?.[0]
-    ? typedocSidebar[0].items[0]
+  items: typedocSidebar[0]
+    ? typedocSidebar[0]
         .items!.filter(
           (item) => item.text === 'Interfaces' || item.text === 'Type Aliases',
         )!
@@ -73,6 +74,31 @@ export function getLocaleConfig(lang: string) {
       link: `${urlPrefix}/reference/api/Interface.UserConfig.md`,
     },
     { text: t('FAQ'), link: `${urlPrefix}/guide/faq.md` },
+    {
+      text: `v${pkg.version}`,
+      items: [
+        {
+          items: [
+            {
+              text: `v${pkg.version}`,
+              link: `https://github.com/rolldown/tsdown/releases/tag/v${pkg.version}`,
+            },
+            {
+              text: t('Release Notes'),
+              link: 'https://github.com/rolldown/tsdown/releases',
+            },
+          ],
+        },
+        {
+          items: [
+            {
+              text: t('unreleased'),
+              link: 'https://main.tsdown.dev',
+            },
+          ],
+        },
+      ],
+    },
   ]
 
   const sidebar: DefaultTheme.SidebarItem[] = [
@@ -82,8 +108,10 @@ export function getLocaleConfig(lang: string) {
       items: [
         { text: t('Introduction'), link: '/index.md' },
         { text: t('Getting Started'), link: '/getting-started.md' },
+        { text: t('How It Works'), link: '/how-it-works.md' },
         { text: t('Migrate from tsup'), link: '/migrate-from-tsup.md' },
         { text: t('FAQ'), link: `/faq.md` },
+        { text: t('Work with AI'), link: '/skills.md' },
       ],
     },
     {
@@ -109,6 +137,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Unbundle'), link: '/unbundle.md' },
         { text: t('CJS Default Export'), link: '/cjs-default.md' },
         { text: t('CSS'), link: '/css.md' },
+        { text: t('Package Validation'), link: '/lint.md' },
       ],
     },
     {
@@ -119,6 +148,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('React Support'), link: '/react-support.md' },
         { text: t('Solid Support'), link: '/solid-support.md' },
         { text: t('Svelte Support'), link: '/svelte-support.md' },
+        { text: t('WASM Support'), link: '/wasm-support.md' },
       ],
     },
     {
@@ -129,28 +159,34 @@ export function getLocaleConfig(lang: string) {
         { text: t('Hooks'), link: '/hooks.md' },
         { text: t('Rolldown Options'), link: '/rolldown-options.md' },
         { text: t('Programmatic Usage'), link: '/programmatic-usage.md' },
+        { text: t('CI Environment'), link: '/ci.md' },
         { text: t('Benchmark'), link: '/benchmark.md' },
       ],
     },
     {
       text: t('API Reference'),
-      base: `${urlPrefix}/reference`,
       items: [
-        { text: t('Command Line Interface'), link: '/cli.md' },
+        {
+          text: t('Command Line Interface'),
+          link: `${urlPrefix}/reference/cli.md`,
+        },
         {
           text: t('Config Options'),
-          link: '/api/Interface.UserConfig.md',
+          link: `${urlPrefix}/reference/api/Interface.UserConfig.md`,
         },
         {
           text: t('Type Definitions'),
-          items: [
-            { text: 'Rolldown', link: '/api/rolldown.md' },
-            ...typedocSidebar
-              .flatMap((i) => i.items!)
-              .filter((i) => i.text !== 'Options' && i.text !== 'rolldown')
-              .toSorted((a, b) => a.text!.localeCompare(b.text!)),
-          ],
+          base: `${urlPrefix}/reference`,
+          items: typedocSidebar
+            .flatMap((i) => i.items!)
+            .filter((i) => i.text !== 'Options' && i.text !== 'rolldown')
+            .toSorted((a, b) => a.text!.localeCompare(b.text!)),
           collapsed: true,
+        },
+        {
+          text: 'Rolldown',
+          link: 'https://rolldown.rs/reference/',
+          target: '_blank',
         },
       ],
     },

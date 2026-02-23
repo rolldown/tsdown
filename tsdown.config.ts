@@ -9,10 +9,14 @@ export default defineConfig([
   {
     entry: ['./src/{index,run,plugins,config}.ts'],
     name: 'tsdown',
-    inlineOnly: [
-      'is-in-ci',
-      'pkg-types', // type-only
-    ],
+    deps: {
+      onlyAllowBundle: [
+        '@publint/pack',
+        'is-in-ci',
+        'package-manager-detector',
+        'pkg-types', // type-only
+      ],
+    },
     platform: 'node',
     failOnWarn: 'ci-only',
     define: {
@@ -34,9 +38,8 @@ export default defineConfig([
       profile: 'esm-only',
     },
     exports: {
-      customExports(exports) {
-        exports['./client'] = './client.d.ts'
-        return exports
+      customExports: {
+        './client': './client.d.ts',
       },
     },
     plugins: [
@@ -55,7 +58,7 @@ export default defineConfig([
     workspace: {
       include: ['packages/*'],
     },
-    inlineOnly: [],
+    deps: { onlyAllowBundle: [] },
     failOnWarn: 'ci-only',
     publint: 'ci-only',
     attw: {

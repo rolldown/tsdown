@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import Users from './Users.vue'
 import Sponsors from './Sponsors.vue'
+import Users from './Users.vue'
 </script>
 
 <template>

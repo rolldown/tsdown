@@ -1,6 +1,12 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type { CssOptions } from '../features/css/index.ts'
+import type {
+  DepsConfig,
+  NoExternalFn,
+  ResolvedDepsConfig,
+} from '../features/deps.ts'
 import type { DevtoolsOptions } from '../features/devtools.ts'
+import type { ExeOptions, SeaConfig } from '../features/exe.ts'
 import type {
   BuildContext,
   RolldownContext,
@@ -77,9 +83,12 @@ export type {
   CopyOptions,
   CopyOptionsFn,
   CssOptions,
+  DepsConfig,
   DevtoolsOptions,
   DtsOptions,
+  ExeOptions,
   ExportsOptions,
+  NoExternalFn,
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
@@ -87,8 +96,10 @@ export type {
   PackageType,
   PublintOptions,
   ReportOptions,
+  ResolvedDepsConfig,
   RolldownChunk,
   RolldownContext,
+  SeaConfig,
   TreeshakingOptions,
   TsdownBundle,
   TsdownHooks,
@@ -113,11 +124,6 @@ export interface Workspace {
    */
   config?: boolean | string
 }
-
-export type NoExternalFn = (
-  id: string,
-  importer: string | undefined,
-) => boolean | null | undefined | void
 
 export type CIOption = 'ci-only' | 'local-only'
 
@@ -148,19 +154,25 @@ export interface UserConfig {
    */
   entry?: TsdownInputOption
 
+  /**
+   * Dependency handling options.
+   */
+  deps?: DepsConfig
+
+  /**
+   * @deprecated Use `deps.neverBundle` instead.
+   */
   external?: ExternalOption
+  /**
+   * @deprecated Use `deps.alwaysBundle` instead.
+   */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
-   * Bundle only the dependencies listed here; throw an error if any others are missing.
-   *
-   * - `undefined` (default): Show warnings for bundled dependencies.
-   * - `false`: Suppress all warnings about `inlineOnly` option.
-   *
-   * Note: Be sure to include all required sub-dependencies as well.
+   * @deprecated Use `deps.onlyAllowBundle` instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**
-   * Skip bundling `node_modules`.
+   * @deprecated Use `deps.skipNodeModulesBundle` instead.
    * @default false
    */
   skipNodeModulesBundle?: boolean
@@ -316,7 +328,14 @@ export interface UserConfig {
 
   //#region Output Options
 
-  /** @default 'es' */
+  /**
+   * Output format(s). Defaults to ESM.
+   *
+   * ### Usage with {@link exe}
+   * If `exe` is enabled, the default format will depend on support level of SEA in the target Node.js version:
+   * - If ESM SEA is supported, the default format will be ESM.
+   * - If only CJS SEA is supported, the default format will be CJS.
+   */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
   /** @default 'dist' */
@@ -471,6 +490,7 @@ export interface UserConfig {
    * Enables generation of TypeScript declaration files (`.d.ts`).
    *
    * By default, this option is auto-detected based on your project's `package.json`:
+   * - If {@link exe} is enabled, declaration file generation is disabled by default.
    * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
    * - Otherwise, declaration file generation is disabled by default.
    */
@@ -550,6 +570,14 @@ export interface UserConfig {
     | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
 
   /**
+   * **[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
+   *
+   * This will bundle the output into a single executable file using Node.js SEA.
+   * Note that this is only supported on Node.js 25.5.0 and later, and is not supported in Bun or Deno.
+   */
+  exe?: WithEnabled<ExeOptions>
+
+  /**
    * **[experimental]** Enable workspace mode.
    * This allows you to build multiple packages in a monorepo.
    */
@@ -590,6 +618,10 @@ export type ResolvedConfig = Overwrite<
       | 'publicDir' // deprecated
       | 'bundle' // deprecated
       | 'removeNodeProtocol' // deprecated
+      | 'external' // deprecated, merged to `deps`
+      | 'noExternal' // deprecated, merged to `deps`
+      | 'inlineOnly' // deprecated, merged to `deps`
+      | 'skipNodeModulesBundle' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'customLogger' // merge to `logger`
@@ -602,7 +634,6 @@ export type ResolvedConfig = Overwrite<
     | 'minify'
     | 'define'
     | 'alias'
-    | 'external'
     | 'onSuccess'
     | 'outExtensions'
     | 'hooks'
@@ -624,8 +655,7 @@ export type ResolvedConfig = Overwrite<
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>
-    noExternal?: NoExternalFn
-    inlineOnly?: Array<string | RegExp> | false
+    deps: ResolvedDepsConfig
     css: Required<CssOptions>
 
     dts: false | DtsOptions
@@ -636,5 +666,6 @@ export type ResolvedConfig = Overwrite<
     publint: false | PublintOptions
     attw: false | AttwOptions
     unused: false | UnusedOptions
+    exe: false | ExeOptions
   }
 >

@@ -1,2 +1,3 @@
 tests/__snapshots__
 dts.snapshot.json
+skills/**/*.md

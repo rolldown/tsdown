@@ -7,12 +7,13 @@ import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
 import { resolveCssOptions } from '../features/css/index.ts'
+import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
+import { validateSea } from '../features/exe.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
-  matchPattern,
   pkgExists,
   resolveComma,
   resolveRegex,
@@ -46,7 +47,7 @@ export async function resolveUserConfig(
 ): Promise<ResolvedConfig[]> {
   let {
     entry,
-    format = ['es'],
+    format,
     plugins = [],
     clean = true,
     logLevel = 'info',
@@ -61,7 +62,6 @@ export async function resolveUserConfig(
     watch = false,
     ignoreWatch,
     shims = false,
-    skipNodeModulesBundle = false,
     publint = false,
     attw = false,
     fromVite,
@@ -78,8 +78,6 @@ export async function resolveUserConfig(
     cwd = process.cwd(),
     name,
     workspace,
-    external,
-    noExternal,
     exports = false,
     bundle,
     unbundle = typeof bundle === 'boolean' ? !bundle : false,
@@ -87,11 +85,11 @@ export async function resolveUserConfig(
     nodeProtocol,
     cjsDefault = true,
     globImport = true,
-    inlineOnly,
     css,
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
+    exe = false,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -136,23 +134,21 @@ export async function resolveUserConfig(
   clean = resolveClean(clean, outDir, cwd)
 
   const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
-  if (dts == null) {
-    dts = !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
-  }
+
   target = resolveTarget(logger, target, color, pkg, nameLabel)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
-  if (typeof external === 'string') {
-    external = resolveRegex(external)
-  }
-  if (typeof noExternal === 'string') {
-    noExternal = resolveRegex(noExternal)
-  }
 
   publint = resolveFeatureOption(publint, {})
   attw = resolveFeatureOption(attw, {})
   exports = resolveFeatureOption(exports, {})
   unused = resolveFeatureOption(unused, {})
   report = resolveFeatureOption(report, {})
+
+  exe = resolveFeatureOption(exe, {})
+
+  if (dts == null) {
+    dts = exe ? false : !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
+  }
   dts = resolveFeatureOption(dts, {})
 
   if (!pkg) {
@@ -238,13 +234,7 @@ export async function resolveUserConfig(
     return ignore
   })
 
-  if (noExternal != null && typeof noExternal !== 'function') {
-    const noExternalPatterns = toArray(noExternal)
-    noExternal = (id) => matchPattern(id, noExternalPatterns)
-  }
-  if (inlineOnly != null && inlineOnly !== false) {
-    inlineOnly = toArray(inlineOnly)
-  }
+  const depsConfig = resolveDepsConfig(userConfig, logger)
 
   devtools = resolveFeatureOption(devtools, {})
   if (devtools) {
@@ -268,22 +258,21 @@ export async function resolveUserConfig(
     copy: publicDir || copy,
     css: resolveCssOptions(css),
     cwd,
+    deps: depsConfig,
     devtools,
     dts,
     entry: resolvedEntry,
     env,
+    exe,
     exports,
-    external,
     fixedExtension,
     globImport,
     hash,
     ignoreWatch,
-    inlineOnly,
     logger,
     name,
     nameLabel,
     nodeProtocol,
-    noExternal,
     outDir,
     pkg,
     platform,
@@ -291,7 +280,6 @@ export async function resolveUserConfig(
     publint,
     report,
     shims,
-    skipNodeModulesBundle,
     sourcemap,
     target,
     treeshake,
@@ -302,10 +290,15 @@ export async function resolveUserConfig(
     write,
   }
 
+  if (exe) {
+    validateSea(config)
+  }
+
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
-    : resolveComma(toArray<Format>(format, 'es'))
+    : resolveComma(toArray<Format>(format, exe ? 'cjs' : 'es'))
+
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
     const overrides = objectFormat ? format[fmt] : undefined

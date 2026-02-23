@@ -2,11 +2,12 @@
 // Copied from https://github.com/privatenumber/tsx
 // MIT License: https://github.com/privatenumber/tsx/blob/master/LICENSE
 
-import { ref, onMounted, useTemplateRef } from 'vue'
+import { onMounted, ref, useTemplateRef } from 'vue'
 
 function reflow(element: HTMLElement) {
   element.style.display = 'none'
-  element.offsetHeight
+  // eslint-disable-next-line no-void
+  void element.offsetHeight
   element.style.display = ''
 }
 
@@ -72,7 +73,7 @@ onMounted(() => {
 
 <template>
   <div :class="['marquee', { moving: isPageVisible }]">
-    <div class="content" ref="content" :style="animationDuration">
+    <div ref="content" class="content" :style="animationDuration">
       <slot />
     </div>
     <div class="content" :style="animationDuration">

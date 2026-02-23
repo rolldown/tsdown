@@ -31,20 +31,6 @@ export function resolveRegex<T>(str: T): T | RegExp {
   return str
 }
 
-export function debounce<T extends (...args: any[]) => any>(
-  fn: T,
-  wait: number,
-): T {
-  let timeout: ReturnType<typeof setTimeout> | undefined
-  return function (this: any, ...args: any[]) {
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      timeout = undefined
-      fn.apply(this, args)
-    }, wait)
-  } as T
-}
-
 export function slash(string: string): string {
   return string.replaceAll('\\', '/')
 }
@@ -110,3 +96,16 @@ export function promiseWithResolvers<T>(): {
 export function typeAssert<T>(
   value: T,
 ): asserts value is Exclude<T, false | null | undefined> {}
+
+export function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number,
+): ((...args: Parameters<T>) => void) & { cancel: () => void } {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const debounced = (...args: Parameters<T>) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), delay)
+  }
+  debounced.cancel = () => clearTimeout(timer)
+  return debounced
+}

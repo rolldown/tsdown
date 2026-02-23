@@ -86,7 +86,7 @@ bun create tsdown@latest
 
 :::
 
-These templates includes ready-to-use configurations and best practices for building, testing and linting TypeScript projects.
+These templates include ready-to-use configurations and best practices for building, testing, and linting TypeScript projects.
 
 ### Try Online {#try-online}
 

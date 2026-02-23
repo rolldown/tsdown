@@ -1,19 +1,22 @@
-import path from 'node:path'
 import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { importWithError } from '../../utils/general.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
+import type { Buffer } from 'node:buffer'
 import type { Options } from 'publint'
 
 const debug = createDebug('tsdown:publint')
 const label = dim`[publint]`
 
-export interface PublintOptions extends Options {
+export interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {
   /** @internal */
   resolvePaths?: string[]
 }
 
-export async function publint(options: ResolvedConfig): Promise<void> {
+export async function publint(
+  options: ResolvedConfig,
+  tarball: Buffer<ArrayBuffer>,
+): Promise<void> {
   if (!options.publint) return
   if (!options.pkg) {
     options.logger.warn(
@@ -36,7 +39,7 @@ export async function publint(options: ResolvedConfig): Promise<void> {
 
   const { messages } = await publint({
     ...options.publint,
-    pkgDir: path.dirname(options.pkg.packageJsonPath),
+    pack: { tarball: tarball.buffer },
   })
   debug('Found %d issues', messages.length)
 

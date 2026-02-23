@@ -33,6 +33,7 @@ async function runTypedoc(tsconfig: string): Promise<void> {
     out: './reference/api',
     entryPoints: ['../src/index.ts'],
     excludeInternal: true,
+    includeVersion: true,
 
     hideBreadcrumbs: true,
     useCodeBlocks: true,

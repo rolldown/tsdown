@@ -11,6 +11,8 @@ CLI 参数与配置选项之间的映射遵循以下规则：
 - `--foo.bar` 等价于设置 `foo: { bar: true }`
 - `--format esm --format cjs` 等价于设置 `format: ['esm', 'cjs']`
 
+CLI 参数同时支持 camelCase 和 kebab-case 两种写法，例如 `--outDir` 和 `--out-dir` 等价。
+
 这种灵活的模式使您能够直接通过命令行方便地控制并覆盖配置选项。
 
 ## `[...files]`
@@ -66,11 +68,25 @@ tsdown --tsconfig tsconfig.build.json
 
 另请参阅 [清理](../options/cleaning.md)。
 
-## `--external <module>`
+## `--deps.never-bundle <module>`
 
 将模块标记为外部依赖。这会阻止指定的模块被包含在打包文件中。
 
 另请参阅 [依赖处理](../options/dependencies.md)。
+
+## `--deps.skip-node-modules-bundle`
+
+跳过解析和打包所有来自 `node_modules` 的依赖。
+
+另请参阅 [依赖处理](../options/dependencies.md)。
+
+## `--external <module>` {#external}
+
+::: warning 已废弃
+请使用 `--deps.never-bundle` 代替。
+:::
+
+`--deps.never-bundle` 的别名。
 
 ## `--minify`
 
@@ -229,6 +245,19 @@ tsdown --copy public
 
 `--copy` 的别名。
 **已废弃：** 为了更清晰和一致，建议使用 `--copy` 选项。
+
+## `--exe`
+
+**[实验性]** 使用 Node.js SEA（单可执行应用）将输出打包为可执行文件。
+
+此选项会使用 Node.js SEA 将输出打包为单个可执行文件。需要 Node.js 25.5.0 或更高版本，不支持 Bun 和 Deno 环境。
+
+启用 `exe` 时：
+
+- 默认输出格式从 `esm` 变更为 `cjs`（除非支持 ESM SEA）。
+- 默认禁用声明文件生成（`dts`）。
+- 禁用代码分割。
+- 仅支持单入口。
 
 ## `--exports`
 

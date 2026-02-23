@@ -27,7 +27,7 @@ cli
     default: 'esm',
   })
   .option('--clean', 'Clean output directory, --no-clean to disable')
-  .option('--external <module>', 'Mark dependencies as external')
+  .option('--deps.never-bundle <module>', 'Mark dependencies as external')
   .option('--minify', 'Minify output')
   .option('--devtools', 'Enable devtools integration')
   .option('--debug [feat]', 'Show debug logs')
@@ -70,6 +70,7 @@ cli
   .option('--public-dir <dir>', 'Alias for --copy, deprecated')
   .option('--tsconfig <tsconfig>', 'Set tsconfig path')
   .option('--unbundle', 'Unbundle mode')
+  .option('--exe', 'Bundle as executable')
   .option('-W, --workspace [dir]', 'Enable workspace mode')
   .option(
     '-F, --filter <pattern>',

@@ -33,3 +33,5 @@ tsdown --watch ./src/index.ts
 
 > [!TIP]
 > Watch mode is ideal for development workflows, as it eliminates the need to manually rebuild your project after every change.
+
+See also [Why tsdown Does Not Support Stub Mode](../guide/faq.md#stub-mode) for background on why watch mode is the recommended alternative to stub mode.

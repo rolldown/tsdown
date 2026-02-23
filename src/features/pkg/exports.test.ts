@@ -280,6 +280,38 @@ describe('generateExports', () => {
     `)
   })
 
+  test('customExports via object', async ({ expect }) => {
+    const results = await generateExports(
+      { es: [genChunk('index.js')] },
+      {
+        exports: {
+          devExports: 'dev',
+          customExports: {
+            './TEST': './TEST',
+          },
+        },
+      },
+    )
+    // key order matters
+    expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
+      "{
+        "exports": {
+          ".": {
+            "dev": "./SRC/index.js",
+            "default": "./index.js"
+          },
+          "./package.json": "./package.json",
+          "./TEST": "./TEST"
+        },
+        "publishExports": {
+          ".": "./index.js",
+          "./package.json": "./package.json",
+          "./TEST": "./TEST"
+        }
+      }"
+    `)
+  })
+
   test('exclude via regex', async ({ expect }) => {
     const results = generateExports(
       { es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')] },
@@ -367,6 +399,82 @@ describe('generateExports', () => {
         },
         "main": "./index.cjs",
         "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('export all includes non-entry chunks', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('index.js'), genChunk('utils.js', false)],
+      },
+      {
+        exports: { all: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./*": "./*",
+          "./utils": "./utils.js",
+        },
+        "main": undefined,
+        "module": undefined,
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('export all excludes virtual modules', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [
+          genChunk('index.js'),
+          genChunk('virtual.js', false, '\0virtual-module'),
+        ],
+      },
+      {
+        exports: { all: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./*": "./*",
+        },
+        "main": undefined,
+        "module": undefined,
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('export all excludes node_modules chunks', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [
+          genChunk('index.js'),
+          genChunk('lodash.js', false, '/project/node_modules/lodash/index.js'),
+        ],
+      },
+      {
+        exports: { all: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "exports": {
+          ".": "./index.js",
+          "./*": "./*",
+        },
+        "main": undefined,
+        "module": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -572,13 +680,13 @@ describe('generateExports', () => {
   })
 })
 
-function genChunk(fileName: string, isEntry = true) {
+function genChunk(fileName: string, isEntry = true, facadeModuleId?: string) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return {
     type: 'chunk',
     fileName,
     isEntry,
-    facadeModuleId: path.resolve(`./SRC/${fileName}`),
+    facadeModuleId: facadeModuleId ?? path.resolve(`./SRC/${fileName}`),
     outDir: cwd,
   } as RolldownChunk
 }

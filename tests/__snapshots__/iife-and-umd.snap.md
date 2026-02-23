@@ -3,6 +3,7 @@
 ```js
 var Lib = (function(exports) {
 
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 
 //#region index.ts
 	const foo = true;
@@ -21,6 +22,7 @@ return exports;
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory((global.Lib = {})));
 })(this, function(exports) {
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 
 //#region index.ts
 	const foo = true;

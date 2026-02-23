@@ -3,7 +3,7 @@
 ```mjs
 import { createRequire } from "module";
 
-//#region rolldown:runtime
+//#region \0rolldown/runtime.js
 var __require = /* @__PURE__ */ createRequire(import.meta.url);
 
 //#endregion

@@ -119,6 +119,47 @@ describe('option transformations', () => {
   })
 })
 
+describe('deps namespace migrations', () => {
+  test('external should move to deps.neverBundle', () => {
+    const input = `
+      export default {
+        external: ['foo', 'bar'],
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('deps:')
+    expect(code).toContain('neverBundle:')
+    expect(code).not.toContain('external:')
+  })
+
+  test('noExternal should move to deps.alwaysBundle', () => {
+    const input = `
+      export default {
+        noExternal: ['foo'],
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('deps:')
+    expect(code).toContain('alwaysBundle:')
+    expect(code).not.toContain('noExternal:')
+  })
+
+  test('multiple deps options should merge into single deps object', () => {
+    const input = `
+      export default {
+        external: ['foo'],
+        noExternal: ['bar'],
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('deps:')
+    expect(code).toContain('neverBundle:')
+    expect(code).toContain('alwaysBundle:')
+    expect(code).not.toContain('external:')
+    expect(code).not.toContain('noExternal:')
+  })
+})
+
 describe('warning options', () => {
   test('metafile should emit warning (use Vite DevTools)', () => {
     const input = `

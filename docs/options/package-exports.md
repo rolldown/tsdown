@@ -80,7 +80,17 @@ The CSS filename defaults to `style.css` and can be customized via `css.fileName
 
 ## Customizing Exports
 
-If you need more control over the generated exports, you can provide a custom function via `exports.customExports`:
+If you need more control over the generated exports, you can provide an object or a custom function via `exports.customExports`:
+
+```ts
+export default defineConfig({
+  exports: {
+    customExports: {
+      './foo': './foo.js',
+    },
+  },
+})
+```
 
 ```ts
 export default defineConfig({

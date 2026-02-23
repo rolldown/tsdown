@@ -22,10 +22,10 @@ export { b };
 
 ```mjs
 //#region index.ts
-const modules = {
+const modules = /* @__PURE__ */ Object.assign({
 	"./modules/a.ts": () => import("./a-vryVd6Q_.mjs"),
 	"./modules/b.ts": () => import("./b-DyldDoKf.mjs")
-};
+});
 
 //#endregion
 export { modules };
