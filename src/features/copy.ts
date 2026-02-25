@@ -67,7 +67,7 @@ export async function copy(options: ResolvedConfig): Promise<void> {
   ).flat()
 
   if (!resolved.length) {
-    options.logger.warn(options.nameLabel, `No files matched for copying.`)
+    options.logger.info(options.nameLabel, `No files matched for copying.`)
     return
   }
 
