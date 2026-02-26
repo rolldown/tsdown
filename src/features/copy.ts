@@ -39,14 +39,16 @@ export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
 export async function copy(options: ResolvedConfig): Promise<void> {
   if (!options.copy) return
 
-  const copy: CopyOptions =
+  const copy = toArray(
     typeof options.copy === 'function'
       ? await options.copy(options)
-      : options.copy
+      : options.copy,
+  )
+  if (!copy.length) return
 
   const resolved = (
     await Promise.all(
-      toArray(copy).map(async (entry) => {
+      copy.map(async (entry) => {
         if (typeof entry === 'string') {
           entry = { from: [entry] }
         }
