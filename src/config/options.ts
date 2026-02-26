@@ -1,3 +1,4 @@
+import satisfies from 'semver/functions/satisfies.js'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
@@ -290,14 +291,18 @@ export async function resolveUserConfig(
     write,
   }
 
+  let defaultFormat: Format = 'esm'
   if (exe) {
     validateSea(config)
+    if (satisfies(process.version, '<25.7.0')) {
+      defaultFormat = 'cjs'
+    }
   }
 
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
-    : resolveComma(toArray<Format>(format, exe ? 'cjs' : 'es'))
+    : resolveComma(toArray<Format>(format, defaultFormat))
 
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0

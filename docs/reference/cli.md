@@ -254,7 +254,7 @@ This will bundle the output into a single executable file using Node.js SEA. Req
 
 When `exe` is enabled:
 
-- The default output format changes from `esm` to `cjs` (unless ESM SEA is supported).
+- The default output format changes from `esm` to `cjs` (unless ESM SEA is supported, i.e., Node.js >= v25.7.0).
 - Declaration file generation (`dts`) is disabled by default.
 - Code splitting is disabled.
 - Only single entry points are supported.

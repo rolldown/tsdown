@@ -329,11 +329,17 @@ export interface UserConfig {
   //#region Output Options
 
   /**
-   * Output format(s). Defaults to ESM.
+   * Output format(s). Available formats are
+   * - `esm`: ESM
+   * - `cjs`: CommonJS
+   * - `iife`: IIFE
+   * - `umd`: UMD
+   *
+   * Defaults to ESM.
    *
    * ### Usage with {@link exe}
    * If `exe` is enabled, the default format will depend on support level of SEA in the target Node.js version:
-   * - If ESM SEA is supported, the default format will be ESM.
+   * - If ESM SEA is supported (Node.js > v25.7), the default format will be ESM.
    * - If only CJS SEA is supported, the default format will be CJS.
    */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
