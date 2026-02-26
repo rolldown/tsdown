@@ -29,20 +29,16 @@ Choose the log level that best fits your workflow to control the amount of infor
 
 ## Fail on Warnings
 
-The `failOnWarn` option controls whether warnings cause the build to exit with a non-zero code. By default, this is set to `'ci-only'`, which means **warnings will cause the build to fail in CI environments** but not locally.
-
-This default behavior ensures that CI pipelines catch potential issues while keeping local development uninterrupted.
+The `failOnWarn` option controls whether warnings cause the build to exit with a non-zero code.
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
-  // Default: fail on warnings only in CI
-  failOnWarn: 'ci-only',
   // Always fail on warnings
-  // failOnWarn: true,
-  // Never fail on warnings
-  // failOnWarn: false,
+  failOnWarn: true,
+  // Fail on warnings only in CI
+  failOnWarn: 'ci-only',
 })
 ```
 

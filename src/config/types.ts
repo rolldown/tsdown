@@ -449,7 +449,7 @@ export interface UserConfig {
   logLevel?: LogLevel
   /**
    * If true, fails the build on warnings.
-   * @default 'ci-only'
+   * @default false
    */
   failOnWarn?: boolean | CIOption
   /**

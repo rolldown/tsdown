@@ -28,7 +28,7 @@ These options accept CI-aware values:
 - `exports` - Auto-generate `package.json` exports
 - `unused` - Unused dependency check
 - `devtools` - DevTools integration
-- `failOnWarn` - Fail on warnings (defaults to `'ci-only'`)
+- `failOnWarn` - Fail on warnings (defaults to `false`)
 
 ## Usage
 
@@ -38,7 +38,7 @@ These options accept CI-aware values:
 export default defineConfig({
   dts: 'local-only',        // Skip DTS in CI for faster builds
   publint: 'ci-only',       // Only run publint in CI
-  failOnWarn: 'ci-only',    // Fail on warnings in CI only (default)
+  failOnWarn: 'ci-only',    // Fail on warnings in CI only (opt-in)
 })
 ```
 
