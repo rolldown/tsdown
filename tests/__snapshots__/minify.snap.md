@@ -1,5 +1,5 @@
 ## index.mjs
 
 ```mjs
-const foo=!0;export{foo};
+const e=!0;export{e as foo};
 ```
