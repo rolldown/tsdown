@@ -8,7 +8,7 @@ const a = 1;
 export { a };
 ```
 
-## b-DyldDoKf.mjs
+## b-BYyHup1r.mjs
 
 ```mjs
 //#region modules/b.ts
@@ -24,7 +24,7 @@ export { b };
 //#region index.ts
 const modules = /* @__PURE__ */ Object.assign({
 	"./modules/a.ts": () => import("./a-vryVd6Q_.mjs"),
-	"./modules/b.ts": () => import("./b-DyldDoKf.mjs")
+	"./modules/b.ts": () => import("./b-BYyHup1r.mjs")
 });
 
 //#endregion

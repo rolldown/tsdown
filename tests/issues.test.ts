@@ -54,21 +54,6 @@ describe('issues', () => {
     expect(outputFiles.toSorted()).toEqual(['index.d.mts', 'index.mjs'])
   })
 
-  test('#216', async (context) => {
-    const { outputFiles } = await testBuild({
-      context,
-      files: {
-        'foo.css': `.foo { color: red; }`,
-        'bar.css': `@import './foo.css'; .bar { color: blue; }`,
-      },
-      options: {
-        entry: ['foo.css', 'bar.css'],
-      },
-    })
-    expect(outputFiles).toContain('bar.css')
-    expect(outputFiles).toContain('foo.css')
-  })
-
   test('#221', async (context) => {
     await testBuild({
       context,

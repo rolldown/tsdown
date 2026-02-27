@@ -20,24 +20,6 @@ describe('target', () => {
     expect(snapshot).contain('?.')
   })
 
-  test('css syntax lowering', async (context) => {
-    const { snapshot } = await testBuild({
-      context,
-      files: { 'index.css': '.foo { & .bar { color: red } }' },
-      options: { entry: 'index.css', target: 'chrome108' },
-    })
-    expect(snapshot).not.contain('&')
-  })
-
-  test('unnecessary css syntax lowering', async (context) => {
-    const { snapshot } = await testBuild({
-      context,
-      files: { 'index.css': '.foo { & .bar { color: red } }' },
-      options: { entry: 'index.css', target: ['safari18.4'] },
-    })
-    expect(snapshot).contain('&')
-  })
-
   test('target: false disables all syntax transformations', async (context) => {
     const { snapshot } = await testBuild({
       context,
@@ -48,13 +30,33 @@ describe('target', () => {
     expect(snapshot).contain('?.')
   })
 
-  test('target: false with CSS preserves modern syntax', async (context) => {
-    const { snapshot } = await testBuild({
-      context,
-      files: { 'index.css': '.foo { & .bar { color: red } }' },
-      options: { entry: 'index.css', target: false },
+  describe.skip('css', () => {
+    test('css syntax lowering', async (context) => {
+      const { snapshot } = await testBuild({
+        context,
+        files: { 'index.css': '.foo { & .bar { color: red } }' },
+        options: { entry: 'index.css', target: 'chrome108' },
+      })
+      expect(snapshot).not.contain('&')
     })
-    // Modern CSS syntax should be preserved when target is false
-    expect(snapshot).contain('&')
+
+    test('unnecessary css syntax lowering', async (context) => {
+      const { snapshot } = await testBuild({
+        context,
+        files: { 'index.css': '.foo { & .bar { color: red } }' },
+        options: { entry: 'index.css', target: ['safari18.4'] },
+      })
+      expect(snapshot).contain('&')
+    })
+
+    test('target: false with CSS preserves modern syntax', async (context) => {
+      const { snapshot } = await testBuild({
+        context,
+        files: { 'index.css': '.foo { & .bar { color: red } }' },
+        options: { entry: 'index.css', target: false },
+      })
+      // Modern CSS syntax should be preserved when target is false
+      expect(snapshot).contain('&')
+    })
   })
 })

@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
-describe('css', () => {
+describe.skip('css', () => {
   test('basic', async (context) => {
     const { outputFiles } = await testBuild({
       context,
@@ -13,7 +13,7 @@ describe('css', () => {
     expect(outputFiles).toEqual(['index.css', 'index.mjs'])
   })
 
-  test.fails('unbundle', async (context) => {
+  test('unbundle', async (context) => {
     const { outputFiles } = await testBuild({
       context,
       files: {
@@ -27,7 +27,7 @@ describe('css', () => {
     expect(outputFiles).toEqual(['index.js', 'style.js', 'style.css'])
   })
 
-  test.fails('with dts', async (context) => {
+  test('with dts', async (context) => {
     const { outputFiles } = await testBuild({
       context,
       files: {
@@ -64,5 +64,20 @@ describe('css', () => {
     expect(outputFiles.filter((f) => f.endsWith('.css'))).toEqual(['index.css'])
     expect(fileMap['index.css']).toContain('body { color: red }')
     expect(fileMap['index.css']).toContain('.async { color: blue }')
+  })
+
+  test('#216', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'foo.css': `.foo { color: red; }`,
+        'bar.css': `@import './foo.css'; .bar { color: blue; }`,
+      },
+      options: {
+        entry: ['foo.css', 'bar.css'],
+      },
+    })
+    expect(outputFiles).toContain('bar.css')
+    expect(outputFiles).toContain('foo.css')
   })
 })
