@@ -63,7 +63,7 @@ catalogs:
     unplugin-unused: ^0.5.7
   prod:
     ansis: ^4.2.0
-    cac: ^6.7.14
+    cac: ^7.0.0
     defu: ^6.1.4
     empathic: ^2.0.0
     hookable: ^6.0.1
