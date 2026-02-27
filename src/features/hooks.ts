@@ -66,6 +66,7 @@ export function executeOnSuccess(
       nodeOptions: {
         shell: true,
         stdio: 'inherit',
+        cwd: config.cwd,
       },
     })
     p.then(({ exitCode }) => {
