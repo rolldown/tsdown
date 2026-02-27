@@ -212,9 +212,12 @@ async function resolveInputOptions(
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled
         if (cjsDefault && log.code === 'MIXED_EXPORT') return
-        if (logger.options?.failOnWarn && level === 'warn') {
+        if (
+          logger.options?.failOnWarn &&
+          level === 'warn' &&
+          log.code !== 'PLUGIN_TIMINGS'
+        )
           defaultHandler('error', log)
-        }
         defaultHandler(level, log)
       },
       devtools: devtools || undefined,
