@@ -53,6 +53,17 @@ export function toObjectEntry(
   return resolveArrayEntry(entry, cwd)
 }
 
+export function isGlobEntry(entry: TsdownInputOption | undefined): boolean {
+  if (!entry) return false
+  if (typeof entry === 'string') return isDynamicPattern(entry)
+  if (Array.isArray(entry)) {
+    return entry.some((e) =>
+      typeof e === 'string' ? isDynamicPattern(e) : isGlobEntry(e),
+    )
+  }
+  return Object.keys(entry).some((key) => key.includes('*'))
+}
+
 async function resolveObjectEntry(
   entries: Record<string, string | string[]>,
   cwd: string,

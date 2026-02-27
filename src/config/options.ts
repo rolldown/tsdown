@@ -134,6 +134,7 @@ export async function resolveUserConfig(
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
 
+  const rawEntry = entry
   const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
 
   target = resolveTarget(logger, target, color, pkg, nameLabel)
@@ -279,6 +280,7 @@ export async function resolveUserConfig(
     platform,
     plugins,
     publint,
+    rawEntry,
     report,
     shims,
     sourcemap,

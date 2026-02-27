@@ -15,6 +15,7 @@ import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import { startDevtoolsUI } from './features/devtools.ts'
+import { isGlobEntry, toObjectEntry } from './features/entry.ts'
 import { buildExe } from './features/exe.ts'
 import { createHooks, executeOnSuccess } from './features/hooks.ts'
 import { bundleDone, initBundleByPkg } from './features/pkg/index.ts'
@@ -187,7 +188,7 @@ async function buildSingle(
     const changedFile: string[] = []
     let hasError = false
 
-    watcher.on('change', (id, event) => {
+    watcher.on('change', async (id, event) => {
       if (event.event === 'update') {
         changedFile.push(id)
         // Cancel pending postBuild immediately on file change,
@@ -200,6 +201,19 @@ async function buildSingle(
       if (configFiles.includes(id) || endsWithConfig.test(id)) {
         globalLogger.info(`Reload config: ${id}, restarting...`)
         restart()
+      }
+      if (
+        (event.event === 'create' || event.event === 'delete') &&
+        config.rawEntry &&
+        isGlobEntry(config.rawEntry)
+      ) {
+        const newEntry = await toObjectEntry(config.rawEntry, config.cwd)
+        const currentKeys = Object.keys(config.entry).toSorted().join('\0')
+        const newKeys = Object.keys(newEntry).toSorted().join('\0')
+        if (currentKeys !== newKeys) {
+          globalLogger.info('Entry files changed, restarting...')
+          restart()
+        }
       }
     })
 

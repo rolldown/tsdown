@@ -653,6 +653,8 @@ export type ResolvedConfig = Overwrite<
   {
     /** Resolved entry map (after glob expansion) */
     entry: Record<string, string>
+    /** Original entry config before glob resolution (for watch mode re-globbing) */
+    rawEntry?: TsdownInputOption
     nameLabel: string | undefined
     format: NormalizedFormat
     target?: string[]
