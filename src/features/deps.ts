@@ -180,15 +180,14 @@ async function parseBundledDep(
 }
 
 export function DepPlugin(
-  config: ResolvedConfig,
-  tsdownBundle: TsdownBundle,
-): Plugin {
-  const {
+  {
     pkg,
     deps: { alwaysBundle, onlyAllowBundle, skipNodeModulesBundle },
     logger,
     nameLabel,
-  } = config
+  }: ResolvedConfig,
+  tsdownBundle: TsdownBundle,
+): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
 
   return {
