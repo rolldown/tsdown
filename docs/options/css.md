@@ -213,9 +213,9 @@ export default defineConfig({
 
 ## Options Reference
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `css.splitting` | `boolean` | `true` | Enable/disable CSS code splitting |
-| `css.fileName` | `string` | `'style.css'` | File name for the merged CSS file (when `splitting: false`) |
-| `css.preprocessorOptions` | `object` | — | Options for CSS preprocessors (scss, sass, less, styl, stylus) |
-| `css.lightningcss` | `object` | — | Options passed to Lightning CSS for syntax lowering |
+| Option                    | Type      | Default       | Description                                                    |
+| ------------------------- | --------- | ------------- | -------------------------------------------------------------- |
+| `css.splitting`           | `boolean` | `true`        | Enable/disable CSS code splitting                              |
+| `css.fileName`            | `string`  | `'style.css'` | File name for the merged CSS file (when `splitting: false`)    |
+| `css.preprocessorOptions` | `object`  | —             | Options for CSS preprocessors (scss, sass, less, styl, stylus) |
+| `css.lightningcss`        | `object`  | —             | Options passed to Lightning CSS for syntax lowering            |

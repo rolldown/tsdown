@@ -213,9 +213,9 @@ export default defineConfig({
 
 ## 选项参考
 
-| 选项 | 类型 | 默认值 | 描述 |
-|------|------|--------|------|
-| `css.splitting` | `boolean` | `true` | 启用/禁用 CSS 代码分割 |
-| `css.fileName` | `string` | `'style.css'` | 合并 CSS 的文件名（当 `splitting: false` 时） |
-| `css.preprocessorOptions` | `object` | — | CSS 预处理器选项（scss、sass、less、styl、stylus） |
-| `css.lightningcss` | `object` | — | 传递给 Lightning CSS 的语法降级选项 |
+| 选项                      | 类型      | 默认值        | 描述                                               |
+| ------------------------- | --------- | ------------- | -------------------------------------------------- |
+| `css.splitting`           | `boolean` | `true`        | 启用/禁用 CSS 代码分割                             |
+| `css.fileName`            | `string`  | `'style.css'` | 合并 CSS 的文件名（当 `splitting: false` 时）      |
+| `css.preprocessorOptions` | `object`  | —             | CSS 预处理器选项（scss、sass、less、styl、stylus） |
+| `css.lightningcss`        | `object`  | —             | 传递给 Lightning CSS 的语法降级选项                |
