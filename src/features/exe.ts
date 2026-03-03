@@ -206,7 +206,11 @@ async function buildSingleExe(
       nodeOptions: { stdio: 'pipe' },
     })
   } finally {
-    await fsRemove(tempDir)
+    if (debug.enabled) {
+      debug('Preserving temp directory for debugging: %s', tempDir)
+    } else {
+      await fsRemove(tempDir)
+    }
   }
 
   // Ad-hoc codesign on macOS host for darwin-targeted executables

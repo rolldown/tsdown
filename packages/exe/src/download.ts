@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
-import { chmod, mkdir, rename, rm, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { createDebug } from 'obug'
 import { x } from 'tinyexec'
-import { fsExists } from '../../../src/utils/fs.ts'
+import { fsExists, fsRemove } from '../../../src/utils/fs.ts'
 import { getCachedBinaryPath } from './cache.ts'
 import {
   getArchiveExtension,
@@ -70,7 +70,7 @@ export async function resolveNodeBinary(
     debug('Binary cached at: %s', cachedPath)
     logger?.info(`Cached Node.js binary at: ${cachedPath}`)
   } finally {
-    await rm(archivePath, { force: true })
+    await fsRemove(archivePath)
   }
 
   return cachedPath
