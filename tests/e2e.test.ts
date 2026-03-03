@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { describe, expect, test, vi } from 'vitest'
@@ -239,7 +240,9 @@ describe('deps', () => {
             success: vi.fn(),
             clearScreen: vi.fn(),
           },
-          inputOptions: { experimental: { attachDebugInfo: 'none' } },
+          inputOptions: {
+            experimental: { attachDebugInfo: 'none' },
+          },
         },
       })
       const message = info.mock.calls?.find(
@@ -252,6 +255,90 @@ describe('deps', () => {
 
       expect(message).toContain('not used in the bundle')
       expect(message).toContain('unused-dep')
+    })
+  })
+
+  describe('inlinedDependencies', () => {
+    const node_modules = {
+      'node_modules/my-lib/index.js': `export const lib = "my-lib"`,
+      'node_modules/my-lib/package.json': JSON.stringify({
+        name: 'my-lib',
+        version: '1.2.3',
+        main: 'index.js',
+      }),
+    }
+
+    test('should populate inlinedDependencies in package.json', async (context) => {
+      const { testDir } = await testBuild({
+        context,
+        files: {
+          ...node_modules,
+          'index.ts': `export { lib } from 'my-lib'`,
+          'package.json': JSON.stringify({
+            name: 'test-pkg',
+            version: '1.0.0',
+          }),
+        },
+        options: {
+          exports: true,
+          inputOptions: {
+            experimental: { attachDebugInfo: 'none' },
+          },
+        },
+        snapshot: false,
+      })
+
+      const pkg = JSON.parse(
+        await readFile(path.join(testDir, 'package.json'), 'utf8'),
+      )
+      expect(pkg.inlinedDependencies).toEqual({ 'my-lib': '1.2.3' })
+    })
+
+    test('should not emit when exports.inlinedDependencies is false', async (context) => {
+      const { testDir } = await testBuild({
+        context,
+        files: {
+          ...node_modules,
+          'index.ts': `export { lib } from 'my-lib'`,
+          'package.json': JSON.stringify({
+            name: 'test-pkg',
+            version: '1.0.0',
+          }),
+        },
+        options: {
+          exports: { inlinedDependencies: false },
+          inputOptions: { experimental: { attachDebugInfo: 'none' } },
+        },
+        snapshot: false,
+      })
+
+      const pkg = JSON.parse(
+        await readFile(path.join(testDir, 'package.json'), 'utf8'),
+      )
+      expect(pkg.inlinedDependencies).toBeUndefined()
+    })
+
+    test('should not emit when no deps are inlined', async (context) => {
+      const { testDir } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export const foo = 42`,
+          'package.json': JSON.stringify({
+            name: 'test-pkg',
+            version: '1.0.0',
+          }),
+        },
+        options: {
+          exports: true,
+          inputOptions: { experimental: { attachDebugInfo: 'none' } },
+        },
+        snapshot: false,
+      })
+
+      const pkg = JSON.parse(
+        await readFile(path.join(testDir, 'package.json'), 'utf8'),
+      )
+      expect(pkg.inlinedDependencies).toBeUndefined()
     })
   })
 })

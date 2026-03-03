@@ -114,7 +114,7 @@ async function resolveInputOptions(
   }
 
   if (config.pkg || config.deps.skipNodeModulesBundle) {
-    plugins.push(DepPlugin(config))
+    plugins.push(DepPlugin(config, bundle))
   }
 
   if (dts) {
