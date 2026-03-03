@@ -5,9 +5,9 @@ This document contains information about how these skills were generated and how
 ## Generation Details
 
 **Generated from documentation at:**
-- **Commit SHA**: `7949216eb518f4c83b876f808991cf4b0cbc1561`
-- **Short SHA**: `7949216`
-- **Date**: 2026-02-22
+- **Commit SHA**: `b81968beb518f4c83b876f808991cf4b0cbc1561`
+- **Short SHA**: `b81968b`
+- **Date**: 2026-03-04
 - **Commit**: feat(sea): add exe option for Node.js SEA executable bundling
 
 **Source documentation:**
@@ -15,7 +15,7 @@ This document contains information about how these skills were generated and how
 - Project README: `/README.md`
 - CLAUDE.md: `/CLAUDE.md`
 
-**Generation date**: 2026-02-22
+**Generation date**: 2026-03-04
 
 ## Structure
 
@@ -72,7 +72,7 @@ When tsdown documentation changes, follow these steps to update the skills:
 
 ```bash
 # Get changes in docs since generation
-git diff 7949216..HEAD -- docs/
+git diff b81968b..HEAD -- docs/
 
 # List changed files
 git diff --name-only 301bcd1..HEAD -- docs/
@@ -116,7 +116,7 @@ Focus on these documentation areas:
 
 ```bash
 # 1. Check what docs changed
-git diff 7949216..HEAD -- docs/ > docs_changes.patch
+git diff b81968b..HEAD -- docs/ > docs_changes.patch
 
 # 2. Review the changes
 cat docs_changes.patch
@@ -230,6 +230,7 @@ When updating, maintain style:
 
 | Date       | SHA      | Changes |
 |------------|----------|---------|
+| 2026-03-04 | b81968b  | Full CSS pipeline: preprocessors, Lightning CSS, code splitting |
 | 2026-02-22 | 7949216  | Add `exe` option for Node.js SEA executable bundling |
 | 2026-01-30 | 301bcd1  | Add CI environment, package validation (publint/attw), WASM support, update entry globs, sourcemap modes, failOnWarn |
 | 2026-01-29 | 0bf92cf  | Initial generation from docs |
@@ -238,7 +239,7 @@ When updating, maintain style:
 
 **For future agents updating these skills:**
 
-1. Run `git diff 7949216..HEAD -- docs/` to see all documentation changes
+1. Run `git diff b81968b..HEAD -- docs/` to see all documentation changes
 2. Read changed files to understand what's new or modified
 3. Update `SKILL.md` by:
    - Adding new options to appropriate tables
@@ -262,5 +263,5 @@ If you're unsure about whether changes warrant updates:
 
 ---
 
-Last updated: 2026-02-22
-Current SHA: 7949216
+Last updated: 2026-03-04
+Current SHA: b81968b
