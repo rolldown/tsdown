@@ -1,7 +1,7 @@
 import semver from 'semver'
 import satisfies from 'semver/functions/satisfies.js'
 
-const SEA_VERSION_RANGE = '>=18.16.0'
+const SEA_VERSION_RANGE = '>=25.7.0'
 
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
@@ -10,8 +10,8 @@ export interface ExeTarget {
   platform: ExePlatform
   arch: ExeArch
   /**
-   * Node.js version to use for the executable. Should be a valid Node.js version string (e.g., "18.15.0").
-   * The minimum required version is 18.16.0, which is when SEA support was added to Node.js.
+   * Node.js version to use for the executable. Should be a valid Node.js version string (e.g., "25.7.0").
+   * The minimum required version is 25.7.0, which is when SEA support was added to Node.js.
    */
   nodeVersion: string
 }
