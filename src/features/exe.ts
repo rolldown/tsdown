@@ -15,6 +15,10 @@ import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
 
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>
+  /**
+   * Output file name without any suffix or extension.
+   * For example, do not include `.exe`, platform suffixes, or architecture suffixes.
+   */
   fileName?: string | ((chunk: RolldownChunk) => string)
 }
 
@@ -156,7 +160,9 @@ function resolveOutputFileName(
   if (suffix) {
     baseName += suffix
   }
-  if ((target?.platform || process.platform) === 'win32') {
+  if (
+    target?.platform ? target.platform === 'win' : process.platform === 'win32'
+  ) {
     baseName += '.exe'
   }
 

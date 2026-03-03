@@ -16,9 +16,9 @@ export interface ExeExtensionOptions {
    * @example
    * ```ts
    * targets: [
-   *   { platform: 'linux', arch: 'x64', nodeVersion: '22.14.0' },
-   *   { platform: 'darwin', arch: 'arm64', nodeVersion: '22.14.0' },
-   *   { platform: 'win', arch: 'x64', nodeVersion: '22.14.0' },
+   *   { platform: 'linux', arch: 'x64', nodeVersion: '25.7.0' },
+   *   { platform: 'darwin', arch: 'arm64', nodeVersion: '25.7.0' },
+   *   { platform: 'win', arch: 'x64', nodeVersion: '25.7.0' },
    * ]
    * ```
    */
