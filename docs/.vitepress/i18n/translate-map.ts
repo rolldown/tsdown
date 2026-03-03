@@ -31,6 +31,7 @@ const zhCN = {
   'Package Exports': '包导出（Package Exports）',
   Unbundle: '非打包模式（Unbundle）',
   'CJS Default Export': 'CJS 默认导出',
+  Executable: '可执行文件',
   'Package Validation': '包校验',
 
   Recipes: '实践指南',

@@ -137,6 +137,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Unbundle'), link: '/unbundle.md' },
         { text: t('CJS Default Export'), link: '/cjs-default.md' },
         { text: t('CSS'), link: '/css.md' },
+        { text: t('Executable'), link: '/exe.md' },
         { text: t('Package Validation'), link: '/lint.md' },
       ],
     },
