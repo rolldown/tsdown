@@ -135,6 +135,10 @@ Each target in the `targets` array accepts:
 When `targets` is specified, the `seaConfig.executable` option is ignored — the downloaded Node.js binary is used instead.
 :::
 
+:::tip Note
+When generating cross-platform executables (e.g., generating an executable for linux-x64 on darwin-arm64), `useCodeCache` and `useSnapshot` must be set to `false` to avoid generating incompatible executables. Since code cache and snapshots can only be loaded on the same platform where they are compiled, the generated executable might crash on startup when trying to load code cache or snapshots built on a different platform.
+:::
+
 ### Caching
 
 Downloaded Node.js binaries are cached in the system cache directory:
