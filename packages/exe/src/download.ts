@@ -9,7 +9,7 @@ import {
   getArchiveExtension,
   getBinaryPathInArchive,
   getDownloadUrl,
-  validateNodeVersion,
+  normalizeNodeVersion,
   type ExeTarget,
 } from './platform.ts'
 
@@ -24,7 +24,7 @@ export async function resolveNodeBinary(
   logger?: MinimalLogger,
 ): Promise<string> {
   debug('Resolving Node.js binary for target: %O', target)
-  validateNodeVersion(target)
+  target.nodeVersion = normalizeNodeVersion(target)
 
   const cachedPath = getCachedBinaryPath(target)
   debug('Cache path: %s', cachedPath)
@@ -97,7 +97,7 @@ async function extractBinary(
         '--strip-components=1',
         binaryInArchive,
       ],
-      { nodeOptions: { stdio: 'pipe' } },
+      { nodeOptions: { stdio: 'inherit' }, throwOnError: true },
     )
   } else {
     // .tar.gz (darwin) or .tar.xz (linux)
@@ -112,7 +112,7 @@ async function extractBinary(
         '--strip-components=2',
         binaryInArchive,
       ],
-      { nodeOptions: { stdio: 'pipe' } },
+      { nodeOptions: { stdio: 'inherit' }, throwOnError: true },
     )
   }
 

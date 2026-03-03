@@ -202,8 +202,10 @@ async function buildSingleExe(
     debug('Wrote sea-config.json: %O -> %s', seaConfig, seaConfigPath)
 
     // Always use host node for --build-sea; the executable field controls the target binary
+    debug('Running: %s --build-sea %s', process.execPath, seaConfigPath)
     await x(process.execPath, ['--build-sea', seaConfigPath], {
-      nodeOptions: { stdio: 'pipe' },
+      nodeOptions: { stdio: ['ignore', 'ignore', 'inherit'] },
+      throwOnError: true,
     })
   } finally {
     if (debug.enabled) {
@@ -217,7 +219,8 @@ async function buildSingleExe(
   if ((target?.platform || process.platform) === 'darwin') {
     try {
       await x('codesign', ['--sign', '-', outputPath], {
-        nodeOptions: { stdio: 'pipe' },
+        nodeOptions: { stdio: 'inherit' },
+        throwOnError: true,
       })
     } catch {
       config.logger.warn(

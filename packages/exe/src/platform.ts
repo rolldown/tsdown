@@ -1,6 +1,7 @@
+import semver from 'semver'
 import satisfies from 'semver/functions/satisfies.js'
 
-const SEA_VERSION_RANGE = '>=18.16.0 <19.0.0 || >=19.7.0'
+const SEA_VERSION_RANGE = '>=18.16.0'
 
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
@@ -54,13 +55,23 @@ export function getBinaryPathInArchive(target: ExeTarget): string {
   return `${dirName}/bin/node`
 }
 
-export function validateNodeVersion(target: ExeTarget): void {
-  if (!satisfies(target.nodeVersion, SEA_VERSION_RANGE)) {
+export function normalizeNodeVersion(target: ExeTarget): string {
+  const version = semver.valid(target.nodeVersion)
+  if (!version) {
     throw new Error(
-      `Node.js ${target.nodeVersion} does not support SEA (Single Executable Applications). ` +
+      `Invalid Node.js version: ${target.nodeVersion}. ` +
+        `Please provide a valid version string (e.g., "25.7.0").`,
+    )
+  }
+
+  if (!satisfies(version, SEA_VERSION_RANGE)) {
+    throw new Error(
+      `Node.js ${version} does not support SEA (Single Executable Applications). ` +
         `Required: ${SEA_VERSION_RANGE}`,
     )
   }
+
+  return version
 }
 
 export function getTargetSuffix(target: ExeTarget): string {
