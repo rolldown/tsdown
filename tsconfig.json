@@ -3,6 +3,7 @@
     "target": "esnext",
     "lib": ["es2023"],
     "moduleDetection": "force",
+    "customConditions": ["dev"],
     "module": "nodenext",
     "moduleResolution": "node16",
     "resolveJsonModule": true,

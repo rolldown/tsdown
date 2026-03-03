@@ -248,16 +248,18 @@ An alias for `--copy`.
 
 ## `--exe`
 
-**[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
+**[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html).
 
-This will bundle the output into a single executable file using Node.js SEA. Requires Node.js 25.5.0 or later, and is not supported in Bun or Deno.
+This will bundle the output into a single executable file. Requires Node.js 25.5.0 or later, and is not supported in Bun or Deno. Cross-platform builds are supported via the `@tsdown/exe` package.
 
 When `exe` is enabled:
 
-- The default output format changes from `esm` to `cjs` (unless ESM SEA is supported, i.e., Node.js >= v25.7.0).
+- The default output format changes from `esm` to `cjs` (unless Node.js >= v25.7.0, which supports ESM).
 - Declaration file generation (`dts`) is disabled by default.
 - Code splitting is disabled.
 - Only single entry points are supported.
+
+See also [Executable](../options/exe.md).
 
 ## `--exports`
 

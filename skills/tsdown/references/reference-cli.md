@@ -258,17 +258,19 @@ tsdown --copy assets --copy static
 
 ### `--exe`
 
-**[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications). Requires Node.js >= 25.5.0, not supported in Bun or Deno.
+**[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html). Requires Node.js >= 25.5.0, not supported in Bun or Deno. Cross-platform builds supported via `@tsdown/exe`.
 
 ```bash
 tsdown --exe
 ```
 
 When enabled:
-- Default format changes to `cjs` (unless ESM SEA is supported)
+- Default format changes to `cjs` (unless Node.js >= 25.7.0)
 - Declaration file generation (`dts`) is disabled by default
 - Code splitting is disabled
 - Only single entry points are supported
+
+See [Executable](option-exe.md) for advanced configuration and cross-platform builds.
 
 ## Package Management
 
@@ -382,7 +384,7 @@ tsdown --format iife --platform browser --minify
 tsdown --format esm --platform node --shims
 ```
 
-### Node.js Executable (SEA)
+### Standalone Executable
 
 ```bash
 tsdown src/cli.ts --exe
