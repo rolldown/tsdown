@@ -156,6 +156,7 @@ async function buildSingle(
   const bundle: TsdownBundle = {
     chunks,
     config,
+    inlinedDeps: new Map(),
     async [asyncDispose]() {
       debouncedPostBuild.cancel()
       ab?.abort()

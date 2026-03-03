@@ -146,5 +146,11 @@
     "vite": "catalog:docs",
     "vitest": "catalog:dev"
   },
+  "inlinedDependencies": {
+    "package-manager-detector": "1.6.0",
+    "@publint/pack": "0.1.4",
+    "is-in-ci": "2.0.0",
+    "pkg-types": "2.3.0"
+  },
   "prettier": "@sxzz/prettier-config"
 }

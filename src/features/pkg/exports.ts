@@ -89,11 +89,21 @@ export interface ExportsOptions {
           isPublish: boolean
         },
       ) => Awaitable<Record<string, any>>)
+
+  /**
+   * Generate `inlinedDependencies` field in package.json.
+   * Lists dependencies that are physically inlined into the bundle with their exact versions.
+   *
+   * @default true
+   * @see {@link https://github.com/e18e/ecosystem-issues/issues/237}
+   */
+  inlinedDependencies?: boolean
 }
 
 export async function writeExports(
   options: ResolvedConfig,
   chunks: ChunksByFormat,
+  inlinedDeps?: Record<string, string | string[]>,
 ): Promise<void> {
   typeAssert(options.pkg)
 
@@ -102,6 +112,7 @@ export async function writeExports(
     pkg,
     chunks,
     options,
+    inlinedDeps,
   )
 
   const updatedPkg = {
@@ -137,11 +148,13 @@ export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
   options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger'>,
+  inlinedDeps?: Record<string, string | string[]>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
   types: string | undefined
   exports: Record<string, any>
+  inlinedDependencies?: Record<string, string | string[]>
   publishExports?: Record<string, any>
 }> {
   typeAssert(options.exports)
@@ -153,6 +166,7 @@ export async function generateExports(
       exclude,
       customExports,
       legacy,
+      inlinedDependencies: emitInlinedDeps = true,
     },
     css,
     logger,
@@ -299,6 +313,7 @@ export async function generateExports(
     module: legacy ? module || pkg.module : undefined,
     types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
+    inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     publishExports,
   }
 }
