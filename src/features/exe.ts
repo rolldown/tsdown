@@ -9,9 +9,11 @@ import satisfies from 'semver/functions/satisfies.js'
 import { x } from 'tinyexec'
 import { formatBytes } from '../utils/format.ts'
 import { fsRemove, fsStat } from '../utils/fs.ts'
+import { importWithError } from '../utils/general.ts'
 import type { ResolvedConfig, RolldownChunk } from '../config/types.ts'
+import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
 
-export interface ExeOptions {
+export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>
   fileName?: string | ((chunk: RolldownChunk) => string)
 }
@@ -99,19 +101,76 @@ export async function buildExe(
   debug('Building executable with SEA for chunk:', chunk.fileName)
 
   const bundledFile = path.join(config.outDir, chunk.fileName)
-  let outputFile: string
-  if (config.exe.fileName) {
-    outputFile =
-      typeof config.exe.fileName === 'function'
-        ? config.exe.fileName(chunk)
-        : config.exe.fileName
-  } else {
-    outputFile = path.basename(bundledFile, path.extname(bundledFile))
-    if (process.platform === 'win32') {
-      outputFile += '.exe'
+  const { targets } = config.exe
+
+  if (targets && targets.length > 0) {
+    if (config.exe.seaConfig?.executable) {
+      config.logger.warn(
+        config.nameLabel,
+        '`seaConfig.executable` is ignored when `targets` is specified.',
+      )
     }
+
+    const { resolveNodeBinary, getTargetSuffix } =
+      await importWithError<typeof import('@tsdown/exe')>('@tsdown/exe')
+
+    for (const target of targets) {
+      const nodeBinaryPath = await resolveNodeBinary(target, config.logger)
+      const suffix = getTargetSuffix(target)
+      const outputFile = resolveOutputFileName(
+        config.exe,
+        chunk,
+        bundledFile,
+        target,
+        suffix,
+      )
+      await buildSingleExe(
+        config,
+        bundledFile,
+        outputFile,
+        nodeBinaryPath,
+        target,
+      )
+    }
+  } else {
+    const outputFile = resolveOutputFileName(config.exe, chunk, bundledFile)
+    await buildSingleExe(config, bundledFile, outputFile)
+  }
+}
+
+function resolveOutputFileName(
+  exe: ExeOptions,
+  chunk: RolldownChunk,
+  bundledFile: string,
+  target?: ExeTarget,
+  suffix?: string,
+): string {
+  let baseName: string
+  if (exe.fileName) {
+    baseName =
+      typeof exe.fileName === 'function' ? exe.fileName(chunk) : exe.fileName
+  } else {
+    baseName = path.basename(bundledFile, path.extname(bundledFile))
   }
 
+  if (suffix) {
+    baseName += suffix
+  }
+  if ((target?.platform || process.platform) === 'win32') {
+    baseName += '.exe'
+  }
+
+  return baseName
+}
+
+async function buildSingleExe(
+  config: ResolvedConfig,
+  bundledFile: string,
+  outputFile: string,
+  executable?: string,
+  target?: ExeTarget,
+): Promise<void> {
+  const exe = config.exe as ExeOptions
   const outputPath = path.join(config.outDir, outputFile)
   debug('Building SEA executable: %s -> %s', bundledFile, outputPath)
 
@@ -123,17 +182,20 @@ export async function buildExe(
   try {
     const seaConfig: SeaConfig = {
       disableExperimentalSEAWarning: true,
-      ...config.exe.seaConfig,
+      ...exe.seaConfig,
       main: bundledFile,
       output: outputPath,
       mainFormat: config.format === 'es' ? 'module' : 'commonjs',
+    }
+    if (executable) {
+      seaConfig.executable = executable
     }
 
     const seaConfigPath = path.join(tempDir, 'sea-config.json')
     await writeFile(seaConfigPath, JSON.stringify(seaConfig))
     debug('Wrote sea-config.json: %O -> %s', seaConfig, seaConfigPath)
 
-    // Build SEA using --build-sea (Node >= 25.5.0)
+    // Always use host node for --build-sea; the executable field controls the target binary
     await x(process.execPath, ['--build-sea', seaConfigPath], {
       nodeOptions: { stdio: 'pipe' },
     })
@@ -141,8 +203,8 @@ export async function buildExe(
     await fsRemove(tempDir)
   }
 
-  // Ad-hoc codesign on macOS (required for Gatekeeper)
-  if (process.platform === 'darwin') {
+  // Ad-hoc codesign on macOS host for darwin-targeted executables
+  if ((target?.platform || process.platform) === 'darwin') {
     try {
       await x('codesign', ['--sign', '-', outputPath], {
         nodeOptions: { stdio: 'pipe' },
@@ -150,7 +212,11 @@ export async function buildExe(
     } catch {
       config.logger.warn(
         config.nameLabel,
-        `Failed to codesign the executable. You may need to sign it manually:\n  codesign --sign - ${outputPath}`,
+        `Failed to code-sign the executable. ${
+          process.platform === 'darwin'
+            ? `You can sign it manually using:\n  codesign --sign - "${outputPath}"`
+            : `Automatic code signing is not supported on ${process.platform}.`
+        }`,
       )
     }
   }

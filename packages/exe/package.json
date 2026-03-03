@@ -1,0 +1,46 @@
+{
+  "name": "@tsdown/exe",
+  "type": "module",
+  "version": "0.21.0-beta.2",
+  "description": "Cross-platform executable building for tsdown",
+  "author": "Kevin Deng <sxzz@sxzz.moe>",
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/sxzz",
+  "homepage": "http://tsdown.dev/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolldown/tsdown.git",
+    "directory": "packages/exe"
+  },
+  "bugs": {
+    "url": "https://github.com/rolldown/tsdown/issues"
+  },
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.mts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*.d.mts",
+        "./*"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
+  },
+  "dependencies": {
+    "tinyexec": "catalog:prod"
+  }
+}

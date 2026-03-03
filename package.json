@@ -62,6 +62,7 @@
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
+    "@tsdown/exe": "workspace:*",
     "@vitejs/devtools": "*",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
@@ -70,6 +71,9 @@
   },
   "peerDependenciesMeta": {
     "@arethetypeswrong/core": {
+      "optional": true
+    },
+    "@tsdown/exe": {
       "optional": true
     },
     "@vitejs/devtools": {
@@ -112,6 +116,7 @@
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",
+    "@tsdown/exe": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/picomatch": "catalog:dev",
     "@types/semver": "catalog:dev",
