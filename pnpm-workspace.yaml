@@ -59,7 +59,6 @@ catalogs:
     '@arethetypeswrong/core': ^0.18.2
     '@vitejs/devtools': ^0.0.0-alpha.32
     publint: ^0.3.17
-    unplugin-lightningcss: ^0.4.5
     unplugin-unused: ^0.5.7
   prod:
     ansis: ^4.2.0

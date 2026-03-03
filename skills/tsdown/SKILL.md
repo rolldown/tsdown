@@ -96,7 +96,7 @@ export default defineConfig({
 | Shims | `shims: true` - Add ESM/CJS compatibility | [option-shims](references/option-shims.md) |
 | CJS default | `cjsDefault: true` (default) / `false` | [option-cjs-default](references/option-cjs-default.md) |
 | Package exports | `exports: true` - Auto-generate exports field | [option-package-exports](references/option-package-exports.md) |
-| CSS handling | **[experimental]** Still in development | [option-css](references/option-css.md) |
+| CSS handling | **[experimental]** `css: { splitting, preprocessorOptions, lightningcss }` | [option-css](references/option-css.md) |
 | Unbundle mode | `unbundle: true` - Preserve directory structure | [option-unbundle](references/option-unbundle.md) |
 | Executable | **[experimental]** `exe: true` - Bundle as standalone executable, cross-platform via `@tsdown/exe` | [option-exe](references/option-exe.md) |
 | Package validation | `publint: true`, `attw: true` - Validate package | [option-lint](references/option-lint.md) |
@@ -197,6 +197,24 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   entry: ['src/index.ts'],
   plugins: [wasm()],
+})
+```
+
+### Library with CSS and Sass
+
+```ts
+export default defineConfig({
+  entry: ['src/index.ts'],
+  format: ['esm', 'cjs'],
+  dts: true,
+  target: 'chrome100',
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "src/styles/variables" as *;`,
+      },
+    },
+  },
 })
 ```
 

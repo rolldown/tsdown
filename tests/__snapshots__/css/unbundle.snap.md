@@ -6,7 +6,7 @@ import "./style.mjs";
 export {  };
 ```
 
-## style-CDacwehR.css
+## style.css
 
 ```css
 body { color: red }

@@ -5,9 +5,9 @@ import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
 import type {
-  CssOptions,
   NormalizedFormat,
   ResolvedConfig,
+  ResolvedCssOptions,
 } from '../../config/types.ts'
 import type {
   ChunksByFormat,
@@ -357,7 +357,7 @@ function exportMeta(
 function exportCss(
   exports: Record<string, any>,
   chunks: ChunksByFormat,
-  { splitting }: Required<CssOptions>,
+  { splitting }: Pick<ResolvedCssOptions, 'splitting'>,
   pkgRoot: string,
 ) {
   if (splitting) return

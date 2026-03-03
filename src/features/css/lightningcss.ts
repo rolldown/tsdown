@@ -1,19 +1,26 @@
+import { importWithError } from '../../utils/general.ts'
 import { esbuildTargetToLightningCSS } from '../../utils/lightningcss.ts'
-import type { ResolvedConfig } from '../../config/index.ts'
-import type { Plugin } from 'rolldown'
+import type { LightningCSSOptions } from './index.ts'
 
-export async function LightningCSSPlugin(
-  options: Pick<ResolvedConfig, 'target'>,
-): Promise<Plugin | undefined> {
-  const LightningCSS = await import('unplugin-lightningcss/rolldown').catch(
-    () => undefined,
-  )
-  if (!LightningCSS) return
+export async function transformWithLightningCSS(
+  code: string,
+  filename: string,
+  target: string[] | undefined,
+  lightningcssOptions?: LightningCSSOptions,
+): Promise<string> {
+  const lightningcss =
+    await importWithError<typeof import('lightningcss')>('lightningcss')
 
-  // Converts the user-provided esbuild-format target into a LightningCSS
-  // targets object.
-  const targets = options.target && esbuildTargetToLightningCSS(options.target)
-  if (!targets) return
+  const targets =
+    lightningcssOptions?.targets ??
+    (target ? esbuildTargetToLightningCSS(target) : undefined)
+  if (!targets && !lightningcssOptions) return code
 
-  return LightningCSS.default({ options: { targets } })
+  const result = lightningcss.transform({
+    filename,
+    code: new TextEncoder().encode(code),
+    ...lightningcssOptions,
+    targets,
+  })
+  return new TextDecoder().decode(result.code)
 }

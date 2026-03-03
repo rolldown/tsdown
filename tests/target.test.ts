@@ -30,7 +30,7 @@ describe('target', () => {
     expect(snapshot).contain('?.')
   })
 
-  describe.skip('css', () => {
+  describe('css', () => {
     test('css syntax lowering', async (context) => {
       const { snapshot } = await testBuild({
         context,

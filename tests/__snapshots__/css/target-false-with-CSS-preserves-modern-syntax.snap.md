@@ -7,6 +7,6 @@ export {  };
 ## style.css
 
 ```css
-body { color: red }
+.foo { & .bar { color: red } }
 
 ```
