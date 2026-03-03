@@ -112,13 +112,12 @@ export async function writeExports(
     pkg,
     chunks,
     options,
+    inlinedDeps,
   )
 
-  const { inlinedDependencies: emitInlinedDeps = true } = options.exports || {}
   const updatedPkg = {
     ...pkg,
     ...generated,
-    inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     packageJsonPath: undefined,
   }
 
@@ -149,11 +148,13 @@ export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
   options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger'>,
+  inlinedDeps?: Record<string, string | string[]>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
   types: string | undefined
   exports: Record<string, any>
+  inlinedDependencies?: Record<string, string | string[]>
   publishExports?: Record<string, any>
 }> {
   typeAssert(options.exports)
@@ -165,6 +166,7 @@ export async function generateExports(
       exclude,
       customExports,
       legacy,
+      inlinedDependencies: emitInlinedDeps = true,
     },
     css,
     logger,
@@ -311,6 +313,7 @@ export async function generateExports(
     module: legacy ? module || pkg.module : undefined,
     types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
+    inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     publishExports,
   }
 }
