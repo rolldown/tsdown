@@ -425,6 +425,12 @@ importers:
 
   packages/exe:
     dependencies:
+      obug:
+        specifier: catalog:prod
+        version: 2.1.1
+      semver:
+        specifier: catalog:prod
+        version: 7.7.4
       tinyexec:
         specifier: catalog:prod
         version: 1.0.2

@@ -48,6 +48,8 @@
     "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "dependencies": {
+    "obug": "catalog:prod",
+    "semver": "catalog:prod",
     "tinyexec": "catalog:prod"
   }
 }

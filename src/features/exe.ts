@@ -107,7 +107,7 @@ export async function buildExe(
   const bundledFile = path.join(config.outDir, chunk.fileName)
   const { targets } = config.exe
 
-  if (targets && targets.length > 0) {
+  if (targets?.length) {
     if (config.exe.seaConfig?.executable) {
       config.logger.warn(
         config.nameLabel,

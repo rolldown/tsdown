@@ -1,9 +1,17 @@
+import satisfies from 'semver/functions/satisfies.js'
+
+const SEA_VERSION_RANGE = '>=18.16.0 <19.0.0 || >=19.7.0'
+
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
 
 export interface ExeTarget {
   platform: ExePlatform
   arch: ExeArch
+  /**
+   * Node.js version to use for the executable. Should be a valid Node.js version string (e.g., "18.15.0").
+   * The minimum required version is 18.16.0, which is when SEA support was added to Node.js.
+   */
   nodeVersion: string
 }
 
@@ -46,6 +54,15 @@ export function getBinaryPathInArchive(target: ExeTarget): string {
   return `${dirName}/bin/node`
 }
 
+export function validateNodeVersion(target: ExeTarget): void {
+  if (!satisfies(target.nodeVersion, SEA_VERSION_RANGE)) {
+    throw new Error(
+      `Node.js ${target.nodeVersion} does not support SEA (Single Executable Applications). ` +
+        `Required: ${SEA_VERSION_RANGE}`,
+    )
+  }
+}
+
 export function getTargetSuffix(target: ExeTarget): string {
-  return `${target.platform}-${target.arch}`
+  return `-${target.platform}-${target.arch}`
 }

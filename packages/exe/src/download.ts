@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { chmod, mkdir, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { createDebug } from 'obug'
 import { x } from 'tinyexec'
 import { fsExists } from '../../../src/utils/fs.ts'
 import { getCachedBinaryPath } from './cache.ts'
@@ -8,8 +9,11 @@ import {
   getArchiveExtension,
   getBinaryPathInArchive,
   getDownloadUrl,
+  validateNodeVersion,
   type ExeTarget,
 } from './platform.ts'
+
+const debug = createDebug('tsdown:exe:download')
 
 export interface MinimalLogger {
   info: (...args: any[]) => void
@@ -19,9 +23,14 @@ export async function resolveNodeBinary(
   target: ExeTarget,
   logger?: MinimalLogger,
 ): Promise<string> {
+  debug('Resolving Node.js binary for target: %O', target)
+  validateNodeVersion(target)
+
   const cachedPath = getCachedBinaryPath(target)
+  debug('Cache path: %s', cachedPath)
 
   if (await fsExists(cachedPath)) {
+    debug('Cache hit: %s', cachedPath)
     logger?.info(
       `Using cached Node.js ${target.nodeVersion} for ${target.platform}-${target.arch}`,
     )
@@ -29,6 +38,7 @@ export async function resolveNodeBinary(
   }
 
   const url = getDownloadUrl(target)
+  debug('Cache miss, downloading from: %s', url)
   logger?.info(
     `Downloading Node.js ${target.nodeVersion} for ${target.platform}-${target.arch}...`,
   )
@@ -47,6 +57,7 @@ export async function resolveNodeBinary(
   const archivePath = `${cachedPath}.download.${ext}`
 
   const buffer = Buffer.from(await response.arrayBuffer())
+  debug('Downloaded %d bytes, writing to: %s', buffer.length, archivePath)
   await writeFile(archivePath, buffer)
 
   try {
@@ -56,6 +67,7 @@ export async function resolveNodeBinary(
       await chmod(cachedPath, 0o755)
     }
 
+    debug('Binary cached at: %s', cachedPath)
     logger?.info(`Cached Node.js binary at: ${cachedPath}`)
   } finally {
     await rm(archivePath, { force: true })
@@ -71,6 +83,7 @@ async function extractBinary(
 ): Promise<void> {
   const binaryInArchive = getBinaryPathInArchive(target)
   const outDir = path.dirname(targetBinaryPath)
+  debug('Extracting %s from archive to %s', binaryInArchive, outDir)
 
   if (target.platform === 'win') {
     // Modern Windows has bsdtar that supports .zip
