@@ -145,9 +145,6 @@ catalogs:
     publint:
       specifier: ^0.3.17
       version: 0.3.17
-    unplugin-lightningcss:
-      specifier: ^0.4.5
-      version: 0.4.5
     unplugin-unused:
       specifier: ^0.5.7
       version: 0.5.7
@@ -349,9 +346,6 @@ importers:
       unplugin-ast:
         specifier: catalog:dev
         version: 0.16.0
-      unplugin-lightningcss:
-        specifier: catalog:peer
-        version: 0.4.5
       unplugin-unused:
         specifier: catalog:peer
         version: 0.5.7
@@ -3658,10 +3652,6 @@ packages:
 
   unplugin-ast@0.16.0:
     resolution: {integrity: sha512-1ow2FlRznoSKE7Fjk2bSxqDsvHyj/O876RqsNlipsM6A+I91t7Mi+jG7tCNNcl3vZx14z4pGXBLSl8KOPrMuFQ==}
-    engines: {node: '>=20.19.0'}
-
-  unplugin-lightningcss@0.4.5:
-    resolution: {integrity: sha512-PMm6POv3gt1HNbxYFItantjcP6dPG/BiV/9IXcVLVBv3BZ+pf7Eo4yE+siIGKoVMXjs3BfVXeETTw2Gv3D8iOw==}
     engines: {node: '>=20.19.0'}
 
   unplugin-unused@0.5.7:
@@ -7557,11 +7547,6 @@ snapshots:
       '@babel/types': 8.0.0-rc.2
       ast-kit: 3.0.0-beta.1
       magic-string-ast: 1.0.3
-      unplugin: 3.0.0
-
-  unplugin-lightningcss@0.4.5:
-    dependencies:
-      lightningcss: 1.31.1
       unplugin: 3.0.0
 
   unplugin-unused@0.5.7:

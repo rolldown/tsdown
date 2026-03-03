@@ -63,9 +63,9 @@
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
     "@vitejs/devtools": "*",
+    "lightningcss": "^1.29.0",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
-    "unplugin-lightningcss": "^0.4.0",
     "unplugin-unused": "^0.5.0"
   },
   "peerDependenciesMeta": {
@@ -75,13 +75,13 @@
     "@vitejs/devtools": {
       "optional": true
     },
+    "lightningcss": {
+      "optional": true
+    },
     "publint": {
       "optional": true
     },
     "typescript": {
-      "optional": true
-    },
-    "unplugin-lightningcss": {
       "optional": true
     },
     "unplugin-unused": {
@@ -136,7 +136,6 @@
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
-    "unplugin-lightningcss": "catalog:peer",
     "unplugin-unused": "catalog:peer",
     "vite": "catalog:docs",
     "vitest": "catalog:dev"

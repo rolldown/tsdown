@@ -1,5 +1,13 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
-import type { CssOptions } from '../features/css/index.ts'
+import type {
+  CssOptions,
+  LessPreprocessorOptions,
+  LightningCSSOptions,
+  PreprocessorOptions,
+  ResolvedCssOptions,
+  SassPreprocessorOptions,
+  StylusPreprocessorOptions,
+} from '../features/css/index.ts'
 import type {
   DepsConfig,
   NoExternalFn,
@@ -88,18 +96,24 @@ export type {
   DtsOptions,
   ExeOptions,
   ExportsOptions,
+  LessPreprocessorOptions,
+  LightningCSSOptions,
   NoExternalFn,
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
   PackageJsonWithPath,
   PackageType,
+  PreprocessorOptions,
   PublintOptions,
   ReportOptions,
+  ResolvedCssOptions,
   ResolvedDepsConfig,
   RolldownChunk,
   RolldownContext,
+  SassPreprocessorOptions,
   SeaConfig,
+  StylusPreprocessorOptions,
   TreeshakingOptions,
   TsdownBundle,
   TsdownHooks,
@@ -664,7 +678,7 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     deps: ResolvedDepsConfig
-    css: Required<CssOptions>
+    css: ResolvedCssOptions
 
     dts: false | DtsOptions
     report: false | ReportOptions

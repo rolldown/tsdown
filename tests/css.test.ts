@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
-describe.skip('css', () => {
+describe('css', () => {
   test('basic', async (context) => {
     const { outputFiles } = await testBuild({
       context,
@@ -24,7 +24,7 @@ describe.skip('css', () => {
         unbundle: true,
       },
     })
-    expect(outputFiles).toEqual(['index.js', 'style.js', 'style.css'])
+    expect(outputFiles).toEqual(['index.mjs', 'style.css', 'style.mjs'])
   })
 
   test('with dts', async (context) => {
@@ -38,7 +38,7 @@ describe.skip('css', () => {
         dts: true,
       },
     })
-    expect(outputFiles).toEqual(['style.css', 'style.js', 'style.d.ts'])
+    expect(outputFiles).toEqual(['style.css', 'style.mjs'])
   })
 
   test('merge css without splitting', async (context) => {
