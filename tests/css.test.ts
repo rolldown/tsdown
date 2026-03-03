@@ -81,4 +81,28 @@ describe('css', () => {
     expect(outputFiles).toContain('bar.css')
     expect(outputFiles).toContain('foo.css')
   })
+
+  test('CSS bundling', async (context) => {
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'foo.css': `.foo { color: red; }`,
+        'bar.css': `@import './foo.css'; .bar { color: blue; }`,
+        'all.css': `@import './foo.css'; @import './bar.css';`,
+      },
+      options: {
+        entry: ['foo.css', 'bar.css', 'all.css'],
+        css: { splitting: true },
+      },
+    })
+    expect(outputFiles).toContain('bar.css')
+    expect(outputFiles).toContain('foo.css')
+    expect(outputFiles).toContain('all.css')
+
+    expect(fileMap['bar.css']).toContain('blue')
+    expect(fileMap['foo.css']).toContain('red')
+    expect(fileMap['foo.css']).toContain('blue')
+    expect(fileMap['all.css']).toContain('red')
+    expect(fileMap['all.css']).toContain('blue')
+  })
 })
