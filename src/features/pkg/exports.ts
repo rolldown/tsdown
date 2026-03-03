@@ -89,11 +89,21 @@ export interface ExportsOptions {
           isPublish: boolean
         },
       ) => Awaitable<Record<string, any>>)
+
+  /**
+   * Generate `inlinedDependencies` field in package.json.
+   * Lists dependencies that are physically inlined into the bundle with their exact versions.
+   *
+   * @default true
+   * @see {@link https://github.com/e18e/ecosystem-issues/issues/237}
+   */
+  inlinedDependencies?: boolean
 }
 
 export async function writeExports(
   options: ResolvedConfig,
   chunks: ChunksByFormat,
+  inlinedDeps?: Record<string, string | string[]>,
 ): Promise<void> {
   typeAssert(options.pkg)
 
@@ -104,9 +114,11 @@ export async function writeExports(
     options,
   )
 
+  const { inlinedDependencies: emitInlinedDeps = true } = options.exports || {}
   const updatedPkg = {
     ...pkg,
     ...generated,
+    inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     packageJsonPath: undefined,
   }
 

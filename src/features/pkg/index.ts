@@ -77,6 +77,7 @@ export async function bundleDone(
     }
 
     const chunks: ChunksByFormat = {}
+    const inlinedDeps = mergeInlinedDeps(ctx.bundles)
     for (const bundle of ctx.bundles) {
       if (!bundle.config.exports) continue
 
@@ -84,7 +85,7 @@ export async function bundleDone(
       chunks[bundle.config.format]!.push(...bundle.chunks)
     }
 
-    await writeExports(exportsConfigs[0], chunks)
+    await writeExports(exportsConfigs[0], chunks, inlinedDeps)
   }
 
   const publintConfigs = dedupeConfigs(configs, 'publint')
@@ -159,4 +160,28 @@ function dedupeConfigs<K extends 'publint' | 'attw' | 'exports'>(
     return [filtered[0]]
   }
   return results
+}
+
+function mergeInlinedDeps(
+  bundles: TsdownBundle[],
+): Record<string, string | string[]> | undefined {
+  const merged = new Map<string, Set<string>>()
+  for (const bundle of bundles) {
+    for (const [pkgName, versions] of bundle.inlinedDeps) {
+      if (!merged.has(pkgName)) {
+        merged.set(pkgName, new Set())
+      }
+      for (const v of versions) {
+        merged.get(pkgName)!.add(v)
+      }
+    }
+  }
+  if (!merged.size) return undefined
+
+  const result: Record<string, string | string[]> = {}
+  for (const [pkgName, versions] of merged) {
+    result[pkgName] =
+      versions.size === 1 ? [...versions][0] : [...versions].toSorted()
+  }
+  return result
 }

@@ -7,6 +7,7 @@ export type ChunksByFormat = Partial<Record<NormalizedFormat, RolldownChunk[]>>
 export interface TsdownBundle extends AsyncDisposable {
   chunks: RolldownChunk[]
   config: ResolvedConfig
+  inlinedDeps: Map<string, Set<string>>
 }
 
 export function addOutDirToChunks(
