@@ -68,6 +68,8 @@ export default defineConfig([
     treeshake: {
       moduleSideEffects: false,
     },
-    exports: true,
+    exports: {
+      devExports: 'dev',
+    },
   },
 ])

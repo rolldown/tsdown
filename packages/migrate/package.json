@@ -16,8 +16,14 @@
     "url": "https://github.com/rolldown/tsdown/issues"
   },
   "exports": {
-    ".": "./dist/index.mjs",
-    "./run": "./dist/run.mjs",
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./run": {
+      "dev": "./src/run.ts",
+      "default": "./dist/run.mjs"
+    },
     "./package.json": "./package.json"
   },
   "types": "./dist/index.d.mts",
@@ -36,7 +42,12 @@
     "dist"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./run": "./dist/run.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "engines": {
     "node": ">=20.19.0"
