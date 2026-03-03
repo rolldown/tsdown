@@ -62,6 +62,10 @@ bun add -D typescript
 `tsdown` 需要 Node.js 20.19 或更高版本。请确保您的开发环境满足此要求后再进行安装。虽然 `tsdown` 主要在 Node.js 下测试，但对 Deno 和 Bun 的支持仍为实验性，可能无法正常工作。
 :::
 
+:::warning Node.js 弃用警告
+低于 22.18.0 的 Node.js 版本已被弃用，将在下一个 minor 版本中移除支持。请升级到 Node.js 22.18.0 或更高版本。
+:::
+
 ### 起步模板 {#starter-templates}
 
 为了更快速地开始，您可以使用 [create-tsdown](https://github.com/rolldown/tsdown/tree/main/packages/create-tsdown) CLI，它提供了一系列起步模板，适用于构建纯 TypeScript 库以及如 React、Vue 等前端库。
