@@ -5,7 +5,7 @@ export interface CssOptions {
    * Enable/disable CSS code splitting.
    * When set to `false`, all CSS in the entire project will be extracted into a single CSS file.
    * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
-   * @default true
+   * @default false
    */
   splitting?: boolean
 
@@ -89,7 +89,7 @@ export function resolveCssOptions(
   options: CssOptions = {},
 ): ResolvedCssOptions {
   return {
-    splitting: options.splitting ?? true,
+    splitting: options.splitting ?? false,
     fileName: options.fileName ?? defaultCssBundleName,
     preprocessorOptions: options.preprocessorOptions,
     lightningcss: options.lightningcss,

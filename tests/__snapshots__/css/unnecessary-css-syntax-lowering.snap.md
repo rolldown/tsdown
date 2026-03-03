@@ -1,4 +1,10 @@
-## index.css
+## index.mjs
+
+```mjs
+export {  };
+```
+
+## style.css
 
 ```css
 .foo {
@@ -7,10 +13,4 @@
   }
 }
 
-```
-
-## index.mjs
-
-```mjs
-export {  };
 ```

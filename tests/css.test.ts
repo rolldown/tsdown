@@ -10,7 +10,7 @@ describe('css', () => {
         'style.css': `body { color: red }`,
       },
     })
-    expect(outputFiles).toEqual(['index.css', 'index.mjs'])
+    expect(outputFiles).toEqual(['index.mjs', 'style.css'])
   })
 
   test('unbundle', async (context) => {
@@ -75,6 +75,7 @@ describe('css', () => {
       },
       options: {
         entry: ['foo.css', 'bar.css'],
+        css: { splitting: true },
       },
     })
     expect(outputFiles).toContain('bar.css')

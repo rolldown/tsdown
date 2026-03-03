@@ -172,9 +172,39 @@ export default defineConfig({
 
 ## CSS 代码分割
 
-### 分割模式（默认）
+### 合并模式（默认）
 
-默认情况下，CSS 按 chunk 分割——每个导入 CSS 的 JavaScript chunk 会有对应的 `.css` 文件：
+默认情况下，所有 CSS 会合并为单个文件（默认为 `style.css`）：
+
+```
+dist/
+  index.mjs
+  style.css  ← 所有 CSS 合并
+```
+
+### 自定义文件名
+
+可以自定义合并 CSS 的文件名：
+
+```ts
+export default defineConfig({
+  css: {
+    fileName: 'my-library.css',
+  },
+})
+```
+
+### 分割模式
+
+要按 chunk 分割 CSS——每个导入 CSS 的 JavaScript chunk 会有对应的 `.css` 文件——启用分割：
+
+```ts
+export default defineConfig({
+  css: {
+    splitting: true,
+  },
+})
+```
 
 ```
 dist/
@@ -184,38 +214,11 @@ dist/
   async-abc123.css ← 异步 chunk 的 CSS
 ```
 
-### 合并模式
-
-要将所有 CSS 合并为单个文件，禁用分割：
-
-```ts
-export default defineConfig({
-  css: {
-    splitting: false,
-  },
-})
-```
-
-这会将所有 chunk 的 CSS 合并到一个文件中（默认为 `style.css`）。
-
-### 自定义文件名
-
-可以自定义合并 CSS 的文件名：
-
-```ts
-export default defineConfig({
-  css: {
-    splitting: false,
-    fileName: 'my-library.css',
-  },
-})
-```
-
 ## 选项参考
 
 | 选项                      | 类型      | 默认值        | 描述                                               |
 | ------------------------- | --------- | ------------- | -------------------------------------------------- |
-| `css.splitting`           | `boolean` | `true`        | 启用/禁用 CSS 代码分割                             |
+| `css.splitting`           | `boolean` | `false`       | 启用按 chunk 的 CSS 代码分割                       |
 | `css.fileName`            | `string`  | `'style.css'` | 合并 CSS 的文件名（当 `splitting: false` 时）      |
 | `css.preprocessorOptions` | `object`  | —             | CSS 预处理器选项（scss、sass、less、styl、stylus） |
 | `css.lightningcss`        | `object`  | —             | 传递给 Lightning CSS 的语法降级选项                |

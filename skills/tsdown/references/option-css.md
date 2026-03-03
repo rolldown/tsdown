@@ -116,17 +116,24 @@ export default defineConfig({
 
 ## Code Splitting
 
-### Per-Chunk (Default)
+### Merged (Default)
 
-Each JS chunk gets a corresponding `.css` file.
-
-### Merged Single File
+All CSS merged into a single file (default: `style.css`).
 
 ```ts
 export default defineConfig({
   css: {
-    splitting: false,           // Merge all CSS
     fileName: 'my-library.css', // Custom name (default: 'style.css')
+  },
+})
+```
+
+### Per-Chunk Splitting
+
+```ts
+export default defineConfig({
+  css: {
+    splitting: true, // Each JS chunk gets a corresponding .css file
   },
 })
 ```
@@ -135,7 +142,7 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `css.splitting` | `boolean` | `true` | Per-chunk CSS splitting |
+| `css.splitting` | `boolean` | `false` | Per-chunk CSS splitting |
 | `css.fileName` | `string` | `'style.css'` | Merged CSS file name |
 | `css.preprocessorOptions` | `object` | — | Preprocessor options (scss/sass/less/styl/stylus) |
 | `css.lightningcss` | `object` | — | Lightning CSS transform options |

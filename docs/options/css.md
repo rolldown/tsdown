@@ -172,9 +172,39 @@ For more information on available options, refer to the [Lightning CSS documenta
 
 ## CSS Code Splitting
 
-### Splitting Mode (Default)
+### Merged Mode (Default)
 
-By default, CSS is split per chunk — each JavaScript chunk that imports CSS will have a corresponding `.css` file:
+By default, all CSS is merged into a single file (default: `style.css`):
+
+```
+dist/
+  index.mjs
+  style.css  ← all CSS merged
+```
+
+### Custom File Name
+
+You can customize the merged CSS file name:
+
+```ts
+export default defineConfig({
+  css: {
+    fileName: 'my-library.css',
+  },
+})
+```
+
+### Splitting Mode
+
+To split CSS per chunk — so each JavaScript chunk that imports CSS has a corresponding `.css` file — enable splitting:
+
+```ts
+export default defineConfig({
+  css: {
+    splitting: true,
+  },
+})
+```
 
 ```
 dist/
@@ -184,38 +214,11 @@ dist/
   async-abc123.css ← CSS from async chunk
 ```
 
-### Merged Mode
-
-To merge all CSS into a single file, disable splitting:
-
-```ts
-export default defineConfig({
-  css: {
-    splitting: false,
-  },
-})
-```
-
-This combines all CSS from all chunks into one file (default: `style.css`).
-
-### Custom File Name
-
-You can customize the merged CSS file name:
-
-```ts
-export default defineConfig({
-  css: {
-    splitting: false,
-    fileName: 'my-library.css',
-  },
-})
-```
-
 ## Options Reference
 
 | Option                    | Type      | Default       | Description                                                    |
 | ------------------------- | --------- | ------------- | -------------------------------------------------------------- |
-| `css.splitting`           | `boolean` | `true`        | Enable/disable CSS code splitting                              |
+| `css.splitting`           | `boolean` | `false`       | Enable CSS code splitting per chunk                            |
 | `css.fileName`            | `string`  | `'style.css'` | File name for the merged CSS file (when `splitting: false`)    |
 | `css.preprocessorOptions` | `object`  | —             | Options for CSS preprocessors (scss, sass, less, styl, stylus) |
 | `css.lightningcss`        | `object`  | —             | Options passed to Lightning CSS for syntax lowering            |
