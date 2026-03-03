@@ -148,7 +148,7 @@ export function resolveDepsConfig(
 
 export function DepPlugin({
   pkg,
-  deps: { alwaysBundle, onlyAllowBundle: inlineOnly, skipNodeModulesBundle },
+  deps: { alwaysBundle, onlyAllowBundle, skipNodeModulesBundle },
   logger,
   nameLabel,
 }: ResolvedConfig): Plugin {
@@ -183,7 +183,7 @@ export function DepPlugin({
     },
 
     generateBundle:
-      inlineOnly === false
+      onlyAllowBundle === false
         ? undefined
         : {
             order: 'post',
@@ -226,9 +226,9 @@ export function DepPlugin({
 
               debug('found deps in bundle: %o', deps)
 
-              if (inlineOnly) {
+              if (onlyAllowBundle) {
                 const errors = Array.from(deps)
-                  .filter((dep) => !matchPattern(dep, inlineOnly))
+                  .filter((dep) => !matchPattern(dep, onlyAllowBundle))
                   .map(
                     (dep) =>
                       `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyAllowBundle`} option.\n` +
@@ -241,7 +241,7 @@ export function DepPlugin({
                   this.error(errors.join('\n\n'))
                 }
 
-                const unusedPatterns = inlineOnly.filter(
+                const unusedPatterns = onlyAllowBundle.filter(
                   (pattern) =>
                     !Array.from(deps).some((dep) =>
                       matchPattern(dep, [pattern]),

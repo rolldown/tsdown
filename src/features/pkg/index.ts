@@ -11,16 +11,15 @@ import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
 import type { Buffer } from 'node:buffer'
 
-export type BundleByPkg = Record<
-  string, // pkgPath
-  {
+export interface BundleByPkg {
+  [pkgPath: string]: {
     promise: Promise<void>
     resolve: () => void
     count: number
     formats: Set<string>
     bundles: TsdownBundle[]
   }
->
+}
 
 export function initBundleByPkg(configs: ResolvedConfig[]): BundleByPkg {
   const map: BundleByPkg = {}
