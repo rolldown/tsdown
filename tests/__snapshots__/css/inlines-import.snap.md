@@ -1,15 +1,17 @@
 ## index.mjs
 
 ```mjs
-/* empty css       */
-
 export {  };
 ```
 
 ## style.css
 
 ```css
-body {
+.other {
+  color: #00f;
+}
+
+.main {
   color: red;
 }
 

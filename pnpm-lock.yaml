@@ -52,9 +52,6 @@ catalogs:
     eslint:
       specifier: ^10.0.2
       version: 10.0.2
-    lightningcss:
-      specifier: ^1.31.1
-      version: 1.31.1
     memfs:
       specifier: ^4.56.10
       version: 4.56.10
@@ -170,6 +167,9 @@ catalogs:
     is-in-ci:
       specifier: ^2.0.0
       version: 2.0.0
+    lightningcss:
+      specifier: ^1.31.1
+      version: 1.31.1
     obug:
       specifier: ^2.1.1
       version: 2.1.1
@@ -274,6 +274,9 @@ importers:
       '@sxzz/test-utils':
         specifier: catalog:dev
         version: 0.5.15(@volar/typescript@2.4.28)(@vue/language-core@3.2.5)(rolldown@1.0.0-rc.6)(typescript@5.9.3)(vitest@4.0.18)
+      '@tsdown/css':
+        specifier: workspace:*
+        version: link:packages/css
       '@tsdown/exe':
         specifier: workspace:*
         version: link:packages/exe
@@ -316,9 +319,6 @@ importers:
       is-in-ci:
         specifier: catalog:prod
         version: 2.0.0
-      lightningcss:
-        specifier: catalog:dev
-        version: 1.31.1
       memfs:
         specifier: catalog:dev
         version: 4.56.10(tslib@2.8.1)
@@ -416,6 +416,15 @@ importers:
       package-manager-detector:
         specifier: catalog:prod
         version: 1.6.0
+
+  packages/css:
+    dependencies:
+      lightningcss:
+        specifier: catalog:prod
+        version: 1.31.1
+      tsdown:
+        specifier: workspace:*
+        version: link:../..
 
   packages/exe:
     dependencies:

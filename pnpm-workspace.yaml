@@ -25,7 +25,6 @@ catalogs:
     bumpp: ^10.4.1
     dedent: ^1.7.1
     eslint: ^10.0.2
-    lightningcss: ^1.31.1
     memfs: ^4.56.10
     pkg-types: ^2.3.0
     prettier: ^3.8.1
@@ -68,6 +67,7 @@ catalogs:
     hookable: ^6.0.1
     import-without-cache: ^0.2.5
     is-in-ci: ^2.0.0
+    lightningcss: ^1.31.1
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3

@@ -8,6 +8,7 @@ import {
   type BuildOptions,
   type InputOptions,
   type OutputOptions,
+  type Plugin,
   type RolldownPluginOption,
 } from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
@@ -148,10 +149,14 @@ async function resolveInputOptions(
         }),
       )
     }
-    plugins.push(
-      CssPlugin(config),
-      ShebangPlugin(logger, cwd, nameLabel, isDualFormat),
-    )
+    let cssPlugin: Plugin
+    try {
+      const { CssPlugin: AdvancedCssPlugin } = await import('@tsdown/css')
+      cssPlugin = AdvancedCssPlugin(config)
+    } catch {
+      cssPlugin = CssPlugin(config)
+    }
+    plugins.push(cssPlugin, ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
     if (globImport) {
       plugins.push(importGlobPlugin({ root: cwd }))
     }
