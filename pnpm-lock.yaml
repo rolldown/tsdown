@@ -61,6 +61,9 @@ catalogs:
     postcss:
       specifier: ^8.5.6
       version: 8.5.6
+    postcss-import:
+      specifier: ^16.1.0
+      version: 16.1.1
     prettier:
       specifier: ^3.8.1
       version: 3.8.1
@@ -337,6 +340,9 @@ importers:
       postcss:
         specifier: catalog:dev
         version: 8.5.6
+      postcss-import:
+        specifier: catalog:dev
+        version: 16.1.1(postcss@8.5.6)
       prettier:
         specifier: catalog:dev
         version: 3.8.1

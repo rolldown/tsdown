@@ -160,6 +160,7 @@
     "package-manager-detector": "catalog:prod",
     "pkg-types": "catalog:dev",
     "postcss": "catalog:dev",
+    "postcss-import": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",
     "rolldown-plugin-dts-snapshot": "catalog:dev",
