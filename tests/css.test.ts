@@ -268,4 +268,48 @@ describe('css', () => {
     expect(fileMap['style.css']).toContain('.main')
     expect(fileMap['style.css']).not.toContain('@import')
   })
+
+  test('lightningcss transformer inlines @import', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `@import './other.css'; .main { color: red }`,
+        'other.css': `.other { color: blue }`,
+      },
+      options: {
+        css: { transformer: 'lightningcss' },
+      },
+    })
+    expect(fileMap['style.css']).toContain('.other')
+    expect(fileMap['style.css']).toContain('.main')
+    expect(fileMap['style.css']).not.toContain('@import')
+  })
+
+  test('lightningcss transformer ignores postcss plugins', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { color: red }`,
+      },
+      options: {
+        css: {
+          transformer: 'lightningcss',
+          postcss: {
+            plugins: [
+              {
+                postcssPlugin: 'test-plugin',
+                Once(root: any) {
+                  root.prepend({ text: 'should-not-appear' })
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
+    expect(fileMap['style.css']).toContain('.foo')
+    expect(fileMap['style.css']).not.toContain('should-not-appear')
+  })
 })

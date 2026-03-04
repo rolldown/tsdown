@@ -59,11 +59,28 @@ export interface CssOptions {
    * - `object`: Inline PostCSS options with optional `plugins` array.
    * - Omitted: Auto-detect PostCSS config from the project root.
    *
+   * Only used when `transformer` is `'postcss'` (default).
    * Requires `postcss` and `@tsdown/css` to be installed.
    *
    * @see https://github.com/postcss/postcss
    */
   postcss?: PostCSSOptions
+
+  /**
+   * CSS transformer to use. Controls how CSS is processed:
+   *
+   * - `'postcss'` (default): `@import` handled by `postcss-import`,
+   *   PostCSS plugins applied, Lightning CSS used only for final
+   *   targets/minify transform.
+   * - `'lightningcss'`: `@import` handled by Lightning CSS `bundleAsync()`,
+   *   PostCSS is **not** used at all.
+   *
+   * Requires `@tsdown/css` to be installed.
+   *
+   * @default 'postcss'
+   * @see https://vite.dev/config/shared-options#css-transformer
+   */
+  transformer?: 'postcss' | 'lightningcss'
 }
 
 export type PostCSSOptions =
@@ -114,6 +131,7 @@ export interface StylusPreprocessorOptions {
 export type LightningCSSOptions = Record<string, any>
 
 export interface ResolvedCssOptions {
+  transformer: 'postcss' | 'lightningcss'
   splitting: boolean
   fileName: string
   minify: boolean
@@ -139,6 +157,7 @@ export function resolveCssOptions(
   }
 
   return {
+    transformer: options.transformer ?? 'postcss',
     splitting: options.splitting ?? false,
     fileName: options.fileName ?? defaultCssBundleName,
     minify: options.minify ?? false,

@@ -62,15 +62,28 @@ export async function processWithPostCSS(
   filename: string,
   postcssOption: PostCSSOptions | undefined,
   cwd: string,
+  injectImport?: boolean,
 ): Promise<PostCSSProcessResult> {
   const config = await resolvePostCSSConfig(postcssOption, cwd)
-  if (!config || (!config.plugins.length && !config.options.parser)) {
+
+  const plugins: any[] = []
+
+  if (injectImport) {
+    const postcssImport: any = await importWithError('postcss-import')
+    plugins.push((postcssImport.default ?? postcssImport)())
+  }
+
+  if (config) {
+    plugins.push(...config.plugins)
+  }
+
+  if (!plugins.length && !config?.options.parser) {
     return { code, deps: [] }
   }
 
   const postcss = await importWithError<typeof import('postcss')>('postcss')
-  const result = await postcss.default(config.plugins).process(code, {
-    ...config.options,
+  const result = await postcss.default(plugins).process(code, {
+    ...config?.options,
     from: filename,
     to: filename,
   })

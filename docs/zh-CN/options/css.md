@@ -180,6 +180,56 @@ export default defineConfig({
 })
 ```
 
+## CSS 转换器
+
+> [!NOTE]
+> 需要安装 `@tsdown/css`。
+
+`css.transformer` 选项控制 CSS 的处理方式。PostCSS 和 Lightning CSS 是**互斥的**处理路径：
+
+- **`'postcss'`**（默认）：`@import` 由 [`postcss-import`](https://github.com/postcss/postcss-import) 解析，PostCSS 插件被应用，然后 Lightning CSS 仅用于最终的语法降级和压缩。
+- **`'lightningcss'`**：`@import` 由 Lightning CSS 的 `bundleAsync()` 解析，**完全不使用** PostCSS。
+
+```ts
+export default defineConfig({
+  css: {
+    transformer: 'lightningcss', // 使用 Lightning CSS 处理所有内容
+  },
+})
+```
+
+使用默认的 `'postcss'` 转换器时，需安装 `postcss` 和可选的 `postcss-import` 用于 `@import` 解析：
+
+```bash
+npm install -D postcss postcss-import
+```
+
+### PostCSS 选项
+
+可以内联配置 PostCSS 或指向配置文件：
+
+```ts
+export default defineConfig({
+  css: {
+    postcss: {
+      plugins: [require('autoprefixer')],
+    },
+  },
+})
+```
+
+或指定目录路径来搜索 PostCSS 配置文件（`postcss.config.js` 等）：
+
+```ts
+export default defineConfig({
+  css: {
+    postcss: './config', // 在 ./config/ 中搜索 postcss.config.js
+  },
+})
+```
+
+未设置 `css.postcss` 时，tsdown 会自动从项目根目录检测 PostCSS 配置。
+
 ## Lightning CSS
 
 > [!NOTE]
@@ -295,11 +345,13 @@ dist/
 
 ## 选项参考
 
-| 选项                      | 类型                          | 默认值          | 描述                                                      |
-| ------------------------- | ----------------------------- | --------------- | --------------------------------------------------------- |
-| `css.splitting`           | `boolean`                     | `false`         | 启用按 chunk 的 CSS 代码分割                              |
-| `css.fileName`            | `string`                      | `'style.css'`   | 合并 CSS 的文件名（当 `splitting: false` 时）             |
-| `css.minify`              | `boolean`                     | `false`         | 启用 CSS 压缩（需要 `@tsdown/css`）                       |
-| `css.target`              | `string \| string[] \| false` | _继承 `target`_ | CSS 专用语法降级目标（需要 `@tsdown/css`）                |
-| `css.preprocessorOptions` | `object`                      | —               | CSS 预处理器选项（需要 `@tsdown/css`）                    |
-| `css.lightningcss`        | `object`                      | —               | 传递给 Lightning CSS 的语法降级选项（需要 `@tsdown/css`） |
+| 选项                      | 类型                              | 默认值          | 描述                                                      |
+| ------------------------- | --------------------------------- | --------------- | --------------------------------------------------------- |
+| `css.transformer`         | `'postcss' \| 'lightningcss'`     | `'postcss'`     | CSS 处理管线（需要 `@tsdown/css`）                        |
+| `css.splitting`           | `boolean`                         | `false`         | 启用按 chunk 的 CSS 代码分割                              |
+| `css.fileName`            | `string`                          | `'style.css'`   | 合并 CSS 的文件名（当 `splitting: false` 时）             |
+| `css.minify`              | `boolean`                         | `false`         | 启用 CSS 压缩（需要 `@tsdown/css`）                       |
+| `css.target`              | `string \| string[] \| false`     | _继承 `target`_ | CSS 专用语法降级目标（需要 `@tsdown/css`）                |
+| `css.postcss`             | `string \| object`                | —               | PostCSS 配置路径或内联选项（需要 `@tsdown/css`）          |
+| `css.preprocessorOptions` | `object`                          | —               | CSS 预处理器选项（需要 `@tsdown/css`）                    |
+| `css.lightningcss`        | `object`                          | —               | 传递给 Lightning CSS 的语法降级选项（需要 `@tsdown/css`） |

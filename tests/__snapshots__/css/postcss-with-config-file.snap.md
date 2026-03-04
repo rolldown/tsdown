@@ -8,8 +8,6 @@ export {  };
 
 ```css
 /* from-config-file */
-.foo {
-  color: red;
-}
+.foo { color: red }
 
 ```

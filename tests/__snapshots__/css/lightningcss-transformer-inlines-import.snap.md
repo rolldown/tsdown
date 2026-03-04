@@ -7,7 +7,12 @@ export {  };
 ## style.css
 
 ```css
-/* postcss-processed */
-.foo { color: red }
+.other {
+  color: #00f;
+}
+
+.main {
+  color: red;
+}
 
 ```

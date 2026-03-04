@@ -7,7 +7,8 @@ export {  };
 ## style.css
 
 ```css
-/* postcss-processed */
-.foo { color: red }
+.foo {
+  color: red;
+}
 
 ```
