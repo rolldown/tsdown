@@ -314,9 +314,7 @@ describe('css', () => {
   })
 
   describe('@import bundling', () => {
-    // Fails: tsdown outputs CSS as `style.css` instead of `entry.css` when
-    // a CSS file is used as the entry point, so `fileMap['entry.css']` is undefined.
-    test.fails('diamond dependency graph', async (context) => {
+    test('diamond dependency graph', async (context) => {
       // From esbuild TestCSSAtImport
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L99
       const { fileMap } = await testBuild({
@@ -339,7 +337,7 @@ describe('css', () => {
             .shared { color: black }
           `,
         },
-        options: { entry: ['entry.css'] },
+        options: { entry: ['entry.css'], css: { splitting: true } },
       })
       expect(fileMap['entry.css']).toContain('.shared')
       expect(fileMap['entry.css']).toContain('.a')
@@ -348,9 +346,7 @@ describe('css', () => {
       expect(fileMap['entry.css']).not.toContain('@import')
     })
 
-    // Fails: tsdown outputs CSS as `style.css` instead of `entry.css` when
-    // a CSS file is used as the entry point, so `fileMap['entry.css']` is undefined.
-    test.fails('shared dependency appears only once', async (context) => {
+    test('shared dependency appears only once', async (context) => {
       // From esbuild TestCSSAtImport
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L99
       const { fileMap } = await testBuild({
@@ -364,7 +360,7 @@ describe('css', () => {
           'b.css': `@import "./shared.css"; .b { color: blue }`,
           'shared.css': `.shared { color: black }`,
         },
-        options: { entry: ['entry.css'] },
+        options: { entry: ['entry.css'], css: { splitting: true } },
       })
       const css = fileMap['entry.css']
       const matches = css.match(/\.shared/g)
@@ -541,24 +537,19 @@ describe('css', () => {
   })
 
   describe('@import conditions', () => {
-    // Fails: tsdown outputs CSS as `style.css` instead of `entry.css` when
-    // a CSS file is used as the entry point, so `fileMap['entry.css']` is undefined.
-    test.fails(
-      'external import with media condition preserved',
-      async (context) => {
-        // From esbuild TestCSSAtImportConditionsBundleExternal
-        // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1353
-        const { fileMap } = await testBuild({
-          context,
-          files: {
-            'entry.css': `@import "https://example.com/print.css" print;`,
-          },
-          options: { entry: ['entry.css'] },
-        })
-        expect(fileMap['entry.css']).toContain('https://example.com/print.css')
-        expect(fileMap['entry.css']).toContain('print')
-      },
-    )
+    test('external import with media condition preserved', async (context) => {
+      // From esbuild TestCSSAtImportConditionsBundleExternal
+      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1353
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'entry.css': `@import "https://example.com/print.css" print;`,
+        },
+        options: { entry: ['entry.css'], css: { splitting: true } },
+      })
+      expect(fileMap['entry.css']).toContain('https://example.com/print.css')
+      expect(fileMap['entry.css']).toContain('print')
+    })
 
     test('@import with media condition', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo at-media/001
@@ -678,9 +669,7 @@ describe('css', () => {
   })
 
   describe('@layer', () => {
-    // Fails: tsdown outputs CSS as `style.css` instead of `entry.css` when
-    // a CSS file is used as the entry point, so `fileMap['entry.css']` is undefined.
-    test.fails('@layer declarations before @import', async (context) => {
+    test('@layer declarations before @import', async (context) => {
       // From esbuild TestCSSAtLayerBeforeImportBundle
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L2517
       const { fileMap } = await testBuild({
@@ -703,7 +692,7 @@ describe('css', () => {
             }
           `,
         },
-        options: { entry: ['entry.css'] },
+        options: { entry: ['entry.css'], css: { splitting: true } },
       })
       expect(fileMap['entry.css']).toContain('layer1')
       expect(fileMap['entry.css']).toContain('layer4')
@@ -805,10 +794,7 @@ describe('css', () => {
   })
 
   describe('css entry point', () => {
-    // Fails: tsdown outputs `entry.mjs` + `style.css` instead of `entry.css`
-    // when a CSS file is used as the entry point. The expected output file name
-    // doesn't match.
-    test.fails('css file as sole entry', async (context) => {
+    test('css file as sole entry', async (context) => {
       // From esbuild TestCSSEntryPoint
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L14
       const { fileMap, outputFiles } = await testBuild({
@@ -821,16 +807,14 @@ describe('css', () => {
             }
           `,
         },
-        options: { entry: ['entry.css'] },
+        options: { entry: ['entry.css'], css: { splitting: true } },
       })
       expect(outputFiles).toContain('entry.css')
       expect(fileMap['entry.css']).toContain('background')
       expect(fileMap['entry.css']).toContain('color')
     })
 
-    // Fails: tsdown outputs `a.mjs`, `b.mjs`, `style.css` instead of separate
-    // `a.css` and `b.css` files when multiple CSS files are used as entry points.
-    test.fails('multiple CSS entry points', async (context) => {
+    test('multiple CSS entry points', async (context) => {
       // From esbuild TestCSSEntryPoint
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L14
       const { outputFiles } = await testBuild({
@@ -839,7 +823,7 @@ describe('css', () => {
           'a.css': `.a { color: red }`,
           'b.css': `.b { color: blue }`,
         },
-        options: { entry: ['a.css', 'b.css'] },
+        options: { entry: ['a.css', 'b.css'], css: { splitting: true } },
       })
       expect(outputFiles).toContain('a.css')
       expect(outputFiles).toContain('b.css')
@@ -1076,8 +1060,8 @@ describe('css', () => {
   })
 
   describe('case insensitivity', () => {
-    // Fails: tsdown outputs CSS as `style.css` instead of `entry.css` when
-    // a CSS file is used as the entry point, so `fileMap['entry.css']` is undefined.
+    // Fails: postcss-import does not handle case-insensitive `@IMPORT`, so the
+    // uppercase `@IMPORT` rule is preserved in the output instead of being resolved.
     test.fails('@IMPORT and LAYER are case insensitive', async (context) => {
       // From esbuild TestCSSCaseInsensitivity
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L2579
@@ -1095,7 +1079,7 @@ describe('css', () => {
             }
           `,
         },
-        options: { entry: ['entry.css'] },
+        options: { entry: ['entry.css'], css: { splitting: true } },
       })
       expect(fileMap['entry.css']).not.toContain('@IMPORT')
       expect(fileMap['entry.css']).toContain('layer')
@@ -1166,9 +1150,7 @@ describe('css', () => {
   })
 
   describe('@import with @layer advanced', () => {
-    // Fails: tsdown outputs CSS as `style.css` instead of `entry.css` when
-    // a CSS file is used as the entry point, so `fileMap['entry.css']` is undefined.
-    test.fails('layer wrapping on import', async (context) => {
+    test('layer wrapping on import', async (context) => {
       // From esbuild TestCSSAtImportConditionsAtLayerBundle
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1808
       const { fileMap } = await testBuild({
@@ -1181,7 +1163,7 @@ describe('css', () => {
           `,
           'foo.css': `body { color: red }`,
         },
-        options: { entry: ['entry.css'] },
+        options: { entry: ['entry.css'], css: { splitting: true } },
       })
       expect(fileMap['entry.css']).toContain('first')
       expect(fileMap['entry.css']).toContain('last')

@@ -1,10 +1,4 @@
-## entry.mjs
-
-```mjs
-export {  };
-```
-
-## style.css
+## entry.css
 
 ```css
 
@@ -14,4 +8,10 @@ export {  };
             }
           
 
+```
+
+## entry.mjs
+
+```mjs
+export {  };
 ```

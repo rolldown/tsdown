@@ -1,13 +1,13 @@
-## entry.mjs
-
-```mjs
-export {  };
-```
-
-## style.css
+## entry.css
 
 ```css
 .shared { color: black } .a { color: green } .b { color: blue }
           
 
+```
+
+## entry.mjs
+
+```mjs
+export {  };
 ```

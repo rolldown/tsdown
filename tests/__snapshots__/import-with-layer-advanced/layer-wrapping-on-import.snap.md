@@ -1,10 +1,4 @@
-## entry.mjs
-
-```mjs
-export {  };
-```
-
-## style.css
+## entry.css
 
 ```css
 @layer first.one {
@@ -13,4 +7,10 @@ body { color: red } }
 body { color: red } }
           
 
+```
+
+## entry.mjs
+
+```mjs
+export {  };
 ```
