@@ -1,12 +1,10 @@
 ## entry.css
 
 ```css
-
-            body {
-              background: white;
-              color: black;
-            }
-          
+body {
+  color: #000;
+  background: #fff;
+}
 
 ```
 

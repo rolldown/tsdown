@@ -1,12 +1,17 @@
 ## style.css
 
 ```css
+@layer foo {
+  .box {
+    background-color: red;
+  }
+}
 
-            @layer foo {}
-            @layer bar {}
-            @layer bar { .box { background-color: green; } }
-            @layer foo { .box { background-color: red; } }
-          
+@layer bar {
+  .box {
+    background-color: green;
+  }
+}
 
 ```
 

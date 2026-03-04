@@ -7,6 +7,8 @@ export {  };
 ## style.css
 
 ```css
-.entry { color: red }
+.entry {
+  color: red;
+}
 
 ```

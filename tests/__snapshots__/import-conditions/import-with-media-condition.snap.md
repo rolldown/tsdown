@@ -2,7 +2,10 @@
 
 ```css
 @media screen {
-.box { background-color: green; } }
+  .box {
+    background-color: green;
+  }
+}
 
 ```
 

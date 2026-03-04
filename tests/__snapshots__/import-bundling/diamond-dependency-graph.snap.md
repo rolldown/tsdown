@@ -1,12 +1,21 @@
 ## entry.css
 
 ```css
+.a {
+  color: green;
+}
 
-            .shared { color: black }
-            .a { color: green }
-            .b { color: blue }
-            .entry { color: red }
-          
+.shared {
+  color: #000;
+}
+
+.b {
+  color: #00f;
+}
+
+.entry {
+  color: red;
+}
 
 ```
 

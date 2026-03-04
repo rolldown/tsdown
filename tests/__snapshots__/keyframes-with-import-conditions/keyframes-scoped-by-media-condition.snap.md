@@ -2,11 +2,28 @@
 
 ```css
 @media screen {
-            .box { animation: BOX; animation-duration: 0s; animation-fill-mode: both; }
-            @keyframes BOX { 0%, 100% { background-color: green; } } }
+  .box {
+    animation: both BOX;
+  }
+
+  @keyframes BOX {
+    0%, 100% {
+      background-color: green;
+    }
+  }
+}
+
 @media print {
-            .box { animation: BOX; animation-duration: 0s; animation-fill-mode: both; }
-            @keyframes BOX { 0%, 100% { background-color: red; } } }
+  .box {
+    animation: both BOX;
+  }
+
+  @keyframes BOX {
+    0%, 100% {
+      background-color: red;
+    }
+  }
+}
 
 ```
 

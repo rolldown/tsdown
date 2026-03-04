@@ -1,7 +1,21 @@
 ## entry.css
 
 ```css
-@IMPORT Url("nested.css") LAYER(layer-name);
+@layer layer-name {
+  @keyframes Foo {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  body {
+    background-color: red;
+  }
+}
 
 ```
 
