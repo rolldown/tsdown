@@ -5,8 +5,8 @@ import { x } from 'tinyexec'
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
-console.debug('Node.js Version:', process.version)
-console.debug('TSDOWN_TEST_BUILTIN_SEA:', process.env.TSDOWN_TEST_BUILTIN_SEA)
+console.info('Node.js Version:', process.version)
+console.info('TSDOWN_TEST_BUILTIN_SEA:', process.env.TSDOWN_TEST_BUILTIN_SEA)
 
 const nodeSupportsBuiltinSea =
   satisfies(process.version, '>=25.5.0') ||
