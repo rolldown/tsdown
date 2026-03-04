@@ -10,9 +10,10 @@ import {
   getPreprocessorLang,
   isCssOrPreprocessor,
 } from './preprocessors.ts'
-import type { ResolvedConfig, Rolldown } from 'tsdown'
+import type { Plugin } from 'rolldown'
+import type { ResolvedConfig } from 'tsdown'
 
-export function CssPlugin(config: ResolvedConfig): Rolldown.Plugin {
+export function CssPlugin(config: ResolvedConfig): Plugin {
   const styles: CssStyles = new Map()
   const postHooks = createCssPostHooks(config, styles)
 
