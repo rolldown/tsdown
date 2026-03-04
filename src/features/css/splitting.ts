@@ -27,7 +27,7 @@ export function CssCodeSplitPlugin(
         if (
           asset.type === 'asset' &&
           typeof asset.source === 'string' &&
-          RE_CSS.test(fileName)
+          RE_CSS.test(asset.fileName)
         ) {
           cssAssets.set(asset.fileName, asset.source)
         }

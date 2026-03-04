@@ -16,10 +16,26 @@
     "url": "https://github.com/rolldown/tsdown/issues"
   },
   "exports": {
-    ".": "./dist/index.mjs",
-    "./config": "./dist/config.mjs",
-    "./plugins": "./dist/plugins.mjs",
-    "./run": "./dist/run.mjs",
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./config": {
+      "dev": "./src/config.ts",
+      "default": "./dist/config.mjs"
+    },
+    "./css": {
+      "dev": "./src/css.ts",
+      "default": "./dist/css.mjs"
+    },
+    "./plugins": {
+      "dev": "./src/plugins.ts",
+      "default": "./dist/plugins.mjs"
+    },
+    "./run": {
+      "dev": "./src/run.ts",
+      "default": "./dist/run.mjs"
+    },
     "./package.json": "./package.json",
     "./client": "./client.d.ts"
   },
@@ -41,7 +57,16 @@
     "esm-shims.js"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./config": "./dist/config.mjs",
+      "./css": "./dist/css.mjs",
+      "./plugins": "./dist/plugins.mjs",
+      "./run": "./dist/run.mjs",
+      "./package.json": "./package.json",
+      "./client": "./client.d.ts"
+    }
   },
   "engines": {
     "node": ">=20.19.0"
@@ -62,9 +87,9 @@
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
+    "@tsdown/css": "workspace:*",
     "@tsdown/exe": "workspace:*",
     "@vitejs/devtools": "*",
-    "lightningcss": "^1.29.0",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
     "unplugin-unused": "^0.5.0"
@@ -73,13 +98,13 @@
     "@arethetypeswrong/core": {
       "optional": true
     },
+    "@tsdown/css": {
+      "optional": true
+    },
     "@tsdown/exe": {
       "optional": true
     },
     "@vitejs/devtools": {
-      "optional": true
-    },
-    "lightningcss": {
       "optional": true
     },
     "publint": {
@@ -116,6 +141,7 @@
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",
+    "@tsdown/css": "workspace:*",
     "@tsdown/exe": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/picomatch": "catalog:dev",
@@ -130,7 +156,6 @@
     "dedent": "catalog:dev",
     "eslint": "catalog:dev",
     "is-in-ci": "catalog:prod",
-    "lightningcss": "catalog:dev",
     "memfs": "catalog:dev",
     "package-manager-detector": "catalog:prod",
     "pkg-types": "catalog:dev",

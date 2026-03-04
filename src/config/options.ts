@@ -258,7 +258,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
-    css: resolveCssOptions(css),
+    css: resolveCssOptions(css, target),
     cwd,
     deps: depsConfig,
     devtools,

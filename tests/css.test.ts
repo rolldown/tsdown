@@ -24,7 +24,7 @@ describe('css', () => {
         unbundle: true,
       },
     })
-    expect(outputFiles).toEqual(['index.mjs', 'style.css', 'style.mjs'])
+    expect(outputFiles).toEqual(['index.mjs', 'style.css'])
   })
 
   test('with dts', async (context) => {
@@ -41,29 +41,52 @@ describe('css', () => {
     expect(outputFiles).toEqual(['style.css', 'style.mjs'])
   })
 
-  test('merge css without splitting', async (context) => {
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'index.ts': `
+  test.for([true, false])(
+    'merge css with splitting=%s',
+    async (splitting, context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `
           import './style.css'
           export const loadAsync = () => import('./async')
         `,
-        'style.css': `body { color: red }`,
-        'async.ts': `import './async.css'`,
-        'async.css': `.async { color: blue }`,
+          'style.css': `body { color: red }`,
+          'async.ts': `import './async.css'`,
+          'async.css': `.async { color: blue }`,
+        },
+        options: {
+          css: {
+            splitting,
+            fileName: 'index.css',
+          },
+        },
+      })
+
+      const cssFiles = outputFiles.filter((f) => f.endsWith('.css'))
+      expect(fileMap['index.css']).toContain('color: red')
+      if (splitting) {
+        expect(cssFiles).toHaveLength(2)
+        expect(cssFiles).toContain('index.css')
+      } else {
+        expect(cssFiles).toEqual(['index.css'])
+        expect(fileMap['index.css']).toContain('.async')
+      }
+    },
+  )
+
+  test('css.minify option accepted', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { color: red }`,
       },
       options: {
-        css: {
-          splitting: false,
-          fileName: 'index.css',
-        },
+        css: { minify: true },
       },
     })
-
-    expect(outputFiles.filter((f) => f.endsWith('.css'))).toEqual(['index.css'])
-    expect(fileMap['index.css']).toContain('body { color: red }')
-    expect(fileMap['index.css']).toContain('.async { color: blue }')
+    expect(outputFiles).toContain('style.css')
   })
 
   test('#216', async (context) => {
@@ -80,5 +103,90 @@ describe('css', () => {
     })
     expect(outputFiles).toContain('bar.css')
     expect(outputFiles).toContain('foo.css')
+  })
+
+  test('css syntax lowering', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { & .bar { color: red } }`,
+      },
+      options: {
+        css: { target: 'chrome90' },
+      },
+    })
+    expect(fileMap['style.css']).toContain('.foo .bar')
+    expect(fileMap['style.css']).not.toContain('&')
+  })
+
+  test('unnecessary css syntax lowering', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { & .bar { color: red } }`,
+      },
+      options: {
+        css: { target: 'chrome120' },
+      },
+    })
+    expect(fileMap['style.css']).toContain('& .bar')
+  })
+
+  test('target=false with CSS preserves modern syntax', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { & .bar { color: red } }`,
+      },
+      options: {
+        target: 'chrome90',
+        css: { target: false },
+      },
+    })
+    expect(fileMap['style.css']).toContain('& .bar')
+  })
+
+  test('inlines @import', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `@import './other.css'; .main { color: red }`,
+        'other.css': `.other { color: blue }`,
+      },
+    })
+    expect(fileMap['style.css']).toContain('.other')
+    expect(fileMap['style.css']).toContain('.main')
+    expect(fileMap['style.css']).not.toContain('@import')
+  })
+
+  test('deep @import chain', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './a.css'`,
+        'a.css': `@import './b.css'; .a { color: red }`,
+        'b.css': `@import './c.css'; .b { color: green }`,
+        'c.css': `.c { color: blue }`,
+      },
+    })
+    expect(fileMap['style.css']).toContain('.a')
+    expect(fileMap['style.css']).toContain('.b')
+    expect(fileMap['style.css']).toContain('.c')
+    expect(fileMap['style.css']).not.toContain('@import')
+  })
+
+  test('empty css file', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': ``,
+      },
+    })
+    expect(outputFiles).toContain('index.mjs')
   })
 })
