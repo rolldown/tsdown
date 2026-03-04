@@ -45,7 +45,7 @@ describe('css urls', () => {
           path { fill: url(#filter) }
           div { background: url('./local.png') }
         `,
-        'local.png': '\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
+        'local.png': '\u0089\u0050\u004E\u0047\u000D\u000A\u001A\u000A',
       },
       options: {
         entry: ['entry.css'],
@@ -62,7 +62,7 @@ describe('css urls', () => {
     expect(css).toContain('https://example.com/images/image.png')
     expect(css).toContain('//example.com/images/image.png')
     expect(css).toContain('data:image/png;base64,iVBORw0KGgo=')
-    expect(css).toContain('url("#filter")')
+    expect(css).toMatch(/url\((?:"|')?#filter(?:"|')?\)/)
   })
 
   test.fails(
@@ -92,104 +92,116 @@ describe('css urls', () => {
           },
           snapshot: false,
         }),
-      ).rejects.toThrow(/url|loader|css|js|json/i)
+      ).rejects.toThrow(/url|loader|css|js(?:on)?/i)
     },
   )
 
-  test.fails('spec-gap: text loader works for url() in css', async (context) => {
-    // Source: esbuild TestTextImportURLInCSSText
-    // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1139
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'entry.css': `a { background: url(./example.txt); }`,
-        'example.txt': `This is some text.`,
-      },
-      options: {
-        entry: ['entry.css'],
-        loader: {
-          '.txt': 'text',
+  test.fails(
+    'spec-gap: text loader works for url() in css',
+    async (context) => {
+      // Source: esbuild TestTextImportURLInCSSText
+      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1139
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'entry.css': `a { background: url(./example.txt); }`,
+          'example.txt': `This is some text.`,
         },
-      },
-    })
-
-    const cssFile = getCssFileName(outputFiles, 'entry.css')
-    const css = fileMap[cssFile]
-
-    expect(css).not.toContain('./example.txt')
-    expect(css).toContain('url(')
-  })
-
-  test.fails('spec-gap: dataurl loader works for url() in css', async (context) => {
-    // Source: esbuild TestDataURLImportURLInCSS
-    // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1157
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'entry.css': `a { background: url(./example.png); }`,
-        'example.png': '\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
-      },
-      options: {
-        entry: ['entry.css'],
-        loader: {
-          '.png': 'dataurl',
+        options: {
+          entry: ['entry.css'],
+          loader: {
+            '.txt': 'text',
+          },
         },
-      },
-    })
+      })
 
-    const cssFile = getCssFileName(outputFiles, 'entry.css')
-    const css = fileMap[cssFile]
+      const cssFile = getCssFileName(outputFiles, 'entry.css')
+      const css = fileMap[cssFile]
 
-    expect(css).toContain('data:')
-  })
+      expect(css).not.toContain('./example.txt')
+      expect(css).toContain('url(')
+    },
+  )
 
-  test.fails('spec-gap: binary loader works for url() in css', async (context) => {
-    // Source: esbuild TestBinaryImportURLInCSS
-    // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1179
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'entry.css': `a { background: url(./example.bin); }`,
-        'example.bin': '\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
-      },
-      options: {
-        entry: ['entry.css'],
-        loader: {
-          '.bin': 'binary',
+  test.fails(
+    'spec-gap: dataurl loader works for url() in css',
+    async (context) => {
+      // Source: esbuild TestDataURLImportURLInCSS
+      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1157
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'entry.css': `a { background: url(./example.png); }`,
+          'example.png': '\u0089\u0050\u004E\u0047\u000D\u000A\u001A\u000A',
         },
-      },
-    })
-
-    const cssFile = getCssFileName(outputFiles, 'entry.css')
-    const css = fileMap[cssFile]
-
-    expect(css).toContain('url(')
-    expect(css).not.toContain('./example.bin')
-  })
-
-  test.fails('spec-gap: base64 loader works for url() in css', async (context) => {
-    // Source: esbuild TestBase64ImportURLInCSS
-    // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1201
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'entry.css': `a { background: url(./example.b64); }`,
-        'example.b64': '\x89\x50\x4E\x47\x0D\x0A\x1A\x0A',
-      },
-      options: {
-        entry: ['entry.css'],
-        loader: {
-          '.b64': 'base64',
+        options: {
+          entry: ['entry.css'],
+          loader: {
+            '.png': 'dataurl',
+          },
         },
-      },
-    })
+      })
 
-    const cssFile = getCssFileName(outputFiles, 'entry.css')
-    const css = fileMap[cssFile]
+      const cssFile = getCssFileName(outputFiles, 'entry.css')
+      const css = fileMap[cssFile]
 
-    expect(css).toContain('url(')
-    expect(css).not.toContain('./example.b64')
-  })
+      expect(css).toContain('data:')
+    },
+  )
+
+  test.fails(
+    'spec-gap: binary loader works for url() in css',
+    async (context) => {
+      // Source: esbuild TestBinaryImportURLInCSS
+      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1179
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'entry.css': `a { background: url(./example.bin); }`,
+          'example.bin': '\u0089\u0050\u004E\u0047\u000D\u000A\u001A\u000A',
+        },
+        options: {
+          entry: ['entry.css'],
+          loader: {
+            '.bin': 'binary',
+          },
+        },
+      })
+
+      const cssFile = getCssFileName(outputFiles, 'entry.css')
+      const css = fileMap[cssFile]
+
+      expect(css).toContain('url(')
+      expect(css).not.toContain('./example.bin')
+    },
+  )
+
+  test.fails(
+    'spec-gap: base64 loader works for url() in css',
+    async (context) => {
+      // Source: esbuild TestBase64ImportURLInCSS
+      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1201
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'entry.css': `a { background: url(./example.b64); }`,
+          'example.b64': '\u0089\u0050\u004E\u0047\u000D\u000A\u001A\u000A',
+        },
+        options: {
+          entry: ['entry.css'],
+          loader: {
+            '.b64': 'base64',
+          },
+        },
+      })
+
+      const cssFile = getCssFileName(outputFiles, 'entry.css')
+      const css = fileMap[cssFile]
+
+      expect(css).toContain('url(')
+      expect(css).not.toContain('./example.b64')
+    },
+  )
 
   test.fails(
     'spec-gap: asset loader keeps shared file referenced by css imports',

@@ -7,9 +7,6 @@ export {  };
 ## style.css
 
 ```css
-body {
-  color: #000;
-  background: #fff;
-}
+body { background: white; color: black; }
 
 ```

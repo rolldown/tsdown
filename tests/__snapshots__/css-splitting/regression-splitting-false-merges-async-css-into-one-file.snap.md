@@ -7,12 +7,8 @@ export {  };
 ## bundle.css
 
 ```css
-.base {
-  color: red;
-}
-.async {
-  color: #00f;
-}
+.base { color: red }
+.async { color: blue }
 
 ```
 

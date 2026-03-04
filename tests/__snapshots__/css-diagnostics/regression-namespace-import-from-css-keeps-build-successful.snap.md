@@ -11,8 +11,6 @@ export {  };
 ## style.css
 
 ```css
-.a {
-  color: red;
-}
+.a { color: red }
 
 ```

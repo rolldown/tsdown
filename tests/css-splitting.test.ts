@@ -5,8 +5,13 @@ function cssFiles(outputFiles: string[]): string[] {
   return outputFiles.filter((file) => file.endsWith('.css'))
 }
 
-function findHashedCss(outputFiles: string[], prefix: string): string | undefined {
-  return outputFiles.find((file) => file.startsWith(prefix) && file.endsWith('.css'))
+function findHashedCss(
+  outputFiles: string[],
+  prefix: string,
+): string | undefined {
+  return outputFiles.find(
+    (file) => file.startsWith(prefix) && file.endsWith('.css'),
+  )
 }
 
 describe('css splitting', () => {
@@ -145,24 +150,27 @@ describe('css splitting', () => {
     expect(sharedMatches).toHaveLength(1)
   })
 
-  test.fails('spec-gap: multi-entry css should emit per-entry css files with shared content', async (context) => {
-    // Source: tsdown issue #668 and esbuild multi-entry expectations
-    // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L99
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'shared.css': `.class-shared { color: red; }`,
-        'entry1.css': `@import './shared.css'; .class-entry1 { color: red; }`,
-        'entry2.css': `@import './shared.css'; .class-entry2 { color: red; }`,
-      },
-      options: {
-        entry: ['entry1.css', 'entry2.css'],
-      },
-    })
+  test.fails(
+    'spec-gap: multi-entry css should emit per-entry css files with shared content',
+    async (context) => {
+      // Source: tsdown issue #668 and esbuild multi-entry expectations
+      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L99
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'shared.css': `.class-shared { color: red; }`,
+          'entry1.css': `@import './shared.css'; .class-entry1 { color: red; }`,
+          'entry2.css': `@import './shared.css'; .class-entry2 { color: red; }`,
+        },
+        options: {
+          entry: ['entry1.css', 'entry2.css'],
+        },
+      })
 
-    expect(outputFiles).toContain('entry1.css')
-    expect(outputFiles).toContain('entry2.css')
-    expect(fileMap['entry1.css']).toContain('class-shared')
-    expect(fileMap['entry2.css']).toContain('class-shared')
-  })
+      expect(outputFiles).toContain('entry1.css')
+      expect(outputFiles).toContain('entry2.css')
+      expect(fileMap['entry1.css']).toContain('class-shared')
+      expect(fileMap['entry2.css']).toContain('class-shared')
+    },
+  )
 })

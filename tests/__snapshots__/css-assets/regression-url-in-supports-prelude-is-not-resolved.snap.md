@@ -7,10 +7,10 @@ export {  };
 ## style.css
 
 ```css
-@supports (background: url(ignored.png)) {
-  a {
-    color: red;
-  }
-}
+
+          @supports (background: url(ignored.png)) {
+            a { color: red; }
+          }
+        
 
 ```

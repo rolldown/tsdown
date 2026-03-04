@@ -17,14 +17,8 @@ export {  };
 ## bundle.css
 
 ```css
-.a {
-  color: red;
-}
-.b {
-  color: #00f;
-}
-.shared {
-  color: #000;
-}
+.a { color: red }
+.b { color: blue }
+.shared { color: black }
 
 ```

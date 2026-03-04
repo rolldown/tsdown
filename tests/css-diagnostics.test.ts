@@ -74,7 +74,11 @@ describe('css diagnostics', () => {
       snapshot: false,
     })
 
-    expect(warnings.some((warning) => /missing|undefined|a\.css/i.test(warning.message))).toBe(true)
+    expect(
+      warnings.some((warning) =>
+        /missing|undefined|a\.css/i.test(warning.message),
+      ),
+    ).toBe(true)
   })
 
   test('regression: undefined css namespace imports are warned', async (context) => {
@@ -95,6 +99,10 @@ describe('css diagnostics', () => {
       snapshot: false,
     })
 
-    expect(warnings.some((warning) => /foo|undefined|empty\.css/i.test(warning.message))).toBe(true)
+    expect(
+      warnings.some((warning) =>
+        /foo|undefined|empty\.css/i.test(warning.message),
+      ),
+    ).toBe(true)
   })
 })

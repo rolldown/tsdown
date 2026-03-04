@@ -7,8 +7,6 @@ export {  };
 ## style.css
 
 ```css
-a {
-  background: url("./example.bin");
-}
+a { background: url(./example.bin); }
 
 ```

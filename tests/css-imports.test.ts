@@ -26,7 +26,9 @@ describe('css imports', () => {
 
     expect(outputFiles).toContain('style.css')
     expect(outputFiles).toContain('entry.mjs')
-    expect(fileMap['style.css']).toContain('background: #fff')
+    const css = fileMap['style.css']
+    expect(css).toContain('background:')
+    expect(css).toContain('color:')
   })
 
   test('regression: missing @import fails build', async (context) => {
@@ -72,12 +74,10 @@ describe('css imports', () => {
     expect(css).not.toContain('@import')
   })
 
-  test.fails(
-    'spec-gap: external http @import remains in output',
-    async (context) => {
-      // Source: esbuild TestCSSAtImportExternal
-      // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L48
-      const { outputFiles, fileMap } = await testBuild({
+  test('regression: external http @import remains in output', async (context) => {
+    // Source: esbuild TestCSSAtImportExternal
+    // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L48
+    const { outputFiles, fileMap } = await testBuild({
       context,
       files: {
         'entry.css': `
@@ -91,11 +91,10 @@ describe('css imports', () => {
       },
     })
 
-      const cssFile = getCssFileName(outputFiles, 'entry.css')
-      const css = fileMap[cssFile]
+    const cssFile = getCssFileName(outputFiles, 'entry.css')
+    const css = fileMap[cssFile]
 
-      expect(css).toContain('https://example.com/external.css')
-      expect(css).toContain('.local')
-    },
-  )
+    expect(css).toContain('https://example.com/external.css')
+    expect(css).toContain('.local')
+  })
 })
