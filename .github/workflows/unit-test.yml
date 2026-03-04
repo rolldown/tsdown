@@ -18,20 +18,20 @@ jobs:
   test_25_8_0:
     uses: sxzz/workflows/.github/workflows/unit-test.yml@v1
     with:
-      node-versions: '25.8.0'
+      node-versions: 25.8.0
       os-matrix: '"ubuntu-latest", "windows-latest"'
-      test: 'TSDOWN_TEST_BUILTIN_SEA=1 pnpm test run tests/exe.test.ts'
+      test: TSDOWN_TEST_BUILTIN_SEA=1 pnpm test run tests/exe.test.ts
 
   test_24_14_0:
     uses: sxzz/workflows/.github/workflows/unit-test.yml@v1
     with:
-      node-versions: '24.14.0'
+      node-versions: 24.14.0
       os-matrix: '"ubuntu-latest", "windows-latest"'
-      test: 'TSDOWN_TEST_BUILTIN_SEA=1 pnpm test run tests/exe.test.ts'
+      test: TSDOWN_TEST_BUILTIN_SEA=1 pnpm test run tests/exe.test.ts
 
   test_22_22_0:
     uses: sxzz/workflows/.github/workflows/unit-test.yml@v1
     with:
-      node-versions: '22.22.0'
+      node-versions: 22.22.0
       os-matrix: '"ubuntu-latest", "windows-latest"'
-      test: 'TSDOWN_TEST_BUILTIN_SEA=1 pnpm test run tests/exe.test.ts'
+      test: TSDOWN_TEST_BUILTIN_SEA=1 pnpm test run tests/exe.test.ts
