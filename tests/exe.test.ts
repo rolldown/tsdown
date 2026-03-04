@@ -7,7 +7,9 @@ import { testBuild } from './utils.ts'
 
 console.log('TSDOWN_TEST_BUILTIN_SEA:', process.env.TSDOWN_TEST_BUILTIN_SEA)
 
-const nodeSupportsBuiltinSea = satisfies(process.version, '>=25.5.0') || !!process.env.TSDOWN_TEST_BUILTIN_SEA
+const nodeSupportsBuiltinSea =
+  satisfies(process.version, '>=25.5.0') ||
+  !!process.env.TSDOWN_TEST_BUILTIN_SEA
 const suffix = process.platform === 'win32' ? '.exe' : ''
 
 describe.runIf(nodeSupportsBuiltinSea)('exe', () => {
