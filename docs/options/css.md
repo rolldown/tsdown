@@ -345,13 +345,13 @@ dist/
 
 ## Options Reference
 
-| Option                    | Type                              | Default         | Description                                                                  |
-| ------------------------- | --------------------------------- | --------------- | ---------------------------------------------------------------------------- |
-| `css.transformer`         | `'postcss' \| 'lightningcss'`     | `'postcss'`     | CSS processing pipeline (requires `@tsdown/css`)                             |
-| `css.splitting`           | `boolean`                         | `false`         | Enable CSS code splitting per chunk                                          |
-| `css.fileName`            | `string`                          | `'style.css'`   | File name for the merged CSS file (when `splitting: false`)                  |
-| `css.minify`              | `boolean`                         | `false`         | Enable CSS minification (requires `@tsdown/css`)                             |
-| `css.target`              | `string \| string[] \| false`     | _from `target`_ | CSS-specific syntax lowering target (requires `@tsdown/css`)                 |
-| `css.postcss`             | `string \| object`                | —               | PostCSS config path or inline options (requires `@tsdown/css`)               |
-| `css.preprocessorOptions` | `object`                          | —               | Options for CSS preprocessors (requires `@tsdown/css`)                       |
-| `css.lightningcss`        | `object`                          | —               | Options passed to Lightning CSS for syntax lowering (requires `@tsdown/css`) |
+| Option                    | Type                          | Default         | Description                                                                  |
+| ------------------------- | ----------------------------- | --------------- | ---------------------------------------------------------------------------- |
+| `css.transformer`         | `'postcss' \| 'lightningcss'` | `'postcss'`     | CSS processing pipeline (requires `@tsdown/css`)                             |
+| `css.splitting`           | `boolean`                     | `false`         | Enable CSS code splitting per chunk                                          |
+| `css.fileName`            | `string`                      | `'style.css'`   | File name for the merged CSS file (when `splitting: false`)                  |
+| `css.minify`              | `boolean`                     | `false`         | Enable CSS minification (requires `@tsdown/css`)                             |
+| `css.target`              | `string \| string[] \| false` | _from `target`_ | CSS-specific syntax lowering target (requires `@tsdown/css`)                 |
+| `css.postcss`             | `string \| object`            | —               | PostCSS config path or inline options (requires `@tsdown/css`)               |
+| `css.preprocessorOptions` | `object`                      | —               | Options for CSS preprocessors (requires `@tsdown/css`)                       |
+| `css.lightningcss`        | `object`                      | —               | Options passed to Lightning CSS for syntax lowering (requires `@tsdown/css`) |

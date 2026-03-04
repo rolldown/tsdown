@@ -345,13 +345,13 @@ dist/
 
 ## 选项参考
 
-| 选项                      | 类型                              | 默认值          | 描述                                                      |
-| ------------------------- | --------------------------------- | --------------- | --------------------------------------------------------- |
-| `css.transformer`         | `'postcss' \| 'lightningcss'`     | `'postcss'`     | CSS 处理管线（需要 `@tsdown/css`）                        |
-| `css.splitting`           | `boolean`                         | `false`         | 启用按 chunk 的 CSS 代码分割                              |
-| `css.fileName`            | `string`                          | `'style.css'`   | 合并 CSS 的文件名（当 `splitting: false` 时）             |
-| `css.minify`              | `boolean`                         | `false`         | 启用 CSS 压缩（需要 `@tsdown/css`）                       |
-| `css.target`              | `string \| string[] \| false`     | _继承 `target`_ | CSS 专用语法降级目标（需要 `@tsdown/css`）                |
-| `css.postcss`             | `string \| object`                | —               | PostCSS 配置路径或内联选项（需要 `@tsdown/css`）          |
-| `css.preprocessorOptions` | `object`                          | —               | CSS 预处理器选项（需要 `@tsdown/css`）                    |
-| `css.lightningcss`        | `object`                          | —               | 传递给 Lightning CSS 的语法降级选项（需要 `@tsdown/css`） |
+| 选项                      | 类型                          | 默认值          | 描述                                                      |
+| ------------------------- | ----------------------------- | --------------- | --------------------------------------------------------- |
+| `css.transformer`         | `'postcss' \| 'lightningcss'` | `'postcss'`     | CSS 处理管线（需要 `@tsdown/css`）                        |
+| `css.splitting`           | `boolean`                     | `false`         | 启用按 chunk 的 CSS 代码分割                              |
+| `css.fileName`            | `string`                      | `'style.css'`   | 合并 CSS 的文件名（当 `splitting: false` 时）             |
+| `css.minify`              | `boolean`                     | `false`         | 启用 CSS 压缩（需要 `@tsdown/css`）                       |
+| `css.target`              | `string \| string[] \| false` | _继承 `target`_ | CSS 专用语法降级目标（需要 `@tsdown/css`）                |
+| `css.postcss`             | `string \| object`            | —               | PostCSS 配置路径或内联选项（需要 `@tsdown/css`）          |
+| `css.preprocessorOptions` | `object`                      | —               | CSS 预处理器选项（需要 `@tsdown/css`）                    |
+| `css.lightningcss`        | `object`                      | —               | 传递给 Lightning CSS 的语法降级选项（需要 `@tsdown/css`） |
