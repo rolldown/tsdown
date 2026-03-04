@@ -61,8 +61,8 @@
     }
   },
   "dependencies": {
-    "rolldown": "catalog:prod",
     "lightningcss": "catalog:prod",
-    "postcss-load-config": "catalog:prod"
+    "postcss-load-config": "catalog:prod",
+    "rolldown": "catalog:prod"
   }
 }
