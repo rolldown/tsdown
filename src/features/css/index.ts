@@ -51,7 +51,41 @@ export interface CssOptions {
    * Requires `@tsdown/css` to be installed.
    */
   lightningcss?: LightningCSSOptions
+
+  /**
+   * PostCSS configuration.
+   *
+   * - `string`: Path to the directory to search for PostCSS config files.
+   * - `object`: Inline PostCSS options with optional `plugins` array.
+   * - Omitted: Auto-detect PostCSS config from the project root.
+   *
+   * Only used when `transformer` is `'postcss'` (default).
+   * Requires `postcss` and `@tsdown/css` to be installed.
+   *
+   * @see https://github.com/postcss/postcss
+   */
+  postcss?: PostCSSOptions
+
+  /**
+   * CSS transformer to use. Controls how CSS is processed:
+   *
+   * - `'postcss'` (default): `@import` handled by `postcss-import`,
+   *   PostCSS plugins applied, Lightning CSS used only for final
+   *   targets/minify transform.
+   * - `'lightningcss'`: `@import` handled by Lightning CSS `bundleAsync()`,
+   *   PostCSS is **not** used at all.
+   *
+   * Requires `@tsdown/css` to be installed.
+   *
+   * @default 'postcss'
+   * @see https://vite.dev/config/shared-options#css-transformer
+   */
+  transformer?: 'postcss' | 'lightningcss'
 }
+
+export type PostCSSOptions =
+  | string
+  | (Record<string, any> & { plugins?: any[] })
 
 export interface PreprocessorOptions {
   scss?: SassPreprocessorOptions
@@ -97,12 +131,14 @@ export interface StylusPreprocessorOptions {
 export type LightningCSSOptions = Record<string, any>
 
 export interface ResolvedCssOptions {
+  transformer: 'postcss' | 'lightningcss'
   splitting: boolean
   fileName: string
   minify: boolean
   target?: string[]
   preprocessorOptions?: PreprocessorOptions
   lightningcss?: LightningCSSOptions
+  postcss?: PostCSSOptions
 }
 
 export const defaultCssBundleName = 'style.css'
@@ -121,11 +157,13 @@ export function resolveCssOptions(
   }
 
   return {
+    transformer: options.transformer ?? 'postcss',
     splitting: options.splitting ?? false,
     fileName: options.fileName ?? defaultCssBundleName,
     minify: options.minify ?? false,
     target: cssTarget,
     preprocessorOptions: options.preprocessorOptions,
     lightningcss: options.lightningcss,
+    postcss: options.postcss,
   }
 }

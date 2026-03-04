@@ -7,10 +7,6 @@ export {  };
 ## style.css
 
 ```css
-.foo {
-  & .bar {
-    color: red;
-  }
-}
+.foo { & .bar { color: red } }
 
 ```
