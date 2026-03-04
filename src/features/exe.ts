@@ -59,11 +59,11 @@ export function validateSea({
     )
   }
 
-  if (!satisfies(process.version, '>=25.5.0')) {
-    throw new Error(
-      `Node.js version ${process.version} does not support \`exe\` option. Please upgrade to Node.js 25.5.0 or later.`,
-    )
-  }
+  // if (!satisfies(process.version, '>=25.5.0')) {
+  //   throw new Error(
+  //     `Node.js version ${process.version} does not support \`exe\` option. Please upgrade to Node.js 25.5.0 or later.`,
+  //   )
+  // }
 
   if (Object.keys(entry).length > 1) {
     throw new Error(
