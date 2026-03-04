@@ -1,7 +1,7 @@
 {
   "name": "@tsdown/css",
   "type": "module",
-  "version": "0.21.0-beta.3",
+  "version": "0.21.0-beta.4",
   "description": "Advanced CSS pipeline for tsdown powered by Lightning CSS",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -48,9 +48,20 @@
     "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "peerDependencies": {
+    "postcss": "^8.4.0",
+    "postcss-import": "^16.0.0",
     "tsdown": "workspace:*"
   },
+  "peerDependenciesMeta": {
+    "postcss": {
+      "optional": true
+    },
+    "postcss-import": {
+      "optional": true
+    }
+  },
   "dependencies": {
-    "lightningcss": "catalog:prod"
+    "lightningcss": "catalog:prod",
+    "postcss-load-config": "catalog:prod"
   }
 }

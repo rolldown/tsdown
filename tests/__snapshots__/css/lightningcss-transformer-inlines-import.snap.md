@@ -7,6 +7,12 @@ export {  };
 ## style.css
 
 ```css
-.other { color: blue } .main { color: red }
+.other {
+  color: #00f;
+}
+
+.main {
+  color: red;
+}
 
 ```

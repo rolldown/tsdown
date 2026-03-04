@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
   "type": "module",
-  "version": "0.21.0-beta.3",
+  "version": "0.21.0-beta.4",
   "packageManager": "pnpm@10.30.3",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
@@ -135,6 +135,12 @@
     "unconfig-core": "catalog:prod",
     "unrun": "catalog:prod"
   },
+  "inlinedDependencies": {
+    "package-manager-detector": "1.6.0",
+    "@publint/pack": "0.1.4",
+    "is-in-ci": "2.0.0",
+    "pkg-types": "2.3.0"
+  },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
     "@publint/pack": "catalog:dev",
@@ -159,6 +165,8 @@
     "memfs": "catalog:dev",
     "package-manager-detector": "catalog:prod",
     "pkg-types": "catalog:dev",
+    "postcss": "catalog:dev",
+    "postcss-import": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",
     "rolldown-plugin-dts-snapshot": "catalog:dev",
@@ -169,12 +177,6 @@
     "unplugin-unused": "catalog:peer",
     "vite": "catalog:docs",
     "vitest": "catalog:dev"
-  },
-  "inlinedDependencies": {
-    "package-manager-detector": "1.6.0",
-    "@publint/pack": "0.1.4",
-    "is-in-ci": "2.0.0",
-    "pkg-types": "2.3.0"
   },
   "prettier": "@sxzz/prettier-config"
 }

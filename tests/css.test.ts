@@ -189,4 +189,127 @@ describe('css', () => {
     })
     expect(outputFiles).toContain('index.mjs')
   })
+
+  test('postcss with inline plugin', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { color: red }`,
+      },
+      options: {
+        css: {
+          postcss: {
+            plugins: [
+              {
+                postcssPlugin: 'test-plugin',
+                Once(root: any) {
+                  root.prepend({ text: 'postcss-processed' })
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
+    expect(fileMap['style.css']).toContain('postcss-processed')
+    expect(fileMap['style.css']).toContain('.foo')
+  })
+
+  test('postcss with config file', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { color: red }`,
+        'postcss.config.cjs': `
+          module.exports = {
+            plugins: [
+              {
+                postcssPlugin: 'test-plugin',
+                Once(root) {
+                  root.prepend({ text: 'from-config-file' })
+                },
+              },
+            ],
+          }
+        `,
+      },
+    })
+    expect(fileMap['style.css']).toContain('from-config-file')
+    expect(fileMap['style.css']).toContain('.foo')
+  })
+
+  test('postcss with @import', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `@import './other.css'; .main { color: red }`,
+        'other.css': `.other { color: blue }`,
+      },
+      options: {
+        css: {
+          postcss: {
+            plugins: [
+              {
+                postcssPlugin: 'test-plugin',
+                Once(root: any) {
+                  root.prepend({ text: 'postcss-processed' })
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
+    expect(fileMap['style.css']).toContain('postcss-processed')
+    expect(fileMap['style.css']).toContain('.other')
+    expect(fileMap['style.css']).toContain('.main')
+    expect(fileMap['style.css']).not.toContain('@import')
+  })
+
+  test('lightningcss transformer inlines @import', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `@import './other.css'; .main { color: red }`,
+        'other.css': `.other { color: blue }`,
+      },
+      options: {
+        css: { transformer: 'lightningcss' },
+      },
+    })
+    expect(fileMap['style.css']).toContain('.other')
+    expect(fileMap['style.css']).toContain('.main')
+    expect(fileMap['style.css']).not.toContain('@import')
+  })
+
+  test('lightningcss transformer ignores postcss plugins', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './style.css'`,
+        'style.css': `.foo { color: red }`,
+      },
+      options: {
+        css: {
+          transformer: 'lightningcss',
+          postcss: {
+            plugins: [
+              {
+                postcssPlugin: 'test-plugin',
+                Once(root: any) {
+                  root.prepend({ text: 'should-not-appear' })
+                },
+              },
+            ],
+          },
+        },
+      },
+    })
+    expect(fileMap['style.css']).toContain('.foo')
+    expect(fileMap['style.css']).not.toContain('should-not-appear')
+  })
 })
