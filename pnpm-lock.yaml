@@ -446,6 +446,9 @@ importers:
       postcss-load-config:
         specifier: catalog:prod
         version: 6.0.1(jiti@2.6.1)(postcss@8.5.8)(yaml@2.8.2)
+      rolldown:
+        specifier: 1.0.0-rc.6
+        version: 1.0.0-rc.6
       tsdown:
         specifier: workspace:*
         version: link:../..
