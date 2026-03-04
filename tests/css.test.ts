@@ -757,22 +757,19 @@ describe('css', () => {
       ['nested-tilde', `a { ~ b { color: red; } }`],
     ] as const
 
-    test.for(nestingCases)(
-      'nesting lowered: %s',
-      async ([, css], context) => {
-        const { fileMap } = await testBuild({
-          context,
-          files: {
-            'index.ts': `import './style.css'`,
-            'style.css': css,
-          },
-          options: {
-            css: { target: 'chrome90' },
-          },
-        })
-        expect(fileMap['style.css']).toContain('color: red')
-      },
-    )
+    test.for(nestingCases)('nesting lowered: %s', async ([, css], context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './style.css'`,
+          'style.css': css,
+        },
+        options: {
+          css: { target: 'chrome90' },
+        },
+      })
+      expect(fileMap['style.css']).toContain('color: red')
+    })
 
     const toplevelCases = [
       ['toplevel-attribute', `[href] { color: red; }`],
