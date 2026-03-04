@@ -1,11 +1,17 @@
 ## style.css
 
 ```css
-@layer a {
-.box { background-color: red; } }
 @layer b {
-.box { background-color: green; } }
-          
+  .box {
+    background-color: green;
+  }
+}
+
+@layer a {
+  .box {
+    background-color: red;
+  }
+}
 
 ```
 
