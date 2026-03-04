@@ -292,7 +292,6 @@ export async function resolveUserConfig(
     write,
   }
 
-  const defaultFormat: Format = 'esm'
   if (exe) {
     validateSea(config)
   }
@@ -300,7 +299,7 @@ export async function resolveUserConfig(
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
-    : resolveComma(toArray<Format>(format, defaultFormat))
+    : resolveComma(toArray<Format>(format, 'esm'))
 
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0

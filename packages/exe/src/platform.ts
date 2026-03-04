@@ -1,8 +1,6 @@
 import semver from 'semver'
 import satisfies from 'semver/functions/satisfies.js'
 
-const SEA_VERSION_RANGE = '>=25.7.0'
-
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
 
@@ -64,10 +62,10 @@ export function normalizeNodeVersion(target: ExeTarget): string {
     )
   }
 
-  if (!satisfies(version, SEA_VERSION_RANGE)) {
+  if (!satisfies(version, '>=25.7.0')) {
     throw new Error(
       `Node.js ${version} does not support SEA (Single Executable Applications). ` +
-        `Required: ${SEA_VERSION_RANGE}`,
+        `Required minimum version is 25.7.0. Please update the nodeVersion in your target configuration.`,
     )
   }
 

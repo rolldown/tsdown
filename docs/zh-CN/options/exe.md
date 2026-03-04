@@ -28,7 +28,6 @@ export default defineConfig({
 
 启用 `exe` 时：
 
-- 默认输出格式保持为 `esm`
 - 默认禁用声明文件生成（`dts`）
 - 禁用代码分割
 - 仅支持单入口

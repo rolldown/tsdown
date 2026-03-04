@@ -28,7 +28,6 @@ export default defineConfig({
 
 When `exe` is enabled:
 
-- The default output format remains `esm`
 - Declaration file generation (`dts`) is disabled by default
 - Code splitting is disabled
 - Only single entry points are supported

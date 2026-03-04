@@ -350,10 +350,6 @@ export interface UserConfig {
    * - `umd`: UMD
    *
    * Defaults to ESM.
-   *
-   * ### Usage with {@link exe}
-   * If `exe` is enabled, the default format will depend on support level of SEA in the target Node.js version:
-   * - The default format remains ESM (SEA support requires Node.js >= v25.7.0).
    */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
