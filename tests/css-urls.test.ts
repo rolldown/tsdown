@@ -11,6 +11,8 @@ function getCssFileName(outputFiles: string[], preferred: string): string {
 }
 
 describe('css urls', () => {
+  // Known gap: unresolved relative assets in CSS url() are not surfaced as hard
+  // build errors in the same way as esbuild.
   test.fails('spec-gap: missing url() assets fail build', async (context) => {
     // Source: esbuild TestMissingImportURLInCSS
     // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1049
@@ -65,6 +67,8 @@ describe('css urls', () => {
     expect(css).toMatch(/url\((?:"|')?#filter(?:"|')?\)/)
   })
 
+  // Known gap: url() targets that resolve to code-like files are not consistently
+  // rejected with loader/type diagnostics yet.
   test.fails(
     'spec-gap: invalid url() targets fail when pointing to code files',
     async (context) => {
@@ -96,6 +100,7 @@ describe('css urls', () => {
     },
   )
 
+  // Known gap: the `text` loader is not fully wired into CSS url() rewriting.
   test.fails(
     'spec-gap: text loader works for url() in css',
     async (context) => {
@@ -123,6 +128,7 @@ describe('css urls', () => {
     },
   )
 
+  // Known gap: the `dataurl` loader is not fully wired into CSS url() rewriting.
   test.fails(
     'spec-gap: dataurl loader works for url() in css',
     async (context) => {
@@ -149,6 +155,7 @@ describe('css urls', () => {
     },
   )
 
+  // Known gap: the `binary` loader is not fully wired into CSS url() rewriting.
   test.fails(
     'spec-gap: binary loader works for url() in css',
     async (context) => {
@@ -176,6 +183,7 @@ describe('css urls', () => {
     },
   )
 
+  // Known gap: the `base64` loader is not fully wired into CSS url() rewriting.
   test.fails(
     'spec-gap: base64 loader works for url() in css',
     async (context) => {
@@ -203,6 +211,8 @@ describe('css urls', () => {
     },
   )
 
+  // Known gap: shared asset emission/dedup for CSS url() imports is not yet aligned
+  // with esbuild's file loader behavior.
   test.fails(
     'spec-gap: asset loader keeps shared file referenced by css imports',
     async (context) => {
@@ -233,6 +243,8 @@ describe('css urls', () => {
     },
   )
 
+  // Known gap: relative CSS url() paths that include query/hash suffixes are not
+  // diagnosed consistently when no matching asset resolution is available.
   test.fails(
     'spec-gap: query/hash urls fail without matching support',
     async (context) => {

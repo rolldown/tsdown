@@ -150,6 +150,8 @@ describe('css splitting', () => {
     expect(sharedMatches).toHaveLength(1)
   })
 
+  // Known gap: multi-entry pure CSS builds are currently collapsed into a shared
+  // output instead of preserving one CSS artifact per entry with shared imports.
   test.fails(
     'spec-gap: multi-entry css should emit per-entry css files with shared content',
     async (context) => {

@@ -11,6 +11,8 @@ function getJsFileName(outputFiles: string[], preferred: string): string {
 }
 
 describe('css spec gaps', () => {
+  // Known gap: CSS Modules class-name export mapping is not yet stable/aligned
+  // with esbuild-style local class export semantics.
   test.fails(
     'spec-gap: local css modules should export stable class names',
     async (context) => {
@@ -32,6 +34,8 @@ describe('css spec gaps', () => {
     },
   )
 
+  // Known gap: `.local.css` vs `.global.css` treatment and JS import semantics are
+  // not yet differentiated to match esbuild behavior.
   test.fails(
     'spec-gap: global-css and local-css should be differentiated',
     async (context) => {
@@ -59,6 +63,8 @@ describe('css spec gaps', () => {
     },
   )
 
+  // Known gap: `composes: ... from` resolution across local CSS modules is not
+  // implemented yet.
   test.fails(
     'spec-gap: composes-from should resolve local class composition',
     async (context) => {
@@ -81,6 +87,8 @@ describe('css spec gaps', () => {
     },
   )
 
+  // Known gap: composes graph validation does not currently report circular
+  // composition diagnostics.
   test.fails(
     'spec-gap: composes circular references should report diagnostics',
     async (context) => {
@@ -103,6 +111,8 @@ describe('css spec gaps', () => {
     },
   )
 
+  // Known gap: canonical `@layer` ordering synthesis for conditional @import
+  // bundling is not yet preserved.
   test.fails(
     'spec-gap: @layer import conditions should preserve canonical ordering',
     async (context) => {

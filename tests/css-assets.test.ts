@@ -11,6 +11,8 @@ function getCssFileName(outputFiles: string[], preferred: string): string {
 }
 
 describe('css assets', () => {
+  // Known gap: URL resolution with spaces in asset paths is not reliably rewritten
+  // through the CSS url() loader pipeline yet.
   test.fails(
     'spec-gap: asset paths with spaces bundle correctly',
     async (context) => {
@@ -69,6 +71,8 @@ describe('css assets', () => {
     expect(css).toContain('a')
   })
 
+  // Known gap: tsdown does not yet rebase nested relative url() references across
+  // @import boundaries for this loader-driven case.
   test.fails(
     'spec-gap: css url() handles nested directories',
     async (context) => {
