@@ -2,7 +2,18 @@
 
 **Status: Experimental — API and behavior may change.**
 
-Configure CSS handling including preprocessors, syntax lowering, and code splitting.
+Configure CSS handling including preprocessors, syntax lowering, minification, and code splitting.
+
+## Architecture: Basic vs Advanced
+
+- **Built-in (basic):** CSS extraction and bundling — no extra dependencies.
+- **Advanced (`@tsdown/css`):** Preprocessors, syntax lowering, minification, `@import` inlining — install `@tsdown/css`.
+
+```bash
+npm install -D @tsdown/css
+```
+
+When installed, the advanced plugin replaces the built-in one automatically.
 
 ## CSS Import
 
@@ -16,7 +27,11 @@ export function greet() { return 'Hello' }
 
 Output: `index.mjs` + `index.css`
 
-## CSS Pre-processors
+### `@import` Inlining (requires `@tsdown/css`)
+
+CSS `@import` statements are resolved and inlined automatically. No separate output files produced.
+
+## CSS Pre-processors (requires `@tsdown/css`)
 
 Built-in support for Sass, Less, and Stylus. Install the preprocessor:
 
@@ -79,7 +94,34 @@ scss: {
 }
 ```
 
-## Lightning CSS (Syntax Lowering)
+## CSS Minification (requires `@tsdown/css`)
+
+```ts
+export default defineConfig({
+  css: {
+    minify: true,
+  },
+})
+```
+
+Powered by Lightning CSS.
+
+## CSS Target (requires `@tsdown/css`)
+
+Override the top-level `target` specifically for CSS:
+
+```ts
+export default defineConfig({
+  target: 'node18',
+  css: {
+    target: 'chrome90', // CSS-specific target
+  },
+})
+```
+
+Set `css.target: false` to disable CSS syntax lowering entirely.
+
+## Lightning CSS (Syntax Lowering, requires `@tsdown/css`)
 
 Install `lightningcss` to enable CSS syntax lowering based on your `target`:
 
@@ -112,7 +154,7 @@ export default defineConfig({
 })
 ```
 
-`css.lightningcss.targets` takes precedence over the top-level `target` for CSS.
+`css.lightningcss.targets` takes precedence over both `target` and `css.target` for CSS.
 
 ## Code Splitting
 
@@ -144,8 +186,10 @@ export default defineConfig({
 |--------|------|---------|-------------|
 | `css.splitting` | `boolean` | `false` | Per-chunk CSS splitting |
 | `css.fileName` | `string` | `'style.css'` | Merged CSS file name |
-| `css.preprocessorOptions` | `object` | — | Preprocessor options (scss/sass/less/styl/stylus) |
-| `css.lightningcss` | `object` | — | Lightning CSS transform options |
+| `css.minify` | `boolean` | `false` | CSS minification (requires `@tsdown/css`) |
+| `css.target` | `string \| string[] \| false` | _from `target`_ | CSS-specific lowering target (requires `@tsdown/css`) |
+| `css.preprocessorOptions` | `object` | — | Preprocessor options (requires `@tsdown/css`) |
+| `css.lightningcss` | `object` | — | Lightning CSS options (requires `@tsdown/css`) |
 
 ## Related
 

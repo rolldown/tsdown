@@ -51,7 +51,24 @@ export interface CssOptions {
    * Requires `@tsdown/css` to be installed.
    */
   lightningcss?: LightningCSSOptions
+
+  /**
+   * PostCSS configuration.
+   *
+   * - `string`: Path to the directory to search for PostCSS config files.
+   * - `object`: Inline PostCSS options with optional `plugins` array.
+   * - Omitted: Auto-detect PostCSS config from the project root.
+   *
+   * Requires `postcss` and `@tsdown/css` to be installed.
+   *
+   * @see https://github.com/postcss/postcss
+   */
+  postcss?: PostCSSOptions
 }
+
+export type PostCSSOptions =
+  | string
+  | (Record<string, any> & { plugins?: any[] })
 
 export interface PreprocessorOptions {
   scss?: SassPreprocessorOptions
@@ -103,6 +120,7 @@ export interface ResolvedCssOptions {
   target?: string[]
   preprocessorOptions?: PreprocessorOptions
   lightningcss?: LightningCSSOptions
+  postcss?: PostCSSOptions
 }
 
 export const defaultCssBundleName = 'style.css'
@@ -127,5 +145,6 @@ export function resolveCssOptions(
     target: cssTarget,
     preprocessorOptions: options.preprocessorOptions,
     lightningcss: options.lightningcss,
+    postcss: options.postcss,
   }
 }

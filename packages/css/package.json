@@ -48,9 +48,16 @@
     "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "peerDependencies": {
+    "postcss": "^8.4.0",
     "tsdown": "workspace:*"
   },
+  "peerDependenciesMeta": {
+    "postcss": {
+      "optional": true
+    }
+  },
   "dependencies": {
-    "lightningcss": "catalog:prod"
+    "lightningcss": "catalog:prod",
+    "postcss-load-config": "catalog:prod"
   }
 }

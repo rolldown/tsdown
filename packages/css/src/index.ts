@@ -4,6 +4,7 @@ import {
   bundleWithLightningCSS,
   transformWithLightningCSS,
 } from './lightningcss.ts'
+import { processWithPostCSS } from './postcss.ts'
 import {
   compilePreprocessor,
   getPreprocessorLang,
@@ -16,6 +17,7 @@ export function CssPlugin(config: ResolvedConfig): Rolldown.Plugin {
   const postHooks = createCssPostHooks(config, styles)
   const shouldMinify = config.css.minify
   const cssTarget = config.css.target
+  const postcssOption = config.css.postcss
 
   return {
     name: '@tsdown/css',
@@ -42,6 +44,15 @@ export function CssPlugin(config: ResolvedConfig): Rolldown.Plugin {
         code = preResult.code
         deps.push(...preResult.deps)
 
+        const postcssResult = await processWithPostCSS(
+          code,
+          id,
+          postcssOption,
+          config.cwd,
+        )
+        code = postcssResult.code
+        deps.push(...postcssResult.deps)
+
         code = await transformWithLightningCSS(code, id, {
           target: cssTarget,
           lightningcss: config.css.lightningcss,
@@ -49,13 +60,26 @@ export function CssPlugin(config: ResolvedConfig): Rolldown.Plugin {
         })
       } else if (RE_CSS.test(id)) {
         const bundleResult = await bundleWithLightningCSS(id, {
-          target: cssTarget,
           lightningcss: config.css.lightningcss,
-          minify: shouldMinify,
           preprocessorOptions: config.css.preprocessorOptions,
         })
         code = bundleResult.code
         deps.push(...bundleResult.deps)
+
+        const postcssResult = await processWithPostCSS(
+          code,
+          id,
+          postcssOption,
+          config.cwd,
+        )
+        code = postcssResult.code
+        deps.push(...postcssResult.deps)
+
+        code = await transformWithLightningCSS(code, id, {
+          target: cssTarget,
+          lightningcss: config.css.lightningcss,
+          minify: shouldMinify,
+        })
       } else {
         return
       }

@@ -99,34 +99,8 @@ If you need to use the **latest TC39 Stage 3 decorators**, please note that `tsd
 > **Note:**
 > The two decorator implementations are very different. Make sure you are using the correct configuration and syntax for your chosen decorator version.
 
-# CSS Targeting
+## CSS Targeting
 
-`tsdown` can also downlevel CSS features to match your specified browser targets. For example, a CSS nesting `&` selector will be flattened if the target is `chrome108` or lower.
+`tsdown` can also downlevel CSS features to match your specified browser targets. By default, the top-level `target` is used for CSS, but you can override it with `css.target` or disable CSS lowering independently with `css.target: false`.
 
-To enable CSS downleveling, install [`lightningcss`](https://lightningcss.dev/):
-
-::: code-group
-
-```sh [npm]
-npm install -D lightningcss
-```
-
-```sh [pnpm]
-pnpm add -D lightningcss
-```
-
-```sh [yarn]
-yarn add -D lightningcss
-```
-
-```sh [bun]
-bun add -D lightningcss
-```
-
-:::
-
-Once installed, simply set your browser target (for example, `target: 'chrome100'`) in your configuration or CLI options, and CSS downleveling will be enabled automatically.
-
-You can also pass additional Lightning CSS options via `css.lightningcss`. See the [CSS documentation](/options/css.md#lightning-css) for details.
-
-For more information on browser targets and CSS compatibility, refer to the [Lightning CSS documentation](https://lightningcss.dev/).
+For full details on CSS syntax lowering, minification, and Lightning CSS options, see the [CSS documentation](/options/css.md#css-target).
