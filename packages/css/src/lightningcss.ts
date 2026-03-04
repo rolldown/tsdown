@@ -4,6 +4,7 @@ import { ResolverFactory } from 'rolldown/experimental'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
 import type { Targets } from 'lightningcss'
 import type { LightningCSSOptions, PreprocessorOptions } from 'tsdown/css'
+import type { MinimalLogger } from './types.ts'
 
 let resolver: ResolverFactory | undefined
 function getResolver(): ResolverFactory {
@@ -26,6 +27,7 @@ export interface BundleCssOptions {
   lightningcss?: LightningCSSOptions
   minify?: boolean
   preprocessorOptions?: PreprocessorOptions
+  logger: MinimalLogger
 }
 
 export interface BundleCssResult {
@@ -95,7 +97,7 @@ export async function bundleWithLightningCSS(
         const dir = path.dirname(from)
         const result = getResolver().sync(dir, specifier)
         if (result.error || !result.path) {
-          console.warn(
+          options.logger.warn(
             `[@tsdown/css] Failed to resolve import '${specifier}' from '${from}': ${result.error || 'unknown error'}`,
           )
           return path.resolve(dir, specifier)

@@ -152,7 +152,7 @@ async function resolveInputOptions(
     let cssPlugin: Plugin
     try {
       const { CssPlugin: AdvancedCssPlugin } = await import('@tsdown/css')
-      cssPlugin = AdvancedCssPlugin(config)
+      cssPlugin = AdvancedCssPlugin(config, { logger })
     } catch {
       cssPlugin = CssPlugin(config)
     }

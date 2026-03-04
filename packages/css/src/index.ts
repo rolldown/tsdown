@@ -12,8 +12,12 @@ import {
 } from './preprocessors.ts'
 import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
+import type { MinimalLogger } from './types.ts'
 
-export function CssPlugin(config: ResolvedConfig): Plugin {
+export function CssPlugin(
+  config: ResolvedConfig,
+  { logger }: { logger: MinimalLogger },
+): Plugin {
   const styles: CssStyles = new Map()
   const postHooks = createCssPostHooks(config, styles)
 
@@ -31,7 +35,7 @@ export function CssPlugin(config: ResolvedConfig): Plugin {
       const deps: string[] = []
 
       if (config.css.transformer === 'lightningcss') {
-        code = await loadWithLightningCSS(id, deps, config)
+        code = await loadWithLightningCSS(id, deps, config, logger)
       } else {
         code = await loadWithPostCSS(id, deps, config)
       }
@@ -60,6 +64,7 @@ async function loadWithLightningCSS(
   id: string,
   deps: string[],
   config: ResolvedConfig,
+  logger: MinimalLogger,
 ): Promise<string> {
   const lang = getPreprocessorLang(id)
 
@@ -84,6 +89,7 @@ async function loadWithLightningCSS(
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
       preprocessorOptions: config.css.preprocessorOptions,
+      logger,
     })
     deps.push(...bundleResult.deps)
     return bundleResult.code
