@@ -2,6 +2,8 @@ packages:
   - docs
   - packages/*
 
+shellEmulator: true
+
 overrides:
   '@docsearch/react': '-'
   rolldown: catalog:prod
