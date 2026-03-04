@@ -5,7 +5,9 @@ import { x } from 'tinyexec'
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
-const nodeSupportsBuiltinSea = satisfies(process.version, '>=25.5.0')
+console.log('TSDOWN_TEST_BUILTIN_SEA:', process.env.TSDOWN_TEST_BUILTIN_SEA)
+
+const nodeSupportsBuiltinSea = satisfies(process.version, '>=25.5.0') || !!process.env.TSDOWN_TEST_BUILTIN_SEA
 const suffix = process.platform === 'win32' ? '.exe' : ''
 
 describe.runIf(nodeSupportsBuiltinSea)('exe', () => {
