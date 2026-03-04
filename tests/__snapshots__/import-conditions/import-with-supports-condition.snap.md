@@ -2,10 +2,7 @@
 
 ```css
 @supports (display: block) {
-  .box {
-    background-color: green;
-  }
-}
+.box { background-color: green; } }
 
 ```
 

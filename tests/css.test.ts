@@ -369,7 +369,7 @@ describe('css', () => {
   })
 
   describe('@import duplicates', () => {
-    test.fails('duplicate import - last wins', async (context) => {
+    test('duplicate import - last wins', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo duplicates/001
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1662
       const { fileMap } = await testBuild({
@@ -416,7 +416,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('green')
     })
 
-    test.fails('two-file cycle', async (context) => {
+    test('two-file cycle', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo cycles/002
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1621
       const { fileMap } = await testBuild({
@@ -434,7 +434,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('red')
     })
 
-    test.fails('cycle with both files having rules', async (context) => {
+    test('cycle with both files having rules', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo cycles/003
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1625
       const { fileMap } = await testBuild({
@@ -450,7 +450,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('red')
     })
 
-    test.fails('cycle resolved by import order', async (context) => {
+    test('cycle resolved by import order', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo cycles/004
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1629
       const { fileMap } = await testBuild({
@@ -466,7 +466,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('red')
     })
 
-    test.fails('cycle with triple import', async (context) => {
+    test('cycle with triple import', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo cycles/005
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1633
       const { fileMap } = await testBuild({
@@ -482,7 +482,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('red')
     })
 
-    test.fails('three-file cycle', async (context) => {
+    test('three-file cycle', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo cycles/006
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1640
       const { fileMap } = await testBuild({
@@ -722,7 +722,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('bar')
     })
 
-    test.fails('@import with anonymous layer', async (context) => {
+    test('@import with anonymous layer', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo at-layer/008
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1547
       const { fileMap } = await testBuild({
@@ -834,7 +834,7 @@ describe('css', () => {
   })
 
   describe('@charset', () => {
-    test.fails('@charset in imported files', async (context) => {
+    test('@charset in imported files', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo at-charset/001
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1482
       const { fileMap } = await testBuild({
@@ -999,7 +999,7 @@ describe('css', () => {
   })
 
   describe('external imports', () => {
-    test.fails('https imports preserved', async (context) => {
+    test('https imports preserved', async (context) => {
       // From esbuild TestCSSAtImportConditionsBundleExternal
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1353
       const { fileMap } = await testBuild({

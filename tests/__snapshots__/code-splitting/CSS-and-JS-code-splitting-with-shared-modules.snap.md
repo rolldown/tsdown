@@ -25,13 +25,10 @@ export {  };
 ## c.css
 
 ```css
-body {
-  background: #000;
-}
 
-body {
-  color: red;
-}
+            body { background: black }
+            body { color: red }
+          
 
 ```
 
@@ -44,13 +41,10 @@ export {  };
 ## d.css
 
 ```css
-body {
-  background: #000;
-}
 
-body {
-  color: #00f;
-}
+            body { background: black }
+            body { color: blue }
+          
 
 ```
 

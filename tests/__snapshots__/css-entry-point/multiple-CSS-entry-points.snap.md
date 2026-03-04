@@ -13,11 +13,7 @@ export {  };
 ## style.css
 
 ```css
-.a {
-  color: red;
-}
-.b {
-  color: #00f;
-}
+.a { color: red }
+.b { color: blue }
 
 ```

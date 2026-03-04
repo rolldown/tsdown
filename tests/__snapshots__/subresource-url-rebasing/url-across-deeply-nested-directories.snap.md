@@ -1,9 +1,7 @@
 ## style.css
 
 ```css
-.box {
-  background-image: url("../images/green.png");
-}
+.box { background-image: url("../images/green.png"); }
 
 ```
 

@@ -7,20 +7,6 @@ export {  };
 ## style.css
 
 ```css
-@layer layer-name {
-  @keyframes Foo {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  body {
-    background-color: red;
-  }
-}
+@IMPORT Url("nested.css") LAYER(layer-name);
 
 ```

@@ -1,17 +1,14 @@
 ## style.css
 
 ```css
-@layer b {
-  .box {
-    background-color: red;
-  }
-}
-
+@media print {
 @layer a {
-  .box {
-    background-color: green;
-  }
-}
+.box { background-color: green; } } }
+@layer b {
+.box { background-color: red; } }
+@layer a {
+.box { background-color: green; } }
+          
 
 ```
 

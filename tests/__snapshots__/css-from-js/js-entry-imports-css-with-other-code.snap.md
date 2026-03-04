@@ -11,8 +11,6 @@ export { foo };
 ## style.css
 
 ```css
-.foo {
-  color: #00f;
-}
+.foo { color: blue }
 
 ```

@@ -2,16 +2,9 @@
 
 ```css
 @media screen {
-  .box {
-    background-color: green;
-  }
-}
-
+.box { background-color: green; } }
 @media print {
-  .box {
-    background-color: red;
-  }
-}
+.box { background-color: red; } }
 
 ```
 
