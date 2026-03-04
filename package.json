@@ -77,7 +77,7 @@
     "build": "unrun ./src/run.ts",
     "dev": "node ./src/run.ts",
     "test": "vitest",
-    "typecheck": "tsgo --noEmit",
+    "test:exe": "TSDOWN_TEST_BUILTIN_SEA=1 vitest run tests/exe.test.ts",
     "format": "prettier --cache --write .",
     "release": "node ./scripts/release.ts",
     "docs:dev": "pnpm -C docs run dev",
