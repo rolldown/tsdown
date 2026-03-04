@@ -10,9 +10,9 @@ import {
   getPreprocessorLang,
   isCssOrPreprocessor,
 } from './preprocessors.ts'
+import type { MinimalLogger } from './types.ts'
 import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
-import type { MinimalLogger } from './types.ts'
 
 export function CssPlugin(
   config: ResolvedConfig,
