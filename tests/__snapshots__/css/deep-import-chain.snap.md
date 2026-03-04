@@ -7,6 +7,16 @@ export {  };
 ## style.css
 
 ```css
-.c { color: blue } .b { color: green } .a { color: red }
+.c {
+  color: #00f;
+}
+
+.b {
+  color: green;
+}
+
+.a {
+  color: red;
+}
 
 ```

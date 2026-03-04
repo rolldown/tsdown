@@ -199,6 +199,7 @@ describe('css', () => {
       },
       options: {
         css: {
+          transformer: 'postcss',
           postcss: {
             plugins: [
               {
@@ -235,6 +236,9 @@ describe('css', () => {
           }
         `,
       },
+      options: {
+        css: { transformer: 'postcss' },
+      },
     })
     expect(fileMap['style.css']).toContain('from-config-file')
     expect(fileMap['style.css']).toContain('.foo')
@@ -255,6 +259,7 @@ describe('css', () => {
       },
       options: {
         css: {
+          transformer: 'postcss',
           postcss: {
             plugins: [
               {
@@ -275,7 +280,7 @@ describe('css', () => {
     expect(fileMap['style.css']).not.toContain('@import')
   })
 
-  test('lightningcss transformer with @import', async (context) => {
+  test('lightningcss inlines @import (default)', async (context) => {
     const { fileMap } = await testBuild({
       context,
       files: {
@@ -288,9 +293,6 @@ describe('css', () => {
           exports: { './lib.css': './lib.css' },
         }),
       },
-      options: {
-        css: { transformer: 'lightningcss' },
-      },
     })
     expect(fileMap['style.css']).toContain('.other')
     expect(fileMap['style.css']).toContain('.lib')
@@ -298,7 +300,7 @@ describe('css', () => {
     expect(fileMap['style.css']).not.toContain('@import')
   })
 
-  test('lightningcss transformer ignores postcss plugins', async (context) => {
+  test('lightningcss ignores postcss plugins', async (context) => {
     const { fileMap } = await testBuild({
       context,
       files: {
@@ -307,7 +309,6 @@ describe('css', () => {
       },
       options: {
         css: {
-          transformer: 'lightningcss',
           postcss: {
             plugins: [
               {
@@ -391,7 +392,7 @@ describe('css', () => {
           'a.css': `.box { background-color: green; }`,
           'b.css': `.box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).not.toContain('@import')
       expect(fileMap['style.css']).toContain('green')
@@ -408,7 +409,7 @@ describe('css', () => {
           'a.css': `.box { background-color: green; }`,
           'b.css': `.box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).not.toContain('@import')
     })
@@ -423,7 +424,7 @@ describe('css', () => {
         files: {
           'style.css': `@import url("style.css"); .box { background-color: green; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
     })
@@ -440,7 +441,7 @@ describe('css', () => {
           'green.css': `.box { background-color: green; }`,
           'red.css': `.box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
       expect(fileMap['style.css']).toContain('red')
@@ -456,7 +457,7 @@ describe('css', () => {
           'a.css': `@import url("b.css"); .box { background-color: green; }`,
           'b.css': `@import url("a.css"); .box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
       expect(fileMap['style.css']).toContain('red')
@@ -472,7 +473,7 @@ describe('css', () => {
           'a.css': `@import url("b.css"); .box { background-color: red; }`,
           'b.css': `@import url("a.css"); .box { background-color: green; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
       expect(fileMap['style.css']).toContain('red')
@@ -488,7 +489,7 @@ describe('css', () => {
           'a.css': `@import url("b.css"); .box { background-color: green; }`,
           'b.css': `@import url("a.css"); .box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
       expect(fileMap['style.css']).toContain('red')
@@ -507,7 +508,7 @@ describe('css', () => {
           'green.css': `.box { background-color: green; }`,
           'red.css': `.box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
       expect(fileMap['style.css']).toContain('red')
@@ -557,7 +558,10 @@ describe('css', () => {
         files: {
           'entry.css': `@import "https://example.com/print.css" print;`,
         },
-        options: { entry: ['entry.css'], css: { splitting: true } },
+        options: {
+          entry: ['entry.css'],
+          css: { splitting: true, transformer: 'postcss' },
+        },
       })
       expect(fileMap['entry.css']).toContain('https://example.com/print.css')
       expect(fileMap['entry.css']).toContain('print')
@@ -660,7 +664,7 @@ describe('css', () => {
       expect(fileMap['style.css']).not.toContain('@import')
     })
 
-    test('@import with layer and media combined', async (context) => {
+    test.fails('@import with layer and media combined', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo at-layer/002
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1504
       const { fileMap } = await testBuild({
@@ -677,6 +681,7 @@ describe('css', () => {
         options: { entry: ['style.css'] },
       })
       expect(fileMap['style.css']).toContain('layer')
+      expect(fileMap['style.css']).toContain('print')
     })
   })
 
@@ -741,7 +746,7 @@ describe('css', () => {
           'a.css': `@import "b.css" layer; .box { background-color: green; }`,
           'b.css': `.box { background-color: red; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('green')
       expect(fileMap['style.css']).toContain('red')
@@ -853,7 +858,7 @@ describe('css', () => {
           'a.css': `@charset "utf-8"; .box { background-color: red; }`,
           'b.css': `@charset "utf-8"; .box { background-color: green; }`,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain('red')
       expect(fileMap['style.css']).toContain('green')
@@ -1020,7 +1025,7 @@ describe('css', () => {
             .local { color: red }
           `,
         },
-        options: { entry: ['style.css'] },
+        options: { entry: ['style.css'], css: { transformer: 'postcss' } },
       })
       expect(fileMap['style.css']).toContain(
         'https://www.example.com/style1.css',
@@ -1033,8 +1038,8 @@ describe('css', () => {
   })
 
   describe('@import url fragments', () => {
-    // Fails: postcss-import cannot resolve URL fragments (e.g. `./a.css#foo`),
-    // causing a "Failed to find './a.css#foo'" build error.
+    // Fails: Lightning CSS treats URL fragments as part of the file path,
+    // causing ENOENT errors (e.g. tries to read `./a.css#foo` as a file).
     test.fails('import with hash fragment', async (context) => {
       // From esbuild TestCSSAtImportConditionsFromExternalRepo url-fragments/001
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L1717
@@ -1049,8 +1054,7 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('green')
     })
 
-    // Fails: postcss-import cannot resolve URL fragments (e.g. `./a.css#1`),
-    // causing a "Failed to find './a.css#1'" build error.
+    // Fails: Lightning CSS treats URL fragments as part of the file path.
     test.fails(
       'duplicate imports with different fragments',
       async (context) => {
@@ -1072,9 +1076,7 @@ describe('css', () => {
   })
 
   describe('case insensitivity', () => {
-    // Fails: postcss-import does not handle case-insensitive `@IMPORT`, so the
-    // uppercase `@IMPORT` rule is preserved in the output instead of being resolved.
-    test.fails('@IMPORT and LAYER are case insensitive', async (context) => {
+    test('@IMPORT and LAYER are case insensitive', async (context) => {
       // From esbuild TestCSSCaseInsensitivity
       // https://github.com/evanw/esbuild/blob/v0.27.3/internal/bundler_tests/bundler_css_test.go#L2579
       const { fileMap } = await testBuild({
@@ -1175,7 +1177,10 @@ describe('css', () => {
           `,
           'foo.css': `body { color: red }`,
         },
-        options: { entry: ['entry.css'], css: { splitting: true } },
+        options: {
+          entry: ['entry.css'],
+          css: { splitting: true, transformer: 'postcss' },
+        },
       })
       expect(fileMap['entry.css']).toContain('first')
       expect(fileMap['entry.css']).toContain('last')

@@ -350,11 +350,6 @@ export interface UserConfig {
    * - `umd`: UMD
    *
    * Defaults to ESM.
-   *
-   * ### Usage with {@link exe}
-   * If `exe` is enabled, the default format will depend on support level of SEA in the target Node.js version:
-   * - If ESM SEA is supported (Node.js > v25.7), the default format will be ESM.
-   * - If only CJS SEA is supported, the default format will be CJS.
    */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
@@ -593,7 +588,7 @@ export interface UserConfig {
    * **[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
    *
    * This will bundle the output into a single executable file using Node.js SEA.
-   * Note that this is only supported on Node.js 25.5.0 and later, and is not supported in Bun or Deno.
+   * Note that this is only supported on Node.js 25.7.0 and later, and is not supported in Bun or Deno.
    */
   exe?: WithEnabled<ExeOptions>
 

@@ -5,7 +5,6 @@ import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
-import satisfies from 'semver/functions/satisfies.js'
 import { resolveClean } from '../features/clean.ts'
 import { resolveCssOptions } from '../features/css/index.ts'
 import { resolveDepsConfig } from '../features/deps.ts'
@@ -293,18 +292,14 @@ export async function resolveUserConfig(
     write,
   }
 
-  let defaultFormat: Format = 'esm'
   if (exe) {
     validateSea(config)
-    if (satisfies(process.version, '<25.7.0')) {
-      defaultFormat = 'cjs'
-    }
   }
 
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
-    : resolveComma(toArray<Format>(format, defaultFormat))
+    : resolveComma(toArray<Format>(format, 'esm'))
 
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0

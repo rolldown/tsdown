@@ -1,7 +1,9 @@
 ## async-!~{000}~.css
 
 ```css
-.async { color: blue }
+.async {
+  color: #00f;
+}
 
 ```
 
@@ -14,7 +16,9 @@ export {  };
 ## index.css
 
 ```css
-body { color: red }
+body {
+  color: red;
+}
 
 ```
 

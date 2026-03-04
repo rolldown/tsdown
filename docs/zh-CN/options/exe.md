@@ -8,7 +8,7 @@ tsdown 可以使用 [Node.js 单可执行应用](https://nodejs.org/api/single-e
 
 ## 环境要求
 
-- Node.js >= 25.5.0（ESM 支持需要 >= 25.7.0）
+- Node.js >= 25.7.0
 - 不支持 Bun 和 Deno
 
 ## 基本用法
@@ -28,7 +28,6 @@ export default defineConfig({
 
 启用 `exe` 时：
 
-- 默认输出格式从 `esm` 变更为 `cjs`（Node.js >= 25.7.0 支持 ESM 时除外）
 - 默认禁用声明文件生成（`dts`）
 - 禁用代码分割
 - 仅支持单入口

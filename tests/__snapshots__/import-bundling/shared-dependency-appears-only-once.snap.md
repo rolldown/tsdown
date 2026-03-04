@@ -1,8 +1,17 @@
 ## entry.css
 
 ```css
-.shared { color: black } .a { color: green } .b { color: blue }
-          
+.a {
+  color: green;
+}
+
+.shared {
+  color: #000;
+}
+
+.b {
+  color: #00f;
+}
 
 ```
 

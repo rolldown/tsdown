@@ -1,7 +1,9 @@
 ## a.css
 
 ```css
-.a { color: red }
+.a {
+  color: red;
+}
 
 ```
 
@@ -14,7 +16,9 @@ export {  };
 ## b.css
 
 ```css
-.b { color: blue }
+.b {
+  color: #00f;
+}
 
 ```
 
