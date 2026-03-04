@@ -2,8 +2,6 @@ packages:
   - docs
   - packages/*
 
-shellEmulator: true
-
 overrides:
   '@docsearch/react': '-'
   rolldown: catalog:prod
@@ -86,6 +84,8 @@ catalogs:
     unrun: ^0.2.29
 
 ignoreWorkspaceRootCheck: true
+
+shellEmulator: true
 
 trustPolicy: no-downgrade
 trustPolicyExclude: []
