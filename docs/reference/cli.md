@@ -250,11 +250,11 @@ An alias for `--copy`.
 
 **[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html).
 
-This will bundle the output into a single executable file. Requires Node.js 25.5.0 or later, and is not supported in Bun or Deno. Cross-platform builds are supported via the `@tsdown/exe` package.
+This will bundle the output into a single executable file. Requires Node.js 25.7.0 or later, and is not supported in Bun or Deno. Cross-platform builds are supported via the `@tsdown/exe` package.
 
 When `exe` is enabled:
 
-- The default output format changes from `esm` to `cjs` (unless Node.js >= v25.7.0, which supports ESM).
+- The default output format remains `esm`.
 - Declaration file generation (`dts`) is disabled by default.
 - Code splitting is disabled.
 - Only single entry points are supported.

@@ -250,11 +250,11 @@ tsdown --copy public
 
 **[实验性]** 使用 [Node.js 单个可执行程序](https://nodejs.org/api/single-executable-applications.html)将输出打包为独立可执行文件。
 
-此选项会将输出打包为单个可执行文件。需要 Node.js 25.5.0 或更高版本，不支持 Bun 和 Deno 环境。通过 `@tsdown/exe` 包支持跨平台构建。
+此选项会将输出打包为单个可执行文件。需要 Node.js 25.7.0 或更高版本，不支持 Bun 和 Deno 环境。通过 `@tsdown/exe` 包支持跨平台构建。
 
 启用 `exe` 时：
 
-- 默认输出格式从 `esm` 变更为 `cjs`（Node.js >= v25.7.0 支持 ESM 时除外）。
+- 默认输出格式保持为 `esm`。
 - 默认禁用声明文件生成（`dts`）。
 - 禁用代码分割。
 - 仅支持单入口。

@@ -8,7 +8,7 @@ tsdown can bundle your TypeScript/JavaScript code into a standalone executable u
 
 ## Requirements
 
-- Node.js >= 25.5.0 (ESM support requires >= 25.7.0)
+- Node.js >= 25.7.0
 - Not supported in Bun or Deno
 
 ## Basic Usage
@@ -28,7 +28,7 @@ export default defineConfig({
 
 When `exe` is enabled:
 
-- The default output format changes from `esm` to `cjs` (unless Node.js >= 25.7.0, which supports ESM)
+- The default output format remains `esm`
 - Declaration file generation (`dts`) is disabled by default
 - Code splitting is disabled
 - Only single entry points are supported

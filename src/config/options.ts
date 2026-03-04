@@ -293,12 +293,9 @@ export async function resolveUserConfig(
     write,
   }
 
-  let defaultFormat: Format = 'esm'
+  const defaultFormat: Format = 'esm'
   if (exe) {
     validateSea(config)
-    if (satisfies(process.version, '<25.7.0')) {
-      defaultFormat = 'cjs'
-    }
   }
 
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
