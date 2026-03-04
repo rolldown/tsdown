@@ -41,30 +41,39 @@ describe('css', () => {
     expect(outputFiles).toEqual(['style.css', 'style.mjs'])
   })
 
-  test('merge css without splitting', async (context) => {
-    const { outputFiles, fileMap } = await testBuild({
-      context,
-      files: {
-        'index.ts': `
+  test.for([true, false])(
+    'merge css with splitting=%s',
+    async (splitting, context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `
           import './style.css'
           export const loadAsync = () => import('./async')
         `,
-        'style.css': `body { color: red }`,
-        'async.ts': `import './async.css'`,
-        'async.css': `.async { color: blue }`,
-      },
-      options: {
-        css: {
-          splitting: false,
-          fileName: 'index.css',
+          'style.css': `body { color: red }`,
+          'async.ts': `import './async.css'`,
+          'async.css': `.async { color: blue }`,
         },
-      },
-    })
+        options: {
+          css: {
+            splitting,
+            fileName: 'index.css',
+          },
+        },
+      })
 
-    expect(outputFiles.filter((f) => f.endsWith('.css'))).toEqual(['index.css'])
-    expect(fileMap['index.css']).toContain('body { color: red }')
-    expect(fileMap['index.css']).toContain('.async { color: blue }')
-  })
+      const cssFiles = outputFiles.filter((f) => f.endsWith('.css'))
+      expect(fileMap['index.css']).toContain('body { color: red }')
+      if (splitting) {
+        expect(cssFiles).toHaveLength(2)
+        expect(cssFiles).toContain('index.css')
+      } else {
+        expect(cssFiles).toEqual(['index.css'])
+        expect(fileMap['index.css']).toContain('.async { color: blue }')
+      }
+    },
+  )
 
   test('#216', async (context) => {
     const { outputFiles } = await testBuild({
