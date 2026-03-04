@@ -13,6 +13,7 @@ export type {
   CssOptions,
   LessPreprocessorOptions,
   LightningCSSOptions,
+  PostCSSOptions,
   PreprocessorAdditionalData,
   PreprocessorAdditionalDataResult,
   PreprocessorOptions,

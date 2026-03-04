@@ -7,12 +7,8 @@ export {  };
 ## index.css
 
 ```css
-body {
-  color: red;
-}
-.async {
-  color: #00f;
-}
+body { color: red }
+.async { color: blue }
 
 ```
 

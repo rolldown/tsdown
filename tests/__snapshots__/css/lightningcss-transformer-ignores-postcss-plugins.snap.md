@@ -7,6 +7,8 @@ export {  };
 ## style.css
 
 ```css
-.other { color: blue } .main { color: red }
+.foo {
+  color: red;
+}
 
 ```
