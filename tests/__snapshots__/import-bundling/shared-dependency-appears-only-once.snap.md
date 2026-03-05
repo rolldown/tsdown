@@ -18,5 +18,6 @@
 ## entry.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

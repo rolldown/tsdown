@@ -1,7 +1,8 @@
-## async-CvIfFAic.mjs
+## async-CEAkTWyO.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```
 
 ## index.css
@@ -20,8 +21,8 @@ body {
 
 ```mjs
 //#region index.ts
-const loadAsync = () => import("./async-CvIfFAic.mjs");
-
+const loadAsync = () => import("./async-CEAkTWyO.mjs");
 //#endregion
 export { loadAsync };
+
 ```

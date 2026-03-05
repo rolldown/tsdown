@@ -10,7 +10,8 @@
 ## a.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```
 
 ## b.css
@@ -25,5 +26,6 @@ export {  };
 ## b.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

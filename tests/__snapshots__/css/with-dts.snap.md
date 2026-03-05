@@ -10,5 +10,6 @@ body {
 ## style.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

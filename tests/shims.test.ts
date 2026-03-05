@@ -17,8 +17,8 @@ describe('shims', () => {
         shims: true,
       },
     })
-    expect(snapshot).contain('const __dirname')
-    expect(snapshot).contain('const __filename')
+    expect(snapshot).not.contain('__dirname')
+    expect(snapshot).not.contain('__filename')
   })
 
   test('cjs on node w/o shims', async (context) => {

@@ -15,8 +15,8 @@ export { foo };
 // js banner
 //#region index.ts
 const foo = 42;
-
 //#endregion
 export { foo };
+
 // js footer
 ```

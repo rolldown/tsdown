@@ -2,6 +2,6 @@
 
 ```mjs
 const cac = 42;
-
 export { cac };
+
 ```

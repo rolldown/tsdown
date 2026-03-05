@@ -12,7 +12,7 @@ export { _default as default };
 ```mjs
 //#region index.ts
 var custom_extension_default = 10;
-
 //#endregion
 export { custom_extension_default as default };
+
 ```

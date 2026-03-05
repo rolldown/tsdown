@@ -16,5 +16,6 @@
 ## style.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

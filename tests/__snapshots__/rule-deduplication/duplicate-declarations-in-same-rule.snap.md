@@ -8,5 +8,6 @@ a{color:red}
 ## style.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

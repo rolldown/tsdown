@@ -1,25 +1,23 @@
 ## a.mjs
 
 ```mjs
-import { t as shared_default } from "./shared-BTs81KGy.mjs";
-
+import { t as shared_default } from "./shared-D_781BoD.mjs";
 //#region a.ts
 console.log(shared_default() + 1);
-
 //#endregion
-export {  };
+export {};
+
 ```
 
 ## b.mjs
 
 ```mjs
-import { t as shared_default } from "./shared-BTs81KGy.mjs";
-
+import { t as shared_default } from "./shared-D_781BoD.mjs";
 //#region b.ts
 console.log(shared_default() + 2);
-
 //#endregion
-export {  };
+export {};
+
 ```
 
 ## c.css
@@ -38,7 +36,8 @@ body {
 ## c.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```
 
 ## d.css
@@ -57,17 +56,18 @@ body {
 ## d.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```
 
-## shared-BTs81KGy.mjs
+## shared-D_781BoD.mjs
 
 ```mjs
 //#region shared.ts
 function shared_default() {
 	return 3;
 }
-
 //#endregion
 export { shared_default as t };
+
 ```

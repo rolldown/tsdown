@@ -12,5 +12,6 @@ body { color: red } }
 ## entry.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

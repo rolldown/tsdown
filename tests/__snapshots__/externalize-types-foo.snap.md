@@ -10,7 +10,7 @@ export { version };
 ```mjs
 //#region node_modules/foo/index.js
 const version = "1.0.0";
-
 //#endregion
 export { version };
+
 ```
