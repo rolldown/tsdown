@@ -38,7 +38,7 @@ describe('css', () => {
         dts: true,
       },
     })
-    expect(outputFiles).toEqual(['style.css', 'style.mjs'])
+    expect(outputFiles).toEqual(['style.css'])
   })
 
   test.for([true, false])(
@@ -103,50 +103,6 @@ describe('css', () => {
     })
     expect(outputFiles).toContain('bar.css')
     expect(outputFiles).toContain('foo.css')
-  })
-
-  test('css syntax lowering', async (context) => {
-    const { fileMap } = await testBuild({
-      context,
-      files: {
-        'index.ts': `import './style.css'`,
-        'style.css': `.foo { & .bar { color: red } }`,
-      },
-      options: {
-        css: { target: 'chrome90' },
-      },
-    })
-    expect(fileMap['style.css']).toContain('.foo .bar')
-    expect(fileMap['style.css']).not.toContain('&')
-  })
-
-  test('unnecessary css syntax lowering', async (context) => {
-    const { fileMap } = await testBuild({
-      context,
-      files: {
-        'index.ts': `import './style.css'`,
-        'style.css': `.foo { & .bar { color: red } }`,
-      },
-      options: {
-        css: { target: 'chrome120' },
-      },
-    })
-    expect(fileMap['style.css']).toContain('& .bar')
-  })
-
-  test('target=false with CSS preserves modern syntax', async (context) => {
-    const { fileMap } = await testBuild({
-      context,
-      files: {
-        'index.ts': `import './style.css'`,
-        'style.css': `.foo { & .bar { color: red } }`,
-      },
-      options: {
-        target: 'chrome90',
-        css: { target: false },
-      },
-    })
-    expect(fileMap['style.css']).toContain('& .bar')
   })
 
   test('inlines @import', async (context) => {

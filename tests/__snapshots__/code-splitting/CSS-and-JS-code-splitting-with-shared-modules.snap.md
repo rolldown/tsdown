@@ -35,12 +35,6 @@ body {
 
 ```
 
-## c.mjs
-
-```mjs
-export {  };
-```
-
 ## d.css
 
 ```css
@@ -52,12 +46,6 @@ body {
   color: #00f;
 }
 
-```
-
-## d.mjs
-
-```mjs
-export {  };
 ```
 
 ## shared-BTs81KGy.mjs

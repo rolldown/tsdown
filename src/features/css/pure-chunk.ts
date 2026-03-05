@@ -15,7 +15,6 @@ export function removePureCssChunks(
 
   for (const [fileName, chunk] of Object.entries(bundle)) {
     if (chunk.type !== 'chunk') continue
-    if (chunk.isEntry) continue
     if (chunk.exports.length > 0) continue
 
     const moduleIds = Object.keys(chunk.modules)

@@ -7,12 +7,6 @@
 
 ```
 
-## a.mjs
-
-```mjs
-export {  };
-```
-
 ## b.css
 
 ```css
@@ -20,10 +14,4 @@ export {  };
   color: #00f;
 }
 
-```
-
-## b.mjs
-
-```mjs
-export {  };
 ```

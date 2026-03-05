@@ -7,9 +7,3 @@ body {
 }
 
 ```
-
-## entry.mjs
-
-```mjs
-export {  };
-```

@@ -12,9 +12,3 @@
 }
 
 ```
-
-## style.mjs
-
-```mjs
-export {  };
-```

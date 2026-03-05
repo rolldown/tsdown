@@ -6,9 +6,3 @@
 }
 
 ```
-
-## style.mjs
-
-```mjs
-export {  };
-```
