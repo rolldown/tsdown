@@ -1,8 +1,17 @@
-import { readFile } from 'node:fs/promises'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { ResolverFactory } from 'rolldown/experimental'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
+import type { MinimalLogger } from './types.ts'
 import type { Targets } from 'lightningcss'
 import type { LightningCSSOptions, PreprocessorOptions } from 'tsdown/css'
+
+let resolver: ResolverFactory | undefined
+function getResolver(): ResolverFactory {
+  return (resolver ??= new ResolverFactory({
+    conditionNames: ['style', 'default'],
+  }))
+}
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
@@ -18,6 +27,7 @@ export interface BundleCssOptions {
   lightningcss?: LightningCSSOptions
   minify?: boolean
   preprocessorOptions?: PreprocessorOptions
+  logger: MinimalLogger
 }
 
 export interface BundleCssResult {
@@ -67,7 +77,9 @@ export async function bundleWithLightningCSS(
     minify: options.minify,
     resolver: {
       async read(filePath: string) {
-        const code = await readFile(filePath, 'utf8')
+        // Note: LightningCSS explicitly recommends using `readFileSync` instead
+        // of `readFile` for better performance.
+        const code = readFileSync(filePath, 'utf8')
         const lang = getPreprocessorLang(filePath)
         if (lang) {
           const preprocessed = await compilePreprocessor(
@@ -82,7 +94,15 @@ export async function bundleWithLightningCSS(
         return code
       },
       resolve(specifier: string, from: string) {
-        return path.resolve(path.dirname(from), specifier)
+        const dir = path.dirname(from)
+        const result = getResolver().sync(dir, specifier)
+        if (result.error || !result.path) {
+          options.logger.warn(
+            `[@tsdown/css] Failed to resolve import '${specifier}' from '${from}': ${result.error || 'unknown error'}`,
+          )
+          return path.resolve(dir, specifier)
+        }
+        return result.path
       },
     },
   })

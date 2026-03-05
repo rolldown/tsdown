@@ -11,6 +11,10 @@ export {  };
   color: #00f;
 }
 
+.lib {
+  color: green;
+}
+
 .main {
   color: red;
 }

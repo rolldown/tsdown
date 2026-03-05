@@ -249,8 +249,13 @@ describe('css', () => {
       context,
       files: {
         'index.ts': `import './style.css'`,
-        'style.css': `@import './other.css'; .main { color: red }`,
+        'style.css': `@import './other.css'; @import 'my-awesome-lib/lib.css'; .main { color: red }`,
         'other.css': `.other { color: blue }`,
+        'node_modules/my-awesome-lib/lib.css': `.lib { color: green }`,
+        'node_modules/my-awesome-lib/package.json': JSON.stringify({
+          name: 'my-awesome-lib',
+          exports: { './lib.css': './lib.css' },
+        }),
       },
       options: {
         css: {
@@ -270,6 +275,7 @@ describe('css', () => {
     })
     expect(fileMap['style.css']).toContain('postcss-processed')
     expect(fileMap['style.css']).toContain('.other')
+    expect(fileMap['style.css']).toContain('.lib')
     expect(fileMap['style.css']).toContain('.main')
     expect(fileMap['style.css']).not.toContain('@import')
   })
@@ -279,11 +285,17 @@ describe('css', () => {
       context,
       files: {
         'index.ts': `import './style.css'`,
-        'style.css': `@import './other.css'; .main { color: red }`,
+        'style.css': `@import './other.css'; @import 'my-awesome-lib/lib.css'; .main { color: red }`,
         'other.css': `.other { color: blue }`,
+        'node_modules/my-awesome-lib/lib.css': `.lib { color: green }`,
+        'node_modules/my-awesome-lib/package.json': JSON.stringify({
+          name: 'my-awesome-lib',
+          exports: { './lib.css': './lib.css' },
+        }),
       },
     })
     expect(fileMap['style.css']).toContain('.other')
+    expect(fileMap['style.css']).toContain('.lib')
     expect(fileMap['style.css']).toContain('.main')
     expect(fileMap['style.css']).not.toContain('@import')
   })
