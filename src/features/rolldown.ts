@@ -202,7 +202,10 @@ async function resolveInputOptions(
         inject,
       },
       plugins,
-      moduleTypes: loader,
+      moduleTypes: {
+        '.node': 'copy',
+        ...loader,
+      },
       logLevel: logger.level === 'error' ? 'silent' : logger.level,
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled

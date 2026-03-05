@@ -896,3 +896,17 @@ test('failOnWarn', async (context) => {
     }),
   ).rejects.toThrow('Module not found')
 })
+
+test('.node file bundle', async (context) => {
+  const files = {
+    'index.ts': `
+      const native = require('./binding.node')
+      export { native }
+    `,
+    'binding.node': 'fake-native-addon-binary-content',
+  }
+  await testBuild({
+    context,
+    files,
+  })
+})
