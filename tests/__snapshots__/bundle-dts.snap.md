@@ -15,11 +15,10 @@ export { shared, str };
 ```mjs
 //#region src/utils/types.ts
 let str = "hello";
-
 //#endregion
 //#region src/utils/shared.ts
 let shared = 10;
-
 //#endregion
 export { shared, str };
+
 ```

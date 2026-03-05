@@ -2,8 +2,8 @@
 
 ```mjs
 /* empty css       */
+export {};
 
-export {  };
 ```
 
 ## style.css

@@ -1,7 +1,8 @@
 ## index.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```
 
 ## style.css
