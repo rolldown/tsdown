@@ -179,6 +179,24 @@ describe('issues', () => {
     expect(fileMap['entry2.css']).toContain('class-shared')
   })
 
+  test('#800', async (context) => {
+    const Vue = (await import('unplugin-vue/rolldown')).default
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `export { default as MyButton } from './MyButton.vue'`,
+        'MyButton.vue': `<template><button class="btn">Click</button></template>\n<style>\n.btn { color: red; }\n</style>`,
+      },
+      options: {
+        plugins: [Vue({ isProduction: true })],
+        deps: { skipNodeModulesBundle: true },
+      },
+    })
+    expect(outputFiles).toContain('index.mjs')
+    expect(outputFiles).toContain('style.css')
+    expect(fileMap['style.css']).toContain('.btn')
+  })
+
   test('#772', async (context) => {
     const { fileMap, outputFiles } = await testBuild({
       context,

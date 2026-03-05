@@ -62,6 +62,7 @@ export async function transformWithLightningCSS(
 export async function bundleWithLightningCSS(
   filename: string,
   options: BundleCssOptions,
+  code?: string,
 ): Promise<BundleCssResult> {
   const targets =
     options.lightningcss?.targets ??
@@ -77,21 +78,26 @@ export async function bundleWithLightningCSS(
     minify: options.minify,
     resolver: {
       async read(filePath: string) {
-        // Note: LightningCSS explicitly recommends using `readFileSync` instead
-        // of `readFile` for better performance.
-        const code = readFileSync(filePath, 'utf8')
+        let fileCode: string
+        if (code != null && filePath === filename) {
+          fileCode = code
+        } else {
+          // Note: LightningCSS explicitly recommends using `readFileSync` instead
+          // of `readFile` for better performance.
+          fileCode = readFileSync(filePath, 'utf8')
+        }
         const lang = getPreprocessorLang(filePath)
         if (lang) {
           const preprocessed = await compilePreprocessor(
             lang,
-            code,
+            fileCode,
             filePath,
             options.preprocessorOptions,
           )
           deps.push(...preprocessed.deps)
           return preprocessed.code
         }
-        return code
+        return fileCode
       },
       resolve(specifier: string, from: string) {
         const dir = path.dirname(from)

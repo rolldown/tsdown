@@ -79,6 +79,9 @@ catalogs:
     unplugin-ast:
       specifier: ^0.16.0
       version: 0.16.0
+    unplugin-vue:
+      specifier: ^7.1.1
+      version: 7.1.1
     vitest:
       specifier: ^4.0.18
       version: 4.0.18
@@ -367,12 +370,18 @@ importers:
       unplugin-unused:
         specifier: catalog:peer
         version: 0.5.7
+      unplugin-vue:
+        specifier: catalog:dev
+        version: 7.1.1(@types/node@25.3.3)(@vitejs/devtools@0.0.0-alpha.32)(jiti@2.6.1)(vue@3.5.29(typescript@5.9.3))(yaml@2.8.2)
       vite:
         specifier: ^8.0.0-beta.15
         version: 8.0.0-beta.16(@types/node@25.3.3)(@vitejs/devtools@0.0.0-alpha.32)(jiti@2.6.1)(yaml@2.8.2)
       vitest:
         specifier: catalog:dev
         version: 4.0.18(@types/node@25.3.3)(@vitejs/devtools@0.0.0-alpha.32)(@vitest/ui@4.0.18)(jiti@2.6.1)(yaml@2.8.2)
+      vue:
+        specifier: catalog:docs
+        version: 3.5.29(typescript@5.9.3)
 
   docs:
     dependencies:
@@ -3872,6 +3881,12 @@ packages:
   unplugin-utils@0.3.1:
     resolution: {integrity: sha512-5lWVjgi6vuHhJ526bI4nlCOmkCIF3nnfXkCMDeMJrtdvxTs6ZFCM8oNufGTsDbKv/tJ/xj8RpvXjRuPBZJuJog==}
     engines: {node: '>=20.19.0'}
+
+  unplugin-vue@7.1.1:
+    resolution: {integrity: sha512-0171rToKyJtoz+faE9CSGtAhCF7//t8sJueyyfZujf4RcKtoHLU/wqcsnuH5aq3tDB+I/Tg6IXiWgPvI+TK/zw==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      vue: ^3.2.25
 
   unplugin@2.3.11:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
@@ -7857,6 +7872,29 @@ snapshots:
     dependencies:
       pathe: 2.0.3
       picomatch: 4.0.3
+
+  unplugin-vue@7.1.1(@types/node@25.3.3)(@vitejs/devtools@0.0.0-alpha.32)(jiti@2.6.1)(vue@3.5.29(typescript@5.9.3))(yaml@2.8.2):
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.13
+      '@jridgewell/trace-mapping': 0.3.31
+      '@vue/reactivity': 3.5.29
+      obug: 2.1.1
+      unplugin: 3.0.0
+      vite: 8.0.0-beta.16(@types/node@25.3.3)(@vitejs/devtools@0.0.0-alpha.32)(jiti@2.6.1)(yaml@2.8.2)
+      vue: 3.5.29(typescript@5.9.3)
+    transitivePeerDependencies:
+      - '@types/node'
+      - '@vitejs/devtools'
+      - esbuild
+      - jiti
+      - less
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - yaml
 
   unplugin@2.3.11:
     dependencies:

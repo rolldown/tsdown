@@ -34,6 +34,7 @@ catalogs:
     rolldown-plugin-require-cjs: ^0.3.3
     typescript: ~5.9.3
     unplugin-ast: ^0.16.0
+    unplugin-vue: ^7.1.1
     vitest: ^4.0.18
   docs:
     '@iconify-json/logos': ^1.2.10

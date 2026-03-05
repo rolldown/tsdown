@@ -2,7 +2,7 @@ export {
   defaultCssBundleName,
   resolveCssOptions,
 } from './features/css/index.ts'
-export { RE_CSS } from './features/css/plugin.ts'
+export { getCleanId, RE_CSS } from './features/css/plugin.ts'
 export { createCssPostHooks } from './features/css/post.ts'
 export {
   getEmptyChunkReplacer,

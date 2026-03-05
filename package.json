@@ -175,8 +175,10 @@
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
     "unplugin-unused": "catalog:peer",
+    "unplugin-vue": "catalog:dev",
     "vite": "catalog:docs",
-    "vitest": "catalog:dev"
+    "vitest": "catalog:dev",
+    "vue": "catalog:docs"
   },
   "prettier": "@sxzz/prettier-config"
 }

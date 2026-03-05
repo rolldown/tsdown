@@ -16,6 +16,7 @@
   "css.d.mts": {
     "createCssPostHooks": "declare function createCssPostHooks(_: { css: { splitting: boolean; fileName: string } }, _: CssStyles): Pick<Required<Plugin>, 'renderChunk' | 'generateBundle'>",
     "CssStyles": "type CssStyles = Map<string, string>",
+    "getCleanId": "declare function getCleanId(_: string): string",
     "getEmptyChunkReplacer": "declare function getEmptyChunkReplacer(_: string[]): (_: string) => string",
     "RE_CSS": "RegExp",
     "removePureCssChunks": "declare function removePureCssChunks(_: Record<string, OutputChunk | OutputAsset>, _: CssStyles): void",
@@ -35,6 +36,7 @@
       "StylusPreprocessorOptions",
       "createCssPostHooks",
       "defaultCssBundleName",
+      "getCleanId",
       "getEmptyChunkReplacer",
       "removePureCssChunks",
       "resolveCssOptions"
