@@ -9,7 +9,7 @@ import {
   getArchiveExtension,
   getBinaryPathInArchive,
   getDownloadUrl,
-  normalizeNodeVersion,
+  resolveNodeVersion,
   type ExeTarget,
 } from './platform.ts'
 
@@ -24,7 +24,7 @@ export async function resolveNodeBinary(
   logger?: MinimalLogger,
 ): Promise<string> {
   debug('Resolving Node.js binary for target: %O', target)
-  target.nodeVersion = normalizeNodeVersion(target)
+  target.nodeVersion = await resolveNodeVersion(target.nodeVersion)
 
   const cachedPath = getCachedBinaryPath(target)
   debug('Cache path: %s', cachedPath)

@@ -1,5 +1,5 @@
-import semver from 'semver'
 import satisfies from 'semver/functions/satisfies.js'
+import valid from 'semver/functions/valid.js'
 
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
@@ -8,7 +8,12 @@ export interface ExeTarget {
   platform: ExePlatform
   arch: ExeArch
   /**
-   * Node.js version to use for the executable. Should be a valid Node.js version string (e.g., "25.7.0").
+   * Node.js version to use for the executable.
+   *
+   * Accepts a valid semver string (e.g., `"25.7.0"`), or the special values
+   * `"latest"` / `"latest-lts"` which resolve the version automatically from
+   * {@link https://nodejs.org/dist/index.json}.
+   *
    * The minimum required version is 25.7.0, which is when SEA support was added to Node.js.
    */
   nodeVersion: string
@@ -53,11 +58,40 @@ export function getBinaryPathInArchive(target: ExeTarget): string {
   return `${dirName}/bin/node`
 }
 
-export function normalizeNodeVersion(target: ExeTarget): string {
-  const version = semver.valid(target.nodeVersion)
+interface NodeRelease {
+  version: string
+  lts: string | false
+}
+
+const NODE_DIST_INDEX_URL = 'https://nodejs.org/dist/index.json'
+
+export async function resolveNodeVersion(nodeVersion: string): Promise<string> {
+  if (nodeVersion === 'latest' || nodeVersion === 'latest-lts') {
+    const response = await fetch(NODE_DIST_INDEX_URL)
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch Node.js releases: HTTP ${response.status} from ${NODE_DIST_INDEX_URL}`,
+      )
+    }
+
+    const releases = (await response.json()) as NodeRelease[]
+
+    const release =
+      nodeVersion === 'latest'
+        ? releases[0]
+        : releases.find((r) => r.lts !== false)
+
+    if (!release) {
+      throw new Error(`No matching Node.js release found for "${nodeVersion}".`)
+    }
+
+    nodeVersion = release.version.replace(/^v/, '')
+  }
+
+  const version = valid(nodeVersion)
   if (!version) {
     throw new Error(
-      `Invalid Node.js version: ${target.nodeVersion}. ` +
+      `Invalid Node.js version: ${nodeVersion}. ` +
         `Please provide a valid version string (e.g., "25.7.0").`,
     )
   }
