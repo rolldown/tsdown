@@ -33,13 +33,6 @@ body {
 
 ```
 
-## c.mjs
-
-```mjs
-export {};
-
-```
-
 ## d.css
 
 ```css
@@ -50,13 +43,6 @@ body {
 body {
   color: #00f;
 }
-
-```
-
-## d.mjs
-
-```mjs
-export {};
 
 ```
 

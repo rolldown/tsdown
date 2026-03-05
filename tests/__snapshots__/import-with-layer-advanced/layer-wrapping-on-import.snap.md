@@ -8,10 +8,3 @@ body { color: red } }
           
 
 ```
-
-## entry.mjs
-
-```mjs
-export {};
-
-```

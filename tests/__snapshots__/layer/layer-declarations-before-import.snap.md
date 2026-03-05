@@ -18,10 +18,3 @@
 @layer layer6.layer7, layer8;
 
 ```
-
-## entry.mjs
-
-```mjs
-export {};
-
-```

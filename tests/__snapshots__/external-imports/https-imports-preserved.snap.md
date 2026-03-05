@@ -8,10 +8,3 @@
           
 
 ```
-
-## style.mjs
-
-```mjs
-export {};
-
-```

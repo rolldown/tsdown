@@ -26,10 +26,3 @@
 }
 
 ```
-
-## style.mjs
-
-```mjs
-export {};
-
-```

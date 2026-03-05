@@ -14,10 +14,3 @@
 }
 
 ```
-
-## style.mjs
-
-```mjs
-export {};
-
-```

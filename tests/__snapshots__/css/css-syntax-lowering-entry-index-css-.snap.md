@@ -1,7 +1,7 @@
 ## style.css
 
 ```css
-body {
+.foo .bar {
   color: red;
 }
 
