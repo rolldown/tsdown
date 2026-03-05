@@ -16,7 +16,11 @@ export interface ExeTarget {
    *
    * The minimum required version is 25.7.0, which is when SEA support was added to Node.js.
    */
-  nodeVersion: string
+  nodeVersion:
+    | (string & {})
+    | 'latest'
+    | 'latest-lts'
+    | `${string}.${string}.${string}`
 }
 
 export interface ExeExtensionOptions {
