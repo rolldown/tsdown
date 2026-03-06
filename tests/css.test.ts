@@ -6,8 +6,8 @@ describe('css', () => {
     const { outputFiles } = await testBuild({
       context,
       files: {
-        'index.ts': `import './style.css'`,
-        'style.css': `body { color: red }`,
+        'index.ts': `import './foo.css'`,
+        'foo.css': `body { color: red }`,
       },
     })
     expect(outputFiles).toEqual(['index.mjs', 'style.css'])
@@ -39,6 +39,75 @@ describe('css', () => {
       },
     })
     expect(outputFiles).toEqual(['style.css'])
+  })
+
+  test('with splitting=true', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.css'`,
+        'foo.css': `body { color: red }`,
+      },
+      options: {
+        css: {
+          splitting: true,
+        },
+      },
+    })
+    expect(outputFiles).toEqual(['index.css', 'index.mjs'])
+  })
+
+  test('with dts=true and splitting=true', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.css'`,
+        'foo.css': `body { color: red }`,
+      },
+      options: {
+        entry: ['index.ts'],
+        dts: true,
+        css: {
+          splitting: true,
+        },
+      },
+    })
+    expect(outputFiles).toEqual(['index.css', 'index.d.mts', 'index.mjs'])
+  })
+
+  test('with sass and splitting=true', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.scss'`,
+        'foo.scss': `$color: blue; body { color: $color; }`,
+      },
+      options: {
+        entry: ['index.ts'],
+        css: {
+          splitting: true,
+        },
+      },
+    })
+    expect(outputFiles).toEqual(['index.css', 'index.mjs'])
+  })
+
+  test('with sass and dts=true and splitting=true', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.scss'`,
+        'foo.scss': `$color: blue; body { color: $color; }`,
+      },
+      options: {
+        entry: ['index.ts'],
+        dts: true,
+        css: {
+          splitting: true,
+        },
+      },
+    })
+    expect(outputFiles).toEqual(['index.css', 'index.d.mts', 'index.mjs'])
   })
 
   test.for([true, false])(

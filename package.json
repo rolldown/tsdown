@@ -171,6 +171,7 @@
     "publint": "catalog:peer",
     "rolldown-plugin-dts-snapshot": "catalog:dev",
     "rolldown-plugin-require-cjs": "catalog:dev",
+    "sass": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
