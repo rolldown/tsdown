@@ -2,7 +2,7 @@ import { createCssPostHooks, type CssStyles } from './post.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type { Plugin } from 'rolldown'
 
-export const RE_CSS: RegExp = /\.(?:css|scss|sass|less|styl|stylus)$/
+export const RE_CSS: RegExp = /\.css(?:$|\?)/
 
 export function getCleanId(id: string): string {
   const queryIndex = id.indexOf('?')
