@@ -3,14 +3,14 @@ import { resolveComma, toArray } from '../../utils/general.ts'
 export interface CssOptions {
   /**
    * Enable/disable CSS code splitting.
-   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file.
+   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file named by {@link fileName}.
    * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
    * @default false
    */
   splitting?: boolean
 
   /**
-   * Specify the name of the CSS file.
+   * Specify the name of the CSS file generated when `splitting` is `false`.
    * @default 'style.css'
    */
   fileName?: string
