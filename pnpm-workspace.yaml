@@ -88,4 +88,4 @@ catalogs:
 ignoreWorkspaceRootCheck: true
 
 trustPolicy: no-downgrade
-trustPolicyExclude: [chokidar@4.0.3]
+trustPolicyIgnoreAfter: 10080 # 7 days
