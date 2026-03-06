@@ -50,6 +50,8 @@
   "peerDependencies": {
     "postcss": "^8.4.0",
     "postcss-import": "^16.0.0",
+    "sass": "*",
+    "sass-embedded": "*",
     "tsdown": "workspace:*"
   },
   "peerDependenciesMeta": {
@@ -57,6 +59,12 @@
       "optional": true
     },
     "postcss-import": {
+      "optional": true
+    },
+    "sass": {
+      "optional": true
+    },
+    "sass-embedded": {
       "optional": true
     }
   },
