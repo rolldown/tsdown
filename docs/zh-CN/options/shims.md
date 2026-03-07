@@ -1,6 +1,6 @@
 # Shims（兼容代码）
 
-Shims 是一些小型代码片段，用于在不同的模块系统（如 CommonJS (CJS) 和 ECMAScript Modules (ESM)）之间提供兼容性。在 `tsdown` 中，shims 用于弥合这些系统之间的差异，确保您的代码能够在不同环境中顺畅运行。
+Shim 是用于 CommonJS (CJS) 和 ECMAScript Modules (ESM) 之间兼容性的小型代码片段。在 `tsdown` 中，shims 用于弥合这些系统之间的差异，确保您的代码能够在不同环境中顺畅运行。
 
 ## ESM 中的 CommonJS 变量
 

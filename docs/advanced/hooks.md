@@ -55,3 +55,40 @@ Invoked before each Rolldown build. For dual-format builds, this hook is called 
 ### `build:done`
 
 Invoked after each tsdown build completes. Use this hook for cleanup or post-processing tasks.
+
+## Examples
+
+### Modifying build options in `build:before`
+
+```ts [tsdown.config.ts]
+export default defineConfig({
+  hooks: {
+    'build:before': function(context) {
+      // Add a custom Rolldown plugin dynamically
+      context.buildOptions.plugins.push({
+        name: 'my-plugin',
+        transform(code, id) {
+          if (id.endsWith('.ts')) {
+            return code.replaceAll('__VERSION__', '"1.0.0"')
+          }
+        },
+      })
+    },
+  },
+})
+```
+
+### Post-processing in `build:done`
+
+```ts [tsdown.config.ts]
+export default defineConfig({
+  hooks: {
+    'build:done': function(context) {
+      // Log all generated chunks
+      for (const chunk of context.chunks) {
+        console.log(`Generated: ${chunk.fileName} (${chunk.code.length} bytes)`)
+      }
+    },
+  },
+})
+```

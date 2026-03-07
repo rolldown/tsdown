@@ -78,7 +78,7 @@ export default defineConfig({
 - **`onlyAllowBundle` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `onlyAllowBundle` 选项或将其设置为 `false` 来抑制警告。
 
 ::: tip
-请确保在 `onlyAllowBundle` 列表中包含所有必需的子依赖，而不仅仅是您直接导入的顶层包。
+请确保在 `onlyAllowBundle` 中包含所有子依赖，不仅是直接导入的顶层包。
 :::
 
 ### `deps.neverBundle`

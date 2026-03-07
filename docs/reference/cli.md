@@ -115,9 +115,11 @@ See also [Log Level](../options/log-level.md).
 
 ### ~~`--silent`~~
 
-**Deprecated:** Please use `--log-level error` instead for better compatibility.
+::: warning Deprecated
+Please use `--log-level error` instead.
+:::
 
-Suppress non-error logs during the build process. Only error messages will be displayed, making it easier to focus on critical issues.
+Suppress non-error logs during the build process. Only error messages will be displayed.
 
 ## `-d, --out-dir <dir>`
 
@@ -162,6 +164,14 @@ See also [Declaration Files](../options/dts.md).
 ## `--publint`
 
 Enable `publint` to validate your package for publishing. This checks for common issues in your package configuration, ensuring it meets best practices.
+
+See also [Package Validation](../options/lint.md).
+
+## `--attw`
+
+Enable [Are the types wrong?](https://github.com/arethetypeswrong/arethetypeswrong.github.io) integration to check your package's TypeScript types for compatibility issues.
+
+See also [Package Validation](../options/lint.md).
 
 ## `--unused`
 
@@ -243,8 +253,11 @@ All contents of the `public` directory will be copied to your output directory (
 
 ## `--public-dir <dir>`
 
+::: warning Deprecated
+Please use `--copy` instead.
+:::
+
 An alias for `--copy`.
-**Deprecated:** Please use `--copy` instead for better clarity and consistency.
 
 ## `--exe`
 
@@ -259,6 +272,26 @@ When `exe` is enabled:
 - Only single entry points are supported.
 
 See also [Executable](../options/exe.md).
+
+## `-W, --workspace [dir]`
+
+Enable workspace mode for building multiple packages in a monorepo. Optionally specify the workspace root directory.
+
+## `-F, --filter <pattern>`
+
+Filter configs by working directory or name. Supports string matching and regex patterns (e.g., `/pkg-name$/` or `pkg-name`).
+
+## `--unbundle`
+
+Enable unbundle (bundleless) mode. Each source file is compiled individually, preserving the source directory structure in the output.
+
+See also [Unbundle](../options/unbundle.md).
+
+## `--fail-on-warn`
+
+Fail the build when warnings are encountered. Enabled by default.
+
+See also [CI Environment](../advanced/ci.md).
 
 ## `--exports`
 

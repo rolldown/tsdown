@@ -26,3 +26,49 @@
      在 Node.js v22.18.0 及以上版本，您可以直接运行 TypeScript 文件，无需额外运行器。
 
 这些替代方案相比 stub 模式，能为您的项目带来更流畅、更可靠的开发体验，尤其是在项目规模扩大或需要插件支持时。关于这一决策的详细说明，请参阅 [这条 GitHub 评论](https://github.com/rolldown/tsdown/pull/164#issuecomment-2849720617)。
+
+## tsdown 和 tsup 有什么区别？ {#tsdown-vs-tsup}
+
+tsdown 是 tsup 的精神继承者，底层由 Rolldown 驱动，而非 esbuild。主要区别：
+
+- **更快的构建速度**：Rolldown 提供了显著更好的性能，尤其在大型项目中。
+- **更丰富的插件生态**：tsdown 支持 Rolldown、Rollup 和 unplugin 插件。
+- **更多内置功能**：CSS 支持、可执行文件打包、工作区模式和包验证均已内置。
+
+详细对比和迁移指南请参阅[从 tsup 迁移](./migrate-from-tsup.md)。
+
+## 能否在 monorepo 中使用 tsdown？ {#monorepo}
+
+可以。tsdown 内置工作区支持。使用 `--workspace`（或 `-W`）启用工作区模式，自动检测 monorepo 中的包。可通过 `--filter`（或 `-F`）过滤特定包：
+
+```bash
+tsdown -W -F my-package
+```
+
+根目录的配置会自动被工作区中的包继承。
+
+## 为什么我的依赖被打包了？ {#dependencies-bundled}
+
+默认情况下，tsdown 会打包所有导入的模块。要排除依赖（如 `package.json` 中列出的依赖），可使用 `deps` 配置：
+
+```ts
+export default defineConfig({
+  deps: {
+    skipNodeModulesBundle: true,
+  },
+})
+```
+
+更多选项请参阅[依赖处理](../options/dependencies.md)。
+
+## 如何生成类型声明文件？ {#dts}
+
+使用 `dts` 选项：
+
+```ts
+export default defineConfig({
+  dts: true,
+})
+```
+
+当 `package.json` 包含 `types` 或 `typings` 字段，或 `exports` 条目包含类型条件时，tsdown 会自动启用 DTS 生成。更多高级选项请参阅[声明文件](../options/dts.md)。

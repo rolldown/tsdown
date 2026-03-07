@@ -55,3 +55,40 @@ export default defineConfig({
 ### `build:done`
 
 在每次 tsdown 构建完成后调用。使用此钩子执行清理或后处理任务。
+
+## 示例
+
+### 在 `build:before` 中修改构建选项
+
+```ts [tsdown.config.ts]
+export default defineConfig({
+  hooks: {
+    'build:before': function(context) {
+      // 动态添加自定义 Rolldown 插件
+      context.buildOptions.plugins.push({
+        name: 'my-plugin',
+        transform(code, id) {
+          if (id.endsWith('.ts')) {
+            return code.replaceAll('__VERSION__', '"1.0.0"')
+          }
+        },
+      })
+    },
+  },
+})
+```
+
+### 在 `build:done` 中进行后处理
+
+```ts [tsdown.config.ts]
+export default defineConfig({
+  hooks: {
+    'build:done': function(context) {
+      // 输出所有生成的 chunk 信息
+      for (const chunk of context.chunks) {
+        console.log(`Generated: ${chunk.fileName} (${chunk.code.length} bytes)`)
+      }
+    },
+  },
+})
+```

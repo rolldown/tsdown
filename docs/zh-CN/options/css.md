@@ -303,6 +303,31 @@ export default defineConfig({
 
 更多可用选项请参考 [Lightning CSS 文档](https://lightningcss.dev/)。
 
+## 保留 CSS 导入（`css.inject`）{#css-inject}
+
+默认情况下，CSS 导入语句在提取为独立文件后会从 JS 输出中移除。启用 `css.inject` 后，JS 输出会保留指向生成的 CSS 文件的 `import` 语句，使库的使用者在导入 JS 时自动引入对应的 CSS：
+
+```ts
+export default defineConfig({
+  css: {
+    inject: true,
+  },
+})
+```
+
+启用 `css.inject: true` 后，输出的 JS 文件将包含：
+
+```js
+// dist/index.mjs
+import './style.css'
+
+export function greet() {
+  return 'Hello'
+}
+```
+
+这对于组件库非常有用，可以确保用户导入组件时自动包含对应的 CSS。
+
 ## CSS 代码分割
 
 ### 合并模式（默认）
@@ -358,4 +383,5 @@ dist/
 | `css.target`              | `string \| string[] \| false` | _继承 `target`_  | CSS 专用语法降级目标                          |
 | `css.postcss`             | `string \| object`            | —                | PostCSS 配置路径或内联选项                    |
 | `css.preprocessorOptions` | `object`                      | —                | CSS 预处理器选项                              |
+| `css.inject`              | `boolean`                     | `false`          | 在 JS 输出中保留 CSS 导入语句                 |
 | `css.lightningcss`        | `object`                      | —                | 传递给 Lightning CSS 的语法降级选项           |

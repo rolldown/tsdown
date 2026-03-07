@@ -221,6 +221,18 @@ export default defineConfig({
 })
 ```
 
+## Preserving CSS Imports (`css.inject`)
+
+When enabled, JS output preserves `import` statements pointing to emitted CSS files. Consumers auto-import CSS alongside JS:
+
+```ts
+export default defineConfig({
+  css: {
+    inject: true,
+  },
+})
+```
+
 ## Options Reference
 
 | Option | Type | Default | Description |
@@ -229,6 +241,7 @@ export default defineConfig({
 | `css.splitting` | `boolean` | `false` | Per-chunk CSS splitting |
 | `css.fileName` | `string` | `'style.css'` | Merged CSS file name |
 | `css.minify` | `boolean` | `false` | CSS minification |
+| `css.inject` | `boolean` | `false` | Preserve CSS imports in JS output |
 | `css.target` | `string \| string[] \| false` | _from `target`_ | CSS-specific lowering target |
 | `css.postcss` | `string \| object` | — | PostCSS config path or inline options |
 | `css.preprocessorOptions` | `object` | — | Preprocessor options |

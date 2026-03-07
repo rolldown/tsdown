@@ -346,6 +346,42 @@ tsdown --from-vite         # Use vite.config.*
 tsdown --from-vite vitest  # Use vitest.config.*
 ```
 
+## Workspace / Monorepo
+
+### `--workspace, -W [dir]`
+
+Enable workspace mode for building multiple packages:
+
+```bash
+tsdown -W
+tsdown -W packages/
+```
+
+### `--filter, -F <pattern>`
+
+Filter configs by name or working directory. Supports regex:
+
+```bash
+tsdown -W -F my-package
+tsdown -W -F /^pkg-/
+```
+
+### `--unbundle`
+
+Enable unbundle (bundleless) mode:
+
+```bash
+tsdown --unbundle
+```
+
+### `--fail-on-warn`
+
+Fail on warnings (enabled by default):
+
+```bash
+tsdown --no-fail-on-warn  # Disable
+```
+
 ## Common Usage Patterns
 
 ### Basic Build

@@ -303,6 +303,31 @@ export default defineConfig({
 
 For more information on available options, refer to the [Lightning CSS documentation](https://lightningcss.dev/).
 
+## Preserving CSS Imports (`css.inject`) {#css-inject}
+
+By default, CSS import statements are removed from JS output after extracting the CSS into separate files. When `css.inject` is enabled, the JS output preserves `import` statements pointing to the emitted CSS files, so consumers of your library will automatically import the CSS alongside the JS:
+
+```ts
+export default defineConfig({
+  css: {
+    inject: true,
+  },
+})
+```
+
+With `css.inject: true`, the output JS will contain:
+
+```js
+// dist/index.mjs
+import './style.css'
+
+export function greet() {
+  return 'Hello'
+}
+```
+
+This is useful for component libraries where you want CSS to be automatically included when users import your components.
+
 ## CSS Code Splitting
 
 ### Merged Mode (Default)
@@ -358,4 +383,5 @@ dist/
 | `css.target`              | `string \| string[] \| false` | _from `target`_  | CSS-specific syntax lowering target                         |
 | `css.postcss`             | `string \| object`            | —                | PostCSS config path or inline options                       |
 | `css.preprocessorOptions` | `object`                      | —                | Options for CSS preprocessors                               |
+| `css.inject`              | `boolean`                     | `false`          | Preserve CSS import statements in JS output                 |
 | `css.lightningcss`        | `object`                      | —                | Options passed to Lightning CSS for syntax lowering         |

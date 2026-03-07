@@ -96,7 +96,8 @@ export default defineConfig({
 | Shims | `shims: true` - Add ESM/CJS compatibility | [option-shims](references/option-shims.md) |
 | CJS default | `cjsDefault: true` (default) / `false` | [option-cjs-default](references/option-cjs-default.md) |
 | Package exports | `exports: true` - Auto-generate exports field | [option-package-exports](references/option-package-exports.md) |
-| CSS handling | **[experimental]** `css: { ... }` — requires `@tsdown/css` | [option-css](references/option-css.md) |
+| CSS handling | **[experimental]** `css: { ... }` — full pipeline with preprocessors, Lightning CSS, PostCSS, code splitting; requires `@tsdown/css` | [option-css](references/option-css.md) |
+| CSS inject | `css: { inject: true }` — preserve CSS imports in JS output | [option-css](references/option-css.md) |
 | Unbundle mode | `unbundle: true` - Preserve directory structure | [option-unbundle](references/option-unbundle.md) |
 | Executable | **[experimental]** `exe: true` - Bundle as standalone executable, cross-platform via `@tsdown/exe` | [option-exe](references/option-exe.md) |
 | Package validation | `publint: true`, `attw: true` - Validate package | [option-lint](references/option-lint.md) |
@@ -105,8 +106,10 @@ export default defineConfig({
 
 | Framework | Guide | Reference |
 |-----------|-------|-----------|
-| React | JSX transform, Fast Refresh | [recipe-react](references/recipe-react.md) |
+| React | JSX transform, React Compiler | [recipe-react](references/recipe-react.md) |
 | Vue | SFC support, JSX | [recipe-vue](references/recipe-vue.md) |
+| Solid | SolidJS JSX transform | [recipe-solid](references/recipe-solid.md) |
+| Svelte | Svelte component libraries (source distribution recommended) | [recipe-svelte](references/recipe-svelte.md) |
 | WASM | WebAssembly modules via `rolldown-plugin-wasm` | [recipe-wasm](references/recipe-wasm.md) |
 
 ## Common Patterns
@@ -158,9 +161,9 @@ export default defineConfig({
   deps: {
     neverBundle: ['react', 'react-dom'],
   },
-  plugins: [
-    // React Fast Refresh support
-  ],
+  inputOptions: {
+    jsx: { runtime: 'automatic' },
+  },
 })
 ```
 
@@ -321,20 +324,28 @@ npx tsdown-migrate              # Migrate from tsup
 
 # Output options
 tsdown --format esm,cjs        # Multiple formats
-tsdown --outDir lib            # Custom output directory
+tsdown -d lib                  # Custom output directory (--out-dir)
 tsdown --minify                # Enable minification
 tsdown --dts                   # Generate declarations
 tsdown --exe                   # Bundle as standalone executable
+tsdown --unbundle              # Bundleless mode
 
 # Entry options
 tsdown src/index.ts            # Single entry
 tsdown src/*.ts                # Glob patterns
 tsdown src/a.ts src/b.ts       # Multiple entries
 
+# Workspace / Monorepo
+tsdown -W                      # Enable workspace mode
+tsdown -W -F my-package        # Filter specific package
+tsdown --filter /^pkg-/        # Filter by regex
+
 # Development
 tsdown --watch                 # Watch mode
 tsdown --sourcemap             # Generate source maps
 tsdown --clean                 # Clean output directory
+tsdown --from-vite             # Reuse Vite config
+tsdown --tsconfig tsconfig.build.json  # Custom tsconfig
 ```
 
 ## Best Practices
