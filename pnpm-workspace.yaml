@@ -35,6 +35,7 @@ catalogs:
     sass: ^1.97.3
     typescript: ~5.9.3
     unplugin-ast: ^0.16.0
+    unplugin-raw: ^0.6.4
     unplugin-vue: ^7.1.1
     vitest: ^4.0.18
   docs:

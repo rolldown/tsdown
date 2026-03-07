@@ -351,6 +351,24 @@ describe('css', () => {
     expect(fileMap['style.css']).not.toContain('should-not-appear')
   })
 
+  test('handle .css?raw with unplugin-raw', async (context) => {
+    const raw = await import('unplugin-raw/rolldown')
+
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import cssText from './foo.css?raw'; console.log(cssText);`,
+        'foo.css': `.foo{color:red;}`,
+      },
+      options: {
+        entry: ['index.ts'],
+        plugins: [raw.default({})],
+      },
+    })
+    expect(outputFiles).toEqual(['index.mjs'])
+    expect(fileMap['index.mjs']).toContain(`.foo{color:red;}`)
+  })
+
   describe('@import bundling', () => {
     test('diamond dependency graph', async (context) => {
       // From esbuild TestCSSAtImport

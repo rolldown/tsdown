@@ -82,6 +82,9 @@ catalogs:
     unplugin-ast:
       specifier: ^0.16.0
       version: 0.16.0
+    unplugin-raw:
+      specifier: ^0.6.4
+      version: 0.6.4
     unplugin-vue:
       specifier: ^7.1.1
       version: 7.1.1
@@ -373,6 +376,9 @@ importers:
       unplugin-ast:
         specifier: catalog:dev
         version: 0.16.0
+      unplugin-raw:
+        specifier: catalog:dev
+        version: 0.6.4
       unplugin-unused:
         specifier: catalog:peer
         version: 0.5.7
@@ -4130,6 +4136,15 @@ packages:
   unplugin-ast@0.16.0:
     resolution: {integrity: sha512-1ow2FlRznoSKE7Fjk2bSxqDsvHyj/O876RqsNlipsM6A+I91t7Mi+jG7tCNNcl3vZx14z4pGXBLSl8KOPrMuFQ==}
     engines: {node: '>=20.19.0'}
+
+  unplugin-raw@0.6.4:
+    resolution: {integrity: sha512-Cxxk4mtLVJKwJjGVijQwVMkEOxBzBSz37jSfm44/Fw9lzo6z+oetXty5PrnkgWzKJYpeoJdBk6PnklibG0pLqg==}
+    engines: {node: '>=20.19.0'}
+    peerDependencies:
+      esbuild: '>=0.25.0'
+    peerDependenciesMeta:
+      esbuild:
+        optional: true
 
   unplugin-unused@0.5.7:
     resolution: {integrity: sha512-quvqrHs6mPhk1hjbGwMoypXfagveue+/22dtgDrEzc2K9485ZAsnVfq7iYIgv7FwooiRa6+HDaLWgK2IavN+2g==}
@@ -8305,6 +8320,11 @@ snapshots:
       ast-kit: 3.0.0-beta.1
       magic-string-ast: 1.0.3
       unplugin: 3.0.0
+
+  unplugin-raw@0.6.4:
+    dependencies:
+      unplugin: 2.3.11
+      unplugin-utils: 0.3.1
 
   unplugin-unused@0.5.7:
     dependencies:
