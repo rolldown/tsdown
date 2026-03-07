@@ -51,8 +51,8 @@ export function greet() {
 在 CSS 导入路径后添加 `?inline` 查询参数，可以将完全处理后的 CSS 作为 JavaScript 字符串返回，而不是输出为独立的 `.css` 文件。此行为与 [Vite 的 `?inline` 行为](https://vite.dev/guide/features#disabling-css-injection-into-the-page)保持一致：
 
 ```ts
-import './style.css' // 提取为 .css 文件
 import css from './theme.css?inline' // 返回处理后的 CSS 字符串
+import './style.css' // 提取为 .css 文件
 console.log(css) // ".theme { color: red; }\n"
 ```
 

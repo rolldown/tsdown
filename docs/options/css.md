@@ -51,8 +51,8 @@ All imported CSS is bundled into a single output file with `@import` statements 
 Appending `?inline` to a CSS import returns the fully processed CSS as a JavaScript string instead of emitting a separate `.css` file. This aligns with [Vite's `?inline` behavior](https://vite.dev/guide/features#disabling-css-injection-into-the-page):
 
 ```ts
-import './style.css' // Extracted to a .css file
 import css from './theme.css?inline' // Returns processed CSS as a string
+import './style.css' // Extracted to a .css file
 console.log(css) // ".theme { color: red; }\n"
 ```
 
