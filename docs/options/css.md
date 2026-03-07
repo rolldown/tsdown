@@ -46,6 +46,26 @@ CSS `@import` statements are automatically resolved and inlined into the output.
 
 All imported CSS is bundled into a single output file with `@import` statements removed.
 
+### Inline CSS (`?inline`)
+
+Appending `?inline` to a CSS import returns the fully processed CSS as a JavaScript string instead of emitting a separate `.css` file. This aligns with [Vite's `?inline` behavior](https://vite.dev/guide/features#disabling-css-injection-into-the-page):
+
+```ts
+import './style.css' // Extracted to a .css file
+import css from './theme.css?inline' // Returns processed CSS as a string
+console.log(css) // ".theme { color: red; }\n"
+```
+
+The `?inline` CSS goes through the full processing pipeline — preprocessors, `@import` inlining, syntax lowering, and minification — just like regular CSS. The only difference is the output format: a JavaScript string export instead of a CSS asset file.
+
+This also works with preprocessors:
+
+```ts
+import css from './theme.scss?inline'
+```
+
+When `?inline` is used, the CSS is not included in the emitted `.css` files and the import is tree-shakeable (`moduleSideEffects: false`).
+
 ## CSS Pre-processors
 
 `tsdown` provides built-in support for `.scss`, `.sass`, `.less`, `.styl`, and `.stylus` files. The corresponding pre-processor must be installed as a dev dependency:

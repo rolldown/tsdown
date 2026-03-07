@@ -46,6 +46,26 @@ export function greet() {
 
 所有被导入的 CSS 会被打包到单个输出文件中，`@import` 语句会被移除。
 
+### 内联 CSS（`?inline`）
+
+在 CSS 导入路径后添加 `?inline` 查询参数，可以将完全处理后的 CSS 作为 JavaScript 字符串返回，而不是输出为独立的 `.css` 文件。此行为与 [Vite 的 `?inline` 行为](https://vite.dev/guide/features#disabling-css-injection-into-the-page)保持一致：
+
+```ts
+import './style.css' // 提取为 .css 文件
+import css from './theme.css?inline' // 返回处理后的 CSS 字符串
+console.log(css) // ".theme { color: red; }\n"
+```
+
+`?inline` CSS 会经过完整的处理管线——预处理器、`@import` 内联、语法降级和压缩——与普通 CSS 完全一致。唯一的区别是输出格式：JavaScript 字符串导出而非 CSS 资源文件。
+
+也支持预处理器文件：
+
+```ts
+import css from './theme.scss?inline'
+```
+
+使用 `?inline` 时，CSS 不会包含在输出的 `.css` 文件中，且该导入是可摇树的（`moduleSideEffects: false`）。
+
 ## CSS 预处理器
 
 `tsdown` 内置支持 `.scss`、`.sass`、`.less`、`.styl` 和 `.stylus` 文件。需要安装对应的预处理器作为开发依赖：

@@ -30,6 +30,17 @@ Output: `index.mjs` + `index.css`
 
 CSS `@import` statements are resolved and inlined automatically. No separate output files produced.
 
+### Inline CSS (`?inline`)
+
+Append `?inline` to return processed CSS as a JS string instead of emitting a `.css` file:
+
+```ts
+import './style.css'                   // → .css file
+import css from './theme.css?inline'   // → JS string
+```
+
+Works with preprocessors too (`./foo.scss?inline`). Goes through full pipeline (preprocessors, @import inlining, lowering, minification). Tree-shakeable (`moduleSideEffects: false`).
+
 ## CSS Pre-processors
 
 Built-in support for Sass, Less, and Stylus. Install the preprocessor:
