@@ -156,7 +156,6 @@ Each feature is self-contained and modular:
 
 **Advanced Features:**
 
-- `css/` - CSS handling with Lightning CSS integration
 - `pkg/exports.ts` - Auto-generate package.json exports field
 - `pkg/publint.ts` - Package linting
 - `pkg/attw.ts` - "Are the types wrong" integration
@@ -176,7 +175,7 @@ Public plugin exports in `src/plugins.ts`: `DepPlugin`, `NodeProtocolPlugin`, `R
 
 2. **Package-aware building:** Detects package.json, auto-generates exports field, validates bundled dependencies, runs package linters
 
-3. **Lazy feature loading:** Optional peer dependencies loaded on-demand (unplugin-unused, unplugin-lightningcss, etc.)
+3. **Lazy feature loading:** Optional peer dependencies loaded on-demand (`@tsdown/css`, unplugin-unused, etc.)
 
 4. **Watch mode coordination:** Config file changes trigger full rebuild restart; file changes tracked per bundle; keyboard shortcuts for manual rebuild/exit
 

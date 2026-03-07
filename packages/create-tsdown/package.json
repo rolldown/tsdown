@@ -54,7 +54,7 @@
   },
   "scripts": {
     "dev": "node ./src/run.ts",
-    "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
+    "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "dependencies": {
     "@clack/prompts": "catalog:create",

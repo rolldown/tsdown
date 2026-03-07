@@ -2,9 +2,9 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { ResolverFactory } from 'rolldown/experimental'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
-import type { MinimalLogger } from './types.ts'
+import type { LightningCSSOptions, PreprocessorOptions } from './options.ts'
 import type { Targets } from 'lightningcss'
-import type { LightningCSSOptions, PreprocessorOptions } from 'tsdown/css'
+import type { Logger } from 'tsdown/internal'
 
 let resolver: ResolverFactory | undefined
 function getResolver(): ResolverFactory {
@@ -27,7 +27,7 @@ export interface BundleCssOptions {
   lightningcss?: LightningCSSOptions
   minify?: boolean
   preprocessorOptions?: PreprocessorOptions
-  logger: MinimalLogger
+  logger: Logger
 }
 
 export interface BundleCssResult {

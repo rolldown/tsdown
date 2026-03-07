@@ -3,15 +3,20 @@
 [![npm version][npmx-version-src]][npmx-href]
 [![npm downloads][npmx-downloads-src]][npmx-href]
 
-Advanced CSS pipeline for [tsdown](https://tsdown.dev), powered by [Lightning CSS](https://lightningcss.dev/).
+CSS support for [tsdown](https://tsdown.dev), powered by [Lightning CSS](https://lightningcss.dev/).
+
+All CSS processing in tsdown requires this package. Install it to enable CSS handling in your builds.
 
 ## Features
 
+- CSS extraction and bundling
 - CSS `@import` inlining via Lightning CSS `bundleAsync`
 - CSS syntax lowering and autoprefixing
 - CSS minification
+- CSS code splitting
 - Source map support
 - Preprocessor support (Sass, Less, Stylus)
+- PostCSS integration
 
 ## Documentation
 

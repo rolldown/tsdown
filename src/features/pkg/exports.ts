@@ -4,11 +4,7 @@ import { RE_CSS, RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
-import type {
-  NormalizedFormat,
-  ResolvedConfig,
-  ResolvedCssOptions,
-} from '../../config/types.ts'
+import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
 import type {
   ChunksByFormat,
   RolldownChunk,
@@ -357,10 +353,10 @@ function exportMeta(
 function exportCss(
   exports: Record<string, any>,
   chunks: ChunksByFormat,
-  { splitting }: Pick<ResolvedCssOptions, 'splitting'>,
+  css: { splitting?: boolean } | undefined,
   pkgRoot: string,
 ) {
-  if (splitting) return
+  if (css?.splitting) return
 
   for (const chunksByFormat of Object.values(chunks)) {
     for (const chunk of chunksByFormat) {

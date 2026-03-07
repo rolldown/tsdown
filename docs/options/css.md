@@ -5,22 +5,19 @@ CSS support in `tsdown` is still an experimental feature. While it covers the co
 > [!WARNING] Experimental Feature
 > CSS support is experimental. Please test thoroughly and report any issues you encounter. The API and behavior may change as the feature matures.
 
-## Basic vs Advanced CSS
+## Getting Started
 
-`tsdown` provides two levels of CSS support:
-
-- **Built-in (basic):** CSS file extraction and bundling works out of the box — no extra dependencies needed.
-- **Advanced (`@tsdown/css`):** Preprocessors (Sass/Less/Stylus), CSS syntax lowering, minification, and `@import` inlining require the `@tsdown/css` package:
+All CSS support in `tsdown` is provided by the `@tsdown/css` package. Install it to enable CSS handling:
 
 ```bash
 npm install -D @tsdown/css
 ```
 
-When `@tsdown/css` is installed, the advanced CSS plugin is automatically used in place of the built-in one.
+When `@tsdown/css` is installed, CSS processing is automatically enabled.
 
 ## CSS Import
 
-Importing `.css` files from your TypeScript or JavaScript entry points is supported out of the box. The CSS content is extracted and emitted as a separate `.css` asset file:
+Importing `.css` files from your TypeScript or JavaScript entry points is supported. The CSS content is extracted and emitted as a separate `.css` asset file:
 
 ```ts
 // src/index.ts
@@ -35,7 +32,7 @@ This produces both `index.mjs` and `index.css` in the output directory.
 
 ### `@import` Inlining
 
-When `@tsdown/css` is installed, CSS `@import` statements are automatically resolved and inlined into the output. This means you can use `@import` to organize your CSS across multiple files without producing separate output files:
+CSS `@import` statements are automatically resolved and inlined into the output. This means you can use `@import` to organize your CSS across multiple files without producing separate output files:
 
 ```css
 /* style.css */
@@ -50,9 +47,6 @@ When `@tsdown/css` is installed, CSS `@import` statements are automatically reso
 All imported CSS is bundled into a single output file with `@import` statements removed.
 
 ## CSS Pre-processors
-
-> [!NOTE]
-> Requires `@tsdown/css` to be installed.
 
 `tsdown` provides built-in support for `.scss`, `.sass`, `.less`, `.styl`, and `.stylus` files. The corresponding pre-processor must be installed as a dev dependency:
 
@@ -138,9 +132,6 @@ export default defineConfig({
 
 ## CSS Minification
 
-> [!NOTE]
-> Requires `@tsdown/css` to be installed.
-
 Enable CSS minification via `css.minify`:
 
 ```ts
@@ -154,9 +145,6 @@ export default defineConfig({
 Minification is powered by [Lightning CSS](https://lightningcss.dev/).
 
 ## CSS Target
-
-> [!NOTE]
-> Requires `@tsdown/css` to be installed.
 
 By default, CSS syntax lowering uses the top-level [`target`](/options/target) option. You can override this specifically for CSS with `css.target`:
 
@@ -181,9 +169,6 @@ export default defineConfig({
 ```
 
 ## CSS Transformer
-
-> [!NOTE]
-> Requires `@tsdown/css` to be installed.
 
 The `css.transformer` option controls how CSS is processed. PostCSS and Lightning CSS are **mutually exclusive** processing paths:
 
@@ -233,9 +218,6 @@ export default defineConfig({
 When `css.postcss` is omitted and `transformer` is `'postcss'`, tsdown auto-detects PostCSS config from the project root.
 
 ## Lightning CSS
-
-> [!NOTE]
-> Requires `@tsdown/css` to be installed.
 
 `tsdown` uses [Lightning CSS](https://lightningcss.dev/) for CSS syntax lowering — transforming modern CSS features into syntax compatible with older browsers based on your `target` setting.
 
@@ -347,13 +329,13 @@ dist/
 
 ## Options Reference
 
-| Option                    | Type                          | Default          | Description                                                                  |
-| ------------------------- | ----------------------------- | ---------------- | ---------------------------------------------------------------------------- |
-| `css.transformer`         | `'postcss' \| 'lightningcss'` | `'lightningcss'` | CSS processing pipeline (requires `@tsdown/css`)                             |
-| `css.splitting`           | `boolean`                     | `false`          | Enable CSS code splitting per chunk                                          |
-| `css.fileName`            | `string`                      | `'style.css'`    | File name for the merged CSS file (when `splitting: false`)                  |
-| `css.minify`              | `boolean`                     | `false`          | Enable CSS minification (requires `@tsdown/css`)                             |
-| `css.target`              | `string \| string[] \| false` | _from `target`_  | CSS-specific syntax lowering target (requires `@tsdown/css`)                 |
-| `css.postcss`             | `string \| object`            | —                | PostCSS config path or inline options (requires `@tsdown/css`)               |
-| `css.preprocessorOptions` | `object`                      | —                | Options for CSS preprocessors (requires `@tsdown/css`)                       |
-| `css.lightningcss`        | `object`                      | —                | Options passed to Lightning CSS for syntax lowering (requires `@tsdown/css`) |
+| Option                    | Type                          | Default          | Description                                                 |
+| ------------------------- | ----------------------------- | ---------------- | ----------------------------------------------------------- |
+| `css.transformer`         | `'postcss' \| 'lightningcss'` | `'lightningcss'` | CSS processing pipeline                                     |
+| `css.splitting`           | `boolean`                     | `false`          | Enable CSS code splitting per chunk                         |
+| `css.fileName`            | `string`                      | `'style.css'`    | File name for the merged CSS file (when `splitting: false`) |
+| `css.minify`              | `boolean`                     | `false`          | Enable CSS minification                                     |
+| `css.target`              | `string \| string[] \| false` | _from `target`_  | CSS-specific syntax lowering target                         |
+| `css.postcss`             | `string \| object`            | —                | PostCSS config path or inline options                       |
+| `css.preprocessorOptions` | `object`                      | —                | Options for CSS preprocessors                               |
+| `css.lightningcss`        | `object`                      | —                | Options passed to Lightning CSS for syntax lowering         |

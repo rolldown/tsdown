@@ -1,14 +1,5 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
 import type {
-  CssOptions,
-  LessPreprocessorOptions,
-  LightningCSSOptions,
-  PreprocessorOptions,
-  ResolvedCssOptions,
-  SassPreprocessorOptions,
-  StylusPreprocessorOptions,
-} from '../features/css/index.ts'
-import type {
   DepsConfig,
   NoExternalFn,
   ResolvedDepsConfig,
@@ -90,30 +81,23 @@ export type {
   CopyEntry,
   CopyOptions,
   CopyOptionsFn,
-  CssOptions,
   DepsConfig,
   DevtoolsOptions,
   DtsOptions,
   ExeOptions,
   ExportsOptions,
-  LessPreprocessorOptions,
-  LightningCSSOptions,
   NoExternalFn,
   OutExtensionContext,
   OutExtensionFactory,
   OutExtensionObject,
   PackageJsonWithPath,
   PackageType,
-  PreprocessorOptions,
   PublintOptions,
   ReportOptions,
-  ResolvedCssOptions,
   ResolvedDepsConfig,
   RolldownChunk,
   RolldownContext,
-  SassPreprocessorOptions,
   SeaConfig,
-  StylusPreprocessorOptions,
   TreeshakingOptions,
   TsdownBundle,
   TsdownHooks,
@@ -557,8 +541,9 @@ export interface UserConfig {
 
   /**
    * **[experimental]** CSS options.
+   * Requires `@tsdown/css` to be installed.
    */
-  css?: CssOptions
+  css?: import('@tsdown/css').CssOptions
 
   /**
    * @deprecated Use `css.inject` instead.
@@ -664,6 +649,7 @@ export type ResolvedConfig = Overwrite<
     | 'banner'
     | 'footer'
     | 'checks'
+    | 'css'
   >,
   {
     /** Resolved entry map (after glob expansion) */
@@ -679,7 +665,6 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     deps: ResolvedDepsConfig
-    css: ResolvedCssOptions
 
     dts: false | DtsOptions
     report: false | ReportOptions

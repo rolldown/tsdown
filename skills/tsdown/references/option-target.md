@@ -195,11 +195,7 @@ export default defineConfig({
 
 ## CSS Targeting
 
-When a browser target is set and `lightningcss` is installed, CSS syntax is also lowered:
-
-```bash
-npm install -D lightningcss
-```
+When `@tsdown/css` is installed and a browser target is set, CSS syntax is also lowered automatically:
 
 ```ts
 export default defineConfig({
@@ -207,17 +203,7 @@ export default defineConfig({
 })
 ```
 
-Custom Lightning CSS options via `css.lightningcss`:
-
-```ts
-export default defineConfig({
-  css: {
-    lightningcss: {
-      targets: { chrome: 100 << 16 },
-    },
-  },
-})
-```
+See [CSS](option-css.md) for full CSS configuration options.
 
 ## Tips
 
@@ -225,7 +211,7 @@ export default defineConfig({
 2. **Use `false`** for modern-only builds
 3. **Specify multiple targets** for broader compatibility
 4. **Use legacy decorators** with `experimentalDecorators`
-5. **Install `lightningcss`** for CSS syntax lowering
+5. **Install `@tsdown/css`** for CSS support and syntax lowering
 6. **Test output** in target environments
 
 ## Related Options

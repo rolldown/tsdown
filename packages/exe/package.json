@@ -45,7 +45,10 @@
     "node": ">=20.19.0"
   },
   "scripts": {
-    "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
+    "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
+  },
+  "peerDependencies": {
+    "tsdown": "workspace:*"
   },
   "dependencies": {
     "obug": "catalog:prod",

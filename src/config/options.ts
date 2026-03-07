@@ -6,7 +6,6 @@ import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
-import { resolveCssOptions } from '../features/css/index.ts'
 import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { validateSea } from '../features/exe.ts'
@@ -271,7 +270,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
-    css: resolveCssOptions(css, target),
+    css,
     cwd,
     deps: depsConfig,
     devtools,
