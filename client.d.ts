@@ -56,3 +56,8 @@ interface ImportGlobFunction {
 interface ImportMeta {
   glob: ImportGlobFunction
 }
+
+declare module '*?inline' {
+  const src: string
+  export default src
+}

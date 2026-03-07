@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import {
   bundleWithLightningCSS,
@@ -7,12 +8,16 @@ import { resolveCssOptions, type ResolvedCssOptions } from './options.ts'
 import { CssPostPlugin, type CssStyles } from './post.ts'
 import { processWithPostCSS as runPostCSS } from './postcss.ts'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
-import { getCleanId, RE_CSS } from './utils.ts'
+import {
+  CSS_LANGS_RE,
+  getCleanId,
+  RE_CSS,
+  RE_CSS_INLINE,
+  RE_INLINE,
+} from './utils.ts'
 import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
-
-const CSS_LANGS_RE = /\.(?:css|less|sass|scss|styl|stylus)$/
 
 interface CssPluginConfig {
   css: ResolvedCssOptions
@@ -38,10 +43,48 @@ export function CssPlugin(
       styles.clear()
     },
 
+    resolveId: {
+      filter: { id: RE_CSS_INLINE },
+      async handler(source, ...args) {
+        const cleanSource = getCleanId(source)
+        const resolved = await this.resolve(cleanSource, ...args)
+        if (resolved) {
+          return {
+            ...resolved,
+            id: `${resolved.id}?inline`,
+          }
+        }
+      },
+    },
+
+    load: {
+      filter: { id: RE_CSS_INLINE },
+      async handler(id) {
+        const cleanId = getCleanId(id)
+        // Only handle real files; virtual CSS modules are loaded by their own plugins
+        if (styles.has(id)) return
+
+        const code = await readFile(cleanId, 'utf8').catch(() => null)
+        if (code == null) return
+
+        return {
+          code,
+          moduleType: 'js',
+        }
+      },
+    },
+
     transform: {
       filter: { id: CSS_LANGS_RE },
       async handler(code, id) {
         const cleanId = getCleanId(id)
+        const isInline = RE_INLINE.test(id)
+
+        // Skip CSS files with non-inline queries (e.g. ?raw handled by other plugins),
+        // but allow through virtual CSS from other plugins (e.g. Vue SFC `lang.css`)
+        // where the clean path itself is not a CSS file.
+        if (id !== cleanId && !isInline && CSS_LANGS_RE.test(cleanId)) return
+
         const deps: string[] = []
 
         if (cssConfig.css.transformer === 'lightningcss') {
@@ -63,6 +106,14 @@ export function CssPlugin(
 
         if (code.length && !code.endsWith('\n')) {
           code += '\n'
+        }
+
+        if (isInline) {
+          return {
+            code: `export default ${JSON.stringify(code)};`,
+            moduleSideEffects: false,
+            moduleType: 'js',
+          }
         }
 
         styles.set(id, code)
@@ -181,7 +232,7 @@ async function processWithLightningCSS(
   config: CssPluginConfig,
   logger: Logger,
 ): Promise<string> {
-  const lang = getPreprocessorLang(id)
+  const lang = getPreprocessorLang(cleanId)
 
   if (lang) {
     const preResult = await compilePreprocessor(
@@ -199,8 +250,9 @@ async function processWithLightningCSS(
     })
   }
 
-  // Virtual modules (with query strings) can't use file-based bundling
-  if (id !== cleanId) {
+  // Virtual modules (with query strings) can't use file-based bundling;
+  // ?inline is excluded because the underlying file is real.
+  if (id !== cleanId && !RE_INLINE.test(id)) {
     return transformWithLightningCSS(code, cleanId, {
       target: config.css.target,
       lightningcss: config.css.lightningcss,
@@ -234,7 +286,7 @@ async function processWithPostCSS(
   deps: string[],
   config: CssPluginConfig,
 ): Promise<string> {
-  const lang = getPreprocessorLang(id)
+  const lang = getPreprocessorLang(cleanId)
 
   if (lang) {
     const preResult = await compilePreprocessor(
