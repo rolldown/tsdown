@@ -4,6 +4,12 @@ import {
   type MarkPartial,
   type Overwrite,
 } from 'tsdown/internal'
+import type { TransformOptions } from 'lightningcss'
+
+export type LightningCSSOptions = Omit<
+  TransformOptions<any>,
+  'filename' | 'code'
+>
 
 export interface CssOptions {
   /**
@@ -130,8 +136,6 @@ export interface StylusPreprocessorOptions {
   paths?: string[]
   [key: string]: any
 }
-
-export type LightningCSSOptions = Record<string, any>
 
 export type ResolvedCssOptions = Overwrite<
   MarkPartial<
