@@ -13,24 +13,44 @@ export function removePureCssChunks(
 ): void {
   const pureCssChunkNames: string[] = []
 
-  for (const [fileName, chunk] of Object.entries(bundle)) {
-    if (chunk.type !== 'chunk') continue
-    if (chunk.exports.length > 0) continue
+  // Pass 1: strict — all modules in the chunk are CSS
+  for (const chunk of Object.values(bundle)) {
+    if (
+      chunk.type !== 'chunk' ||
+      chunk.exports.length ||
+      !chunk.moduleIds.length
+    )
+      continue
+    if (chunk.moduleIds.every((id) => styles.has(id))) {
+      pureCssChunkNames.push(chunk.fileName)
+    }
+  }
 
-    const moduleIds = Object.keys(chunk.modules)
-    if (moduleIds.length === 0) continue
-    const allCss = moduleIds.every((id) => styles.has(id))
-    if (!allCss) continue
-
-    pureCssChunkNames.push(fileName)
+  // Pass 2: relaxed — non-entry chunk contains CSS modules and its JS code is
+  // trivially empty (e.g. a wrapper like `import './foo.css'` with no logic).
+  const strictSet = new Set(pureCssChunkNames)
+  for (const chunk of Object.values(bundle)) {
+    if (
+      chunk.type !== 'chunk' ||
+      chunk.exports.length ||
+      chunk.isEntry ||
+      chunk.isDynamicEntry
+    )
+      continue
+    if (strictSet.has(chunk.fileName)) continue
+    if (
+      chunk.moduleIds.some((id) => styles.has(id)) &&
+      isEmptyChunkCode(chunk.code)
+    ) {
+      pureCssChunkNames.push(chunk.fileName)
+    }
   }
 
   if (!pureCssChunkNames.length) return
 
   const replaceEmptyChunk = getEmptyChunkReplacer(pureCssChunkNames)
 
-  for (const file of Object.keys(bundle)) {
-    const chunk = bundle[file]
+  for (const chunk of Object.values(bundle)) {
     if (chunk.type !== 'chunk') continue
 
     let chunkImportsPureCssChunk = false
@@ -77,4 +97,13 @@ export function getEmptyChunkReplacer(
 
 function escapeRegex(str: string): string {
   return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
+}
+
+function isEmptyChunkCode(code: string): boolean {
+  return !code
+    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    .replaceAll(/\/\/[^\n]*/g, '')
+    .replaceAll(/\bexport\s*\{\s*\};?/g, '')
+    .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
+    .trim()
 }

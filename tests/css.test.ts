@@ -1359,4 +1359,133 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('.b')
     })
   })
+
+  describe('css.inject', () => {
+    test('preserves css import in js output', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './foo.css'\nexport const a = 1`,
+          'foo.css': `body { color: red }`,
+        },
+        options: {
+          css: { inject: true },
+        },
+      })
+      expect(outputFiles).toContain('style.css')
+      expect(outputFiles).toContain('index.mjs')
+      expect(fileMap['index.mjs']).toContain("import './style.css'")
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
+    test('with splitting=true', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './foo.css'\nexport const a = 1`,
+          'foo.css': `body { color: red }`,
+        },
+        options: {
+          css: { inject: true, splitting: true },
+        },
+      })
+      expect(outputFiles).toContain('index.css')
+      expect(outputFiles).toContain('index.mjs')
+      expect(fileMap['index.mjs']).toContain("import './index.css'")
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
+    test('multiple css imports', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './a.css'\nimport './b.css'\nexport const a = 1`,
+          'a.css': `.a { color: red }`,
+          'b.css': `.b { color: blue }`,
+        },
+        options: {
+          css: { inject: true },
+        },
+      })
+      expect(outputFiles).toContain('style.css')
+      expect(fileMap['index.mjs']).toContain("import './style.css'")
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
+    test('injects css import into async chunk with splitting=true', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export const main = 1\nimport('./async')`,
+          'async.ts': `import './async.css'\nexport const asyncValue = 2`,
+          'async.css': `.async { color: red }`,
+        },
+        options: {
+          css: {
+            inject: true,
+            splitting: true,
+          },
+        },
+      })
+
+      const asyncCss = outputFiles.find((file) => /^async-.*\.css$/.test(file))
+      const asyncJs = outputFiles.find((file) => /^async-.*\.mjs$/.test(file))
+
+      expect(asyncCss).toBeTruthy()
+      expect(asyncJs).toBeTruthy()
+
+      const asyncCode = fileMap[asyncJs!]
+      expect(asyncCode).toContain(`import './${asyncCss}'`)
+      expect(asyncCode).not.toContain('empty css')
+    })
+
+    test('rewrites shared css-only chunk imports to css files', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts':
+            `export const loadA = () => import('./async-a')\n` +
+            `export const loadB = () => import('./async-b')`,
+          'async-a.ts': `import './shared'\nimport './a.css'\nexport const a = 1`,
+          'async-b.ts': `import './shared'\nexport const b = 2`,
+          'shared.ts': `import './shared.css'`,
+          'shared.css': `.shared { color: red }`,
+          'a.css': `.a { color: blue }`,
+        },
+        options: {
+          css: { inject: true, splitting: true },
+        },
+      })
+
+      const asyncAJs = outputFiles.find((file) =>
+        /^async-a-.*\.mjs$/.test(file),
+      )
+      const asyncAStyles = outputFiles.find((file) =>
+        /^async-a-.*\.css$/.test(file),
+      )
+      const asyncBJs = outputFiles.find((file) =>
+        /^async-b-.*\.mjs$/.test(file),
+      )
+      const sharedJs = outputFiles.find((file) => /^shared-.*\.mjs$/.test(file))
+      const sharedStyles = outputFiles.find((file) =>
+        /^shared-.*\.css$/.test(file),
+      )
+
+      expect(asyncAJs).toBeTruthy()
+      expect(asyncAStyles).toBeTruthy()
+      expect(asyncBJs).toBeTruthy()
+      expect(sharedStyles).toBeTruthy()
+      expect(sharedJs).toBeFalsy()
+
+      const asyncACode = fileMap[asyncAJs!]
+      const asyncBCode = fileMap[asyncBJs!]
+
+      expect(asyncACode).toContain(`import './${asyncAStyles}'`)
+      expect(asyncACode).toContain(`import "./${sharedStyles}"`)
+      expect(asyncACode).not.toContain('.mjs"')
+
+      expect(asyncBCode).toContain(`import "./${sharedStyles}"`)
+      expect(asyncBCode).not.toContain('.mjs"')
+    })
+  })
 })

@@ -25,12 +25,6 @@ export function getPreprocessorLang(
   return PREPROCESSOR_LANGS[ext]
 }
 
-const CSS_LANGS_RE = /\.(?:css|less|sass|scss|styl|stylus)$/
-
-export function isCssOrPreprocessor(filename: string): boolean {
-  return CSS_LANGS_RE.test(filename)
-}
-
 export function compilePreprocessor(
   lang: PreprocessorLang,
   code: string,

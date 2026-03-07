@@ -1,4 +1,5 @@
 import { resolveComma, toArray } from '../../utils/general.ts'
+import type { MarkPartial, Overwrite } from '../../utils/types.ts'
 
 export interface CssOptions {
   /**
@@ -67,6 +68,16 @@ export interface CssOptions {
   postcss?: PostCSSOptions
 
   /**
+   * When enabled, JS output preserves import statements pointing to emitted CSS files.
+   * Consumers of the library will automatically import the CSS alongside the JS.
+   *
+   * Requires `@tsdown/css` to be installed.
+   *
+   * @default false
+   */
+  inject?: boolean
+
+  /**
    * CSS transformer to use. Controls how CSS is processed:
    *
    * - `'lightningcss'` (default): `@import` handled by Lightning CSS
@@ -130,16 +141,13 @@ export interface StylusPreprocessorOptions {
 
 export type LightningCSSOptions = Record<string, any>
 
-export interface ResolvedCssOptions {
-  transformer: 'postcss' | 'lightningcss'
-  splitting: boolean
-  fileName: string
-  minify: boolean
-  target?: string[]
-  preprocessorOptions?: PreprocessorOptions
-  lightningcss?: LightningCSSOptions
-  postcss?: PostCSSOptions
-}
+export type ResolvedCssOptions = Overwrite<
+  MarkPartial<
+    Required<CssOptions>,
+    'preprocessorOptions' | 'lightningcss' | 'postcss'
+  >,
+  { target?: string[] }
+>
 
 export const defaultCssBundleName = 'style.css'
 
@@ -161,6 +169,7 @@ export function resolveCssOptions(
     splitting: options.splitting ?? false,
     fileName: options.fileName ?? defaultCssBundleName,
     minify: options.minify ?? false,
+    inject: options.inject ?? false,
     target: cssTarget,
     preprocessorOptions: options.preprocessorOptions,
     lightningcss: options.lightningcss,

@@ -1,4 +1,4 @@
-import { createCssPostHooks, type CssStyles } from './post.ts'
+import { CssPostPlugin, type CssStyles } from './post.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type { Plugin } from 'rolldown'
 
@@ -9,26 +9,33 @@ export function getCleanId(id: string): string {
   return queryIndex === -1 ? id : id.slice(0, queryIndex)
 }
 
-export function CssPlugin(config: ResolvedConfig): Plugin {
+export function CssPlugin(config: ResolvedConfig): Plugin[] {
   const styles: CssStyles = new Map()
-  const postHooks = createCssPostHooks(config, styles)
 
-  return {
-    name: 'tsdown:builtin-css',
+  return [
+    {
+      name: 'tsdown:css',
 
-    buildStart() {
-      styles.clear()
+      buildStart() {
+        styles.clear()
+      },
+      transform: {
+        filter: { id: RE_CSS },
+        handler(code, id) {
+          if (code.length && !code.endsWith('\n')) {
+            code += '\n'
+          }
+
+          styles.set(id, code)
+          return {
+            code: '',
+            moduleSideEffects: 'no-treeshake',
+            moduleType: 'js',
+          }
+        },
+      },
     },
 
-    transform(code, id) {
-      if (!RE_CSS.test(id)) return
-      if (code.length > 0 && !code.endsWith('\n')) {
-        code += '\n'
-      }
-      styles.set(id, code)
-      return { code: '', moduleSideEffects: 'no-treeshake', moduleType: 'js' }
-    },
-
-    ...postHooks,
-  }
+    CssPostPlugin(config.css, styles),
+  ]
 }

@@ -1,74 +1,163 @@
-import {
-  createCssPostHooks,
-  getCleanId,
-  RE_CSS,
-  type CssStyles,
-} from 'tsdown/css'
+import path from 'node:path'
+import { CssPostPlugin, getCleanId, RE_CSS, type CssStyles } from 'tsdown/css'
 import {
   bundleWithLightningCSS,
   transformWithLightningCSS,
 } from './lightningcss.ts'
 import { processWithPostCSS as runPostCSS } from './postcss.ts'
-import {
-  compilePreprocessor,
-  getPreprocessorLang,
-  isCssOrPreprocessor,
-} from './preprocessors.ts'
+import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
 import type { MinimalLogger } from './types.ts'
 import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 
+const CSS_LANGS_RE = /\.(?:css|less|sass|scss|styl|stylus)$/
+
 export function CssPlugin(
   config: ResolvedConfig,
   { logger }: { logger: MinimalLogger },
-): Plugin {
+): Plugin[] {
   const styles: CssStyles = new Map()
-  const postHooks = createCssPostHooks(config, styles)
 
-  return {
+  const transformPlugin: Plugin = {
     name: '@tsdown/css',
 
     buildStart() {
       styles.clear()
     },
 
-    async transform(code, id) {
-      if (!isCssOrPreprocessor(id)) return
+    transform: {
+      filter: { id: CSS_LANGS_RE },
+      async handler(code, id) {
+        const cleanId = getCleanId(id)
+        const deps: string[] = []
 
-      const cleanId = getCleanId(id)
-      const deps: string[] = []
+        if (config.css.transformer === 'lightningcss') {
+          code = await processWithLightningCSS(
+            code,
+            id,
+            cleanId,
+            deps,
+            config,
+            logger,
+          )
+        } else {
+          code = await processWithPostCSS(code, id, cleanId, deps, config)
+        }
 
-      if (config.css.transformer === 'lightningcss') {
-        code = await processWithLightningCSS(
-          code,
-          id,
-          cleanId,
-          deps,
-          config,
-          logger,
-        )
-      } else {
-        code = await processWithPostCSS(code, id, cleanId, deps, config)
-      }
+        for (const dep of deps) {
+          this.addWatchFile(dep)
+        }
 
-      for (const dep of deps) {
-        this.addWatchFile(dep)
-      }
+        if (code.length && !code.endsWith('\n')) {
+          code += '\n'
+        }
 
-      if (code.length && !code.endsWith('\n')) {
-        code += '\n'
-      }
-
-      styles.set(id, code)
-      return {
-        code: '',
-        moduleSideEffects: 'no-treeshake',
-        moduleType: 'js',
-      }
+        styles.set(id, code)
+        return {
+          code: '',
+          moduleSideEffects: 'no-treeshake',
+          moduleType: 'js',
+        }
+      },
     },
-
-    ...postHooks,
   }
+
+  const plugins: Plugin[] = [transformPlugin]
+
+  if (config.css.inject) {
+    // Inject plugin runs BEFORE CssPostPlugin so it can see pure CSS chunks
+    // before they are removed, and rewrite their imports to CSS asset paths.
+    const injectPlugin: Plugin = {
+      name: '@tsdown/css:inject',
+
+      generateBundle(_outputOptions, bundle) {
+        const chunks = Object.values(bundle)
+        // Identify pure CSS chunks and empty CSS wrapper chunks
+        const pureCssChunks = new Set<string>()
+        for (const chunk of chunks) {
+          if (
+            chunk.type !== 'chunk' ||
+            chunk.exports.length ||
+            !chunk.moduleIds.length ||
+            chunk.isEntry ||
+            chunk.isDynamicEntry
+          )
+            continue
+          // Strict: all modules are CSS
+          if (chunk.moduleIds.every((id) => styles.has(id))) {
+            pureCssChunks.add(chunk.fileName)
+            continue
+          }
+          // Relaxed: chunk has CSS modules and code is trivially empty
+          // (e.g. a JS file whose only purpose is `import './foo.css'`)
+          if (
+            chunk.moduleIds.some((id) => styles.has(id)) &&
+            isEmptyChunkCode(chunk.code)
+          ) {
+            pureCssChunks.add(chunk.fileName)
+          }
+        }
+
+        for (const chunk of chunks) {
+          if (chunk.type !== 'chunk') continue
+          if (pureCssChunks.has(chunk.fileName)) continue
+
+          if (config.css.splitting) {
+            // Rewrite pure CSS chunk imports in-place: swap .mjs/.cjs/.js → .css
+            // This preserves import order and sourcemap line positions.
+            for (const imp of chunk.imports) {
+              if (!pureCssChunks.has(imp)) continue
+              const basename = path.basename(imp)
+              const escaped = basename.replaceAll(
+                /[.*+?^${}()|[\]\\]/g,
+                String.raw`\$&`,
+              )
+              const cssBasename = basename.replace(/\.[cm]?js$/, '.css')
+              const importRE = new RegExp(
+                String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`,
+              )
+              chunk.code = chunk.code.replace(importRE, `$1${cssBasename}$2`)
+            }
+            // Direct CSS modules in this chunk need a prepended import
+            if (chunk.moduleIds.some((id) => styles.has(id))) {
+              const cssFile = chunk.fileName.replace(/\.[cm]?js$/, '.css')
+              const relativePath = path.posix.relative(
+                path.posix.dirname(chunk.fileName),
+                cssFile,
+              )
+              const importPath =
+                relativePath[0] === '.' ? relativePath : `./${relativePath}`
+              chunk.code = `import '${importPath}';\n${chunk.code}`
+              if (chunk.map) {
+                chunk.map.mappings = `;${chunk.map.mappings}`
+              }
+            }
+          } else {
+            const hasCss =
+              chunk.moduleIds.some((id) => styles.has(id)) ||
+              chunk.imports.some((imp) => pureCssChunks.has(imp))
+            if (hasCss) {
+              const cssFile = config.css.fileName
+              const relativePath = path.posix.relative(
+                path.posix.dirname(chunk.fileName),
+                cssFile,
+              )
+              const importPath =
+                relativePath[0] === '.' ? relativePath : `./${relativePath}`
+              chunk.code = `import '${importPath}';\n${chunk.code}`
+              if (chunk.map) {
+                chunk.map.mappings = `;${chunk.map.mappings}`
+              }
+            }
+          }
+        }
+      },
+    }
+    plugins.push(injectPlugin)
+  }
+
+  plugins.push(CssPostPlugin(config.css, styles))
+  return plugins
 }
 
 async function processWithLightningCSS(
@@ -161,4 +250,13 @@ async function processWithPostCSS(
     lightningcss: config.css.lightningcss,
     minify: config.css.minify,
   })
+}
+
+function isEmptyChunkCode(code: string): boolean {
+  return !code
+    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    .replaceAll(/\/\/[^\n]*/g, '')
+    .replaceAll(/\bexport\s*\{\s*\};?/g, '')
+    .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
+    .trim()
 }

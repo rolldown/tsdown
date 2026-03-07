@@ -149,14 +149,30 @@ async function resolveInputOptions(
         }),
       )
     }
-    let cssPlugin: Plugin
+
+    let cssPlugins: Plugin[]
     try {
       const { CssPlugin: AdvancedCssPlugin } = await import('@tsdown/css')
-      cssPlugin = AdvancedCssPlugin(config, { logger })
+      cssPlugins = AdvancedCssPlugin(config, { logger })
     } catch {
-      cssPlugin = CssPlugin(config)
+      if (
+        config.css.inject ||
+        config.css.minify ||
+        config.css.preprocessorOptions ||
+        config.css.lightningcss ||
+        config.css.postcss
+      ) {
+        throw new Error(
+          '`@tsdown/css` is required to use advanced CSS features. Please install it with `npm install @tsdown/css`.',
+        )
+      }
+      cssPlugins = CssPlugin(config)
     }
-    plugins.push(cssPlugin, ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
+    plugins.push(
+      ...cssPlugins,
+      ShebangPlugin(logger, cwd, nameLabel, isDualFormat),
+    )
+
     if (globImport) {
       plugins.push(importGlobPlugin({ root: cwd }))
     }

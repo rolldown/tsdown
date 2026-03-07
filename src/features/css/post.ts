@@ -1,19 +1,21 @@
 import { removePureCssChunks } from './pure-chunk.ts'
-import { defaultCssBundleName } from './index.ts'
+import { defaultCssBundleName, type ResolvedCssOptions } from './index.ts'
 import type { Plugin } from 'rolldown'
 
 export type CssStyles = Map<string, string>
 
-export function createCssPostHooks(
-  config: {
-    css: { splitting: boolean; fileName: string }
-  },
+export function CssPostPlugin(
+  config: Pick<ResolvedCssOptions, 'splitting' | 'fileName'>,
   styles: CssStyles,
-): Pick<Required<Plugin>, 'renderChunk' | 'generateBundle'> {
+): Plugin {
   const collectedCSS: string[] = []
 
   return {
+    name: 'tsdown:css-post',
+
     renderChunk(_code, chunk) {
+      if (config.splitting) return
+
       let chunkCSS = ''
       for (const id of Object.keys(chunk.modules)) {
         const code = styles.get(id)
@@ -27,25 +29,41 @@ export function createCssPostHooks(
         chunkCSS += '\n'
       }
 
-      if (config.css.splitting) {
-        const cssAssetFileName = chunk.fileName.replace(/\.(m?js|cjs)$/, '.css')
-        this.emitFile({
-          type: 'asset',
-          fileName: cssAssetFileName,
-          source: chunkCSS,
-        })
-      } else {
-        collectedCSS.push(chunkCSS)
-      }
+      collectedCSS.push(chunkCSS)
     },
 
     generateBundle(_outputOptions, bundle) {
-      if (!config.css.splitting && collectedCSS.length > 0) {
+      if (config.splitting) {
+        // Emit CSS assets in generateBundle where chunk fileNames are resolved
+        for (const chunk of Object.values(bundle)) {
+          if (chunk.type !== 'chunk') continue
+
+          let chunkCSS = ''
+          for (const id of chunk.moduleIds) {
+            const code = styles.get(id)
+            if (code) {
+              chunkCSS += code
+            }
+          }
+          if (!chunkCSS) continue
+
+          if (!chunkCSS.endsWith('\n')) {
+            chunkCSS += '\n'
+          }
+
+          const cssAssetFileName = chunk.fileName.replace(/\.[cm]?js$/, '.css')
+          this.emitFile({
+            type: 'asset',
+            fileName: cssAssetFileName,
+            source: chunkCSS,
+          })
+        }
+      } else if (collectedCSS.length > 0) {
         const allCSS = collectedCSS.join('')
         if (allCSS) {
           this.emitFile({
             type: 'asset',
-            fileName: config.css.fileName,
+            fileName: config.fileName,
             source: allCSS,
             originalFileName: defaultCssBundleName,
           })
