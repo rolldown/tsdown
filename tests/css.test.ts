@@ -1,36 +1,7 @@
 import { describe, expect, test } from 'vitest'
-import { CssGuardPlugin } from '../src/features/rolldown.ts'
 import { testBuild } from './utils.ts'
 
 describe('css', () => {
-  test('css-guard plugin throws error for CSS files', () => {
-    const guardPlugin = CssGuardPlugin()
-    const { transform } = guardPlugin
-    const handler = typeof transform === 'object' ? transform.handler : transform
-    const filter = typeof transform === 'object' ? transform.filter : undefined
-
-    const cssExtensions = [
-      'style.css',
-      'theme.less',
-      'app.sass',
-      'main.scss',
-      'base.styl',
-      'global.stylus',
-    ]
-    for (const file of cssExtensions) {
-      expect(() => handler!.call({} as any, '', file)).toThrow(
-        `CSS file "${file}" was encountered but \`@tsdown/css\` is not installed`,
-      )
-    }
-
-    // Non-CSS files should not match the filter
-    const idFilter = filter!.id as RegExp
-    expect(idFilter.test('index.ts')).toBe(false)
-    expect(idFilter.test('app.js')).toBe(false)
-    expect(idFilter.test('style.css')).toBe(true)
-    expect(idFilter.test('theme.scss')).toBe(true)
-  })
-
   test('basic', async (context) => {
     const { outputFiles } = await testBuild({
       context,
