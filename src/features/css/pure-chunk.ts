@@ -101,9 +101,9 @@ function escapeRegex(str: string): string {
 
 function isEmptyChunkCode(code: string): boolean {
   return !code
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\/\/[^\n]*/g, '')
-    .replace(/\bexport\s*\{\s*\};?/g, '')
-    .replace(/\bimport\s*["'][^"']*["'];?/g, '')
+    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    .replaceAll(/\/\/[^\n]*/g, '')
+    .replaceAll(/\bexport\s*\{\s*\};?/g, '')
+    .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
     .trim()
 }
