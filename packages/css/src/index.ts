@@ -71,9 +71,10 @@ export function CssPlugin(
       name: '@tsdown/css:inject',
 
       generateBundle(_outputOptions, bundle) {
+        const chunks = Object.values(bundle)
         // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
-        for (const chunk of Object.values(bundle)) {
+        for (const chunk of chunks) {
           if (
             chunk.type !== 'chunk' ||
             chunk.exports.length ||
@@ -97,7 +98,7 @@ export function CssPlugin(
           }
         }
 
-        for (const chunk of Object.values(bundle)) {
+        for (const chunk of chunks) {
           if (chunk.type !== 'chunk') continue
           if (pureCssChunks.has(chunk.fileName)) continue
 
