@@ -1,4 +1,4 @@
-import { importWithError } from '../../../src/utils/general.ts'
+import { importWithError } from 'tsdown/internal'
 import type { PostCSSOptions } from './options.ts'
 
 interface PostCSSConfigResult {

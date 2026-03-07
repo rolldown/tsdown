@@ -24,6 +24,10 @@
       "dev": "./src/config.ts",
       "default": "./dist/config.mjs"
     },
+    "./internal": {
+      "dev": "./src/internal.ts",
+      "default": "./dist/internal.mjs"
+    },
     "./plugins": {
       "dev": "./src/plugins.ts",
       "default": "./dist/plugins.mjs"
@@ -57,6 +61,7 @@
     "exports": {
       ".": "./dist/index.mjs",
       "./config": "./dist/config.mjs",
+      "./internal": "./dist/internal.mjs",
       "./plugins": "./dist/plugins.mjs",
       "./run": "./dist/run.mjs",
       "./package.json": "./package.json",

@@ -1,5 +1,5 @@
-import { resolveComma, toArray } from '../../../src/utils/general.ts'
-import type { MarkPartial, Overwrite } from '../../../src/utils/types.ts'
+import { resolveComma, toArray } from 'tsdown/internal'
+import type { MarkPartial, Overwrite } from 'tsdown/internal'
 
 export interface CssOptions {
   /**
