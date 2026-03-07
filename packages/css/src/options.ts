@@ -1,6 +1,3 @@
-import { resolveComma, toArray } from '../../utils/general.ts'
-import type { MarkPartial, Overwrite } from '../../utils/types.ts'
-
 export interface CssOptions {
   /**
    * Enable/disable CSS code splitting.
@@ -21,8 +18,6 @@ export interface CssOptions {
    * Accepts esbuild-style target strings (e.g., `'chrome99'`, `'safari16.2'`).
    * Defaults to the top-level `target` option.
    *
-   * Requires `@tsdown/css` to be installed.
-   *
    * @see https://vite.dev/config/build-options#build-csstarget
    */
   target?: string | string[] | false
@@ -32,15 +27,11 @@ export interface CssOptions {
    *
    * In addition to options specific to each processor, `additionalData` option
    * can be used to inject extra code for each style content.
-   *
-   * Requires `@tsdown/css` to be installed.
    */
   preprocessorOptions?: PreprocessorOptions
 
   /**
    * Enable/disable CSS minification.
-   *
-   * Requires `@tsdown/css` to be installed.
    *
    * @default false
    */
@@ -48,8 +39,6 @@ export interface CssOptions {
 
   /**
    * Lightning CSS options for CSS syntax lowering and transformations.
-   *
-   * Requires `@tsdown/css` to be installed.
    */
   lightningcss?: LightningCSSOptions
 
@@ -61,7 +50,7 @@ export interface CssOptions {
    * - Omitted: Auto-detect PostCSS config from the project root.
    *
    * Only used when `transformer` is `'postcss'`.
-   * Requires `postcss` and `@tsdown/css` to be installed.
+   * Requires `postcss` to be installed.
    *
    * @see https://github.com/postcss/postcss
    */
@@ -70,8 +59,6 @@ export interface CssOptions {
   /**
    * When enabled, JS output preserves import statements pointing to emitted CSS files.
    * Consumers of the library will automatically import the CSS alongside the JS.
-   *
-   * Requires `@tsdown/css` to be installed.
    *
    * @default false
    */
@@ -85,8 +72,6 @@ export interface CssOptions {
    * - `'postcss'`: `@import` handled by `postcss-import`,
    *   PostCSS plugins applied, Lightning CSS used only for final
    *   targets/minify transform.
-   *
-   * Requires `@tsdown/css` to be installed.
    *
    * @default 'lightningcss'
    * @see https://vite.dev/config/shared-options#css-transformer
@@ -149,6 +134,18 @@ export type ResolvedCssOptions = Overwrite<
   { target?: string[] }
 >
 
+// export interface ResolvedCssOptions {
+//   transformer: 'postcss' | 'lightningcss'
+//   splitting: boolean
+//   fileName: string
+//   minify: boolean
+//   inject: boolean
+//   target?: string[]
+//   preprocessorOptions?: PreprocessorOptions
+//   lightningcss?: LightningCSSOptions
+//   postcss?: PostCSSOptions
+// }
+
 export const defaultCssBundleName = 'style.css'
 
 export function resolveCssOptions(
@@ -175,4 +172,12 @@ export function resolveCssOptions(
     lightningcss: options.lightningcss,
     postcss: options.postcss,
   }
+}
+
+function toArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value]
+}
+
+function resolveComma(items: string[]): string[] {
+  return items.flatMap((item) => item.split(','))
 }

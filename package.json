@@ -24,10 +24,6 @@
       "dev": "./src/config.ts",
       "default": "./dist/config.mjs"
     },
-    "./css": {
-      "dev": "./src/css.ts",
-      "default": "./dist/css.mjs"
-    },
     "./plugins": {
       "dev": "./src/plugins.ts",
       "default": "./dist/plugins.mjs"
@@ -61,7 +57,6 @@
     "exports": {
       ".": "./dist/index.mjs",
       "./config": "./dist/config.mjs",
-      "./css": "./dist/css.mjs",
       "./plugins": "./dist/plugins.mjs",
       "./run": "./dist/run.mjs",
       "./package.json": "./package.json",
@@ -74,8 +69,8 @@
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
     "lint:fix": "pnpm run lint --fix",
-    "build": "unrun ./src/run.ts",
-    "dev": "node ./src/run.ts",
+    "build": "node -C dev ./src/run.ts",
+    "dev": "pnpm run build",
     "test": "vitest",
     "typecheck": "tsgo --noEmit",
     "format": "prettier --cache --write .",

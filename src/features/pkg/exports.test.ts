@@ -2,7 +2,6 @@ import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
 import { globalLogger } from '../../utils/logger.ts'
-import { resolveCssOptions } from '../css/index.ts'
 import { generateExports as _generateExports } from './exports.ts'
 import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
@@ -12,7 +11,7 @@ const FAKE_PACKAGE_JSON = {
   name: 'fake-pkg',
   packageJsonPath: path.join(cwd, 'package.json'),
 }
-const DEFAULT_CSS_OPTIONS = resolveCssOptions()
+const DEFAULT_CSS_OPTIONS = {}
 
 function generateExports(
   chunks: ChunksByFormat = {},
@@ -577,7 +576,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('style.css')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -603,7 +602,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -626,7 +625,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('custom.css')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false, fileName: 'custom.css' }),
+        css: { splitting: false, fileName: 'custom.css' },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -650,7 +649,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('style.css', 'dist')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -676,7 +675,7 @@ describe('generateExports', () => {
         exports: {
           devExports: 'dev',
         },
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`

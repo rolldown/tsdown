@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import type { PreprocessorOptions } from 'tsdown/css'
+import type { PreprocessorOptions } from './options.ts'
 
 export type PreprocessorLang = 'sass' | 'scss' | 'less' | 'styl' | 'stylus'
 

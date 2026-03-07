@@ -8,16 +8,14 @@ import {
   type BuildOptions,
   type InputOptions,
   type OutputOptions,
-  type Plugin,
   type RolldownPluginOption,
 } from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
 import { lowestCommonAncestor } from '../utils/fs.ts'
-import { importWithError } from '../utils/general.ts'
+import { importWithError, pkgExists } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
-import { CssPlugin } from './css/plugin.ts'
 import { DepPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
@@ -150,29 +148,26 @@ async function resolveInputOptions(
       )
     }
 
-    let cssPlugins: Plugin[]
-    try {
-      const { CssPlugin: AdvancedCssPlugin } = await import('@tsdown/css')
-      cssPlugins = AdvancedCssPlugin(config, { logger })
-    } catch {
-      if (
-        config.css.inject ||
-        config.css.minify ||
-        config.css.preprocessorOptions ||
-        config.css.lightningcss ||
-        config.css.postcss
-      ) {
-        throw new Error(
-          '`@tsdown/css` is required to use advanced CSS features. Please install it with `npm install @tsdown/css`.',
-        )
-      }
-      cssPlugins = CssPlugin(config)
+    if (pkgExists('@tsdown/css')) {
+      const { CssPlugin } = await import('@tsdown/css')
+      plugins.push(CssPlugin(config, { logger }))
+    } else {
+      plugins.push({
+        name: 'tsdown:css-guard',
+        transform: {
+          order: 'post',
+          filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
+          handler(_code, id) {
+            throw new Error(
+              `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
+                `Please install it: \`npm install @tsdown/css\``,
+            )
+          },
+        },
+      })
     }
-    plugins.push(
-      ...cssPlugins,
-      ShebangPlugin(logger, cwd, nameLabel, isDualFormat),
-    )
 
+    plugins.push(ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
     if (globImport) {
       plugins.push(importGlobPlugin({ root: cwd }))
     }

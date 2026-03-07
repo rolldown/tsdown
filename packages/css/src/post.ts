@@ -1,5 +1,5 @@
+import { defaultCssBundleName, type ResolvedCssOptions } from './options.ts'
 import { removePureCssChunks } from './pure-chunk.ts'
-import { defaultCssBundleName, type ResolvedCssOptions } from './index.ts'
 import type { Plugin } from 'rolldown'
 
 export type CssStyles = Map<string, string>

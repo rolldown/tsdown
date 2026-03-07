@@ -1,5 +1,5 @@
 import { importWithError } from '../../../src/utils/general.ts'
-import type { PostCSSOptions } from 'tsdown/css'
+import type { PostCSSOptions } from './options.ts'
 
 interface PostCSSConfigResult {
   options: Record<string, any>
