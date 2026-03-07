@@ -128,6 +128,10 @@ export function CssPlugin(
             const importPath =
               relativePath[0] === '.' ? relativePath : `./${relativePath}`
             chunk.code = `import '${importPath}';\n${chunk.code}`
+            // Shift sourcemap by one line to account for prepended import
+            if (chunk.map) {
+              chunk.map.mappings = `;${chunk.map.mappings}`
+            }
           }
         }
       },
