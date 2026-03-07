@@ -491,6 +491,9 @@ importers:
       tinyexec:
         specifier: catalog:prod
         version: 1.0.2
+      tsdown:
+        specifier: workspace:*
+        version: link:../..
 
   packages/migrate:
     dependencies:

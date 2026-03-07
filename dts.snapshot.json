@@ -1,5 +1,5 @@
 {
-  "config-!~{00d}~.d.mts": {
+  "config-!~{00e}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
@@ -71,16 +71,32 @@
     ]
   },
   "internal.d.mts": {
+    "fsExists": "declare function fsExists(_: string): Promise<boolean>",
+    "fsRemove": "declare function fsRemove(_: string): Promise<void>",
     "importWithError": "declare function importWithError<T>(_: string, _: string[]): Promise<T>",
     "resolveComma": "declare function resolveComma<T extends string>(_: T[]): T[]",
     "toArray": "declare function toArray<T>(_: T | T[] | null | undefined, _: T): T[]",
     "#exports": [
+      "Logger",
       "MarkPartial",
       "Overwrite",
+      "fsExists",
+      "fsRemove",
       "importWithError",
       "resolveComma",
       "toArray"
     ]
+  },
+  "logger-!~{00c}~.d.mts": {
+    "Arrayable": "type Arrayable<T> = T | T[]",
+    "Awaitable": "type Awaitable<T> = T | Promise<T>",
+    "globalLogger": "Logger",
+    "Logger": "interface Logger {\n level: LogLevel\n options?: LoggerOptions\n info: (...args: any[]) => void\n warn: (...args: any[]) => void\n warnOnce: (...args: any[]) => void\n error: (...args: any[]) => void\n success: (...args: any[]) => void\n clearScreen: (_: LogType) => void\n}",
+    "LoggerOptions": "interface LoggerOptions {\n allowClearScreen?: boolean\n customLogger?: Logger\n console?: Console\n failOnWarn?: boolean\n}",
+    "LogLevel": "type LogLevel = LogType | 'silent'",
+    "LogType": "type LogType = 'error' | 'warn' | 'info'",
+    "MarkPartial": "type MarkPartial<T, K extends keyof T> = Omit<Required<T>, K> & Partial<Pick<T, K>>",
+    "Overwrite": "type Overwrite<T, U> = Omit<T, keyof U> & U"
   },
   "plugins.d.mts": {
     "NodeProtocolPlugin": "declare function NodeProtocolPlugin(_: 'strip' | true): Plugin",
@@ -97,13 +113,7 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00b}~.d.mts": {
-    "Arrayable": "type Arrayable<T> = T | T[]",
-    "Awaitable": "type Awaitable<T> = T | Promise<T>",
-    "MarkPartial": "type MarkPartial<T, K extends keyof T> = Omit<Required<T>, K> & Partial<Pick<T, K>>",
-    "Overwrite": "type Overwrite<T, U> = Omit<T, keyof U> & U"
-  },
-  "types-!~{00c}~.d.mts": {
+  "types-!~{00d}~.d.mts": {
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "BuildContext": "interface BuildContext {\n options: ResolvedConfig\n hooks: Hookable<TsdownHooks>\n}",
     "ChunkAddon": "type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string",
@@ -120,12 +130,7 @@
     "ExeOptions": "interface ExeOptions extends ExeExtensionOptions {\n seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>\n fileName?: string | ((_: RolldownChunk) => string)\n}",
     "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: Record<string, any> | ((_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>)\n inlinedDependencies?: boolean\n}",
     "Format": "type Format = ModuleFormat",
-    "globalLogger": "Logger",
     "InlineConfig": "interface InlineConfig extends UserConfig {\n config?: boolean | string\n configLoader?: 'auto' | 'native' | 'unrun'\n filter?: RegExp | Arrayable<string>\n}",
-    "Logger": "interface Logger {\n level: LogLevel\n options?: LoggerOptions\n info: (...args: any[]) => void\n warn: (...args: any[]) => void\n warnOnce: (...args: any[]) => void\n error: (...args: any[]) => void\n success: (...args: any[]) => void\n clearScreen: (_: LogType) => void\n}",
-    "LoggerOptions": "interface LoggerOptions {\n allowClearScreen?: boolean\n customLogger?: Logger\n console?: Console\n failOnWarn?: boolean\n}",
-    "LogLevel": "type LogLevel = LogType | 'silent'",
-    "LogType": "type LogType = 'error' | 'warn' | 'info'",
     "NoExternalFn": "type NoExternalFn = (_: string, _: string | undefined) => boolean | null | undefined | void",
     "NormalizedFormat": "type NormalizedFormat = InternalModuleFormat",
     "OutExtensionContext": "interface OutExtensionContext {\n options: InputOptions\n format: NormalizedFormat\n pkgType?: PackageType\n}",

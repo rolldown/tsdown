@@ -3,7 +3,7 @@ import { chmod, mkdir, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { createDebug } from 'obug'
 import { x } from 'tinyexec'
-import { fsExists, fsRemove } from '../../../src/utils/fs.ts'
+import { fsExists, fsRemove, type Logger } from 'tsdown/internal'
 import { getCachedBinaryPath } from './cache.ts'
 import {
   getArchiveExtension,
@@ -15,13 +15,9 @@ import {
 
 const debug = createDebug('tsdown:exe:download')
 
-export interface MinimalLogger {
-  info: (...args: any[]) => void
-}
-
 export async function resolveNodeBinary(
   target: ExeTarget,
-  logger?: MinimalLogger,
+  logger?: Logger,
 ): Promise<string> {
   debug('Resolving Node.js binary for target: %O', target)
   target.nodeVersion = await resolveNodeVersion(target.nodeVersion)

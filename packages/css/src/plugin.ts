@@ -8,9 +8,9 @@ import { CssPostPlugin, type CssStyles } from './post.ts'
 import { processWithPostCSS as runPostCSS } from './postcss.ts'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
 import { getCleanId, RE_CSS } from './utils.ts'
-import type { MinimalLogger } from './types.ts'
 import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
+import type { Logger } from 'tsdown/internal'
 
 const CSS_LANGS_RE = /\.(?:css|less|sass|scss|styl|stylus)$/
 
@@ -22,7 +22,7 @@ interface CssPluginConfig {
 
 export function CssPlugin(
   config: ResolvedConfig,
-  { logger }: { logger: MinimalLogger },
+  { logger }: { logger: Logger },
 ): Plugin[] {
   const cssConfig: CssPluginConfig = {
     css: resolveCssOptions(config.css, config.target),
@@ -179,7 +179,7 @@ async function processWithLightningCSS(
   cleanId: string,
   deps: string[],
   config: CssPluginConfig,
-  logger: MinimalLogger,
+  logger: Logger,
 ): Promise<string> {
   const lang = getPreprocessorLang(id)
 

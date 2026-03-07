@@ -47,6 +47,9 @@
   "scripts": {
     "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
+  "peerDependencies": {
+    "tsdown": "workspace:*"
+  },
   "dependencies": {
     "obug": "catalog:prod",
     "semver": "catalog:prod",
