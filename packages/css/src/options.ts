@@ -1,5 +1,9 @@
-import { resolveComma, toArray } from 'tsdown/internal'
-import type { MarkPartial, Overwrite } from 'tsdown/internal'
+import {
+  resolveComma,
+  toArray,
+  type MarkPartial,
+  type Overwrite,
+} from 'tsdown/internal'
 
 export interface CssOptions {
   /**
