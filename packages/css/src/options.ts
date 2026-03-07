@@ -1,3 +1,5 @@
+import type { MarkPartial, Overwrite } from '../../../src/utils/types.ts'
+
 export interface CssOptions {
   /**
    * Enable/disable CSS code splitting.
@@ -133,18 +135,6 @@ export type ResolvedCssOptions = Overwrite<
   >,
   { target?: string[] }
 >
-
-// export interface ResolvedCssOptions {
-//   transformer: 'postcss' | 'lightningcss'
-//   splitting: boolean
-//   fileName: string
-//   minify: boolean
-//   inject: boolean
-//   target?: string[]
-//   preprocessorOptions?: PreprocessorOptions
-//   lightningcss?: LightningCSSOptions
-//   postcss?: PostCSSOptions
-// }
 
 export const defaultCssBundleName = 'style.css'
 
