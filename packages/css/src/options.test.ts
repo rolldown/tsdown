@@ -1,0 +1,68 @@
+import { describe, expect, test } from 'vitest'
+import { defaultCssBundleName, resolveCssOptions } from './options.ts'
+
+describe('resolveCssOptions', () => {
+  test('defaults', () => {
+    const result = resolveCssOptions()
+    expect(result).toEqual({
+      transformer: 'lightningcss',
+      splitting: false,
+      fileName: defaultCssBundleName,
+      minify: false,
+      inject: false,
+      target: undefined,
+      preprocessorOptions: undefined,
+      lightningcss: undefined,
+      postcss: undefined,
+    })
+  })
+
+  test('inherits top-level target', () => {
+    const result = resolveCssOptions({}, ['chrome100'])
+    expect(result.target).toEqual(['chrome100'])
+  })
+
+  test('css.target overrides top-level target', () => {
+    const result = resolveCssOptions({ target: 'safari16' }, ['chrome100'])
+    expect(result.target).toEqual(['safari16'])
+  })
+
+  test('css.target with comma-separated values', () => {
+    const result = resolveCssOptions({ target: 'chrome100,safari16' })
+    expect(result.target).toEqual(['chrome100', 'safari16'])
+  })
+
+  test('css.target array', () => {
+    const result = resolveCssOptions({ target: ['chrome100', 'safari16'] })
+    expect(result.target).toEqual(['chrome100', 'safari16'])
+  })
+
+  test('css.target=false disables target', () => {
+    const result = resolveCssOptions({ target: false }, ['chrome100'])
+    expect(result.target).toBeUndefined()
+  })
+
+  test('custom options are passed through', () => {
+    const result = resolveCssOptions({
+      transformer: 'postcss',
+      splitting: true,
+      fileName: 'custom.css',
+      minify: true,
+      inject: true,
+      preprocessorOptions: { scss: { additionalData: '$x: 1;' } },
+      lightningcss: { drafts: { customMedia: true } },
+      postcss: { plugins: [] },
+    })
+    expect(result).toEqual({
+      transformer: 'postcss',
+      splitting: true,
+      fileName: 'custom.css',
+      minify: true,
+      inject: true,
+      target: undefined,
+      preprocessorOptions: { scss: { additionalData: '$x: 1;' } },
+      lightningcss: { drafts: { customMedia: true } },
+      postcss: { plugins: [] },
+    })
+  })
+})
