@@ -88,27 +88,34 @@ export function CssPlugin(
           if (chunk.type !== 'chunk') continue
           if (pureCssChunks.has(chunk.fileName)) continue
 
-          const cssFiles: string[] = []
-
           if (config.css.splitting) {
-            // Direct CSS modules in this chunk
-            if (chunk.moduleIds.some((id) => styles.has(id))) {
-              cssFiles.push(chunk.fileName.replace(/\.[cm]?js$/, '.css'))
-            }
-            // CSS from imported pure CSS chunks
+            // Rewrite pure CSS chunk imports in-place: swap .mjs/.cjs/.js → .css
+            // This preserves import order and sourcemap line positions.
             for (const imp of chunk.imports) {
-              if (pureCssChunks.has(imp)) {
-                const cssFile = imp.replace(/\.[cm]?js$/, '.css')
-                cssFiles.push(cssFile)
-                // Remove the pure CSS chunk import from code so
-                // removePureCssChunks won't replace it with /* empty css */
-                const escaped = path
-                  .basename(imp)
-                  .replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
-                const importRE = new RegExp(
-                  String.raw`\bimport\s*["'][^"']*${escaped}["'];\n?`,
-                )
-                chunk.code = chunk.code.replace(importRE, '')
+              if (!pureCssChunks.has(imp)) continue
+              const basename = path.basename(imp)
+              const escaped = basename.replaceAll(
+                /[.*+?^${}()|[\]\\]/g,
+                String.raw`\$&`,
+              )
+              const cssBasename = basename.replace(/\.[cm]?js$/, '.css')
+              const importRE = new RegExp(
+                String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`,
+              )
+              chunk.code = chunk.code.replace(importRE, `$1${cssBasename}$2`)
+            }
+            // Direct CSS modules in this chunk need a prepended import
+            if (chunk.moduleIds.some((id) => styles.has(id))) {
+              const cssFile = chunk.fileName.replace(/\.[cm]?js$/, '.css')
+              const relativePath = path.posix.relative(
+                path.posix.dirname(chunk.fileName),
+                cssFile,
+              )
+              const importPath =
+                relativePath[0] === '.' ? relativePath : `./${relativePath}`
+              chunk.code = `import '${importPath}';\n${chunk.code}`
+              if (chunk.map) {
+                chunk.map.mappings = `;${chunk.map.mappings}`
               }
             }
           } else {
@@ -116,21 +123,17 @@ export function CssPlugin(
               chunk.moduleIds.some((id) => styles.has(id)) ||
               chunk.imports.some((imp) => pureCssChunks.has(imp))
             if (hasCss) {
-              cssFiles.push(config.css.fileName)
-            }
-          }
-
-          for (const cssFile of cssFiles) {
-            const relativePath = path.posix.relative(
-              path.posix.dirname(chunk.fileName),
-              cssFile,
-            )
-            const importPath =
-              relativePath[0] === '.' ? relativePath : `./${relativePath}`
-            chunk.code = `import '${importPath}';\n${chunk.code}`
-            // Shift sourcemap by one line to account for prepended import
-            if (chunk.map) {
-              chunk.map.mappings = `;${chunk.map.mappings}`
+              const cssFile = config.css.fileName
+              const relativePath = path.posix.relative(
+                path.posix.dirname(chunk.fileName),
+                cssFile,
+              )
+              const importPath =
+                relativePath[0] === '.' ? relativePath : `./${relativePath}`
+              chunk.code = `import '${importPath}';\n${chunk.code}`
+              if (chunk.map) {
+                chunk.map.mappings = `;${chunk.map.mappings}`
+              }
             }
           }
         }
