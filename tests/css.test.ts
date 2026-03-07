@@ -1,23 +1,13 @@
 import { describe, expect, test } from 'vitest'
+import { CssGuardPlugin } from '../src/features/rolldown.ts'
 import { testBuild } from './utils.ts'
 
 describe('css', () => {
-  test('css-guard plugin throws error for CSS files', async () => {
-    // Test the guard plugin behavior directly — this is the plugin that gets
-    // registered when @tsdown/css is not installed.
-    const guardPlugin = {
-      name: 'tsdown:css-guard',
-      transform: {
-        order: 'post' as const,
-        filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
-        handler(_code: string, id: string) {
-          throw new Error(
-            `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
-              `Please install it: \`npm install @tsdown/css\``,
-          )
-        },
-      },
-    }
+  test('css-guard plugin throws error for CSS files', () => {
+    const guardPlugin = CssGuardPlugin()
+    const { transform } = guardPlugin
+    const handler = typeof transform === 'object' ? transform.handler : transform
+    const filter = typeof transform === 'object' ? transform.filter : undefined
 
     const cssExtensions = [
       'style.css',
@@ -28,16 +18,17 @@ describe('css', () => {
       'global.stylus',
     ]
     for (const file of cssExtensions) {
-      expect(() =>
-        guardPlugin.transform.handler('', file),
-      ).toThrow(`CSS file "${file}" was encountered but \`@tsdown/css\` is not installed`)
+      expect(() => handler!.call({} as any, '', file)).toThrow(
+        `CSS file "${file}" was encountered but \`@tsdown/css\` is not installed`,
+      )
     }
 
     // Non-CSS files should not match the filter
-    expect(guardPlugin.transform.filter.id.test('index.ts')).toBe(false)
-    expect(guardPlugin.transform.filter.id.test('app.js')).toBe(false)
-    expect(guardPlugin.transform.filter.id.test('style.css')).toBe(true)
-    expect(guardPlugin.transform.filter.id.test('theme.scss')).toBe(true)
+    const idFilter = filter!.id as RegExp
+    expect(idFilter.test('index.ts')).toBe(false)
+    expect(idFilter.test('app.js')).toBe(false)
+    expect(idFilter.test('style.css')).toBe(true)
+    expect(idFilter.test('theme.scss')).toBe(true)
   })
 
   test('basic', async (context) => {

@@ -8,6 +8,7 @@ import {
   type BuildOptions,
   type InputOptions,
   type OutputOptions,
+  type Plugin,
   type RolldownPluginOption,
 } from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
@@ -152,19 +153,7 @@ async function resolveInputOptions(
       const { CssPlugin } = await import('@tsdown/css')
       plugins.push(CssPlugin(config, { logger }))
     } else {
-      plugins.push({
-        name: 'tsdown:css-guard',
-        transform: {
-          order: 'post',
-          filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
-          handler(_code, id) {
-            throw new Error(
-              `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
-                `Please install it: \`npm install @tsdown/css\``,
-            )
-          },
-        },
-      })
+      plugins.push(CssGuardPlugin())
     }
 
     plugins.push(ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
@@ -349,5 +338,21 @@ function handlePluginInspect(plugins: RolldownPluginOption) {
         return `"rolldown plugin: ${plugins.name}"`
       }
     }
+  }
+}
+
+export function CssGuardPlugin(): Plugin {
+  return {
+    name: 'tsdown:css-guard',
+    transform: {
+      order: 'post',
+      filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
+      handler(_code, id) {
+        throw new Error(
+          `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
+            `Please install it: \`npm install @tsdown/css\``,
+        )
+      },
+    },
   }
 }
