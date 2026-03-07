@@ -369,6 +369,49 @@ describe('css', () => {
     expect(fileMap['index.mjs']).toContain(`.foo{color:red;}`)
   })
 
+  test('handle .css?inline', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import css from './foo.css?inline'; console.log(css);`,
+        'foo.css': `.foo { color: red; }`,
+      },
+    })
+    expect(outputFiles).toEqual(['index.mjs'])
+    expect(fileMap['index.mjs']).toContain('.foo')
+    expect(fileMap['index.mjs']).toContain('color')
+  })
+
+  test('handle .scss?inline', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import css from './foo.scss?inline'; console.log(css);`,
+        'foo.scss': `$color: red; .foo { color: $color; }`,
+      },
+    })
+    expect(outputFiles).toEqual(['index.mjs'])
+    // Verify SCSS was actually compiled (no $color variable in output)
+    expect(fileMap['index.mjs']).not.toContain('$color')
+    expect(fileMap['index.mjs']).toContain('color: red')
+  })
+
+  test('css?inline alongside regular css import', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './bar.css'; import css from './foo.css?inline'; console.log(css);`,
+        'foo.css': `.foo { color: red; }`,
+        'bar.css': `.bar { color: blue; }`,
+      },
+    })
+    expect(outputFiles).toContain('style.css')
+    expect(outputFiles).toContain('index.mjs')
+    expect(fileMap['style.css']).toContain('.bar')
+    expect(fileMap['style.css']).not.toContain('.foo')
+    expect(fileMap['index.mjs']).toContain('.foo')
+  })
+
   describe('@import bundling', () => {
     test('diamond dependency graph', async (context) => {
       // From esbuild TestCSSAtImport
