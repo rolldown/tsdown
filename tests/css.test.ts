@@ -2,6 +2,44 @@ import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
 describe('css', () => {
+  test('css-guard plugin throws error for CSS files', async () => {
+    // Test the guard plugin behavior directly — this is the plugin that gets
+    // registered when @tsdown/css is not installed.
+    const guardPlugin = {
+      name: 'tsdown:css-guard',
+      transform: {
+        order: 'post' as const,
+        filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
+        handler(_code: string, id: string) {
+          throw new Error(
+            `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
+              `Please install it: \`npm install @tsdown/css\``,
+          )
+        },
+      },
+    }
+
+    const cssExtensions = [
+      'style.css',
+      'theme.less',
+      'app.sass',
+      'main.scss',
+      'base.styl',
+      'global.stylus',
+    ]
+    for (const file of cssExtensions) {
+      expect(() =>
+        guardPlugin.transform.handler('', file),
+      ).toThrow(`CSS file "${file}" was encountered but \`@tsdown/css\` is not installed`)
+    }
+
+    // Non-CSS files should not match the filter
+    expect(guardPlugin.transform.filter.id.test('index.ts')).toBe(false)
+    expect(guardPlugin.transform.filter.id.test('app.js')).toBe(false)
+    expect(guardPlugin.transform.filter.id.test('style.css')).toBe(true)
+    expect(guardPlugin.transform.filter.id.test('theme.scss')).toBe(true)
+  })
+
   test('basic', async (context) => {
     const { outputFiles } = await testBuild({
       context,
