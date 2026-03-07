@@ -4,16 +4,15 @@
 
 Configure CSS handling including preprocessors, syntax lowering, minification, and code splitting.
 
-## Architecture: Basic vs Advanced
+## Getting Started
 
-- **Built-in (basic):** CSS extraction and bundling — no extra dependencies.
-- **Advanced (`@tsdown/css`):** Preprocessors, syntax lowering, minification, `@import` inlining — install `@tsdown/css`.
+All CSS support in `tsdown` is provided by the `@tsdown/css` package. Install it to enable CSS handling:
 
 ```bash
 npm install -D @tsdown/css
 ```
 
-When installed, the advanced plugin replaces the built-in one automatically.
+When `@tsdown/css` is installed, CSS processing is automatically enabled. Without it, encountering CSS files will result in an error.
 
 ## CSS Import
 
@@ -27,11 +26,11 @@ export function greet() { return 'Hello' }
 
 Output: `index.mjs` + `index.css`
 
-### `@import` Inlining (requires `@tsdown/css`)
+### `@import` Inlining
 
 CSS `@import` statements are resolved and inlined automatically. No separate output files produced.
 
-## CSS Pre-processors (requires `@tsdown/css`)
+## CSS Pre-processors
 
 Built-in support for Sass, Less, and Stylus. Install the preprocessor:
 
@@ -94,7 +93,7 @@ scss: {
 }
 ```
 
-## CSS Minification (requires `@tsdown/css`)
+## CSS Minification
 
 ```ts
 export default defineConfig({
@@ -106,7 +105,7 @@ export default defineConfig({
 
 Powered by Lightning CSS.
 
-## CSS Target (requires `@tsdown/css`)
+## CSS Target
 
 Override the top-level `target` specifically for CSS:
 
@@ -121,7 +120,7 @@ export default defineConfig({
 
 Set `css.target: false` to disable CSS syntax lowering entirely.
 
-## CSS Transformer (requires `@tsdown/css`)
+## CSS Transformer
 
 `css.transformer` controls mutually exclusive CSS processing paths:
 
@@ -152,7 +151,7 @@ export default defineConfig({
 
 Auto-detects PostCSS config from project root when `transformer` is `'postcss'` and `css.postcss` is omitted.
 
-## Lightning CSS (Syntax Lowering, requires `@tsdown/css`)
+## Lightning CSS (Syntax Lowering)
 
 Install `lightningcss` to enable CSS syntax lowering based on your `target`:
 
@@ -215,14 +214,14 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `css.transformer` | `'postcss' \| 'lightningcss'` | `'lightningcss'` | CSS processing pipeline (requires `@tsdown/css`) |
+| `css.transformer` | `'postcss' \| 'lightningcss'` | `'lightningcss'` | CSS processing pipeline |
 | `css.splitting` | `boolean` | `false` | Per-chunk CSS splitting |
 | `css.fileName` | `string` | `'style.css'` | Merged CSS file name |
-| `css.minify` | `boolean` | `false` | CSS minification (requires `@tsdown/css`) |
-| `css.target` | `string \| string[] \| false` | _from `target`_ | CSS-specific lowering target (requires `@tsdown/css`) |
-| `css.postcss` | `string \| object` | — | PostCSS config path or inline options (requires `@tsdown/css`) |
-| `css.preprocessorOptions` | `object` | — | Preprocessor options (requires `@tsdown/css`) |
-| `css.lightningcss` | `object` | — | Lightning CSS options (requires `@tsdown/css`) |
+| `css.minify` | `boolean` | `false` | CSS minification |
+| `css.target` | `string \| string[] \| false` | _from `target`_ | CSS-specific lowering target |
+| `css.postcss` | `string \| object` | — | PostCSS config path or inline options |
+| `css.preprocessorOptions` | `object` | — | Preprocessor options |
+| `css.lightningcss` | `object` | — | Lightning CSS options |
 
 ## Related
 

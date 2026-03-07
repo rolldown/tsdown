@@ -1,3 +1,4 @@
+import { resolveComma, toArray } from '../../../src/utils/general.ts'
 import type { MarkPartial, Overwrite } from '../../../src/utils/types.ts'
 
 export interface CssOptions {
@@ -162,12 +163,4 @@ export function resolveCssOptions(
     lightningcss: options.lightningcss,
     postcss: options.postcss,
   }
-}
-
-function toArray<T>(value: T | T[]): T[] {
-  return Array.isArray(value) ? value : [value]
-}
-
-function resolveComma(items: string[]): string[] {
-  return items.flatMap((item) => item.split(','))
 }
