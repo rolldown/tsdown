@@ -11,26 +11,23 @@ export function removePureCssChunks(
   bundle: Record<string, OutputChunk | OutputAsset>,
   styles: CssStyles,
 ): void {
-  const pureCssChunkNames: string[] = []
-
-  for (const [fileName, chunk] of Object.entries(bundle)) {
-    if (chunk.type !== 'chunk') continue
-    if (chunk.exports.length > 0) continue
-
-    const moduleIds = Object.keys(chunk.modules)
-    if (moduleIds.length === 0) continue
-    const allCss = moduleIds.every((id) => styles.has(id))
-    if (!allCss) continue
-
-    pureCssChunkNames.push(fileName)
-  }
+  const pureCssChunkNames: string[] = Object.values(bundle)
+    .filter((chunk): chunk is OutputChunk => {
+      if (
+        chunk.type !== 'chunk' ||
+        chunk.exports.length ||
+        !chunk.moduleIds.length
+      )
+        return false
+      return chunk.moduleIds.every((id) => styles.has(id))
+    })
+    .map((chunk) => chunk.fileName)
 
   if (!pureCssChunkNames.length) return
 
   const replaceEmptyChunk = getEmptyChunkReplacer(pureCssChunkNames)
 
-  for (const file of Object.keys(bundle)) {
-    const chunk = bundle[file]
+  for (const chunk of Object.values(bundle)) {
     if (chunk.type !== 'chunk') continue
 
     let chunkImportsPureCssChunk = false

@@ -171,14 +171,24 @@ describe('warning options', () => {
     expect(warnings).toContainEqual(expect.stringContaining('metafile'))
   })
 
-  test('injectStyle should emit warning (not implemented)', () => {
+  test('injectStyle: true should be transformed to css: { inject: true }', () => {
     const input = `
       export default {
         injectStyle: true,
       }
     `
-    const { warnings } = transform(input, 'tsup.config.ts', 1)
-    expect(warnings).toContainEqual(expect.stringContaining('injectStyle'))
+    const { warnings } = transform(input, 'tsup.config.ts')
+    expect(warnings).not.toContainEqual(expect.stringContaining('injectStyle'))
+  })
+
+  test('injectStyle: false should be removed', () => {
+    const input = `
+      export default {
+        injectStyle: false,
+      }
+    `
+    const { warnings } = transform(input, 'tsup.config.ts')
+    expect(warnings).not.toContainEqual(expect.stringContaining('injectStyle'))
   })
 
   test('cjsInterop should emit warning', () => {

@@ -20,8 +20,6 @@ const WARNING_MESSAGES: Record<string, string> = {
     'The `splitting` option is currently unsupported in tsdown. Code splitting is always enabled and cannot be disabled.',
   metafile:
     'The `metafile` option is not available in tsdown. Consider using Vite DevTools as an alternative.',
-  injectStyle:
-    'The `injectStyle` option has not yet been implemented in tsdown.',
   swc: 'The `swc` option is not supported in tsdown. Please use oxc instead.',
   experimentalDts:
     'The `experimentalDts` option is not supported in tsdown. Use the `dts` option instead.',
@@ -200,7 +198,57 @@ export function transformTsupConfig(
     edits.push(node.replace("nodeProtocol: 'strip'"))
   }
 
-  // 7. Move properties into deps namespace
+  // 7. Transform injectStyle: true -> css: { inject: true }
+  const injectStyleTruePairs = root.findAll({
+    rule: {
+      kind: 'pair',
+      all: [
+        {
+          has: {
+            field: 'key',
+            kind: 'property_identifier',
+            regex: '^injectStyle$',
+          },
+        },
+        {
+          has: {
+            field: 'value',
+            kind: 'true',
+          },
+        },
+      ],
+    },
+  })
+  for (const node of injectStyleTruePairs) {
+    edits.push(node.replace('css: { inject: true }'))
+  }
+
+  // 7.1. Transform injectStyle: false -> remove
+  const injectStyleFalsePairs = root.findAll({
+    rule: {
+      kind: 'pair',
+      all: [
+        {
+          has: {
+            field: 'key',
+            kind: 'property_identifier',
+            regex: '^injectStyle$',
+          },
+        },
+        {
+          has: {
+            field: 'value',
+            kind: 'false',
+          },
+        },
+      ],
+    },
+  })
+  for (const node of injectStyleFalsePairs) {
+    edits.push(node.replace(''))
+  }
+
+  // 8. Move properties into deps namespace
   const depsProperties: { name: string; value: string }[] = []
   for (const [oldName, newName] of Object.entries(DEPS_NAMESPACE_RENAMES)) {
     const pair = findPropertyPair(oldName)

@@ -561,6 +561,11 @@ export interface UserConfig {
   css?: CssOptions
 
   /**
+   * @deprecated Use `css.inject` instead.
+   */
+  injectStyle?: boolean
+
+  /**
    * @deprecated Alias for `copy`, will be removed in the future.
    */
   publicDir?: CopyOptions | CopyOptionsFn
@@ -632,6 +637,7 @@ export type ResolvedConfig = Overwrite<
       | 'fromVite' // merged
       | 'publicDir' // deprecated
       | 'bundle' // deprecated
+      | 'injectStyle' // deprecated, merged to `css`
       | 'removeNodeProtocol' // deprecated
       | 'external' // deprecated, merged to `deps`
       | 'noExternal' // deprecated, merged to `deps`

@@ -1359,4 +1359,84 @@ describe('css', () => {
       expect(fileMap['style.css']).toContain('.b')
     })
   })
+
+  describe('css.inject', () => {
+    test('preserves css import in js output', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './foo.css'\nexport const a = 1`,
+          'foo.css': `body { color: red }`,
+        },
+        options: {
+          css: { inject: true },
+        },
+      })
+      expect(outputFiles).toContain('style.css')
+      expect(outputFiles).toContain('index.mjs')
+      expect(fileMap['index.mjs']).toContain("import './style.css'")
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
+    test('with splitting=true', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './foo.css'\nexport const a = 1`,
+          'foo.css': `body { color: red }`,
+        },
+        options: {
+          css: { inject: true, splitting: true },
+        },
+      })
+      expect(outputFiles).toContain('index.css')
+      expect(outputFiles).toContain('index.mjs')
+      expect(fileMap['index.mjs']).toContain("import './index.css'")
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
+    test('multiple css imports', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './a.css'\nimport './b.css'\nexport const a = 1`,
+          'a.css': `.a { color: red }`,
+          'b.css': `.b { color: blue }`,
+        },
+        options: {
+          css: { inject: true },
+        },
+      })
+      expect(outputFiles).toContain('style.css')
+      expect(fileMap['index.mjs']).toContain("import './style.css'")
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
+    test('injects css import into async chunk with splitting=true', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export const main = 1\nimport('./async')`,
+          'async.ts': `import './async.css'\nexport const asyncValue = 2`,
+          'async.css': `.async { color: red }`,
+        },
+        options: {
+          css: {
+            inject: true,
+            splitting: true,
+          },
+        },
+      })
+
+      const asyncCss = outputFiles.find((file) => /^async-.*\.css$/.test(file))
+      const asyncJs = outputFiles.find((file) => /^async-.*\.mjs$/.test(file))
+
+      expect(asyncCss).toBeTruthy()
+      expect(asyncJs).toBeTruthy()
+
+      const asyncCode = fileMap[asyncJs!]
+      expect(asyncCode).toContain(`import './${asyncCss}'`)
+      expect(asyncCode).not.toContain('empty css')
+    })
+  })
 })

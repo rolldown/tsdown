@@ -86,6 +86,7 @@ export async function resolveUserConfig(
     cjsDefault = true,
     globImport = true,
     css,
+    injectStyle,
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
@@ -161,6 +162,19 @@ export async function resolveUserConfig(
     }
     if (attw) {
       logger.warn(nameLabel, 'attw is enabled but package.json is not found')
+    }
+  }
+
+  if (injectStyle != null) {
+    if (css?.inject == null) {
+      logger.warn(
+        `${blue`injectStyle`} is deprecated. Use ${blue`css.inject`} instead.`,
+      )
+      css = { ...css, inject: injectStyle }
+    } else {
+      throw new TypeError(
+        '`injectStyle` is deprecated. Cannot be used with `css.inject`',
+      )
     }
   }
 

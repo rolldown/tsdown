@@ -2,7 +2,7 @@
 
 ```css
 .async {
-  color: #00f;
+  color: red;
 }
 
 ```
@@ -10,16 +10,8 @@
 ## async-CEAkTWyO.mjs
 
 ```mjs
+import './async-CEAkTWyO.css';
 export {};
-
-```
-
-## index.css
-
-```css
-body {
-  color: red;
-}
 
 ```
 
@@ -27,8 +19,9 @@ body {
 
 ```mjs
 //#region index.ts
-const loadAsync = () => import("./async-CEAkTWyO.mjs");
+const main = 1;
+import("./async-CEAkTWyO.mjs");
 //#endregion
-export { loadAsync };
+export { main };
 
 ```
