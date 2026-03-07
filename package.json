@@ -175,6 +175,7 @@
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
+    "unplugin-raw": "catalog:dev",
     "unplugin-unused": "catalog:peer",
     "unplugin-vue": "catalog:dev",
     "vite": "catalog:docs",
