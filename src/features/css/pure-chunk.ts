@@ -11,17 +11,40 @@ export function removePureCssChunks(
   bundle: Record<string, OutputChunk | OutputAsset>,
   styles: CssStyles,
 ): void {
-  const pureCssChunkNames: string[] = Object.values(bundle)
-    .filter((chunk): chunk is OutputChunk => {
-      if (
-        chunk.type !== 'chunk' ||
-        chunk.exports.length ||
-        !chunk.moduleIds.length
-      )
-        return false
-      return chunk.moduleIds.every((id) => styles.has(id))
-    })
-    .map((chunk) => chunk.fileName)
+  const pureCssChunkNames: string[] = []
+
+  // Pass 1: strict — all modules in the chunk are CSS
+  for (const chunk of Object.values(bundle)) {
+    if (
+      chunk.type !== 'chunk' ||
+      chunk.exports.length ||
+      !chunk.moduleIds.length
+    )
+      continue
+    if (chunk.moduleIds.every((id) => styles.has(id))) {
+      pureCssChunkNames.push(chunk.fileName)
+    }
+  }
+
+  // Pass 2: relaxed — non-entry chunk contains CSS modules and its JS code is
+  // trivially empty (e.g. a wrapper like `import './foo.css'` with no logic).
+  const strictSet = new Set(pureCssChunkNames)
+  for (const chunk of Object.values(bundle)) {
+    if (
+      chunk.type !== 'chunk' ||
+      chunk.exports.length ||
+      chunk.isEntry ||
+      chunk.isDynamicEntry
+    )
+      continue
+    if (strictSet.has(chunk.fileName)) continue
+    if (
+      chunk.moduleIds.some((id) => styles.has(id)) &&
+      isEmptyChunkCode(chunk.code)
+    ) {
+      pureCssChunkNames.push(chunk.fileName)
+    }
+  }
 
   if (!pureCssChunkNames.length) return
 
@@ -74,4 +97,13 @@ export function getEmptyChunkReplacer(
 
 function escapeRegex(str: string): string {
   return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
+}
+
+function isEmptyChunkCode(code: string): boolean {
+  return !code
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/\bexport\s*\{\s*\};?/g, '')
+    .replace(/\bimport\s*["'][^"']*["'];?/g, '')
+    .trim()
 }

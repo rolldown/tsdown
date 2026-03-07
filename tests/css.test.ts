@@ -1438,5 +1438,54 @@ describe('css', () => {
       expect(asyncCode).toContain(`import './${asyncCss}'`)
       expect(asyncCode).not.toContain('empty css')
     })
+
+    test('rewrites shared css-only chunk imports to css files', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts':
+            `export const loadA = () => import('./async-a')\n` +
+            `export const loadB = () => import('./async-b')`,
+          'async-a.ts': `import './shared'\nimport './a.css'\nexport const a = 1`,
+          'async-b.ts': `import './shared'\nexport const b = 2`,
+          'shared.ts': `import './shared.css'`,
+          'shared.css': `.shared { color: red }`,
+          'a.css': `.a { color: blue }`,
+        },
+        options: {
+          css: { inject: true, splitting: true },
+        },
+      })
+
+      const asyncAJs = outputFiles.find((file) =>
+        /^async-a-.*\.mjs$/.test(file),
+      )
+      const asyncAStyles = outputFiles.find((file) =>
+        /^async-a-.*\.css$/.test(file),
+      )
+      const asyncBJs = outputFiles.find((file) =>
+        /^async-b-.*\.mjs$/.test(file),
+      )
+      const sharedJs = outputFiles.find((file) => /^shared-.*\.mjs$/.test(file))
+      const sharedStyles = outputFiles.find((file) =>
+        /^shared-.*\.css$/.test(file),
+      )
+
+      expect(asyncAJs).toBeTruthy()
+      expect(asyncAStyles).toBeTruthy()
+      expect(asyncBJs).toBeTruthy()
+      expect(sharedStyles).toBeTruthy()
+      expect(sharedJs).toBeFalsy()
+
+      const asyncACode = fileMap[asyncAJs!]
+      const asyncBCode = fileMap[asyncBJs!]
+
+      expect(asyncACode).toContain(`import './${asyncAStyles}'`)
+      expect(asyncACode).toContain(`import "./${sharedStyles}"`)
+      expect(asyncACode).not.toContain('.mjs"')
+
+      expect(asyncBCode).toContain(`import "./${sharedStyles}"`)
+      expect(asyncBCode).not.toContain('.mjs"')
+    })
   })
 })

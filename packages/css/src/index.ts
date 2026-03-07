@@ -71,14 +71,27 @@ export function CssPlugin(
       name: '@tsdown/css:inject',
 
       generateBundle(_outputOptions, bundle) {
-        // Identify pure CSS chunks (same logic as removePureCssChunks)
+        // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
         for (const chunk of Object.values(bundle)) {
           if (
-            chunk.type === 'chunk' &&
-            !chunk.exports.length &&
-            chunk.moduleIds.length &&
-            chunk.moduleIds.every((id) => styles.has(id))
+            chunk.type !== 'chunk' ||
+            chunk.exports.length ||
+            !chunk.moduleIds.length ||
+            chunk.isEntry ||
+            chunk.isDynamicEntry
+          )
+            continue
+          // Strict: all modules are CSS
+          if (chunk.moduleIds.every((id) => styles.has(id))) {
+            pureCssChunks.add(chunk.fileName)
+            continue
+          }
+          // Relaxed: chunk has CSS modules and code is trivially empty
+          // (e.g. a JS file whose only purpose is `import './foo.css'`)
+          if (
+            chunk.moduleIds.some((id) => styles.has(id)) &&
+            isEmptyChunkCode(chunk.code)
           ) {
             pureCssChunks.add(chunk.fileName)
           }
@@ -236,4 +249,13 @@ async function processWithPostCSS(
     lightningcss: config.css.lightningcss,
     minify: config.css.minify,
   })
+}
+
+function isEmptyChunkCode(code: string): boolean {
+  return !code
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/[^\n]*/g, '')
+    .replace(/\bexport\s*\{\s*\};?/g, '')
+    .replace(/\bimport\s*["'][^"']*["'];?/g, '')
+    .trim()
 }
