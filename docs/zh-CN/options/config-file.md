@@ -67,11 +67,12 @@ tsdown --no-config
 `tsdown` 支持多种配置加载器，以适配不同的文件格式。您可以通过 `--config-loader` 选项选择配置加载器。可用的加载器包括：
 
 - `auto`（默认）：如果运行时支持，则使用原生方式加载 TypeScript，否则回退到 `unrun`。
-- `native`：通过原生运行时支持加载 TypeScript 配置文件。需要兼容的环境，如最新版 Node.js、Deno 或 Bun。
-- `unrun`：使用 [`unrun`](https://gugustinette.github.io/unrun/) 库加载配置文件，提供更强大和灵活的加载能力。
+- `native`：通过原生运行时支持加载 TypeScript 配置文件。需要兼容的环境，如 Node.js 22.18.0+、Deno 或 Bun。
+- `tsx`：使用 [`tsx`](https://tsx.is/) 库通过其 [tsImport API](https://tsx.is/dev-api/ts-import) 加载配置文件。注意 `tsx` 是可选的 peer dependency，需要手动安装后才能使用。
+- `unrun`：使用 [`unrun`](https://gugustinette.github.io/unrun/) 库加载配置文件，提供更强大和灵活的加载能力。注意 `unrun` 是可选的 peer dependency，需要手动安装后才能使用。
 
 > [!TIP]
-> Node.js 原生需要指定文件扩展名才能导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议使用 `unrun` 加载器以获得更好的兼容性。
+> Node.js 原生需要指定文件扩展名才能导入 TypeScript 文件。如果您在 Node.js 环境下希望加载不带 `.ts` 扩展名的 TypeScript 配置文件，建议安装并使用 `tsx` 或 `unrun` 加载器以获得更好的兼容性。
 
 ## 扩展 Vite 或 Vitest 配置（实验性功能）{#extending-vite-or-vitest-config-experimental}
 
