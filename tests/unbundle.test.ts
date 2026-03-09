@@ -1,4 +1,4 @@
-import { describe, test } from 'vitest'
+import { describe, test, expect } from 'vitest'
 import { testBuild } from './utils.ts'
 
 describe('unbundle', () => {
@@ -38,5 +38,22 @@ describe('unbundle', () => {
         unbundle: true,
       },
     })
+  })
+
+  test('preserve folder structure', async (context) => {
+    const files = {
+      'src/utils/bar.ts': `export const bar = 2`,
+      'package.json': JSON.stringify({ version: '0.0.0' }),
+    }
+    const {outputFiles} = await testBuild({
+      context,
+      files,
+      options: {
+        entry: ['src/**/*'],
+        unbundle: true,
+      },
+    })
+
+    expect(outputFiles).toContain('utils/bar.mjs')
   })
 })
