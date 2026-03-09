@@ -63,7 +63,7 @@ export default defineConfig({
 ```ts [tsdown.config.ts]
 export default defineConfig({
   hooks: {
-    'build:before': function(context) {
+    'build:before': function (context) {
       // 动态添加自定义 Rolldown 插件
       context.buildOptions.plugins.push({
         name: 'my-plugin',
@@ -83,7 +83,7 @@ export default defineConfig({
 ```ts [tsdown.config.ts]
 export default defineConfig({
   hooks: {
-    'build:done': function(context) {
+    'build:done': function (context) {
       // 输出所有生成的 chunk 信息
       for (const chunk of context.chunks) {
         console.log(`Generated: ${chunk.fileName} (${chunk.code.length} bytes)`)
