@@ -67,11 +67,12 @@ This is useful if you want to rely solely on command-line options or default set
 `tsdown` supports multiple config loaders to accommodate various file formats. You can select a config loader using the `--config-loader` option. The available loaders are:
 
 - `auto` (default): Utilizes native runtime loading for TypeScript if supported; otherwise, defaults to `unrun`.
-- `native`: Loads TypeScript configuration files using native runtime support. Requires a compatible environment, such as the latest Node.js, Deno, or Bun.
-- `unrun`: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library. It provides more powerful and flexible loading capabilities.
+- `native`: Loads TypeScript configuration files using native runtime support. Requires a compatible environment, such as Node.js 22.18.0+, Deno, or Bun.
+- `tsx`: Loads configuration files using the [`tsx`](https://tsx.is/) library via its [tsImport API](https://tsx.is/dev-api/ts-import). Note that `tsx` is an optional peer dependency — you need to install it manually if you want to use this loader.
+- `unrun`: Loads configuration files using the [`unrun`](https://gugustinette.github.io/unrun/) library. It provides more powerful and flexible loading capabilities. Note that `unrun` is an optional peer dependency — you need to install it manually if you want to use this loader.
 
 > [!TIP]
-> Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider using the `unrun` loader for seamless compatibility.
+> Node.js does not natively support importing TypeScript files without specifying the file extension. If you are using Node.js and want to load a TypeScript config file without including the `.ts` extension, consider installing and using the `tsx` or `unrun` loader for seamless compatibility.
 
 ## Extending Vite or Vitest Config (Experimental)
 

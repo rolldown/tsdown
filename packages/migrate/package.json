@@ -50,7 +50,7 @@
     }
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "dev": "node ./src/run.ts",

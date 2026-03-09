@@ -32,10 +32,12 @@ catalogs:
     rolldown-plugin-dts-snapshot: ^0.4.0
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.98.0
+    tsx: ^4.20.3
     typescript: ~6.0.2
     unplugin-ast: ^0.16.0
     unplugin-raw: ^0.6.4
     unplugin-vue: ^7.1.1
+    unrun: ^0.2.33
     vitest: ^4.1.2
   docs:
     '@iconify-json/logos': ^1.2.11
@@ -83,10 +85,10 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
-    unrun: ^0.2.34
 
 allowBuilds:
   '@parcel/watcher': false
+  esbuild: false
 
 ignoreWorkspaceRootCheck: true
 trustPolicy: no-downgrade
