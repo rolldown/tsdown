@@ -63,7 +63,7 @@ Invoked after each tsdown build completes. Use this hook for cleanup or post-pro
 ```ts [tsdown.config.ts]
 export default defineConfig({
   hooks: {
-    'build:before': function(context) {
+    'build:before': function (context) {
       // Add a custom Rolldown plugin dynamically
       context.buildOptions.plugins.push({
         name: 'my-plugin',
@@ -83,7 +83,7 @@ export default defineConfig({
 ```ts [tsdown.config.ts]
 export default defineConfig({
   hooks: {
-    'build:done': function(context) {
+    'build:done': function (context) {
       // Log all generated chunks
       for (const chunk of context.chunks) {
         console.log(`Generated: ${chunk.fileName} (${chunk.code.length} bytes)`)
