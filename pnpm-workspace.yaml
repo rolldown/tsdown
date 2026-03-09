@@ -48,7 +48,7 @@ catalogs:
     typedoc-plugin-markdown: ^4.10.0
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.6.6
-    vite: ^8.0.0-beta.17
+    vite: ^8.0.0-beta.18
     vitepress: ^2.0.0-alpha.16
     vitepress-plugin-group-icons: ^1.7.1
     vitepress-plugin-llms: ^1.11.0
