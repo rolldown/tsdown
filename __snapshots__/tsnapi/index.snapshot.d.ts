@@ -60,7 +60,7 @@ export interface ExportsOptions {
 }
 export interface InlineConfig extends UserConfig {
   config?: boolean | string;
-  configLoader?: "auto" | "native" | "unrun";
+  configLoader?: "auto" | "native" | "tsx" | "unrun";
   filter?: RegExp | Arrayable<string>;
 }
 export interface Logger {

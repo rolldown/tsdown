@@ -83,7 +83,6 @@ export function promiseWithResolvers<T>(): {
 }
 
 export function typeAssert<T>(
-  // eslint-disable-next-line unused-imports/no-unused-vars
   value: T,
 ): asserts value is Exclude<T, false | null | undefined> {}
 
