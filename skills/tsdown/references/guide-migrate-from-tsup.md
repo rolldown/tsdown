@@ -160,7 +160,7 @@ Some tsup features are not yet available. Check [GitHub issues](https://github.c
 
 ### Build Fails After Migration
 
-1. **Check Node.js version** - Requires Node.js 20.19+
+1. **Check Node.js version** - Requires Node.js 22.18.0+
 2. **Install TypeScript** - Required for DTS generation
 3. **Review config changes** - Ensure format and options are correct
 4. **Check dependencies** - Verify all dependencies are installed

@@ -8,7 +8,7 @@ import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
 import { fsStat } from '../utils/fs.ts'
-import { toArray } from '../utils/general.ts'
+import { importWithError, toArray } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import type { InlineConfig, UserConfig, UserConfigExport } from './types.ts'
 import type {
@@ -143,20 +143,20 @@ export async function loadConfigFile(
   }
 }
 
-type Parser = 'native' | 'unrun'
+type Parser = 'native' | 'tsx' | 'unrun'
 
 const isBun = !!process.versions.bun
 const nativeTS = process.features.typescript || process.versions.deno
-const autoLoader = isBun || (nativeTS && isSupported) ? 'native' : 'unrun'
+const autoLoader: Parser =
+  isBun || (nativeTS && isSupported) ? 'native' : 'unrun'
 
 function resolveConfigLoader(
   configLoader: InlineConfig['configLoader'] = 'auto',
 ): Parser {
   if (configLoader === 'auto') {
     return autoLoader
-  } else {
-    return configLoader === 'native' ? 'native' : 'unrun'
   }
+  return configLoader === 'native' ? 'native' : configLoader
 }
 
 function createParser(loader: Parser) {
@@ -174,11 +174,16 @@ function createParser(loader: Parser) {
       return parsed
     }
 
-    if (loader === 'native') {
-      return nativeImport(filepath)
+    switch (loader) {
+      case 'native':
+        return nativeImport(filepath)
+      case 'tsx':
+        return tsxImport(filepath)
+      case 'unrun':
+        return unrunImport(filepath)
+      default:
+        throw new Error(`Unknown config loader: ${loader}`)
     }
-
-    return unrunImport(filepath)
   }
 }
 
@@ -198,7 +203,7 @@ async function nativeImport(id: string) {
     const cannotFindModule = error?.message?.includes?.('Cannot find module')
     if (cannotFindModule) {
       const configError = new Error(
-        `Failed to load the config file. Try setting the --config-loader CLI flag to \`unrun\`.\n\n${error.message}`,
+        `Failed to load the config file. Try setting the --config-loader CLI flag to \`tsx\` or \`unrun\`.\n\n${error.message}`,
         { cause: error },
       )
       throw configError
@@ -209,7 +214,7 @@ async function nativeImport(id: string) {
       error.stack.includes('node:internal/modules/esm/translators')
     if (nodeInternalBug) {
       const configError = new Error(
-        `Failed to load the config file due to a known Node.js bug. Try setting the --config-loader CLI flag to \`unrun\` or upgrading Node.js to v24.11.1 or later.\n\n${error.message}`,
+        `Failed to load the config file due to a known Node.js bug. Try setting the --config-loader CLI flag to \`tsx\` or \`unrun\`, or upgrading Node.js to v24.11.1 or later.\n\n${error.message}`,
         { cause: error },
       )
       throw configError
@@ -221,8 +226,15 @@ async function nativeImport(id: string) {
   return config
 }
 
+async function tsxImport(id: string) {
+  const { tsImport } =
+    await importWithError<typeof import('tsx/esm/api')>('tsx/esm/api')
+  const mod = await tsImport(id, import.meta.url)
+  return mod
+}
+
 async function unrunImport(id: string) {
-  const { unrun } = await import('unrun')
+  const { unrun } = await importWithError<typeof import('unrun')>('unrun')
   const { module } = await unrun({
     path: pathToFileURL(id).href,
   })
