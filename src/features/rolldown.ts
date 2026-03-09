@@ -24,6 +24,7 @@ import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
+import { DtsExportKindPlugin } from './dts-export-kind.ts'
 import type {
   DtsOptions,
   NormalizedFormat,
@@ -125,6 +126,7 @@ async function resolveInputOptions(
 
     if (format === 'es') {
       plugins.push(dtsPlugin(options))
+      plugins.push(DtsExportKindPlugin())
     } else if (cjsDts) {
       plugins.push(
         dtsPlugin({
@@ -133,6 +135,7 @@ async function resolveInputOptions(
           cjsDefault,
         }),
       )
+      plugins.push(DtsExportKindPlugin())
     }
   }
   if (!cjsDts) {

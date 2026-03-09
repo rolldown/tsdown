@@ -179,6 +179,26 @@ describe('issues', () => {
     expect(fileMap['entry2.css']).toContain('class-shared')
   })
 
+  test('#770', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.d.ts': `declare function defineMcpToolRegister(name: string): void\nexport { type defineMcpToolRegister as a }`,
+      },
+      options: {
+        entry: 'index.d.ts',
+        dts: { dtsInput: true },
+      },
+      expectPattern: '**/*.d.ts',
+    })
+    expect(fileMap['index.d.ts']).toContain(
+      'export { defineMcpToolRegister as a };',
+    )
+    expect(fileMap['index.d.ts']).not.toContain(
+      'export { type defineMcpToolRegister as a }',
+    )
+  })
+
   test('#800', async (context) => {
     const Vue = (await import('unplugin-vue/rolldown')).default
     const { outputFiles, fileMap } = await testBuild({
