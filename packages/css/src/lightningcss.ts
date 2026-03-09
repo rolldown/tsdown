@@ -1,17 +1,10 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { ResolverFactory } from 'rolldown/experimental'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
+import { getCssResolver, resolveWithResolver } from './resolve.ts'
 import type { LightningCSSOptions, PreprocessorOptions } from './options.ts'
 import type { Targets } from 'lightningcss'
 import type { Logger } from 'tsdown/internal'
-
-let resolver: ResolverFactory | undefined
-function getResolver(): ResolverFactory {
-  return (resolver ??= new ResolverFactory({
-    conditionNames: ['style', 'default'],
-  }))
-}
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
@@ -100,15 +93,14 @@ export async function bundleWithLightningCSS(
         return fileCode
       },
       resolve(specifier: string, from: string) {
-        const dir = path.dirname(from)
-        const result = getResolver().sync(dir, specifier)
-        if (result.error || !result.path) {
+        const resolved = resolveWithResolver(getCssResolver(), specifier, from)
+        if (!resolved) {
           options.logger.warn(
-            `[@tsdown/css] Failed to resolve import '${specifier}' from '${from}': ${result.error || 'unknown error'}`,
+            `[@tsdown/css] Failed to resolve import '${specifier}' from '${from}'`,
           )
-          return path.resolve(dir, specifier)
+          return path.resolve(path.dirname(from), specifier)
         }
-        return result.path
+        return resolved
       },
     },
   })

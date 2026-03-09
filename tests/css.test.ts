@@ -92,6 +92,26 @@ describe('css', () => {
     expect(outputFiles).toEqual(['index.css', 'index.mjs'])
   })
 
+  test('sass resolves node_modules packages', async (context) => {
+    const { outputFiles, snapshot } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.scss'`,
+        'foo.scss': `@use '@my-lib/styles/vars';\nbody { color: vars.$primary; }`,
+        'node_modules/@my-lib/styles/vars.scss': `$primary: #ff0000;`,
+        'node_modules/@my-lib/styles/package.json': `{"name":"@my-lib/styles","main":"index.js"}`,
+      },
+      options: {
+        entry: ['index.ts'],
+        css: {
+          splitting: true,
+        },
+      },
+    })
+    expect(outputFiles).toEqual(['index.css', 'index.mjs'])
+    expect(snapshot).toContain('#ff0000')
+  })
+
   test('with sass and dts=true and splitting=true', async (context) => {
     const { outputFiles } = await testBuild({
       context,

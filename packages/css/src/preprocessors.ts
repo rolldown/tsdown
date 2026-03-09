@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { getSassResolver, resolveWithResolver } from './resolve.ts'
 import type { PreprocessorOptions } from './options.ts'
 
 export type PreprocessorLang = 'sass' | 'scss' | 'less' | 'styl' | 'stylus'
@@ -251,8 +252,7 @@ async function compileSass(
         ? fileURLToPath(context.containingUrl)
         : filename
 
-      const dir = path.dirname(importer)
-      const resolved = await tryResolveScss(url, dir)
+      const resolved = await tryResolveScss(url, importer)
       if (resolved) {
         return pathToFileURL(resolved)
       }
@@ -291,8 +291,9 @@ async function compileSass(
 
 async function tryResolveScss(
   url: string,
-  dir: string,
+  importer: string,
 ): Promise<string | undefined> {
+  const dir = path.dirname(importer)
   const { existsSync } = await import('node:fs')
   const extensions = ['.scss', '.sass', '.css']
   const prefixes = ['', '_']
@@ -306,28 +307,28 @@ async function tryResolveScss(
       )
       if (existsSync(file)) return file
     }
-    return undefined
-  }
+  } else {
+    for (const ext of extensions) {
+      for (const prefix of prefixes) {
+        const file = path.resolve(
+          dir,
+          path.dirname(url),
+          prefix + path.basename(url) + ext,
+        )
+        if (existsSync(file)) return file
+      }
+    }
 
-  for (const ext of extensions) {
-    for (const prefix of prefixes) {
-      const file = path.resolve(
-        dir,
-        path.dirname(url),
-        prefix + path.basename(url) + ext,
-      )
-      if (existsSync(file)) return file
+    for (const ext of extensions) {
+      for (const prefix of prefixes) {
+        const file = path.resolve(dir, url, `${prefix}index${ext}`)
+        if (existsSync(file)) return file
+      }
     }
   }
 
-  for (const ext of extensions) {
-    for (const prefix of prefixes) {
-      const file = path.resolve(dir, url, `${prefix}index${ext}`)
-      if (existsSync(file)) return file
-    }
-  }
-
-  return undefined
+  // Fall back to node_modules resolution
+  return resolveWithResolver(getSassResolver(), url, importer)
 }
 
 let _sass: any
