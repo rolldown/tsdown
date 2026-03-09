@@ -18,13 +18,13 @@ import { lowestCommonAncestor } from '../utils/fs.ts'
 import { importWithError, pkgExists } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { DepPlugin } from './deps.ts'
+import { DtsExportKindPlugin } from './dts-export-kind.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShimsInject } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
-import { DtsExportKindPlugin } from './dts-export-kind.ts'
 import type {
   DtsOptions,
   NormalizedFormat,
@@ -125,8 +125,7 @@ async function resolveInputOptions(
     }
 
     if (format === 'es') {
-      plugins.push(dtsPlugin(options))
-      plugins.push(DtsExportKindPlugin())
+      plugins.push(dtsPlugin(options), DtsExportKindPlugin())
     } else if (cjsDts) {
       plugins.push(
         dtsPlugin({
@@ -134,8 +133,8 @@ async function resolveInputOptions(
           emitDtsOnly: true,
           cjsDefault,
         }),
+        DtsExportKindPlugin(),
       )
-      plugins.push(DtsExportKindPlugin())
     }
   }
   if (!cjsDts) {
