@@ -2,13 +2,12 @@
 
 This directory contains detailed reference documentation for the tsdown skill.
 
-## Created Files (36 total)
+## Created Files (35 total)
 
-### Core Guides (4)
+### Core Guides (3)
 - ✅ `guide-getting-started.md` - Installation, first bundle, CLI basics
 - ✅ `guide-migrate-from-tsup.md` - Migration guide from tsup
 - ✅ `guide-introduction.md` - Introduction and key features
-- ✅ `guide-faq.md` - Frequently asked questions
 
 ### Configuration Options (20)
 - ✅ `option-config-file.md` - Config file formats, loaders, workspace
@@ -57,7 +56,7 @@ This directory contains detailed reference documentation for the tsdown skill.
 
 ## Coverage Status
 
-**Created:** 36 files (100% complete)
+**Created:** 35 files (100% complete)
 
 ## Current Skill Features
 

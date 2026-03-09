@@ -41,12 +41,11 @@ Files are prefixed by category:
 
 ## Reference Files
 
-### Core Guides (4 files)
+### Core Guides (3 files)
 
 - `guide-getting-started.md` - Installation, first bundle, CLI basics
 - `guide-migrate-from-tsup.md` - Migration guide and compatibility
 - `guide-introduction.md` - Why tsdown, key features
-- `guide-faq.md` - Frequently asked questions
 
 ### Configuration Options (21 files)
 
@@ -148,7 +147,7 @@ git log --oneline 8e3fa9c..HEAD -- docs/
 
 | Date       | SHA     | Changes                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------- |
-| 2026-03-08 | 8e3fa9c | Full refresh: all docs reviewed, 36 reference files, complete coverage |
+| 2026-03-08 | 8e3fa9c | Full refresh: all docs reviewed, 35 reference files, complete coverage |
 
 ---
 
