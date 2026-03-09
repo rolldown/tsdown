@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
 describe('unbundle', () => {
@@ -45,7 +45,7 @@ describe('unbundle', () => {
       'src/utils/bar.ts': `export const bar = 2`,
       'package.json': JSON.stringify({ version: '0.0.0' }),
     }
-    const {outputFiles} = await testBuild({
+    const { outputFiles } = await testBuild({
       context,
       files,
       options: {
