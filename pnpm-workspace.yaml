@@ -84,7 +84,7 @@ catalogs:
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
-    unrun: ^0.2.30
+    unrun: ^0.2.31
 
 ignoreWorkspaceRootCheck: true
 ignoredBuiltDependencies:
