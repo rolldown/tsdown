@@ -119,9 +119,7 @@ export function resolveDepsConfig(
         '`inlineOnly` is deprecated. Cannot be used with `deps.onlyBundle`.',
       )
     }
-    logger?.warn(
-      '`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.',
-    )
+    logger?.warn('`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.')
     onlyBundle = config.inlineOnly
   }
   if (config.skipNodeModulesBundle != null) {
