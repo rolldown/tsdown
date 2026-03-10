@@ -29,7 +29,7 @@ export default defineConfig({
   deps: {
     neverBundle: ['lodash', /^@my-scope\//],
     alwaysBundle: ['some-package'],
-    onlyAllowBundle: ['cac', 'bumpp'],
+    onlyBundle: ['cac', 'bumpp'],
     skipNodeModulesBundle: true,
   },
 })
@@ -55,16 +55,16 @@ export default defineConfig({
 `skipNodeModulesBundle` 不能与 `alwaysBundle` 一起使用，这两个选项互斥。
 :::
 
-### `deps.onlyAllowBundle`
+### `deps.onlyBundle`
 
-`onlyAllowBundle` 选项作为允许从 `node_modules` 中打包的依赖白名单。如果有任何不在列表中的依赖被打包，tsdown 将抛出错误。这对于防止意外的依赖被静默内联到输出文件中非常有用，尤其是在大型项目中可能存在许多依赖的情况下。
+`onlyBundle` 选项作为允许从 `node_modules` 中打包的依赖白名单。如果有任何不在列表中的依赖被打包，tsdown 将抛出错误。这对于防止意外的依赖被静默内联到输出文件中非常有用，尤其是在大型项目中可能存在许多依赖的情况下。
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   deps: {
-    onlyAllowBundle: ['cac', 'bumpp'],
+    onlyBundle: ['cac', 'bumpp'],
   },
 })
 ```
@@ -73,12 +73,12 @@ export default defineConfig({
 
 #### 行为
 
-- **`onlyAllowBundle` 为数组**（例如 `['cac', /^my-/]`）：只有匹配列表的依赖才允许被打包，其他依赖会触发错误。列表中未使用的模式也会被报告。
-- **`onlyAllowBundle` 为 `false`**：抑制所有关于打包依赖的警告和检查。
-- **`onlyAllowBundle` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `onlyAllowBundle` 选项或将其设置为 `false` 来抑制警告。
+- **`onlyBundle` 为数组**（例如 `['cac', /^my-/]`）：只有匹配列表的依赖才允许被打包，其他依赖会触发错误。列表中未使用的模式也会被报告。
+- **`onlyBundle` 为 `false`**：抑制所有关于打包依赖的警告和检查。
+- **`onlyBundle` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `onlyBundle` 选项或将其设置为 `false` 来抑制警告。
 
 ::: tip
-请确保在 `onlyAllowBundle` 中包含所有子依赖，不仅是直接导入的顶层包。
+请确保在 `onlyBundle` 中包含所有子依赖，不仅是直接导入的顶层包。
 :::
 
 ### `deps.neverBundle`
@@ -141,7 +141,8 @@ export default defineConfig({
 | ----------------------- | ---------------------------- |
 | `external`              | `deps.neverBundle`           |
 | `noExternal`            | `deps.alwaysBundle`          |
-| `inlineOnly`            | `deps.onlyAllowBundle`       |
+| `inlineOnly`            | `deps.onlyBundle`            |
+| `onlyAllowBundle`       | `deps.onlyBundle`            |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## 总结
@@ -150,7 +151,7 @@ export default defineConfig({
   - `dependencies` 和 `peerDependencies` 被视为外部依赖，不会被打包。
   - `devDependencies` 和幻影依赖只有在代码中实际使用时才会被打包。
 - **自定义**：
-  - 使用 `deps.onlyAllowBundle` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
+  - 使用 `deps.onlyBundle` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
   - 使用 `deps.neverBundle` 将特定依赖标记为外部依赖。
   - 使用 `deps.alwaysBundle` 强制将特定依赖打包。
   - 使用 `deps.skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。

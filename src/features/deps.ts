@@ -51,6 +51,10 @@ export interface DepsConfig {
    *
    * Note: Be sure to include all required sub-dependencies as well.
    */
+  onlyBundle?: Arrayable<string | RegExp> | false
+  /**
+   * @deprecated Use `deps.onlyBundle` instead.
+   */
   onlyAllowBundle?: Arrayable<string | RegExp> | false
   /**
    * Skip bundling all `node_modules` dependencies.
@@ -65,7 +69,7 @@ export interface DepsConfig {
 export interface ResolvedDepsConfig {
   neverBundle?: ExternalOption
   alwaysBundle?: NoExternalFn
-  onlyAllowBundle?: Array<string | RegExp> | false
+  onlyBundle?: Array<string | RegExp> | false
   skipNodeModulesBundle: boolean
 }
 
@@ -76,7 +80,7 @@ export function resolveDepsConfig(
   let {
     neverBundle,
     alwaysBundle,
-    onlyAllowBundle,
+    onlyBundle,
     skipNodeModulesBundle = false,
   } = config.deps || {}
 
@@ -98,16 +102,27 @@ export function resolveDepsConfig(
     logger?.warn('`noExternal` is deprecated. Use `deps.alwaysBundle` instead.')
     alwaysBundle = config.noExternal
   }
-  if (config.inlineOnly != null) {
-    if (onlyAllowBundle != null) {
+  if (config.deps?.onlyAllowBundle != null) {
+    if (onlyBundle != null) {
       throw new TypeError(
-        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyAllowBundle`.',
+        '`deps.onlyAllowBundle` is deprecated. Cannot be used with `deps.onlyBundle`.',
       )
     }
     logger?.warn(
-      '`inlineOnly` is deprecated. Use `deps.onlyAllowBundle` instead.',
+      '`deps.onlyAllowBundle` is deprecated. Use `deps.onlyBundle` instead.',
     )
-    onlyAllowBundle = config.inlineOnly
+    onlyBundle = config.deps.onlyAllowBundle
+  }
+  if (config.inlineOnly != null) {
+    if (onlyBundle != null) {
+      throw new TypeError(
+        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyBundle`.',
+      )
+    }
+    logger?.warn(
+      '`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.',
+    )
+    onlyBundle = config.inlineOnly
   }
   if (config.skipNodeModulesBundle != null) {
     if (config.deps?.skipNodeModulesBundle != null) {
@@ -137,14 +152,14 @@ export function resolveDepsConfig(
       '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
     )
   }
-  if (onlyAllowBundle != null && onlyAllowBundle !== false) {
-    onlyAllowBundle = toArray(onlyAllowBundle)
+  if (onlyBundle != null && onlyBundle !== false) {
+    onlyBundle = toArray(onlyBundle)
   }
 
   return {
     neverBundle,
     alwaysBundle,
-    onlyAllowBundle,
+    onlyBundle,
     skipNodeModulesBundle,
   }
 }
@@ -182,7 +197,7 @@ async function parseBundledDep(
 export function DepPlugin(
   {
     pkg,
-    deps: { alwaysBundle, onlyAllowBundle, skipNodeModulesBundle },
+    deps: { alwaysBundle, onlyBundle, skipNodeModulesBundle },
     logger,
     nameLabel,
   }: ResolvedConfig,
@@ -253,13 +268,13 @@ export function DepPlugin(
 
         debug('found deps in bundle: %o', deps)
 
-        if (onlyAllowBundle) {
+        if (onlyBundle) {
           const errors = Array.from(deps)
-            .filter((dep) => !matchPattern(dep, onlyAllowBundle))
+            .filter((dep) => !matchPattern(dep, onlyBundle))
             .map(
               (dep) =>
-                `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyAllowBundle`} option.\n` +
-                `To fix this, either add it to ${blue`deps.onlyAllowBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
+                `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyBundle`} option.\n` +
+                `To fix this, either add it to ${blue`deps.onlyBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
                 `Imported by\n${[...(importers.get(dep) || [])]
                   .map((s) => `- ${underline(s)}`)
                   .join('\n')}`,
@@ -268,25 +283,25 @@ export function DepPlugin(
             this.error(errors.join('\n\n'))
           }
 
-          const unusedPatterns = onlyAllowBundle.filter(
+          const unusedPatterns = onlyBundle.filter(
             (pattern) =>
               !Array.from(deps).some((dep) => matchPattern(dep, [pattern])),
           )
           if (unusedPatterns.length) {
             logger.info(
               nameLabel,
-              `The following entries in ${blue`deps.onlyAllowBundle`} are not used in the bundle:\n${unusedPatterns
+              `The following entries in ${blue`deps.onlyBundle`} are not used in the bundle:\n${unusedPatterns
                 .map((pattern) => `- ${yellow(pattern)}`)
                 .join(
                   '\n',
                 )}\nConsider removing them to keep your configuration clean.`,
             )
           }
-        } else if (onlyAllowBundle == null && deps.size) {
+        } else if (onlyBundle == null && deps.size) {
           logger.info(
             nameLabel,
-            `Hint: consider adding ${blue`deps.onlyAllowBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyAllowBundle: false`} to disable this hint.\n` +
-              `See more at ${underline`https://tsdown.dev/options/dependencies#deps-onlyallowbundle`}\n` +
+            `Hint: consider adding ${blue`deps.onlyBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyBundle: false`} to disable this hint.\n` +
+              `See more at ${underline`https://tsdown.dev/options/dependencies#deps-onlybundle`}\n` +
               `Detected dependencies in bundle:\n${Array.from(deps)
                 .map((dep) => `- ${blue(dep)}`)
                 .join('\n')}`,

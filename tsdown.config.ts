@@ -10,7 +10,7 @@ export default defineConfig([
     entry: ['./src/{index,run,plugins,config,internal}.ts'],
     name: 'tsdown',
     deps: {
-      onlyAllowBundle: [
+      onlyBundle: [
         '@publint/pack',
         'is-in-ci',
         'package-manager-detector',
@@ -59,7 +59,7 @@ export default defineConfig([
     workspace: {
       include: ['packages/*'],
     },
-    deps: { onlyAllowBundle: [] },
+    deps: { onlyBundle: [] },
     failOnWarn: 'ci-only',
     publint: 'ci-only',
     attw: {

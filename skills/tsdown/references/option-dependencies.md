@@ -31,7 +31,7 @@ export default defineConfig({
   deps: {
     neverBundle: ['react', /^@myorg\//],
     alwaysBundle: ['some-package'],
-    onlyAllowBundle: ['cac', 'bumpp'],
+    onlyBundle: ['cac', 'bumpp'],
     skipNodeModulesBundle: true,
   },
 })
@@ -71,7 +71,7 @@ export default defineConfig({
 })
 ```
 
-### `deps.onlyAllowBundle`
+### `deps.onlyBundle`
 
 Whitelist of dependencies allowed to be bundled from node_modules. Throws an error if any unlisted dependency is bundled:
 
@@ -79,7 +79,7 @@ Whitelist of dependencies allowed to be bundled from node_modules. Throws an err
 export default defineConfig({
   entry: ['src/index.ts'],
   deps: {
-    onlyAllowBundle: [
+    onlyBundle: [
       'cac',               // Allow bundling cac
       'bumpp',             // Allow bundling bumpp
       /^my-utils/,         // Regex patterns supported
@@ -235,7 +235,8 @@ tsdown --deps.skip-node-modules-bundle
 |---|---|
 | `external` | `deps.neverBundle` |
 | `noExternal` | `deps.alwaysBundle` |
-| `inlineOnly` | `deps.onlyAllowBundle` |
+| `inlineOnly` | `deps.onlyBundle` |
+| `onlyAllowBundle` | `deps.onlyBundle` |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## Examples by Use Case
@@ -359,7 +360,7 @@ export default defineConfig({
 **Override (under `deps`):**
 - `neverBundle` → Force external
 - `alwaysBundle` → Force bundled
-- `onlyAllowBundle` → Whitelist bundled deps
+- `onlyBundle` → Whitelist bundled deps
 - `skipNodeModulesBundle` → Skip all node_modules
 
 **Declaration files:**
