@@ -50,6 +50,7 @@ describe('unbundle', () => {
       files,
       options: {
         entry: ['src/**/*'],
+        root: 'src',
         unbundle: true,
       },
     })
