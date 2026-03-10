@@ -150,6 +150,17 @@ function rewriteImportCss(
   })
 }
 
+const externalRE: RegExp = /^(?:[a-z]+:)?\/\//
+const dataUrlRE: RegExp = /^\s*data:/i
+
+function skipUrlReplacer(unquotedUrl: string): boolean {
+  return (
+    externalRE.test(unquotedUrl) ||
+    dataUrlRE.test(unquotedUrl) ||
+    unquotedUrl[0] === '#'
+  )
+}
+
 async function doUrlReplace(
   rawUrl: string,
   matched: string,
@@ -161,6 +172,10 @@ async function doUrlReplace(
   if (first === `"` || first === `'`) {
     wrap = first
     rawUrl = rawUrl.slice(1, -1)
+  }
+
+  if (skipUrlReplacer(rawUrl)) {
+    return matched
   }
 
   const newUrl = await replacer(rawUrl, matched)

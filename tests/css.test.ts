@@ -112,6 +112,27 @@ describe('css', () => {
     expect(snapshot).toContain('#ff0000')
   })
 
+  test('sass preserves data URIs in node_modules', async (context) => {
+    const { outputFiles, snapshot } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.scss'`,
+        'foo.scss': `@use '@my-lib/styles/icons';`,
+        'node_modules/@my-lib/styles/icons.scss': `.icon { --bg: url("data:image/svg+xml;utf8,%3Csvg%3E%3C/svg%3E"); }`,
+        'node_modules/@my-lib/styles/package.json': `{"name":"@my-lib/styles","main":"index.js"}`,
+      },
+      options: {
+        entry: ['index.ts'],
+        css: {
+          splitting: true,
+        },
+      },
+    })
+    expect(outputFiles).toEqual(['index.css', 'index.mjs'])
+    expect(snapshot).toContain('data:image/svg+xml')
+    expect(snapshot).not.toContain('node_modules')
+  })
+
   test('with sass and dts=true and splitting=true', async (context) => {
     const { outputFiles } = await testBuild({
       context,
