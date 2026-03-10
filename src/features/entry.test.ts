@@ -8,7 +8,7 @@ describe('toObjectEntry', () => {
     const { testDir } = await writeFixtures(context, {
       'index.ts': '',
     })
-    const result = await toObjectEntry('index.ts', testDir)
+    const [result] = await toObjectEntry('index.ts', testDir)
     expect(result).toEqual({
       index: 'index.ts',
     })
@@ -19,7 +19,7 @@ describe('toObjectEntry', () => {
       'foo.ts': '',
       'bar.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       ['foo.ts', 'bar.ts', 'nonexistent'],
       testDir,
     )
@@ -34,7 +34,7 @@ describe('toObjectEntry', () => {
     const { testDir } = await writeFixtures(context, {
       'index.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       { main: 'index.ts', nonexistent: 'nonexistent' },
       testDir,
     )
@@ -52,7 +52,7 @@ describe('toObjectEntry', () => {
       'test/test.ts': '',
       'nested/a/b/c.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       {
         '*.min': '*.ts',
         'lib/*': 'src/*.ts',
@@ -77,7 +77,7 @@ describe('toObjectEntry', () => {
       'src/foo.ts': '',
       'src/bar.ts': '',
     })
-    const result = await toObjectEntry(['src/*.ts', 'nonexistent'], testDir)
+    const [result] = await toObjectEntry(['src/*.ts', 'nonexistent'], testDir)
     expect(result).not.include.keys('nonexistent')
     expect(result).toEqual({
       foo: path.join(testDir, 'src/foo.ts'),
@@ -90,7 +90,7 @@ describe('toObjectEntry', () => {
       'src/index.ts': '',
       'src/utils/helper.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       ['src/index.ts', 'src/utils/helper.ts'],
       testDir,
     )
@@ -106,7 +106,7 @@ describe('toObjectEntry', () => {
       'src/foo.ts': '',
       'src/bar.ts': '',
     })
-    const result = await toObjectEntry(['index.ts', 'src/*.ts'], testDir)
+    const [result] = await toObjectEntry(['index.ts', 'src/*.ts'], testDir)
     expect(result).toEqual({
       index: path.join(testDir, 'index.ts'),
       'src/foo': path.join(testDir, 'src/foo.ts'),
@@ -121,7 +121,7 @@ describe('toObjectEntry', () => {
       'src/hooks/useAuth.ts': '',
       'src/hooks/useUser.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       {
         'hooks/*': ['src/hooks/*.ts', '!src/hooks/index.ts'],
       },
@@ -142,7 +142,7 @@ describe('toObjectEntry', () => {
       'src/utils/helper.ts': '',
       'src/utils/format.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       {
         'utils/*': [
           'src/utils/*.ts',
@@ -197,7 +197,7 @@ describe('toObjectEntry', () => {
       'src/foo.ts': '',
       'src/bar.ts': '',
     })
-    const result = await toObjectEntry(
+    const [result] = await toObjectEntry(
       [
         'src/*',
         '!src/foo.ts',
@@ -212,6 +212,42 @@ describe('toObjectEntry', () => {
       main: 'index.ts',
       bar: 'override by object',
       'lib/foo': path.join(testDir, 'src/foo.ts'),
+    })
+  })
+
+  test('array entry with custom root', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+      'src/utils/helper.ts': '',
+    })
+    const root = testDir
+    const [result, resolvedRoot] = await toObjectEntry(
+      ['src/index.ts', 'src/utils/helper.ts'],
+      testDir,
+      root,
+    )
+    expect(resolvedRoot).toBe(root)
+    expect(result).toEqual({
+      'src/index': 'src/index.ts',
+      'src/utils/helper': 'src/utils/helper.ts',
+    })
+  })
+
+  test('glob entry with custom root', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+      'src/utils/helper.ts': '',
+    })
+    const root = testDir
+    const [result, resolvedRoot] = await toObjectEntry(
+      ['src/**/*.ts'],
+      testDir,
+      root,
+    )
+    expect(resolvedRoot).toBe(root)
+    expect(result).toEqual({
+      'src/index': path.join(testDir, 'src/index.ts'),
+      'src/utils/helper': path.join(testDir, 'src/utils/helper.ts'),
     })
   })
 })

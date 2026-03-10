@@ -53,6 +53,20 @@ dist/
 
 Each output file corresponds directly to its source file, preserving the module structure of your original codebase.
 
+## Controlling the Output Root
+
+By default, the output directory structure is based on the common base directory of all entry files. You can use the [`root`](/options/root) option to override this behavior:
+
+```ts
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  unbundle: true,
+  root: '.', // Preserve `src/` prefix in output
+})
+```
+
 ## When to Use Unbundle Mode
 
 Unbundle mode is ideal when you want to:

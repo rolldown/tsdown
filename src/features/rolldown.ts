@@ -14,7 +14,6 @@ import {
 import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
-import { lowestCommonAncestor } from '../utils/fs.ts'
 import { importWithError, pkgExists } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { DepPlugin } from './deps.ts'
@@ -235,16 +234,8 @@ async function resolveOutputOptions(
   cjsDts: boolean,
 ): Promise<OutputOptions> {
   /// keep-sorted
-  const {
-    banner,
-    cjsDefault,
-    entry,
-    footer,
-    minify,
-    outDir,
-    sourcemap,
-    unbundle,
-  } = config
+  const { banner, cjsDefault, footer, minify, outDir, sourcemap, unbundle } =
+    config
 
   const [entryFileNames, chunkFileNames] = resolveChunkFilename(
     config,
@@ -262,9 +253,7 @@ async function resolveOutputOptions(
       entryFileNames,
       chunkFileNames,
       preserveModules: unbundle,
-      preserveModulesRoot: unbundle
-        ? lowestCommonAncestor(...Object.values(entry))
-        : undefined,
+      preserveModulesRoot: unbundle ? config.root : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
       codeSplitting: config.exe ? false : undefined,

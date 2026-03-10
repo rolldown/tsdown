@@ -80,6 +80,7 @@ export async function resolveUserConfig(
     exports = false,
     bundle,
     unbundle = typeof bundle === 'boolean' ? !bundle : false,
+    root,
     removeNodeProtocol,
     nodeProtocol,
     cjsDefault = true,
@@ -134,7 +135,14 @@ export async function resolveUserConfig(
   clean = resolveClean(clean, outDir, cwd)
 
   const rawEntry = entry
-  const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
+  const [resolvedEntry, resolvedRoot] = await resolveEntry(
+    logger,
+    entry,
+    cwd,
+    color,
+    nameLabel,
+    root ? path.resolve(cwd, root) : undefined,
+  )
 
   target = resolveTarget(logger, target, color, pkg, nameLabel)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
@@ -294,6 +302,7 @@ export async function resolveUserConfig(
     publint,
     rawEntry,
     report,
+    root: resolvedRoot,
     shims,
     sourcemap,
     target,

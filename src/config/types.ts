@@ -377,6 +377,16 @@ export interface UserConfig {
   unbundle?: boolean
 
   /**
+   * Specifies the root directory of input files, similar to TypeScript's `rootDir`.
+   * This determines the output directory structure.
+   *
+   * By default, the root is computed as the common base directory of all entry files.
+   *
+   * @see https://www.typescriptlang.org/tsconfig/#rootDir
+   */
+  root?: string
+
+  /**
    * @deprecated Use `unbundle` instead.
    * @default true
    */
@@ -665,6 +675,8 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     deps: ResolvedDepsConfig
+    /** Resolved root directory of input files */
+    root: string
 
     dts: false | DtsOptions
     report: false | ReportOptions

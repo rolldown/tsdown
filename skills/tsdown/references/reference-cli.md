@@ -374,6 +374,15 @@ Enable unbundle (bundleless) mode:
 tsdown --unbundle
 ```
 
+### `--root <dir>`
+
+Specify the root directory of input files (similar to TypeScript's `rootDir`). Controls the output directory structure by determining how entry file paths map to output paths. Defaults to the common base directory of all entry files.
+
+```bash
+tsdown --root src
+tsdown --root .
+```
+
 ### `--fail-on-warn`
 
 Fail on warnings (enabled by default):

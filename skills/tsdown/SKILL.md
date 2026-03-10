@@ -99,6 +99,7 @@ export default defineConfig({
 | CSS handling | **[experimental]** `css: { ... }` — full pipeline with preprocessors, Lightning CSS, PostCSS, code splitting; requires `@tsdown/css` | [option-css](references/option-css.md) |
 | CSS inject | `css: { inject: true }` — preserve CSS imports in JS output | [option-css](references/option-css.md) |
 | Unbundle mode | `unbundle: true` - Preserve directory structure | [option-unbundle](references/option-unbundle.md) |
+| Root directory | `root: 'src'` - Control output directory mapping | [option-root](references/option-root.md) |
 | Executable | **[experimental]** `exe: true` - Bundle as standalone executable, cross-platform via `@tsdown/exe` | [option-exe](references/option-exe.md) |
 | Package validation | `publint: true`, `attw: true` - Validate package | [option-lint](references/option-lint.md) |
 

@@ -303,6 +303,7 @@ tsdown --unbundle --format esm --dts
 
 ## Related Options
 
+- [Root Directory](option-root.md) - Control output directory mapping
 - [Entry](option-entry.md) - Entry patterns
 - [Output Directory](option-output-directory.md) - Output location
 - [Output Format](option-output-format.md) - Module formats

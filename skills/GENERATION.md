@@ -67,6 +67,7 @@ Files are prefixed by category:
 - `option-package-exports.md` - Auto-generate package.json exports
 - `option-css.md` - CSS handling (preprocessors, Lightning CSS, PostCSS, code splitting, inject)
 - `option-unbundle.md` - Preserve directory structure
+- `option-root.md` - Root directory of input files
 - `option-log-level.md` - Logging configuration
 - `option-lint.md` - Package validation (publint, attw)
 - `option-exe.md` - Executable bundling (Node.js SEA)

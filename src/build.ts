@@ -208,7 +208,7 @@ async function buildSingle(
         config.rawEntry &&
         isGlobEntry(config.rawEntry)
       ) {
-        const newEntry = await toObjectEntry(config.rawEntry, config.cwd)
+        const [newEntry] = await toObjectEntry(config.rawEntry, config.cwd)
         const currentKeys = Object.keys(config.entry).toSorted().join('\0')
         const newKeys = Object.keys(newEntry).toSorted().join('\0')
         if (currentKeys !== newKeys) {

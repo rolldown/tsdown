@@ -135,6 +135,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Shims'), link: '/shims.md' },
         { text: t('Package Exports'), link: '/package-exports.md' },
         { text: t('Unbundle'), link: '/unbundle.md' },
+        { text: t('Root Directory'), link: '/root.md' },
         { text: t('CJS Default Export'), link: '/cjs-default.md' },
         { text: t('CSS'), link: '/css.md' },
         { text: t('Executable'), link: '/exe.md' },

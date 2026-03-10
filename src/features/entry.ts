@@ -14,7 +14,8 @@ export async function resolveEntry(
   cwd: string,
   color: Ansis,
   nameLabel?: string,
-): Promise<Record<string, string>> {
+  root?: string,
+): Promise<[entry: Record<string, string>, root: string]> {
   if (!entry || Object.keys(entry).length === 0) {
     const defaultEntry = path.resolve(cwd, 'src/index.ts')
 
@@ -27,7 +28,7 @@ export async function resolveEntry(
     }
   }
 
-  const entryMap = await toObjectEntry(entry, cwd)
+  const [entryMap, computedRoot] = await toObjectEntry(entry, cwd, root)
   const entries = Object.values(entryMap)
   if (entries.length === 0) {
     throw new Error(`${nameLabel} Cannot find entry: ${JSON.stringify(entry)}`)
@@ -36,13 +37,14 @@ export async function resolveEntry(
     nameLabel,
     `entry: ${color(entries.map((entry) => path.relative(cwd, entry)).join(', '))}`,
   )
-  return entryMap
+  return [entryMap, computedRoot]
 }
 
 export function toObjectEntry(
   entry: TsdownInputOption,
   cwd: string,
-): Promise<Record<string, string>> {
+  root?: string,
+): Promise<[entry: Record<string, string>, root: string]> {
   if (typeof entry === 'string') {
     entry = [entry]
   }
@@ -50,7 +52,7 @@ export function toObjectEntry(
   if (!Array.isArray(entry)) {
     return resolveObjectEntry(entry, cwd)
   }
-  return resolveArrayEntry(entry, cwd)
+  return resolveArrayEntry(entry, cwd, root)
 }
 
 export function isGlobEntry(entry: TsdownInputOption | undefined): boolean {
@@ -67,8 +69,8 @@ export function isGlobEntry(entry: TsdownInputOption | undefined): boolean {
 async function resolveObjectEntry(
   entries: Record<string, string | string[]>,
   cwd: string,
-) {
-  return Object.fromEntries(
+): Promise<[entry: Record<string, string>, root: string]> {
+  const entry = Object.fromEntries(
     (
       await Promise.all(
         Object.entries(entries).map(async ([key, value]) => {
@@ -126,12 +128,14 @@ async function resolveObjectEntry(
       )
     ).flat(),
   )
+  return [entry, cwd]
 }
 
 async function resolveArrayEntry(
   entries: (string | Record<string, Arrayable<string>>)[],
   cwd: string,
-) {
+  root?: string,
+): Promise<[entry: Record<string, string>, root: string]> {
   const stringEntries: string[] = []
   const objectEntries: Record<string, Arrayable<string>>[] = []
   for (const e of entries) {
@@ -156,7 +160,10 @@ async function resolveArrayEntry(
     resolvedEntries = stringEntries
   }
 
-  const base = lowestCommonAncestor(...resolvedEntries)
+  const computedRoot = root || lowestCommonAncestor(...resolvedEntries)
+  // For entry name computation, base must match the path style of entries:
+  // glob entries are absolute, non-glob entries stay relative (may be virtual files)
+  const base = root && !isGlob ? path.relative(cwd, root) || '.' : computedRoot
   const arrayEntryMap = Object.fromEntries(
     resolvedEntries.map((file) => {
       const relative = path.relative(base, file)
@@ -164,11 +171,15 @@ async function resolveArrayEntry(
     }),
   )
 
-  return Object.assign(
-    {},
-    arrayEntryMap,
-    ...(await Promise.all(
-      objectEntries.map((entry) => resolveObjectEntry(entry, cwd)),
-    )),
+  const resolvedObjectEntries = await Promise.all(
+    objectEntries.map(async (entry) => {
+      const [entryMap] = await resolveObjectEntry(entry, cwd)
+      return entryMap
+    }),
   )
+
+  return [
+    Object.assign({}, arrayEntryMap, ...resolvedObjectEntries),
+    computedRoot,
+  ]
 }
