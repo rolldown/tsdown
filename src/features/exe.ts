@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
@@ -9,7 +9,7 @@ import satisfies from 'semver/functions/satisfies.js'
 import { x } from 'tinyexec'
 import { formatBytes } from '../utils/format.ts'
 import { fsRemove, fsStat } from '../utils/fs.ts'
-import { importWithError } from '../utils/general.ts'
+import { importWithError, typeAssert } from '../utils/general.ts'
 import type { ResolvedConfig, RolldownChunk } from '../config/types.ts'
 import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
 
@@ -20,6 +20,11 @@ export interface ExeOptions extends ExeExtensionOptions {
    * For example, do not include `.exe`, platform suffixes, or architecture suffixes.
    */
   fileName?: string | ((chunk: RolldownChunk) => string)
+  /**
+   * Output directory for executables.
+   * @default 'build'
+   */
+  outDir?: string
 }
 
 /**
@@ -176,8 +181,12 @@ async function buildSingleExe(
   executable?: string,
   target?: ExeTarget,
 ): Promise<void> {
-  const exe = config.exe as ExeOptions
-  const outputPath = path.join(config.outDir, outputFile)
+  typeAssert(config.exe)
+  const exe = config.exe
+  const exeOutDir = path.resolve(config.cwd, exe.outDir || 'build')
+
+  await mkdir(exeOutDir, { recursive: true })
+  const outputPath = path.join(exeOutDir, outputFile)
   debug('Building SEA executable: %s -> %s', bundledFile, outputPath)
 
   const t = performance.now()

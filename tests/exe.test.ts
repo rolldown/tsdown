@@ -38,9 +38,24 @@ describe.runIf(nodeSupportsBuiltinSea)('exe', () => {
       snapshot: false,
     })
 
-    const exePath = path.join(testDir, `dist/index${suffix}`)
+    const exePath = path.join(testDir, `build/index${suffix}`)
     const { stdout } = await x(exePath)
     expect(stdout.trim()).toBe('hello from sea')
+  })
+
+  test('exe.outDir outputs executable to custom directory', async (context) => {
+    const { testDir } = await testBuild({
+      context,
+      files: {
+        'index.ts': 'console.log("hello from custom outdir")',
+      },
+      options: { exe: true },
+      snapshot: false,
+    })
+
+    const exePath = path.join(testDir, `build/index${suffix}`)
+    const { stdout } = await x(exePath)
+    expect(stdout.trim()).toBe('hello from custom outdir')
   })
 
   test('bundles dynamic import() and executes correctly', async (context) => {
@@ -64,7 +79,7 @@ describe.runIf(nodeSupportsBuiltinSea)('exe', () => {
       snapshot: false,
     })
 
-    const exePath = path.join(testDir, `dist/index${suffix}`)
+    const exePath = path.join(testDir, `build/index${suffix}`)
     const { stdout } = await x(exePath)
     expect(stdout.trim()).toBe('hello from dynamic import')
   })
