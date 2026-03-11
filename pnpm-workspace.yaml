@@ -19,7 +19,7 @@ catalogs:
     '@types/node': ^25.4.0
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260310.1
+    '@typescript/native-preview': 7.0.0-dev.20260311.1
     '@vitest/coverage-v8': ^4.0.18
     '@vitest/ui': ^4.0.18
     bumpp: ^10.4.1
@@ -31,8 +31,8 @@ catalogs:
     postcss-import: ^16.1.1
     prettier: ^3.8.1
     rolldown-plugin-dts-snapshot: ^0.4.0
-    rolldown-plugin-require-cjs: ^0.3.3
-    sass: ^1.97.3
+    rolldown-plugin-require-cjs: ^0.4.0
+    sass: ^1.98.0
     typescript: ~5.9.3
     unplugin-ast: ^0.16.0
     unplugin-raw: ^0.6.4
@@ -77,18 +77,18 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
     postcss-load-config: ^6.0.1
-    rolldown: 1.0.0-rc.8
-    rolldown-plugin-dts: ^0.22.4
+    rolldown: 1.0.0-rc.9
+    rolldown-plugin-dts: ^0.22.5
     semver: ^7.7.4
     tinyexec: ^1.0.2
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
-    unrun: ^0.2.31
+    unrun: ^0.2.32
+
+allowBuilds:
+  '@parcel/watcher': false
 
 ignoreWorkspaceRootCheck: true
-ignoredBuiltDependencies:
-  - '@parcel/watcher'
-
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080 # 7 days
