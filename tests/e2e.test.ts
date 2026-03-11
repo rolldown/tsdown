@@ -177,7 +177,7 @@ describe('deps', () => {
     })
   })
 
-  describe('onlyAllowBundle', () => {
+  describe('onlyBundle', () => {
     test('should allow whitelisted dependencies to be bundled', async (context) => {
       const files = {
         'index.ts': `export * from 'cac'; export * from 'bumpp'`,
@@ -188,7 +188,7 @@ describe('deps', () => {
         options: {
           deps: {
             alwaysBundle: ['cac'],
-            onlyAllowBundle: ['cac', 'bumpp'],
+            onlyBundle: ['cac', 'bumpp'],
           },
           plugins: [pluginMockDepCode],
           inputOptions: {
@@ -209,7 +209,7 @@ describe('deps', () => {
           context,
           files,
           options: {
-            deps: { onlyAllowBundle: [] },
+            deps: { onlyBundle: [] },
             plugins: [pluginMockDepCode],
           },
         }),
@@ -228,7 +228,7 @@ describe('deps', () => {
         options: {
           deps: {
             alwaysBundle: ['cac'],
-            onlyAllowBundle: ['cac', 'unused-dep'],
+            onlyBundle: ['cac', 'unused-dep'],
           },
           plugins: [pluginMockDepCode],
           customLogger: {

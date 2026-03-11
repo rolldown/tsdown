@@ -166,7 +166,7 @@ export interface UserConfig {
    */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
-   * @deprecated Use `deps.onlyAllowBundle` instead.
+   * @deprecated Use `deps.onlyBundle` instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**

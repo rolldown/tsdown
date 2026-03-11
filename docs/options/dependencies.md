@@ -29,7 +29,7 @@ export default defineConfig({
   deps: {
     neverBundle: ['lodash', /^@my-scope\//],
     alwaysBundle: ['some-package'],
-    onlyAllowBundle: ['cac', 'bumpp'],
+    onlyBundle: ['cac', 'bumpp'],
     skipNodeModulesBundle: true,
   },
 })
@@ -55,16 +55,16 @@ This will prevent `tsdown` from parsing and bundling any dependencies from `node
 `skipNodeModulesBundle` cannot be used together with `alwaysBundle`. These options are mutually exclusive.
 :::
 
-### `deps.onlyAllowBundle`
+### `deps.onlyBundle`
 
-The `onlyAllowBundle` option acts as a whitelist for dependencies that are allowed to be bundled from `node_modules`. If any dependency not in the list is found in the bundle, tsdown will throw an error. This is useful for preventing unexpected dependencies from being silently inlined into your output, especially in large projects.
+The `onlyBundle` option acts as a whitelist for dependencies that are allowed to be bundled from `node_modules`. If any dependency not in the list is found in the bundle, tsdown will throw an error. This is useful for preventing unexpected dependencies from being silently inlined into your output, especially in large projects.
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   deps: {
-    onlyAllowBundle: ['cac', 'bumpp'],
+    onlyBundle: ['cac', 'bumpp'],
   },
 })
 ```
@@ -73,12 +73,12 @@ In this example, only `cac` and `bumpp` are allowed to be bundled. If any other 
 
 #### Behavior
 
-- **`onlyAllowBundle` is an array** (e.g., `['cac', /^my-/]`): Only dependencies matching the list are allowed to be bundled. An error is thrown for any others. Unused patterns in the list will also be reported.
-- **`onlyAllowBundle` is `false`**: All warnings and checks about bundled dependencies are suppressed.
-- **`onlyAllowBundle` is not set** (default): A warning is shown if any `node_modules` dependencies are bundled, suggesting you add the `onlyAllowBundle` option or set it to `false` to suppress warnings.
+- **`onlyBundle` is an array** (e.g., `['cac', /^my-/]`): Only dependencies matching the list are allowed to be bundled. An error is thrown for any others. Unused patterns in the list will also be reported.
+- **`onlyBundle` is `false`**: All warnings and checks about bundled dependencies are suppressed.
+- **`onlyBundle` is not set** (default): A warning is shown if any `node_modules` dependencies are bundled, suggesting you add the `onlyBundle` option or set it to `false` to suppress warnings.
 
 ::: tip
-Make sure to include all required sub-dependencies in the `onlyAllowBundle` list as well, not just the top-level packages you directly import.
+Make sure to include all required sub-dependencies in the `onlyBundle` list as well, not just the top-level packages you directly import.
 :::
 
 ### `deps.neverBundle`
@@ -141,7 +141,8 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
 | ----------------------- | ---------------------------- |
 | `external`              | `deps.neverBundle`           |
 | `noExternal`            | `deps.alwaysBundle`          |
-| `inlineOnly`            | `deps.onlyAllowBundle`       |
+| `inlineOnly`            | `deps.onlyBundle`            |
+| `deps.onlyAllowBundle`  | `deps.onlyBundle`            |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## Summary
@@ -150,7 +151,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
   - `dependencies` and `peerDependencies` are treated as external and not bundled.
   - `devDependencies` and phantom dependencies are only bundled if they are actually used in your code.
 - **Customization**:
-  - Use `deps.onlyAllowBundle` to whitelist dependencies allowed to be bundled, and throw an error for any others.
+  - Use `deps.onlyBundle` to whitelist dependencies allowed to be bundled, and throw an error for any others.
   - Use `deps.neverBundle` to mark specific dependencies as external.
   - Use `deps.alwaysBundle` to force specific dependencies to be bundled.
   - Use `deps.skipNodeModulesBundle` to skip resolving and bundling all dependencies from `node_modules`.
