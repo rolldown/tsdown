@@ -53,7 +53,7 @@ export interface DepsConfig {
    */
   onlyBundle?: Arrayable<string | RegExp> | false
   /**
-   * @deprecated Use `deps.onlyBundle` instead.
+   * @deprecated Use {@link onlyBundle} instead.
    */
   onlyAllowBundle?: Arrayable<string | RegExp> | false
   /**

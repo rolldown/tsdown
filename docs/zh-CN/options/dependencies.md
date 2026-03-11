@@ -142,7 +142,7 @@ export default defineConfig({
 | `external`              | `deps.neverBundle`           |
 | `noExternal`            | `deps.alwaysBundle`          |
 | `inlineOnly`            | `deps.onlyBundle`            |
-| `onlyAllowBundle`       | `deps.onlyBundle`            |
+| `deps.onlyAllowBundle`  | `deps.onlyBundle`            |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## 总结

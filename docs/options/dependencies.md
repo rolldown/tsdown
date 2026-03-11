@@ -142,7 +142,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
 | `external`              | `deps.neverBundle`           |
 | `noExternal`            | `deps.alwaysBundle`          |
 | `inlineOnly`            | `deps.onlyBundle`            |
-| `onlyAllowBundle`       | `deps.onlyBundle`            |
+| `deps.onlyAllowBundle`  | `deps.onlyBundle`            |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## Summary
