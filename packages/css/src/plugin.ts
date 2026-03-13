@@ -67,6 +67,8 @@ export function CssPlugin(
         const code = await readFile(cleanId, 'utf8').catch(() => null)
         if (code == null) return
 
+        this.addWatchFile(cleanId)
+
         return {
           code,
           moduleType: 'js',
