@@ -136,8 +136,8 @@
     "unrun": "catalog:prod"
   },
   "inlinedDependencies": {
-    "package-manager-detector": "1.6.0",
     "is-in-ci": "2.0.0",
+    "package-manager-detector": "1.6.0",
     "pkg-types": "2.3.0"
   },
   "devDependencies": {
