@@ -1,5 +1,5 @@
 {
-  "config-!~{00e}~.d.mts": {
+  "config-!~{00d}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
@@ -87,7 +87,7 @@
       "toArray"
     ]
   },
-  "logger-!~{00c}~.d.mts": {
+  "logger-!~{00b}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",
     "globalLogger": "Logger",
@@ -113,7 +113,7 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00d}~.d.mts": {
+  "types-!~{00c}~.d.mts": {
     "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "BuildContext": "interface BuildContext {\n options: ResolvedConfig\n hooks: Hookable<TsdownHooks>\n}",
     "ChunkAddon": "type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string",
