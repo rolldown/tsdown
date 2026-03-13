@@ -114,7 +114,7 @@ export default defineConfig({
 This downloads the target platform's Node.js binary from nodejs.org, caches it locally, and uses it to build the executable. The output files are named with platform and architecture suffixes:
 
 ```
-dist/
+build/
   cli-linux-x64
   cli-darwin-arm64
   cli-win-x64.exe

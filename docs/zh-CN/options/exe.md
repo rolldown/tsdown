@@ -114,7 +114,7 @@ export default defineConfig({
 这会从 nodejs.org 下载目标平台的 Node.js 二进制文件，缓存到本地，并使用它来构建可执行文件。输出文件会带有平台和架构后缀：
 
 ```
-dist/
+build/
   cli-linux-x64
   cli-darwin-arm64
   cli-win-x64.exe
