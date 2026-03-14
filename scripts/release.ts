@@ -6,6 +6,7 @@ const result = await versionBump({
   commit: true,
   push: true,
   tag: true,
+  confirm: true,
 })
 
 if (!result.newVersion.includes('beta')) {
