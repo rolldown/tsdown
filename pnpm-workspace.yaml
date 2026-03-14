@@ -16,13 +16,13 @@ catalogs:
     '@sxzz/eslint-config': ^7.8.3
     '@sxzz/prettier-config': ^2.3.1
     '@sxzz/test-utils': ^0.5.15
-    '@types/node': ^25.4.0
+    '@types/node': ^25.5.0
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260312.1
+    '@typescript/native-preview': 7.0.0-dev.20260314.1
     '@vitest/coverage-v8': ^4.1.0
     '@vitest/ui': ^4.1.0
-    bumpp: ^10.4.1
+    bumpp: ^11.0.0
     dedent: ^1.7.2
     eslint: ^10.0.3
     memfs: ^4.56.11
@@ -43,7 +43,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^4.0.2
     '@unocss/eslint-plugin': ^66.6.6
     '@vueuse/core': ^14.2.1
-    oxc-minify: ^0.118.0
+    oxc-minify: ^0.119.0
     typedoc: ^0.28.17
     typedoc-plugin-markdown: ^4.10.0
     typedoc-vitepress-theme: ^1.1.2
@@ -55,13 +55,13 @@ catalogs:
     vue: ^3.5.30
     vue-tsc: ^3.2.5
   migrate:
-    '@antfu/ni': ^28.3.0
+    '@antfu/ni': ^29.0.0
     '@ast-grep/napi': ^0.41.1
     consola: ^3.4.2
     diff: ^8.0.3
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.0.0-alpha.33
+    '@vitejs/devtools': ^0.1.0
     publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
@@ -80,7 +80,7 @@ catalogs:
     rolldown: 1.0.0-rc.9
     rolldown-plugin-dts: ^0.22.5
     semver: ^7.7.4
-    tinyexec: ^1.0.2
+    tinyexec: ^1.0.4
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
