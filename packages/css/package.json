@@ -1,7 +1,7 @@
 {
   "name": "@tsdown/css",
   "type": "module",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "description": "Advanced CSS pipeline for tsdown powered by Lightning CSS",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
