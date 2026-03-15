@@ -73,62 +73,65 @@ async function resolveObjectEntry(
   const entry = Object.fromEntries(
     (
       await Promise.all(
-        Object.entries(entries).map(async ([key, value]) => {
-          if (!key.includes('*')) {
-            if (Array.isArray(value)) {
-              throw new TypeError(
-                `Object entry "${key}" cannot have an array value when the key is not a glob pattern.`,
-              )
+        Object.entries(entries).map(
+          async ([key, value]): Promise<[string, string][]> => {
+            if (!key.includes('*')) {
+              if (Array.isArray(value)) {
+                throw new TypeError(
+                  `Object entry "${key}" cannot have an array value when the key is not a glob pattern.`,
+                )
+              }
+
+              return [[key, value]]
             }
 
-            return [[key, value]]
-          }
-
-          const patterns = toArray(value)
-          const files = await glob(patterns, {
-            cwd,
-            expandDirectories: false,
-          })
-          if (!files.length) {
-            throw new Error(
-              `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(
-                patterns,
-              )}`,
-            )
-          }
-
-          let valueGlobBase: string | undefined
-          for (const pattern of patterns) {
-            if (pattern.startsWith('!')) continue
-            const base = picomatch.scan(pattern).base
-            if (valueGlobBase === undefined) {
-              valueGlobBase = base
-            } else if (valueGlobBase !== base) {
+            const patterns = toArray(value)
+            const files = await glob(patterns, {
+              cwd,
+              expandDirectories: false,
+            })
+            if (!files.length) {
               throw new Error(
-                `When using object entry with glob pattern key "${key}", all value glob patterns must have the same base directory.`,
+                `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(
+                  patterns,
+                )}`,
               )
             }
-          }
-          if (valueGlobBase === undefined) {
-            throw new Error(
-              `Cannot determine base directory for value glob patterns of key "${key}".`,
-            )
-          }
 
-          return files.map((file) => [
-            slash(
-              key.replaceAll(
-                '*',
-                stripExtname(path.relative(valueGlobBase, file)),
+            let valueGlobBase: string | undefined
+            for (const pattern of patterns) {
+              if (pattern.startsWith('!')) continue
+              const base = picomatch.scan(pattern).base
+              if (valueGlobBase === undefined) {
+                valueGlobBase = base
+              } else if (valueGlobBase !== base) {
+                throw new Error(
+                  `When using object entry with glob pattern key "${key}", all value glob patterns must have the same base directory.`,
+                )
+              }
+            }
+            if (valueGlobBase === undefined) {
+              throw new Error(
+                `Cannot determine base directory for value glob patterns of key "${key}".`,
+              )
+            }
+
+            return files.map((file) => [
+              slash(
+                key.replaceAll(
+                  '*',
+                  stripExtname(path.relative(valueGlobBase, file)),
+                ),
               ),
-            ),
-            path.resolve(cwd, file),
-          ])
-        }),
+              path.resolve(cwd, file),
+            ])
+          },
+        ),
       )
     ).flat(),
   )
-  return [entry, cwd]
+  const root = lowestCommonAncestor(...Object.values(entry))
+  return [entry, root]
 }
 
 async function resolveArrayEntry(
