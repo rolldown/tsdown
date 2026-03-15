@@ -42,7 +42,6 @@ export async function copy(options: ResolvedConfig): Promise<void> {
   if (!options.copy) return
 
   const resolved = await resolveCopyEntries(options)
-
   if (!resolved.length) {
     options.logger.warn(options.nameLabel, `No files matched for copying.`)
     return
