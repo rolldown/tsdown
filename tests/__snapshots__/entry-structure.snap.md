@@ -1,11 +1,13 @@
 ## index.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```
 
 ## utils/index.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

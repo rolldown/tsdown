@@ -115,9 +115,11 @@ See also [Log Level](../options/log-level.md).
 
 ### ~~`--silent`~~
 
-**Deprecated:** Please use `--log-level error` instead for better compatibility.
+::: warning Deprecated
+Please use `--log-level error` instead.
+:::
 
-Suppress non-error logs during the build process. Only error messages will be displayed, making it easier to focus on critical issues.
+Suppress non-error logs during the build process. Only error messages will be displayed.
 
 ## `-d, --out-dir <dir>`
 
@@ -162,6 +164,14 @@ See also [Declaration Files](../options/dts.md).
 ## `--publint`
 
 Enable `publint` to validate your package for publishing. This checks for common issues in your package configuration, ensuring it meets best practices.
+
+See also [Package Validation](../options/lint.md).
+
+## `--attw`
+
+Enable [Are the types wrong?](https://github.com/arethetypeswrong/arethetypeswrong.github.io) integration to check your package's TypeScript types for compatibility issues.
+
+See also [Package Validation](../options/lint.md).
 
 ## `--unused`
 
@@ -243,21 +253,45 @@ All contents of the `public` directory will be copied to your output directory (
 
 ## `--public-dir <dir>`
 
+::: warning Deprecated
+Please use `--copy` instead.
+:::
+
 An alias for `--copy`.
-**Deprecated:** Please use `--copy` instead for better clarity and consistency.
 
 ## `--exe`
 
-**[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
+**[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html).
 
-This will bundle the output into a single executable file using Node.js SEA. Requires Node.js 25.5.0 or later, and is not supported in Bun or Deno.
+This will bundle the output into a single executable file. Requires Node.js 25.7.0 or later, and is not supported in Bun or Deno. Cross-platform builds are supported via the `@tsdown/exe` package.
 
 When `exe` is enabled:
 
-- The default output format changes from `esm` to `cjs` (unless ESM SEA is supported).
 - Declaration file generation (`dts`) is disabled by default.
 - Code splitting is disabled.
 - Only single entry points are supported.
+
+See also [Executable](../options/exe.md).
+
+## `-W, --workspace [dir]`
+
+Enable workspace mode for building multiple packages in a monorepo. Optionally specify the workspace root directory.
+
+## `-F, --filter <pattern>`
+
+Filter configs by working directory or name. Supports string matching and regex patterns (e.g., `/pkg-name$/` or `pkg-name`).
+
+## `--unbundle`
+
+Enable unbundle (bundleless) mode. Each source file is compiled individually, preserving the source directory structure in the output.
+
+See also [Unbundle](../options/unbundle.md).
+
+## `--fail-on-warn`
+
+Fail the build when warnings are encountered. Enabled by default.
+
+See also [CI Environment](../advanced/ci.md).
 
 ## `--exports`
 

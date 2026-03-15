@@ -1,20 +1,16 @@
 ## index.mjs
 
 ```mjs
-import "./style.mjs";
+/* empty css       */
+export {};
 
-export {  };
 ```
 
-## style-CDacwehR.css
+## style.css
 
 ```css
-body { color: red }
+body {
+  color: red;
+}
 
-```
-
-## style.mjs
-
-```mjs
-export {  };
 ```

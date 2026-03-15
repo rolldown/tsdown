@@ -242,9 +242,8 @@ exports[`warning options > experimentalDts should emit warning > warnings 1`] = 
 ]
 `;
 
-exports[`warning options > injectStyle should emit warning (not implemented) > code 1`] = `
+exports[`warning options > injectStyle: false should be removed > code 1`] = `
 "export default {
-  injectStyle: true,
   format: 'cjs',
   clean: false,
   dts: false,
@@ -252,10 +251,14 @@ exports[`warning options > injectStyle should emit warning (not implemented) > c
 }"
 `;
 
-exports[`warning options > injectStyle should emit warning (not implemented) > warnings 1`] = `
-[
-  "The \`injectStyle\` option has not yet been implemented in tsdown.",
-]
+exports[`warning options > injectStyle: true should be transformed to css: { inject: true } > code 1`] = `
+"export default {
+  css: { inject: true },
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
 `;
 
 exports[`warning options > legacyOutput should emit warning > code 1`] = `

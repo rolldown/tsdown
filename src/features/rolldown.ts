@@ -8,16 +8,14 @@ import {
   type BuildOptions,
   type InputOptions,
   type OutputOptions,
+  type Plugin,
   type RolldownPluginOption,
 } from 'rolldown'
 import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
-import { lowestCommonAncestor } from '../utils/fs.ts'
-import { importWithError } from '../utils/general.ts'
+import { importWithError, pkgExists } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
-import { LightningCSSPlugin } from './css/lightningcss.ts'
-import { CssCodeSplitPlugin } from './css/splitting.ts'
 import { DepPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
@@ -114,7 +112,7 @@ async function resolveInputOptions(
   }
 
   if (config.pkg || config.deps.skipNodeModulesBundle) {
-    plugins.push(DepPlugin(config))
+    plugins.push(DepPlugin(config, bundle))
   }
 
   if (dts) {
@@ -149,18 +147,14 @@ async function resolveInputOptions(
         }),
       )
     }
-    if (target) {
-      plugins.push(
-        // Use Lightning CSS to handle CSS input. This is a temporary solution
-        // until Rolldown supports CSS syntax lowering natively.
-        await LightningCSSPlugin({ target }),
-      )
+
+    if (pkgExists('@tsdown/css')) {
+      const { CssPlugin } = await import('@tsdown/css')
+      plugins.push(CssPlugin(config, { logger }))
+    } else {
+      plugins.push(CssGuardPlugin())
     }
-    // Add CSS code split plugin after LightningCSS to merge generated CSS files
-    const cssPlugin = CssCodeSplitPlugin(config)
-    if (cssPlugin) {
-      plugins.push(cssPlugin)
-    }
+
     plugins.push(ShebangPlugin(logger, cwd, nameLabel, isDualFormat))
     if (globImport) {
       plugins.push(importGlobPlugin({ root: cwd }))
@@ -207,14 +201,20 @@ async function resolveInputOptions(
         inject,
       },
       plugins,
-      moduleTypes: loader,
+      moduleTypes: {
+        '.node': 'copy',
+        ...loader,
+      },
       logLevel: logger.level === 'error' ? 'silent' : logger.level,
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled
         if (cjsDefault && log.code === 'MIXED_EXPORT') return
-        if (logger.options?.failOnWarn && level === 'warn') {
+        if (
+          logger.options?.failOnWarn &&
+          level === 'warn' &&
+          log.code !== 'PLUGIN_TIMINGS'
+        )
           defaultHandler('error', log)
-        }
         defaultHandler(level, log)
       },
       devtools: devtools || undefined,
@@ -234,16 +234,8 @@ async function resolveOutputOptions(
   cjsDts: boolean,
 ): Promise<OutputOptions> {
   /// keep-sorted
-  const {
-    banner,
-    cjsDefault,
-    entry,
-    footer,
-    minify,
-    outDir,
-    sourcemap,
-    unbundle,
-  } = config
+  const { banner, cjsDefault, footer, minify, outDir, sourcemap, unbundle } =
+    config
 
   const [entryFileNames, chunkFileNames] = resolveChunkFilename(
     config,
@@ -261,9 +253,7 @@ async function resolveOutputOptions(
       entryFileNames,
       chunkFileNames,
       preserveModules: unbundle,
-      preserveModulesRoot: unbundle
-        ? lowestCommonAncestor(...Object.values(entry))
-        : undefined,
+      preserveModulesRoot: unbundle ? config.root : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
       codeSplitting: config.exe ? false : undefined,
@@ -337,5 +327,21 @@ function handlePluginInspect(plugins: RolldownPluginOption) {
         return `"rolldown plugin: ${plugins.name}"`
       }
     }
+  }
+}
+
+export function CssGuardPlugin(): Plugin {
+  return {
+    name: 'tsdown:css-guard',
+    transform: {
+      order: 'post',
+      filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
+      handler(_code, id) {
+        throw new Error(
+          `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
+            `Please install it: \`npm install @tsdown/css\``,
+        )
+      },
+    },
   }
 }

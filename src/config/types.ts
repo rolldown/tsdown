@@ -1,5 +1,4 @@
 import type { CopyEntry, CopyOptions, CopyOptionsFn } from '../features/copy.ts'
-import type { CssOptions } from '../features/css/index.ts'
 import type {
   DepsConfig,
   NoExternalFn,
@@ -82,7 +81,6 @@ export type {
   CopyEntry,
   CopyOptions,
   CopyOptionsFn,
-  CssOptions,
   DepsConfig,
   DevtoolsOptions,
   DtsOptions,
@@ -168,7 +166,7 @@ export interface UserConfig {
    */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
-   * @deprecated Use `deps.onlyAllowBundle` instead.
+   * @deprecated Use `deps.onlyBundle` instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**
@@ -329,12 +327,13 @@ export interface UserConfig {
   //#region Output Options
 
   /**
-   * Output format(s). Defaults to ESM.
+   * Output format(s). Available formats are
+   * - `esm`: ESM
+   * - `cjs`: CommonJS
+   * - `iife`: IIFE
+   * - `umd`: UMD
    *
-   * ### Usage with {@link exe}
-   * If `exe` is enabled, the default format will depend on support level of SEA in the target Node.js version:
-   * - If ESM SEA is supported, the default format will be ESM.
-   * - If only CJS SEA is supported, the default format will be CJS.
+   * Defaults to ESM.
    */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
@@ -376,6 +375,16 @@ export interface UserConfig {
    * @default false
    */
   unbundle?: boolean
+
+  /**
+   * Specifies the root directory of input files, similar to TypeScript's `rootDir`.
+   * This determines the output directory structure.
+   *
+   * By default, the root is computed as the common base directory of all entry files.
+   *
+   * @see https://www.typescriptlang.org/tsconfig/#rootDir
+   */
+  root?: string
 
   /**
    * @deprecated Use `unbundle` instead.
@@ -443,7 +452,7 @@ export interface UserConfig {
   logLevel?: LogLevel
   /**
    * If true, fails the build on warnings.
-   * @default 'ci-only'
+   * @default false
    */
   failOnWarn?: boolean | CIOption
   /**
@@ -542,8 +551,14 @@ export interface UserConfig {
 
   /**
    * **[experimental]** CSS options.
+   * Requires `@tsdown/css` to be installed.
    */
-  css?: CssOptions
+  css?: import('@tsdown/css').CssOptions
+
+  /**
+   * @deprecated Use `css.inject` instead.
+   */
+  injectStyle?: boolean
 
   /**
    * @deprecated Alias for `copy`, will be removed in the future.
@@ -573,7 +588,7 @@ export interface UserConfig {
    * **[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).
    *
    * This will bundle the output into a single executable file using Node.js SEA.
-   * Note that this is only supported on Node.js 25.5.0 and later, and is not supported in Bun or Deno.
+   * Note that this is only supported on Node.js 25.7.0 and later, and is not supported in Bun or Deno.
    */
   exe?: WithEnabled<ExeOptions>
 
@@ -617,6 +632,7 @@ export type ResolvedConfig = Overwrite<
       | 'fromVite' // merged
       | 'publicDir' // deprecated
       | 'bundle' // deprecated
+      | 'injectStyle' // deprecated, merged to `css`
       | 'removeNodeProtocol' // deprecated
       | 'external' // deprecated, merged to `deps`
       | 'noExternal' // deprecated, merged to `deps`
@@ -643,10 +659,13 @@ export type ResolvedConfig = Overwrite<
     | 'banner'
     | 'footer'
     | 'checks'
+    | 'css'
   >,
   {
     /** Resolved entry map (after glob expansion) */
     entry: Record<string, string>
+    /** Original entry config before glob resolution (for watch mode re-globbing) */
+    rawEntry?: TsdownInputOption
     nameLabel: string | undefined
     format: NormalizedFormat
     target?: string[]
@@ -656,7 +675,8 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     deps: ResolvedDepsConfig
-    css: Required<CssOptions>
+    /** Resolved root directory of input files */
+    root: string
 
     dts: false | DtsOptions
     report: false | ReportOptions

@@ -6,12 +6,19 @@ const result = await versionBump({
   commit: true,
   push: true,
   tag: true,
+  confirm: true,
 })
 
 if (!result.newVersion.includes('beta')) {
   console.log('Pushing to release branch')
-  await x('git', ['update-ref', 'refs/heads/release', 'refs/heads/main'])
-  await x('git', ['push', 'origin', 'release'])
+  await x('git', ['update-ref', 'refs/heads/release', 'refs/heads/main'], {
+    nodeOptions: { stdio: 'inherit' },
+    throwOnError: true,
+  })
+  await x('git', ['push', 'origin', 'release'], {
+    nodeOptions: { stdio: 'inherit' },
+    throwOnError: true,
+  })
 }
 
 console.log(

@@ -9,79 +9,86 @@ overrides:
 
 catalogs:
   create:
-    '@clack/prompts': ^1.0.0
+    '@clack/prompts': ^1.1.0
     giget: ^3.1.2
   dev:
     '@publint/pack': ^0.1.4
-    '@sxzz/eslint-config': ^7.7.1
+    '@sxzz/eslint-config': ^7.8.3
     '@sxzz/prettier-config': ^2.3.1
     '@sxzz/test-utils': ^0.5.15
-    '@types/node': ^25.2.3
+    '@types/node': ^25.5.0
     '@types/picomatch': ^4.0.2
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260211.1
-    '@vitest/coverage-v8': ^4.0.18
-    '@vitest/ui': ^4.0.18
-    bumpp: ^10.4.1
-    dedent: ^1.7.1
-    eslint: ^9.39.2
-    lightningcss: ^1.31.1
-    memfs: ^4.56.10
+    '@typescript/native-preview': 7.0.0-dev.20260314.1
+    '@vitest/coverage-v8': ^4.1.0
+    '@vitest/ui': ^4.1.0
+    bumpp: ^11.0.0
+    dedent: ^1.7.2
+    eslint: ^10.0.3
+    memfs: ^4.56.11
     pkg-types: ^2.3.0
+    postcss: ^8.5.8
+    postcss-import: ^16.1.1
     prettier: ^3.8.1
-    rolldown-plugin-dts-snapshot: ^0.3.2
-    rolldown-plugin-require-cjs: ^0.3.3
+    rolldown-plugin-dts-snapshot: ^0.4.0
+    rolldown-plugin-require-cjs: ^0.4.0
+    sass: ^1.98.0
     typescript: ~5.9.3
     unplugin-ast: ^0.16.0
-    vitest: ^4.0.18
+    unplugin-raw: ^0.6.4
+    unplugin-vue: ^7.1.1
+    vitest: ^4.1.0
   docs:
     '@iconify-json/logos': ^1.2.10
-    '@shikijs/vitepress-twoslash': ^3.22.0
-    '@unocss/eslint-plugin': ^66.6.0
+    '@shikijs/vitepress-twoslash': ^4.0.2
+    '@unocss/eslint-plugin': ^66.6.6
     '@vueuse/core': ^14.2.1
-    oxc-minify: ^0.112.0
-    typedoc: ^0.28.16
+    oxc-minify: ^0.119.0
+    typedoc: ^0.28.17
     typedoc-plugin-markdown: ^4.10.0
     typedoc-vitepress-theme: ^1.1.2
-    unocss: ^66.6.0
-    vite: ^8.0.0-beta.13
+    unocss: ^66.6.6
+    vite: ^8.0.0
     vitepress: ^2.0.0-alpha.16
     vitepress-plugin-group-icons: ^1.7.1
     vitepress-plugin-llms: ^1.11.0
-    vue: ^3.5.28
-    vue-tsc: ^3.2.4
+    vue: ^3.5.30
+    vue-tsc: ^3.2.5
   migrate:
-    '@antfu/ni': ^28.2.0
-    '@ast-grep/napi': ^0.40.5
+    '@antfu/ni': ^29.0.0
+    '@ast-grep/napi': ^0.41.1
     consola: ^3.4.2
     diff: ^8.0.3
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.0.0-alpha.26
-    publint: ^0.3.17
-    unplugin-lightningcss: ^0.4.5
+    '@vitejs/devtools': ^0.1.0
+    publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
     ansis: ^4.2.0
-    cac: ^6.7.14
+    cac: ^7.0.0
     defu: ^6.1.4
     empathic: ^2.0.0
     hookable: ^6.0.1
     import-without-cache: ^0.2.5
     is-in-ci: ^2.0.0
+    lightningcss: ^1.32.0
     obug: ^2.1.1
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.3
-    rolldown: 1.0.0-rc.3
-    rolldown-plugin-dts: ^0.22.1
+    postcss-load-config: ^6.0.1
+    rolldown: 1.0.0-rc.9
+    rolldown-plugin-dts: ^0.22.5
     semver: ^7.7.4
-    tinyexec: ^1.0.2
+    tinyexec: ^1.0.4
     tinyglobby: ^0.2.15
     tree-kill: ^1.2.2
-    unconfig-core: ^7.4.2
-    unrun: ^0.2.27
+    unconfig-core: ^7.5.0
+    unrun: ^0.2.32
+
+allowBuilds:
+  '@parcel/watcher': false
 
 ignoreWorkspaceRootCheck: true
-
 trustPolicy: no-downgrade
-trustPolicyExclude: []
+trustPolicyIgnoreAfter: 10080 # 7 days

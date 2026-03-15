@@ -33,16 +33,16 @@ export default function greet() {
 
 ```js
 // dist/index.cjs
-function hello() {
+function greet() {
   console.log('Hello, world!')
 }
-module.exports = hello
+module.exports = greet
 ```
 
 **生成的声明文件：**
 
 ```ts
 // dist/index.d.cts
-declare function hello(): void
-export = hello
+declare function greet(): void
+export = greet
 ```

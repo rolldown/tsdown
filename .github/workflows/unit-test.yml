@@ -11,3 +11,6 @@ on:
 jobs:
   unit-test:
     uses: sxzz/workflows/.github/workflows/unit-test.yml@v1
+    with:
+      node-versions: '22,24,25'
+      os-matrix: '"ubuntu-latest", "windows-latest"'

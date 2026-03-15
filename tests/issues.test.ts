@@ -54,21 +54,6 @@ describe('issues', () => {
     expect(outputFiles.toSorted()).toEqual(['index.d.mts', 'index.mjs'])
   })
 
-  test('#216', async (context) => {
-    const { outputFiles } = await testBuild({
-      context,
-      files: {
-        'foo.css': `.foo { color: red; }`,
-        'bar.css': `@import './foo.css'; .bar { color: blue; }`,
-      },
-      options: {
-        entry: ['foo.css', 'bar.css'],
-      },
-    })
-    expect(outputFiles).toContain('bar.css')
-    expect(outputFiles).toContain('foo.css')
-  })
-
   test('#221', async (context) => {
     await testBuild({
       context,
@@ -192,5 +177,49 @@ describe('issues', () => {
     expect(fileMap['entry2.css']).toContain('class-entry2')
     expect(fileMap['entry1.css']).toContain('class-shared')
     expect(fileMap['entry2.css']).toContain('class-shared')
+  })
+
+  test('#800', async (context) => {
+    const Vue = (await import('unplugin-vue/rolldown')).default
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `export { default as MyButton } from './MyButton.vue'`,
+        'MyButton.vue': `<template><button class="btn">Click</button></template>\n<style>\n.btn { color: red; }\n</style>`,
+      },
+      options: {
+        plugins: [Vue({ isProduction: true })],
+        deps: { skipNodeModulesBundle: true },
+      },
+    })
+    expect(outputFiles).toContain('index.mjs')
+    expect(outputFiles).toContain('style.css')
+    expect(fileMap['style.css']).toContain('.btn')
+  })
+
+  test('#772', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import { randomUUID } from 'node:crypto'\nimport { resolve } from 'node:path'\nexport const id = randomUUID()\nexport const dir = resolve('.')`,
+        'crypto-polyfill.ts': `export function randomUUID() { return 'polyfill-uuid' }`,
+        'path-polyfill.ts': `export function resolve(...args: string[]) { return args.join('/') }`,
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: {
+            paths: { crypto: ['./crypto-polyfill'] },
+          },
+        }),
+      },
+      options: {
+        nodeProtocol: 'strip',
+        alias: { path: './path-polyfill' },
+        tsconfig: 'tsconfig.json',
+      },
+    })
+    expect(outputFiles).toContain('index.mjs')
+    expect(fileMap['index.mjs']).toContain('args.join')
+    expect(fileMap['index.mjs']).not.toMatch(/from ['"]path['"]/)
+    expect(fileMap['index.mjs']).toContain('polyfill-uuid')
+    expect(fileMap['index.mjs']).not.toMatch(/from ['"]crypto['"]/)
   })
 })

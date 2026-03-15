@@ -2,11 +2,12 @@
 
 This directory contains detailed reference documentation for the tsdown skill.
 
-## Created Files (31 total)
+## Created Files (35 total)
 
-### Core Guides (2)
+### Core Guides (3)
 - ✅ `guide-getting-started.md` - Installation, first bundle, CLI basics
 - ✅ `guide-migrate-from-tsup.md` - Migration guide from tsup
+- ✅ `guide-introduction.md` - Introduction and key features
 
 ### Configuration Options (20)
 - ✅ `option-config-file.md` - Config file formats, loaders, workspace
@@ -24,22 +25,30 @@ This directory contains detailed reference documentation for the tsdown skill.
 - ✅ `option-watch-mode.md` - Watch mode configuration
 - ✅ `option-shims.md` - ESM/CJS compatibility shims
 - ✅ `option-package-exports.md` - Auto-generate package.json exports
-- ✅ `option-css.md` - CSS handling (experimental, stub only)
+- ✅ `option-css.md` - CSS handling (experimental, full pipeline: preprocessors, Lightning CSS, PostCSS, code splitting)
 - ✅ `option-unbundle.md` - Preserve directory structure
 - ✅ `option-cjs-default.md` - CommonJS default export handling
 - ✅ `option-log-level.md` - Logging configuration
 - ✅ `option-lint.md` - Package validation (publint & attw)
 
-### Advanced Topics (5)
+### Executable (1)
+- ✅ `option-exe.md` - Standalone executable bundling (Node.js SEA)
+
+### Advanced Topics (6)
 - ✅ `advanced-plugins.md` - Rolldown, Rollup, Unplugin support
 - ✅ `advanced-hooks.md` - Lifecycle hooks system
 - ✅ `advanced-programmatic.md` - Node.js API usage
 - ✅ `advanced-rolldown-options.md` - Pass options to Rolldown
 - ✅ `advanced-ci.md` - CI environment detection and CI-aware options
 
-### Framework Recipes (3)
+### Advanced (continued)
+- ✅ `advanced-benchmark.md` - Performance benchmarks
+
+### Framework Recipes (5)
 - ✅ `recipe-react.md` - React library setup with JSX
 - ✅ `recipe-vue.md` - Vue library setup with SFC
+- ✅ `recipe-solid.md` - Solid.js library setup
+- ✅ `recipe-svelte.md` - Svelte component libraries
 - ✅ `recipe-wasm.md` - WASM module support
 
 ### Reference (1)
@@ -47,16 +56,7 @@ This directory contains detailed reference documentation for the tsdown skill.
 
 ## Coverage Status
 
-**Created:** 31 files (97% complete)
-**Remaining:** 3 files (low priority, not referenced from SKILL.md)
-
-### Remaining Files (Lower Priority)
-
-These files can be added as needed:
-
-1. **`guide-introduction.md`** - Covered in main SKILL.md
-2. **`guide-faq.md`** - FAQ (stub mode, etc.)
-3. **`advanced-benchmark.md`** - Performance data
+**Created:** 35 files (100% complete)
 
 ## Current Skill Features
 

@@ -1,7 +1,8 @@
-import { mkdtemp, readFile } from 'node:fs/promises'
+import { mkdtemp, readdir, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { formatWithOptions } from 'node:util'
+import { x } from 'tinyexec'
 import { fsRemove } from '../../utils/fs.ts'
 import { promiseWithResolvers } from '../../utils/general.ts'
 import { attw } from './attw.ts'
@@ -10,17 +11,17 @@ import { publint } from './publint.ts'
 import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
 import type { Buffer } from 'node:buffer'
+import type { DetectResult } from 'package-manager-detector'
 
-export type BundleByPkg = Record<
-  string, // pkgPath
-  {
+export interface BundleByPkg {
+  [pkgPath: string]: {
     promise: Promise<void>
     resolve: () => void
     count: number
     formats: Set<string>
     bundles: TsdownBundle[]
   }
->
+}
 
 export function initBundleByPkg(configs: ResolvedConfig[]): BundleByPkg {
   const map: BundleByPkg = {}
@@ -77,6 +78,7 @@ export async function bundleDone(
     }
 
     const chunks: ChunksByFormat = {}
+    const inlinedDeps = mergeInlinedDeps(ctx.bundles)
     for (const bundle of ctx.bundles) {
       if (!bundle.config.exports) continue
 
@@ -84,7 +86,7 @@ export async function bundleDone(
       chunks[bundle.config.format]!.push(...bundle.chunks)
     }
 
-    await writeExports(exportsConfigs[0], chunks)
+    await writeExports(exportsConfigs[0], chunks, inlinedDeps)
   }
 
   const publintConfigs = dedupeConfigs(configs, 'publint')
@@ -116,20 +118,14 @@ async function packTarball(
 ): Promise<Buffer<ArrayBuffer>> {
   const pkgDir = path.dirname(packageJsonPath)
   const destination = await mkdtemp(path.join(tmpdir(), 'tsdown-pack-'))
-  const [{ detect }, { pack }] = await Promise.all([
-    import('package-manager-detector/detect'),
-    import('@publint/pack'),
-  ])
+  const { detect } = await import('package-manager-detector/detect')
+
   try {
     const detected = await detect({ cwd: pkgDir })
     if (detected?.name === 'deno') {
       throw new Error(`Cannot pack tarball for Deno projects at ${pkgDir}`)
     }
-    const tarballPath = await pack(pkgDir, {
-      destination,
-      packageManager: detected?.name,
-      ignoreScripts: true,
-    })
+    const tarballPath = await pack(pkgDir, detected, destination, true)
     return readFile(tarballPath)
   } finally {
     await fsRemove(destination)
@@ -159,4 +155,106 @@ function dedupeConfigs<K extends 'publint' | 'attw' | 'exports'>(
     return [filtered[0]]
   }
   return results
+}
+
+function mergeInlinedDeps(
+  bundles: TsdownBundle[],
+): Record<string, string | string[]> | undefined {
+  const merged = new Map<string, Set<string>>()
+  for (const bundle of bundles) {
+    for (const [pkgName, versions] of bundle.inlinedDeps) {
+      if (!merged.has(pkgName)) {
+        merged.set(pkgName, new Set())
+      }
+      for (const v of versions) {
+        merged.get(pkgName)!.add(v)
+      }
+    }
+  }
+  if (!merged.size) return
+
+  const sorted = [...merged.entries()].toSorted(([a], [b]) =>
+    a.localeCompare(b),
+  )
+
+  const result: Record<string, string | string[]> = {}
+  for (const [pkgName, versions] of sorted) {
+    result[pkgName] =
+      versions.size === 1 ? [...versions][0] : [...versions].toSorted()
+  }
+  return result
+}
+
+// Copy from publint: https://github.com/publint/publint/blob/master/packages/pack/src/node/pack.js
+// MIT License
+async function pack(
+  dir: string,
+  pm: DetectResult | null,
+  destination: string,
+  ignoreScripts?: boolean,
+) {
+  pm ||= { name: 'npm', agent: 'npm' }
+
+  if (pm.name === 'deno') {
+    throw new Error(`Cannot pack tarball for Deno projects at ${dir}`)
+  }
+
+  const command: string = pm.name
+  const args: string[] = ['pack']
+
+  if (pm.name === 'bun') {
+    args.unshift('pm')
+  }
+
+  // Handle tarball output
+  const outFile = path.join(destination, 'package.tgz')
+  if (destination) {
+    switch (pm.agent) {
+      case 'yarn':
+        args.push('-f', outFile)
+        break
+      case 'yarn@berry':
+        args.push('-o', outFile)
+        break
+      case 'bun':
+        args.push('--destination', destination)
+        break
+      default:
+        args.push('--pack-destination', destination)
+        break
+    }
+  }
+
+  // Handle ignore-scripts
+  if (ignoreScripts) {
+    switch (pm.agent) {
+      case 'pnpm':
+        args.push('--config.ignore-scripts=true')
+        break
+      case 'yarn@berry':
+        // yarn berry does not support ignoring scripts
+        break
+      default:
+        args.push('--ignore-scripts')
+        break
+    }
+  }
+
+  const output = await x(command, args, {
+    nodeOptions: { cwd: dir },
+  })
+
+  // Get first file that ends with `.tgz` in the pack destination.
+  // Also double-check against stdout as usually the package manager also prints
+  // the tarball file name there, in case the directory has existing tarballs.
+  const tarballFile = await readdir(destination).then((files) =>
+    files.find((file) => file.endsWith('.tgz')),
+  )
+  if (!tarballFile) {
+    throw new Error(
+      `Failed to find packed tarball file in ${destination}. Command output:\n${JSON.stringify(output, null, 2)}`,
+    )
+  }
+
+  return path.join(destination, tarballFile)
 }

@@ -99,32 +99,8 @@ tsdown --target chrome100 --target node20.18
 > **注意：**
 > 两种装饰器实现差异很大，请确保您使用了正确的配置和语法以匹配所选的装饰器版本。
 
-# CSS 目标
+## CSS 目标
 
-`tsdown` 也可以将 CSS 特性降级以匹配您指定的浏览器目标。例如，如果目标是 `chrome108` 或更低版本，CSS 嵌套的 `&` 选择器将被展开为平铺结构。
+`tsdown` 也可以将 CSS 特性降级以匹配您指定的浏览器目标。默认使用顶层的 `target` 进行 CSS 降级，但你可以通过 `css.target` 单独覆盖，或设置 `css.target: false` 独立禁用 CSS 降级。
 
-要启用 CSS 降级，您需要手动安装 [`unplugin-lightningcss`](https://github.com/unplugin/unplugin-lightningcss)：
-
-::: code-group
-
-```sh [npm]
-npm install -D unplugin-lightningcss
-```
-
-```sh [pnpm]
-pnpm add -D unplugin-lightningcss
-```
-
-```sh [yarn]
-yarn add -D unplugin-lightningcss
-```
-
-```sh [bun]
-bun add -D unplugin-lightningcss
-```
-
-:::
-
-安装后，只需在配置或 CLI 选项中设置您的浏览器目标（例如 `target: 'chrome100'`），CSS 降级将会自动启用。
-
-有关浏览器目标和 CSS 兼容性的更多信息，请参阅 [Lightning CSS 文档](https://lightningcss.dev/)。
+关于 CSS 语法降级、压缩和 Lightning CSS 选项的完整说明，请参阅 [CSS 文档](/zh-CN/options/css.md#css-目标)。

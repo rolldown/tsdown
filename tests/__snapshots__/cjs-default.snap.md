@@ -1,14 +1,13 @@
 ## index.cjs
 
 ```cjs
-
 //#region index.ts
 function hello() {
 	console.log("Hello!");
 }
-
 //#endregion
 module.exports = hello;
+
 ```
 
 ## index.d.cts
@@ -35,7 +34,7 @@ export { hello as default };
 function hello() {
 	console.log("Hello!");
 }
-
 //#endregion
 export { hello as default };
+
 ```

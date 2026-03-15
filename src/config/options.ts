@@ -6,7 +6,6 @@ import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { resolveClean } from '../features/clean.ts'
-import { resolveCssOptions } from '../features/css/index.ts'
 import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { validateSea } from '../features/exe.ts'
@@ -51,7 +50,7 @@ export async function resolveUserConfig(
     plugins = [],
     clean = true,
     logLevel = 'info',
-    failOnWarn = 'ci-only',
+    failOnWarn = false,
     customLogger,
     treeshake = true,
     platform = 'node',
@@ -81,11 +80,13 @@ export async function resolveUserConfig(
     exports = false,
     bundle,
     unbundle = typeof bundle === 'boolean' ? !bundle : false,
+    root,
     removeNodeProtocol,
     nodeProtocol,
     cjsDefault = true,
     globImport = true,
     css,
+    injectStyle,
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
@@ -133,7 +134,15 @@ export async function resolveUserConfig(
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
 
-  const resolvedEntry = await resolveEntry(logger, entry, cwd, color, nameLabel)
+  const rawEntry = entry
+  const [resolvedEntry, resolvedRoot] = await resolveEntry(
+    logger,
+    entry,
+    cwd,
+    color,
+    nameLabel,
+    root ? path.resolve(cwd, root) : undefined,
+  )
 
   target = resolveTarget(logger, target, color, pkg, nameLabel)
   tsconfig = await resolveTsconfig(logger, tsconfig, cwd, color, nameLabel)
@@ -160,6 +169,19 @@ export async function resolveUserConfig(
     }
     if (attw) {
       logger.warn(nameLabel, 'attw is enabled but package.json is not found')
+    }
+  }
+
+  if (injectStyle != null) {
+    if (css?.inject == null) {
+      logger.warn(
+        `${blue`injectStyle`} is deprecated. Use ${blue`css.inject`} instead.`,
+      )
+      css = { ...css, inject: injectStyle }
+    } else {
+      throw new TypeError(
+        '`injectStyle` is deprecated. Cannot be used with `css.inject`',
+      )
     }
   }
 
@@ -256,7 +278,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     copy: publicDir || copy,
-    css: resolveCssOptions(css),
+    css,
     cwd,
     deps: depsConfig,
     devtools,
@@ -278,7 +300,9 @@ export async function resolveUserConfig(
     platform,
     plugins,
     publint,
+    rawEntry,
     report,
+    root: resolvedRoot,
     shims,
     sourcemap,
     target,
@@ -297,7 +321,7 @@ export async function resolveUserConfig(
   const objectFormat = typeof format === 'object' && !Array.isArray(format)
   const formats = objectFormat
     ? (Object.keys(format) as Format[])
-    : resolveComma(toArray<Format>(format, exe ? 'cjs' : 'es'))
+    : resolveComma(toArray<Format>(format, 'esm'))
 
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0

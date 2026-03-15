@@ -1,7 +1,7 @@
 {
   "name": "create-tsdown",
   "type": "module",
-  "version": "0.20.3",
+  "version": "0.21.2",
   "description": "Create a new tsdown project",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -16,8 +16,14 @@
     "url": "https://github.com/rolldown/tsdown/issues"
   },
   "exports": {
-    ".": "./dist/index.mjs",
-    "./run": "./dist/run.mjs",
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./run": {
+      "dev": "./src/run.ts",
+      "default": "./dist/run.mjs"
+    },
     "./package.json": "./package.json"
   },
   "types": "./dist/index.d.mts",
@@ -36,14 +42,19 @@
     "dist"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./run": "./dist/run.mjs",
+      "./package.json": "./package.json"
+    }
   },
   "engines": {
     "node": ">=20.19.0"
   },
   "scripts": {
     "dev": "node ./src/run.ts",
-    "build": "unrun ../../src/run.ts -c ../../tsdown.config.ts -F ."
+    "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "dependencies": {
     "@clack/prompts": "catalog:create",

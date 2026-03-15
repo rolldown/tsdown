@@ -7,5 +7,6 @@ export * from "unconfig-core";
 ## index.mjs
 
 ```mjs
-export {  };
+export {};
+
 ```

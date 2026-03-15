@@ -12,7 +12,7 @@ export { mod };
 ```mjs
 //#region mod.ts
 const mod = 42;
-
 //#endregion
 export { mod };
+
 ```

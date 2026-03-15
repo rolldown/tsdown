@@ -63,12 +63,12 @@ bun add -D rollup-plugin-svelte svelte svelte-preprocess
 
 综合实践与官方建议（参见 SvelteKit 文档「[Packaging](https://svelte.dev/docs/kit/packaging)」），不推荐将 Svelte 组件库预编译为 JS 分发。推荐直接分发 `.svelte` 源码，由使用者的 Svelte 工具链（如 Vite + `@sveltejs/vite-plugin-svelte`）在其项目内编译。
 
-不推荐“编译为 JS 后分发”的主要原因：
+不推荐「编译为 JS 后分发」的主要原因：
 
 - 版本兼容性：预编译 JS 绑定到特定的编译器与 `svelte/internal` 版本，和使用者项目版本不一致时容易引发运行时或 SSR/Hydration 问题。
 - SSR/Hydration 一致性：库侧的编译选项（`generate`、`hydratable`、`dev` 等）若与应用侧不一致，易出现复水不匹配。
 - 工具链优化与体验：源码形态能获得更好的 HMR、警告定位、样式处理与摇树优化；纯 JS 产物可能会丢失这些能力。
-- 维护成本：Svelte 升级时，不需要频繁重发“已锁死编译器版本”的 JS 产物。
+- 维护成本：Svelte 升级时，不需要频繁重发「已锁死编译器版本」的 JS 产物。
 
 何时可以考虑 JS 分发（例外）：
 

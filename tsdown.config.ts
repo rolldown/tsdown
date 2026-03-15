@@ -7,10 +7,10 @@ import { defineConfig } from './src/config.ts'
 
 export default defineConfig([
   {
-    entry: ['./src/{index,run,plugins,config}.ts'],
+    entry: ['./src/{index,run,plugins,config,internal}.ts'],
     name: 'tsdown',
     deps: {
-      onlyAllowBundle: [
+      onlyBundle: [
         '@publint/pack',
         'is-in-ci',
         'package-manager-detector',
@@ -38,6 +38,7 @@ export default defineConfig([
       profile: 'esm-only',
     },
     exports: {
+      devExports: 'dev',
       customExports: {
         './client': './client.d.ts',
       },
@@ -58,7 +59,7 @@ export default defineConfig([
     workspace: {
       include: ['packages/*'],
     },
-    deps: { onlyAllowBundle: [] },
+    deps: { onlyBundle: [] },
     failOnWarn: 'ci-only',
     publint: 'ci-only',
     attw: {
@@ -68,6 +69,8 @@ export default defineConfig([
     treeshake: {
       moduleSideEffects: false,
     },
-    exports: true,
+    exports: {
+      devExports: 'dev',
+    },
   },
 ])

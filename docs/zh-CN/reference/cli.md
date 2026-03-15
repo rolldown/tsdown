@@ -115,9 +115,11 @@ tsdown --tsconfig tsconfig.build.json
 
 ### ~~`--silent`~~
 
-**已废弃：** 请使用 `--log-level error` 以获得更好的兼容性。
+::: warning 已废弃
+请使用 `--log-level error` 代替。
+:::
 
-在构建过程中屏蔽非错误日志，仅显示错误信息，便于专注于关键问题。
+在构建过程中屏蔽非错误日志，仅显示错误信息。
 
 ## `-d, --out-dir <dir>`
 
@@ -162,6 +164,14 @@ tsdown --tsconfig tsconfig.build.json
 ## `--publint`
 
 启用 `publint` 以验证您的包是否适合发布。此功能检查包配置中的常见问题，确保符合最佳实践。
+
+另请参阅 [包验证](../options/lint.md)。
+
+## `--attw`
+
+启用 [Are the types wrong?](https://github.com/arethetypeswrong/arethetypeswrong.github.io) 集成，检查包的 TypeScript 类型兼容性。
+
+另请参阅 [包验证](../options/lint.md)。
 
 ## `--unused`
 
@@ -243,21 +253,45 @@ tsdown --copy public
 
 ## `--public-dir <dir>`
 
+::: warning 已废弃
+请使用 `--copy` 代替。
+:::
+
 `--copy` 的别名。
-**已废弃：** 为了更清晰和一致，建议使用 `--copy` 选项。
 
 ## `--exe`
 
-**[实验性]** 使用 Node.js SEA（单可执行应用）将输出打包为可执行文件。
+**[实验性]** 使用 [Node.js 单个可执行程序](https://nodejs.org/api/single-executable-applications.html)将输出打包为独立可执行文件。
 
-此选项会使用 Node.js SEA 将输出打包为单个可执行文件。需要 Node.js 25.5.0 或更高版本，不支持 Bun 和 Deno 环境。
+此选项会将输出打包为单个可执行文件。需要 Node.js 25.7.0 或更高版本，不支持 Bun 和 Deno 环境。通过 `@tsdown/exe` 包支持跨平台构建。
 
 启用 `exe` 时：
 
-- 默认输出格式从 `esm` 变更为 `cjs`（除非支持 ESM SEA）。
 - 默认禁用声明文件生成（`dts`）。
 - 禁用代码分割。
 - 仅支持单入口。
+
+另请参阅 [可执行文件](../options/exe.md)。
+
+## `-W, --workspace [dir]`
+
+启用工作区模式，用于在 monorepo 中构建多个包。可选指定工作区根目录。
+
+## `-F, --filter <pattern>`
+
+按工作目录或名称过滤配置。支持字符串匹配和正则表达式（如 `/pkg-name$/` 或 `pkg-name`）。
+
+## `--unbundle`
+
+启用非打包（bundleless）模式。每个源文件单独编译，输出目录保留源代码的目录结构。
+
+另请参阅 [非打包模式](../options/unbundle.md)。
+
+## `--fail-on-warn`
+
+遇到警告时使构建失败。默认启用。
+
+另请参阅 [CI 环境](../advanced/ci.md)。
 
 ## `--exports`
 

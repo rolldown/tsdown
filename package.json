@@ -1,8 +1,8 @@
 {
   "name": "tsdown",
   "type": "module",
-  "version": "0.20.3",
-  "packageManager": "pnpm@10.29.2",
+  "version": "0.21.2",
+  "packageManager": "pnpm@10.32.1",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -16,10 +16,26 @@
     "url": "https://github.com/rolldown/tsdown/issues"
   },
   "exports": {
-    ".": "./dist/index.mjs",
-    "./config": "./dist/config.mjs",
-    "./plugins": "./dist/plugins.mjs",
-    "./run": "./dist/run.mjs",
+    ".": {
+      "dev": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    },
+    "./config": {
+      "dev": "./src/config.ts",
+      "default": "./dist/config.mjs"
+    },
+    "./internal": {
+      "dev": "./src/internal.ts",
+      "default": "./dist/internal.mjs"
+    },
+    "./plugins": {
+      "dev": "./src/plugins.ts",
+      "default": "./dist/plugins.mjs"
+    },
+    "./run": {
+      "dev": "./src/run.ts",
+      "default": "./dist/run.mjs"
+    },
     "./package.json": "./package.json",
     "./client": "./client.d.ts"
   },
@@ -41,7 +57,16 @@
     "esm-shims.js"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./config": "./dist/config.mjs",
+      "./internal": "./dist/internal.mjs",
+      "./plugins": "./dist/plugins.mjs",
+      "./run": "./dist/run.mjs",
+      "./package.json": "./package.json",
+      "./client": "./client.d.ts"
+    }
   },
   "engines": {
     "node": ">=20.19.0"
@@ -49,8 +74,8 @@
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
     "lint:fix": "pnpm run lint --fix",
-    "build": "unrun ./src/run.ts",
-    "dev": "node ./src/run.ts",
+    "build": "node -C dev ./src/run.ts",
+    "dev": "pnpm run build",
     "test": "vitest",
     "typecheck": "tsgo --noEmit",
     "format": "prettier --cache --write .",
@@ -62,14 +87,21 @@
   },
   "peerDependencies": {
     "@arethetypeswrong/core": "^0.18.1",
+    "@tsdown/css": "workspace:*",
+    "@tsdown/exe": "workspace:*",
     "@vitejs/devtools": "*",
     "publint": "^0.3.0",
     "typescript": "^5.0.0",
-    "unplugin-lightningcss": "^0.4.0",
     "unplugin-unused": "^0.5.0"
   },
   "peerDependenciesMeta": {
     "@arethetypeswrong/core": {
+      "optional": true
+    },
+    "@tsdown/css": {
+      "optional": true
+    },
+    "@tsdown/exe": {
       "optional": true
     },
     "@vitejs/devtools": {
@@ -79,9 +111,6 @@
       "optional": true
     },
     "typescript": {
-      "optional": true
-    },
-    "unplugin-lightningcss": {
       "optional": true
     },
     "unplugin-unused": {
@@ -106,12 +135,19 @@
     "unconfig-core": "catalog:prod",
     "unrun": "catalog:prod"
   },
+  "inlinedDependencies": {
+    "is-in-ci": "2.0.0",
+    "package-manager-detector": "1.6.0",
+    "pkg-types": "2.3.0"
+  },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
     "@publint/pack": "catalog:dev",
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",
+    "@tsdown/css": "workspace:*",
+    "@tsdown/exe": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/picomatch": "catalog:dev",
     "@types/semver": "catalog:dev",
@@ -125,21 +161,25 @@
     "dedent": "catalog:dev",
     "eslint": "catalog:dev",
     "is-in-ci": "catalog:prod",
-    "lightningcss": "catalog:dev",
     "memfs": "catalog:dev",
     "package-manager-detector": "catalog:prod",
     "pkg-types": "catalog:dev",
+    "postcss": "catalog:dev",
+    "postcss-import": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",
     "rolldown-plugin-dts-snapshot": "catalog:dev",
     "rolldown-plugin-require-cjs": "catalog:dev",
+    "sass": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
-    "unplugin-lightningcss": "catalog:peer",
+    "unplugin-raw": "catalog:dev",
     "unplugin-unused": "catalog:peer",
+    "unplugin-vue": "catalog:dev",
     "vite": "catalog:docs",
-    "vitest": "catalog:dev"
+    "vitest": "catalog:dev",
+    "vue": "catalog:docs"
   },
   "prettier": "@sxzz/prettier-config"
 }

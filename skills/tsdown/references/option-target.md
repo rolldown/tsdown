@@ -193,12 +193,25 @@ export default defineConfig({
 })
 ```
 
+## CSS Targeting
+
+When `@tsdown/css` is installed and a browser target is set, CSS syntax is also lowered automatically:
+
+```ts
+export default defineConfig({
+  target: 'chrome108',  // CSS nesting will be flattened
+})
+```
+
+See [CSS](option-css.md) for full CSS configuration options.
+
 ## Tips
 
 1. **Let tsdown auto-detect** from package.json when possible
 2. **Use `false`** for modern-only builds
 3. **Specify multiple targets** for broader compatibility
 4. **Use legacy decorators** with `experimentalDecorators`
+5. **Install `@tsdown/css`** for CSS support and syntax lowering
 6. **Test output** in target environments
 
 ## Related Options
@@ -206,3 +219,4 @@ export default defineConfig({
 - [Platform](option-platform.md) - Runtime environment
 - [Output Format](option-output-format.md) - Module formats
 - [Minification](option-minification.md) - Code optimization
+- [CSS](option-css.md) - CSS handling and preprocessors

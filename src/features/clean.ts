@@ -19,6 +19,11 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
       config.clean.push('node_modules/.rolldown')
     }
 
+    if (config.exe) {
+      const exeOutDir = path.resolve(config.cwd, config.exe.outDir || 'build')
+      config.clean.push(exeOutDir)
+    }
+
     if (!config.clean.length) continue
     const files = await glob(config.clean, {
       cwd: config.cwd,

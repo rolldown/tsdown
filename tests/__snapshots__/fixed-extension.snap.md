@@ -1,12 +1,11 @@
 ## index.cjs
 
 ```cjs
-
 //#region index.ts
 var fixed_extension_default = 10;
-
 //#endregion
 module.exports = fixed_extension_default;
+
 ```
 
 ## index.d.cts
@@ -31,7 +30,7 @@ export { _default as default };
 ```mjs
 //#region index.ts
 var fixed_extension_default = 10;
-
 //#endregion
 export { fixed_extension_default as default };
+
 ```

@@ -2,7 +2,6 @@ import path from 'node:path'
 import process from 'node:process'
 import { describe, test } from 'vitest'
 import { globalLogger } from '../../utils/logger.ts'
-import { resolveCssOptions } from '../css/index.ts'
 import { generateExports as _generateExports } from './exports.ts'
 import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
@@ -12,7 +11,7 @@ const FAKE_PACKAGE_JSON = {
   name: 'fake-pkg',
   packageJsonPath: path.join(cwd, 'package.json'),
 }
-const DEFAULT_CSS_OPTIONS = resolveCssOptions()
+const DEFAULT_CSS_OPTIONS = {}
 
 function generateExports(
   chunks: ChunksByFormat = {},
@@ -37,6 +36,7 @@ describe('generateExports', () => {
         "exports": {
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -58,6 +58,7 @@ describe('generateExports', () => {
           ".": "./main.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -77,6 +78,7 @@ describe('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -96,6 +98,7 @@ describe('generateExports', () => {
           "./foo": "./foo/index.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -115,6 +118,7 @@ describe('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -137,6 +141,7 @@ describe('generateExports', () => {
           },
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": "./foo.cjs",
         "module": "./foo.js",
         "publishExports": undefined,
@@ -159,6 +164,7 @@ describe('generateExports', () => {
           },
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": "./foo.cjs",
         "module": "./foo.js",
         "publishExports": undefined,
@@ -181,6 +187,7 @@ describe('generateExports', () => {
           },
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.mjs",
         "publishExports": undefined,
@@ -233,6 +240,7 @@ describe('generateExports', () => {
           ".": "./SRC/index.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
         "publishExports": {
@@ -327,6 +335,7 @@ describe('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -352,6 +361,7 @@ describe('generateExports', () => {
           "./foo": "./foo.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -373,6 +383,7 @@ describe('generateExports', () => {
         "exports": {
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -397,6 +408,7 @@ describe('generateExports', () => {
           },
           "./*": "./*",
         },
+        "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
         "publishExports": undefined,
@@ -421,6 +433,7 @@ describe('generateExports', () => {
           "./*": "./*",
           "./utils": "./utils.js",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -447,6 +460,7 @@ describe('generateExports', () => {
           ".": "./index.js",
           "./*": "./*",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -473,6 +487,7 @@ describe('generateExports', () => {
           ".": "./index.js",
           "./*": "./*",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -500,6 +515,7 @@ describe('generateExports', () => {
           "./foo": "./foo/index.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -546,6 +562,7 @@ describe('generateExports', () => {
           },
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
         "publishExports": undefined,
@@ -559,7 +576,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('style.css')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -569,6 +586,7 @@ describe('generateExports', () => {
           "./package.json": "./package.json",
           "./style.css": "./style.css",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -584,7 +602,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -593,6 +611,7 @@ describe('generateExports', () => {
           ".": "./index.js",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -606,7 +625,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('custom.css')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false, fileName: 'custom.css' }),
+        css: { splitting: false, fileName: 'custom.css' },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -616,6 +635,7 @@ describe('generateExports', () => {
           "./custom.css": "./custom.css",
           "./package.json": "./package.json",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -629,7 +649,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('style.css', 'dist')] },
       {
         exports: {},
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -639,6 +659,7 @@ describe('generateExports', () => {
           "./package.json": "./package.json",
           "./style.css": "./dist/style.css",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": undefined,
@@ -654,7 +675,7 @@ describe('generateExports', () => {
         exports: {
           devExports: 'dev',
         },
-        css: resolveCssOptions({ splitting: false }),
+        css: { splitting: false },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -667,6 +688,7 @@ describe('generateExports', () => {
           "./package.json": "./package.json",
           "./style.css": "./style.css",
         },
+        "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
         "publishExports": {
