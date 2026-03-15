@@ -38,17 +38,41 @@ export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
 
 type ResolvedCopyEntry = CopyEntry & { from: string; to: string }
 
+export async function copy(options: ResolvedConfig): Promise<void> {
+  if (!options.copy) return
+
+  const resolved = await resolveCopyEntries(options)
+
+  if (!resolved.length) {
+    options.logger.warn(options.nameLabel, `No files matched for copying.`)
+    return
+  }
+
+  await Promise.all(
+    resolved.map(({ from, to, verbose }) => {
+      if (verbose) {
+        options.logger.info(
+          options.nameLabel,
+          `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
+            options.cwd,
+            to,
+          )}`,
+        )
+      }
+      return fsCopy(from, to)
+    }),
+  )
+}
+
 export async function resolveCopyEntries(
   options: ResolvedConfig,
 ): Promise<ResolvedCopyEntry[]> {
-  if (!options.copy) return []
-
   const copy = toArray(
     typeof options.copy === 'function'
       ? await options.copy(options)
       : options.copy,
   )
-  if (!copy.length) return
+  if (!copy.length) return []
 
   const resolved = (
     await Promise.all(
@@ -79,32 +103,6 @@ export async function resolveCopyEntries(
   ).flat()
 
   return resolved
-}
-
-export async function copy(options: ResolvedConfig): Promise<void> {
-  if (!options.copy) return
-
-  const resolved = await resolveCopyEntries(options)
-
-  if (!resolved.length) {
-    options.logger.warn(options.nameLabel, `No files matched for copying.`)
-    return
-  }
-
-  await Promise.all(
-    resolved.map(({ from, to, verbose }) => {
-      if (verbose) {
-        options.logger.info(
-          options.nameLabel,
-          `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
-            options.cwd,
-            to,
-          )}`,
-        )
-      }
-      return fsCopy(from, to)
-    }),
-  )
 }
 
 // https://github.com/vladshcherbin/rollup-plugin-copy/blob/master/src/index.js
