@@ -21,6 +21,23 @@ describe('unbundle', () => {
     })
   })
 
+  test('object entry', async (context) => {
+    const files = {
+      'src/index.ts': `export { sub } from "./sub";`,
+      'src/sub.ts': `export const sub = "Hello, World!" as const`,
+    }
+    await testBuild({
+      context,
+      files,
+      options: {
+        entry: {
+          index: 'src/index.ts',
+        },
+        unbundle: true,
+      },
+    })
+  })
+
   test('base dir', async (context) => {
     const files = {
       'src/index.ts': `
