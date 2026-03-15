@@ -36,15 +36,37 @@ export interface CopyEntry {
 export type CopyOptions = Arrayable<string | CopyEntry>
 export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>
 
+type ResolvedCopyEntry = CopyEntry & { from: string; to: string }
+
 export async function copy(options: ResolvedConfig): Promise<void> {
   if (!options.copy) return
 
+  const resolved = await resolveCopyEntries(options)
+  await Promise.all(
+    resolved.map(({ from, to, verbose }) => {
+      if (verbose) {
+        options.logger.info(
+          options.nameLabel,
+          `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
+            options.cwd,
+            to,
+          )}`,
+        )
+      }
+      return fsCopy(from, to)
+    }),
+  )
+}
+
+export async function resolveCopyEntries(
+  options: ResolvedConfig,
+): Promise<ResolvedCopyEntry[]> {
   const copy = toArray(
     typeof options.copy === 'function'
       ? await options.copy(options)
       : options.copy,
   )
-  if (!copy.length) return
+  if (!copy.length) return []
 
   const resolved = (
     await Promise.all(
@@ -63,52 +85,44 @@ export async function copy(options: ResolvedConfig): Promise<void> {
           })
         }
 
-        return from.map((file) => resolveCopyEntry({ ...entry, from: file }))
+        return from.map((file) =>
+          resolveCopyEntry(
+            { ...entry, from: file },
+            options.cwd,
+            options.outDir,
+          ),
+        )
       }),
     )
   ).flat()
 
   if (!resolved.length) {
     options.logger.warn(options.nameLabel, `No files matched for copying.`)
-    return
   }
 
-  await Promise.all(
-    resolved.map(({ from, to, verbose }) => {
-      if (verbose) {
-        options.logger.info(
-          options.nameLabel,
-          `Copying files from ${path.relative(options.cwd, from)} to ${path.relative(
-            options.cwd,
-            to,
-          )}`,
-        )
-      }
-      return fsCopy(from, to)
-    }),
+  return resolved
+}
+
+// https://github.com/vladshcherbin/rollup-plugin-copy/blob/master/src/index.js
+// MIT License
+function resolveCopyEntry(
+  entry: CopyEntry & { from: string },
+  cwd: string,
+  outDir: string,
+): CopyEntry & { from: string; to: string } {
+  const { flatten = true, rename } = entry
+  const from = path.resolve(cwd, entry.from)
+  const to = entry.to ? path.resolve(cwd, entry.to) : outDir
+
+  const { base, dir } = path.parse(path.relative(cwd, from))
+  const destFolder =
+    flatten || (!flatten && !dir) ? to : dir.replace(dir.split(path.sep)[0], to)
+  const dest = path.join(
+    destFolder,
+    rename ? renameTarget(base, rename, from) : base,
   )
 
-  // https://github.com/vladshcherbin/rollup-plugin-copy/blob/master/src/index.js
-  // MIT License
-  function resolveCopyEntry(
-    entry: CopyEntry & { from: string },
-  ): CopyEntry & { from: string; to: string } {
-    const { flatten = true, rename } = entry
-    const from = path.resolve(options.cwd, entry.from)
-    const to = entry.to ? path.resolve(options.cwd, entry.to) : options.outDir
-
-    const { base, dir } = path.parse(path.relative(options.cwd, from))
-    const destFolder =
-      flatten || (!flatten && !dir)
-        ? to
-        : dir.replace(dir.split(path.sep)[0], to)
-    const dest = path.join(
-      destFolder,
-      rename ? renameTarget(base, rename, from) : base,
-    )
-
-    return { ...entry, from, to: dest }
-  }
+  return { ...entry, from, to: dest }
 }
 
 function renameTarget(
