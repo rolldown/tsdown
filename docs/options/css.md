@@ -460,6 +460,22 @@ dist/
   async-abc123.css ← CSS from async chunk
 ```
 
+## PostCSS Optional Peer Dependencies
+
+When using `transformer: 'postcss'`, the following packages may need to be installed depending on the features you use:
+
+| Package                                                             | Purpose                                  | Required When                          |
+| ------------------------------------------------------------------- | ---------------------------------------- | -------------------------------------- |
+| [`postcss`](https://github.com/postcss/postcss)                     | Core PostCSS engine                      | Always (with `transformer: 'postcss'`) |
+| [`postcss-import`](https://github.com/postcss/postcss-import)       | Resolve and inline `@import` statements  | CSS files use `@import`                |
+| [`postcss-modules`](https://github.com/css-modules/postcss-modules) | CSS modules support (scoped class names) | Using `.module.css` files              |
+
+```bash
+npm install -D postcss postcss-import postcss-modules
+```
+
+All three are declared as optional peer dependencies of `@tsdown/css` and only loaded when needed.
+
 ## Options Reference
 
 | Option                    | Type                          | Default          | Description                                                 |

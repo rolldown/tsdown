@@ -264,6 +264,22 @@ export default defineConfig({
 })
 ```
 
+## PostCSS Optional Peer Dependencies
+
+When using `transformer: 'postcss'`, install these as needed:
+
+| Package | Purpose | Required When |
+|---------|---------|---------------|
+| `postcss` | Core PostCSS engine | Always (with `transformer: 'postcss'`) |
+| `postcss-import` | Resolve/inline `@import` | CSS uses `@import` |
+| `postcss-modules` | CSS modules (scoped classes) | Using `.module.css` files |
+
+```bash
+npm install -D postcss postcss-import postcss-modules
+```
+
+All declared as optional peer dependencies of `@tsdown/css`.
+
 ## Options Reference
 
 | Option | Type | Default | Description |

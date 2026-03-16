@@ -460,6 +460,22 @@ dist/
   async-abc123.css ← 异步 chunk 的 CSS
 ```
 
+## PostCSS 可选依赖
+
+使用 `transformer: 'postcss'` 时，根据使用的功能可能需要安装以下包：
+
+| 包                                                                  | 用途                           | 何时需要                                     |
+| ------------------------------------------------------------------- | ------------------------------ | -------------------------------------------- |
+| [`postcss`](https://github.com/postcss/postcss)                     | PostCSS 核心引擎               | 始终需要（使用 `transformer: 'postcss'` 时） |
+| [`postcss-import`](https://github.com/postcss/postcss-import)       | 解析和内联 `@import` 语句      | CSS 文件使用 `@import` 时                    |
+| [`postcss-modules`](https://github.com/css-modules/postcss-modules) | CSS modules 支持（作用域类名） | 使用 `.module.css` 文件时                    |
+
+```bash
+npm install -D postcss postcss-import postcss-modules
+```
+
+这三个包都声明为 `@tsdown/css` 的可选 peer dependencies，仅在需要时加载。
+
 ## 选项参考
 
 | 选项                      | 类型                          | 默认值           | 描述                                          |
