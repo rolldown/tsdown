@@ -328,6 +328,94 @@ export function greet() {
 
 这对于组件库非常有用，可以确保用户导入组件时自动包含对应的 CSS。
 
+## CSS Modules
+
+扩展名为 `.module.css` 的文件（以及预处理器变体如 `.module.scss`、`.module.less` 等）会被视为 [CSS Modules](https://github.com/css-modules/css-modules)。类名会自动添加作用域，并作为 JavaScript 对象导出：
+
+```ts
+// src/index.ts
+import styles from './app.module.css'
+
+console.log(styles.title) // "scoped_title_hash"
+```
+
+```css
+/* app.module.css */
+.title {
+  color: red;
+}
+.content {
+  font-size: 14px;
+}
+```
+
+CSS 会以作用域化的类名输出，JS 输出导出原始类名到作用域化类名的映射。
+
+### 配置
+
+通过 `css.modules` 配置 CSS modules 行为：
+
+```ts
+export default defineConfig({
+  css: {
+    modules: {
+      // 作用域行为：'local'（默认）或 'global'
+      scopeBehaviour: 'local',
+
+      // 作用域类名模式（Lightning CSS 模式语法）
+      generateScopedName: '[hash]_[local]',
+
+      // JS 导出中的类名转换约定
+      localsConvention: 'camelCase',
+    },
+  },
+})
+```
+
+设置 `css.modules: false` 可完全禁用 CSS modules——`.module.css` 文件将被视为普通 CSS。
+
+### `localsConvention`
+
+控制类名在 JavaScript 中的导出方式：
+
+| 值                | 输入      | 导出                |
+| ----------------- | --------- | ------------------- |
+| _（未设置）_      | `foo-bar` | `foo-bar`           |
+| `'camelCase'`     | `foo-bar` | `foo-bar`、`fooBar` |
+| `'camelCaseOnly'` | `foo-bar` | `fooBar`            |
+| `'dashes'`        | `foo-bar` | `foo-bar`、`fooBar` |
+| `'dashesOnly'`    | `foo-bar` | `fooBar`            |
+
+### `generateScopedName`
+
+使用 `transformer: 'lightningcss'`（默认）时，接受 Lightning CSS [模式字符串](https://lightningcss.dev/css-modules.html#custom-naming-conventions)（如 `'[hash]_[local]'`）。
+
+使用 `transformer: 'postcss'` 时，还支持函数形式：
+
+```ts
+export default defineConfig({
+  css: {
+    transformer: 'postcss',
+    modules: {
+      generateScopedName: (name, filename, css) => {
+        return `my-lib_${name}`
+      },
+    },
+  },
+})
+```
+
+> [!NOTE]
+> 函数形式的 `generateScopedName` 仅在 `transformer: 'postcss'` 时支持。Lightning CSS 转换器仅支持字符串模式。
+
+### 可选依赖
+
+使用 `transformer: 'postcss'` 配合 CSS modules 时，需安装 [`postcss-modules`](https://github.com/css-modules/postcss-modules)：
+
+```bash
+npm install -D postcss postcss-modules
+```
+
 ## CSS 代码分割
 
 ### 合并模式（默认）
@@ -380,6 +468,7 @@ dist/
 | `css.splitting`           | `boolean`                     | `false`          | 启用按 chunk 的 CSS 代码分割                  |
 | `css.fileName`            | `string`                      | `'style.css'`    | 合并 CSS 的文件名（当 `splitting: false` 时） |
 | `css.minify`              | `boolean`                     | `false`          | 启用 CSS 压缩                                 |
+| `css.modules`             | `object \| false`             | `{}`             | CSS modules 配置，或 `false` 禁用             |
 | `css.target`              | `string \| string[] \| false` | _继承 `target`_  | CSS 专用语法降级目标                          |
 | `css.postcss`             | `string \| object`            | —                | PostCSS 配置路径或内联选项                    |
 | `css.preprocessorOptions` | `object`                      | —                | CSS 预处理器选项                              |

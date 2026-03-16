@@ -328,6 +328,94 @@ export function greet() {
 
 This is useful for component libraries where you want CSS to be automatically included when users import your components.
 
+## CSS Modules
+
+Files with the `.module.css` extension (and preprocessor variants like `.module.scss`, `.module.less`, etc.) are treated as [CSS modules](https://github.com/css-modules/css-modules). Class names are automatically scoped and exported as a JavaScript object:
+
+```ts
+// src/index.ts
+import styles from './app.module.css'
+
+console.log(styles.title) // "scoped_title_hash"
+```
+
+```css
+/* app.module.css */
+.title {
+  color: red;
+}
+.content {
+  font-size: 14px;
+}
+```
+
+The CSS is emitted with scoped class names, and the JS output exports the mapping from original to scoped names.
+
+### Configuration
+
+Configure CSS modules behavior via `css.modules`:
+
+```ts
+export default defineConfig({
+  css: {
+    modules: {
+      // Scoping behavior: 'local' (default) or 'global'
+      scopeBehaviour: 'local',
+
+      // Pattern for scoped class names (Lightning CSS pattern syntax)
+      generateScopedName: '[hash]_[local]',
+
+      // Transform class name convention in JS exports
+      localsConvention: 'camelCase',
+    },
+  },
+})
+```
+
+Set `css.modules: false` to disable CSS modules entirely — `.module.css` files will be treated as regular CSS.
+
+### `localsConvention`
+
+Controls how class names are exported in JavaScript:
+
+| Value             | Input     | Exports             |
+| ----------------- | --------- | ------------------- |
+| _(not set)_       | `foo-bar` | `foo-bar`           |
+| `'camelCase'`     | `foo-bar` | `foo-bar`, `fooBar` |
+| `'camelCaseOnly'` | `foo-bar` | `fooBar`            |
+| `'dashes'`        | `foo-bar` | `foo-bar`, `fooBar` |
+| `'dashesOnly'`    | `foo-bar` | `fooBar`            |
+
+### `generateScopedName`
+
+When using `transformer: 'lightningcss'` (default), this accepts a Lightning CSS [pattern string](https://lightningcss.dev/css-modules.html#custom-naming-conventions) (e.g., `'[hash]_[local]'`).
+
+When using `transformer: 'postcss'`, this also accepts a function:
+
+```ts
+export default defineConfig({
+  css: {
+    transformer: 'postcss',
+    modules: {
+      generateScopedName: (name, filename, css) => {
+        return `my-lib_${name}`
+      },
+    },
+  },
+})
+```
+
+> [!NOTE]
+> Function-form `generateScopedName` is only supported with `transformer: 'postcss'`. The Lightning CSS transformer only supports string patterns.
+
+### Optional Dependencies
+
+When using `transformer: 'postcss'` with CSS modules, install [`postcss-modules`](https://github.com/css-modules/postcss-modules):
+
+```bash
+npm install -D postcss postcss-modules
+```
+
 ## CSS Code Splitting
 
 ### Merged Mode (Default)
@@ -380,6 +468,7 @@ dist/
 | `css.splitting`           | `boolean`                     | `false`          | Enable CSS code splitting per chunk                         |
 | `css.fileName`            | `string`                      | `'style.css'`    | File name for the merged CSS file (when `splitting: false`) |
 | `css.minify`              | `boolean`                     | `false`          | Enable CSS minification                                     |
+| `css.modules`             | `object \| false`             | `{}`             | CSS modules configuration, or `false` to disable            |
 | `css.target`              | `string \| string[] \| false` | _from `target`_  | CSS-specific syntax lowering target                         |
 | `css.postcss`             | `string \| object`            | —                | PostCSS config path or inline options                       |
 | `css.preprocessorOptions` | `object`                      | —                | Options for CSS preprocessors                               |

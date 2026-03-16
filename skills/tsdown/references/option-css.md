@@ -197,6 +197,37 @@ export default defineConfig({
 
 `css.lightningcss.targets` takes precedence over both `target` and `css.target` for CSS.
 
+## CSS Modules
+
+Files with `.module.css` (and `.module.scss`, `.module.less`, etc.) are treated as CSS modules — class names are scoped and exported as JS:
+
+```ts
+import styles from './app.module.css'
+console.log(styles.title) // "scoped_title_hash"
+```
+
+### Configuration
+
+```ts
+export default defineConfig({
+  css: {
+    modules: {
+      scopeBehaviour: 'local',             // 'local' (default) | 'global'
+      generateScopedName: '[hash]_[local]', // Lightning CSS pattern string
+      localsConvention: 'camelCase',       // 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
+    },
+  },
+})
+```
+
+Set `css.modules: false` to disable. Function-form `generateScopedName` requires `transformer: 'postcss'`.
+
+### Optional Dependencies (PostCSS path)
+
+```bash
+npm install -D postcss postcss-modules
+```
+
 ## Code Splitting
 
 ### Merged (Default)
@@ -241,6 +272,7 @@ export default defineConfig({
 | `css.splitting` | `boolean` | `false` | Per-chunk CSS splitting |
 | `css.fileName` | `string` | `'style.css'` | Merged CSS file name |
 | `css.minify` | `boolean` | `false` | CSS minification |
+| `css.modules` | `object \| false` | `{}` | CSS modules config, or `false` to disable |
 | `css.inject` | `boolean` | `false` | Preserve CSS imports in JS output |
 | `css.target` | `string \| string[] \| false` | _from `target`_ | CSS-specific lowering target |
 | `css.postcss` | `string \| object` | — | PostCSS config path or inline options |
