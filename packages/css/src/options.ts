@@ -194,9 +194,9 @@ export interface StylusPreprocessorOptions {
 export type ResolvedCssOptions = Overwrite<
   MarkPartial<
     Required<CssOptions>,
-    'preprocessorOptions' | 'lightningcss' | 'postcss'
+    'preprocessorOptions' | 'lightningcss' | 'postcss' | 'modules'
   >,
-  { target?: string[]; modules: CSSModulesOptions | false }
+  { target?: string[] }
 >
 
 export const defaultCssBundleName = 'style.css'
