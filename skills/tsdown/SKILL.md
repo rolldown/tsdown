@@ -57,6 +57,8 @@ export default defineConfig({
 | CLI Reference | All CLI commands and options | [reference-cli](references/reference-cli.md) |
 | Migrate from tsup | Migration guide and compatibility notes | [guide-migrate-from-tsup](references/guide-migrate-from-tsup.md) |
 | Plugins | Rolldown, Rollup, Unplugin support | [advanced-plugins](references/advanced-plugins.md) |
+
+> For comprehensive migration assistance with complete option mappings, install the dedicated [`tsdown-migrate`](../tsdown-migrate/SKILL.md) skill: `npx skills add rolldown/tsdown-migrate`
 | Hooks | Lifecycle hooks for custom logic | [advanced-hooks](references/advanced-hooks.md) |
 | Programmatic API | Build from Node.js scripts | [advanced-programmatic](references/advanced-programmatic.md) |
 | Rolldown Options | Pass options directly to Rolldown | [advanced-rolldown-options](references/advanced-rolldown-options.md) |

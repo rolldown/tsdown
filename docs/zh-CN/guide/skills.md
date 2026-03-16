@@ -32,6 +32,38 @@ skill 的源码在[这里](https://github.com/rolldown/tsdown/tree/main/skills/t
 用 tsdown 的 workspace 支持搭建 monorepo 构建
 ```
 
+## 迁移 Skill
+
+如果你的项目需要从 tsup 迁移，可以安装专门的迁移 skill：
+
+```bash
+npx skills add rolldown/tsdown-migrate
+```
+
+该 skill 教会 AI 如何执行 tsup→tsdown 迁移，提供以下知识：
+
+- tsup 和 tsdown 之间的完整选项映射
+- 默认值差异及如何保留 tsup 行为
+- 不支持的选项及其替代方案
+- package.json 迁移规则（依赖、脚本、配置字段）
+- 迁移后可推荐的 tsdown 独有新特性
+
+### 示例提示词
+
+```
+将我的 tsup 项目迁移到 tsdown
+```
+
+```
+把我的 tsup.config.ts 转换为 tsdown 格式
+```
+
+```
+tsup 和 tsdown 的选项有什么区别？
+```
+
+迁移 skill 的源码在[这里](https://github.com/rolldown/tsdown/tree/main/skills/tsdown-migrate)。
+
 ## 包含的内容
 
 tsdown skill 涵盖以下知识：

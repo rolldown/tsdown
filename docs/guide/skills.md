@@ -32,6 +32,38 @@ Add React support to my tsdown config with Fast Refresh
 Set up a monorepo build with tsdown workspace support
 ```
 
+## Migration Skill
+
+For projects migrating from tsup, a dedicated migration skill is available:
+
+```bash
+npx skills add rolldown/tsdown-migrate
+```
+
+This skill teaches AI agents how to perform tsup→tsdown migrations by providing:
+
+- Complete option mappings between tsup and tsdown
+- Default value differences and how to preserve tsup behavior
+- Unsupported options and their alternatives
+- Package.json migration rules (dependencies, scripts, config fields)
+- New tsdown-exclusive features to suggest after migration
+
+### Example Prompts
+
+```
+Migrate my tsup project to tsdown
+```
+
+```
+Convert my tsup.config.ts to tsdown format
+```
+
+```
+What are the differences between tsup and tsdown options?
+```
+
+The source code of the migration skill is [here](https://github.com/rolldown/tsdown/tree/main/skills/tsdown-migrate).
+
 ## What's Included
 
 The tsdown skill provides knowledge about:

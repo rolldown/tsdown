@@ -43,25 +43,87 @@ npx tsdown-migrate packages/foo packages/bar
 
 ### 默认值
 
-- **`format`**：默认值为 `esm`。
-- **`clean`**：默认启用，每次构建前会清理 `outDir`。
-- **`dts`**：如果您的 `package.json` 中包含 `typings` 或 `types` 字段，则会自动启用。
-- **`target`**：默认会读取 `package.json` 中的 `engines.node` 字段（如有）。
+| 选项     | tsup     | tsdown                                                         |
+| -------- | -------- | -------------------------------------------------------------- |
+| `format` | `'cjs'`  | `'esm'`                                                        |
+| `clean`  | `false`  | `true`（每次构建前清理 `outDir`）                              |
+| `dts`    | `false`  | 如果 `package.json` 中包含 `types` 或 `typings` 字段则自动启用 |
+| `target` | _（无）_ | 自动读取 `package.json` 中的 `engines.node` 字段               |
 
-### 功能差距
+### 选项重命名
 
-`tsdown` 尚未实现 `tsup` 中的某些功能。如果您发现缺少某些您需要的选项，请[提交 issue](https://github.com/rolldown/tsdown/issues) 告诉我们您的需求。
+部分选项已重命名以提高清晰度：
+
+| tsup             | tsdown       | 说明                          |
+| ---------------- | ------------ | ----------------------------- |
+| `cjsInterop`     | `cjsDefault` | CJS 默认导出处理              |
+| `esbuildPlugins` | `plugins`    | 现使用 Rolldown/Unplugin 插件 |
+
+### 已弃用但兼容的选项
+
+以下 tsup 选项在 tsdown 中仍然可用（向后兼容），但会发出弃用警告，**未来版本将会移除**。请立即迁移到推荐的替代方案。
+
+| tsup（已弃用）             | tsdown（推荐）                          | 说明                   |
+| -------------------------- | --------------------------------------- | ---------------------- |
+| `entryPoints`              | `entry`                                 | 在 tsup 中也已弃用     |
+| `publicDir`                | `copy`                                  | 复制静态文件到输出目录 |
+| `bundle: false`            | `unbundle: true`                        | 转换为正向表达         |
+| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`                 | 更灵活，支持多种模式   |
+| `injectStyle: true`        | `css: { inject: true }`                 | 移入 CSS 命名空间      |
+| `external: [...]`          | `deps: { neverBundle: [...] }`          | 移入 deps 命名空间     |
+| `noExternal: [...]`        | `deps: { alwaysBundle: [...] }`         | 移入 deps 命名空间     |
+| `skipNodeModulesBundle`    | `deps: { skipNodeModulesBundle: true }` | 移入 deps 命名空间     |
+
+tsdown 还新增了 `deps.onlyBundle`，用于白名单指定允许打包的依赖。
+
+### 插件系统
+
+tsdown 使用 [Rolldown](https://rolldown.rs/) 插件代替 esbuild 插件。如果您使用 [unplugin](https://github.com/unjs/unplugin) 插件，需更新导入路径：
+
+```ts
+// 迁移前 (tsup)
+import plugin from 'unplugin-example/esbuild'
+
+// 迁移后 (tsdown)
+import plugin from 'unplugin-example/rolldown'
+```
+
+### 不支持的选项
+
+以下 tsup 选项在 tsdown 中不可用：
+
+| 选项                     | 状态     | 替代方案                                              |
+| ------------------------ | -------- | ----------------------------------------------------- |
+| `splitting: false`       | 始终启用 | 代码分割无法禁用                                      |
+| `metafile`               | 不可用   | 使用 `devtools: true` 通过 Vite DevTools 分析打包产物 |
+| `swc`                    | 不支持   | tsdown 内置使用 oxc 进行转换                          |
+| `experimentalDts`        | 已取代   | 请使用 `dts` 选项                                     |
+| `legacyOutput`           | 不支持   | 无替代方案                                            |
+| `plugins`（tsup 实验性） | 不兼容   | 请迁移到 Rolldown 插件                                |
+
+如果您发现缺少某些您需要的选项，请[提交 issue](https://github.com/rolldown/tsdown/issues) 告诉我们您的需求。
 
 ### tsdown 新增特性
 
-`tsdown` 还引入了一些 `tsup` 不具备的新特性：
+`tsdown` 引入了许多 `tsup` 不具备的新特性：
 
 - **`nodeProtocol`**：控制 Node.js 内置模块导入的处理方式：
   - `true`：为内置模块添加 `node:` 前缀（如 `fs` → `node:fs`）
   - `'strip'`：移除导入中的 `node:` 前缀（如 `node:fs` → `fs`）
   - `false`：保持导入不变（默认）
+- **`workspace`**：通过 `workspace: 'packages/*'` 在 monorepo 中构建多个包
+- **`exports`**：通过 `exports: true` 自动生成 `package.json` 中的 `exports` 字段
+- **`publint`** / **`attw`**：验证包的常见问题和类型正确性
+- **`exe`**：通过 `exe: true` 打包为 Node.js 独立可执行文件（SEA）
+- **`devtools`**：通过 `devtools: true` 集成 Vite DevTools 进行打包分析
+- **`hooks`**：生命周期钩子（`build:prepare`、`build:before`、`build:done`）用于自定义构建逻辑
+- **`css`**：完整的 CSS 处理管线，支持预处理器、Lightning CSS、PostCSS、CSS Modules 和代码分割
+- **`globImport`**：支持 `import.meta.glob`（Vite 风格的 glob 导入）
 
 迁移后，请仔细检查您的配置，确保其符合您的预期。
+
+> [!TIP]
+> 可安装 AI skill 获取迁移引导：`npx skills add rolldown/tsdown-migrate`
 
 ## 致谢
 
