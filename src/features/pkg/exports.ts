@@ -124,6 +124,9 @@ export async function writeExports(
 
   const original = readFileSync(pkg.packageJsonPath, 'utf8')
   let contents = JSON.stringify(updatedPkg, null, detectIndentation(original))
+  if (original.includes('\r\n')) {
+    contents = contents.replaceAll('\n', '\r\n')
+  }
   if (original.endsWith('\n')) contents += '\n'
   if (contents !== original) {
     writeFileSync(pkg.packageJsonPath, contents, 'utf8')
