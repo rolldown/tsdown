@@ -1572,4 +1572,80 @@ describe('css', () => {
       expect(asyncBCode).not.toContain('.mjs"')
     })
   })
+
+  describe('css modules', () => {
+    test('basic css module exports scoped class names', async (context) => {
+      const { fileMap, outputFiles } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as styles } from './app.module.css'`,
+          'app.module.css': `.title { color: red }\n.content { font-size: 14px }`,
+        },
+        options: {
+          css: { modules: { generateScopedName: 'mod_[local]' } },
+        },
+      })
+      expect(outputFiles).toContain('style.css')
+      expect(outputFiles).toContain('index.mjs')
+
+      const js = fileMap['index.mjs']
+      expect(js).toContain('export')
+      expect(js).toContain('mod_title')
+      expect(js).toContain('mod_content')
+
+      const css = fileMap['style.css']
+      expect(css).toContain('.mod_title')
+      expect(css).toContain('.mod_content')
+      expect(css).not.toMatch(/(?<!_)\.title\b/)
+      expect(css).not.toMatch(/(?<!_)\.content\b/)
+    })
+
+    test('css module with modules=false disables scoping', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './app.module.css'`,
+          'app.module.css': `.title { color: red }`,
+        },
+        options: {
+          css: { modules: false },
+        },
+      })
+      const css = fileMap['style.css']
+      expect(css).toContain('.title')
+    })
+
+    test('non-module css is not affected', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './app.css'`,
+          'app.css': `.title { color: red }`,
+        },
+      })
+      const css = fileMap['style.css']
+      expect(css).toContain('.title')
+    })
+
+    test('css module with splitting', async (context) => {
+      const { fileMap, outputFiles } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as styles } from './app.module.css'`,
+          'app.module.css': `.title { color: red }`,
+        },
+        options: {
+          css: {
+            splitting: true,
+            modules: { generateScopedName: 'mod_[local]' },
+          },
+        },
+      })
+      expect(outputFiles).toContain('index.css')
+      expect(outputFiles).toContain('index.mjs')
+
+      const js = fileMap['index.mjs']
+      expect(js).toContain('mod_title')
+    })
+  })
 })
