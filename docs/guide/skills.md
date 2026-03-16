@@ -4,13 +4,20 @@ tsdown provides official [skills](https://agentskills.io/) for AI coding agents,
 
 ## Installation
 
-Install the tsdown skill to your AI coding agent:
+Install all tsdown skills to your AI coding agent:
 
 ```bash
 npx skills add rolldown/tsdown
 ```
 
-The source code of the skill is [here](https://github.com/rolldown/tsdown/tree/main/skills/tsdown).
+Or install a specific skill only:
+
+```bash
+npx skills add rolldown/tsdown --skill tsdown          # tsdown skill only
+npx skills add rolldown/tsdown --skill tsdown-migrate   # migration skill only
+```
+
+The source code of the skills is [here](https://github.com/rolldown/tsdown/tree/main/skills).
 
 ## Example Prompts
 
@@ -34,10 +41,10 @@ Set up a monorepo build with tsdown workspace support
 
 ## Migration Skill
 
-For projects migrating from tsup, a dedicated migration skill is available:
+For projects migrating from tsup, a dedicated migration skill is also included when you install `rolldown/tsdown`. You can also install it separately:
 
 ```bash
-npx skills add rolldown/tsdown-migrate
+npx skills add rolldown/tsdown --skill tsdown-migrate
 ```
 
 This skill teaches AI agents how to perform tsup→tsdown migrations by providing:

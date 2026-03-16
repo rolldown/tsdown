@@ -83,7 +83,6 @@ tsdown 使用 [Rolldown](https://rolldown.rs/) 插件代替 esbuild 插件。如
 ```ts
 // 迁移前 (tsup)
 import plugin from 'unplugin-example/esbuild'
-
 // 迁移后 (tsdown)
 import plugin from 'unplugin-example/rolldown'
 ```
@@ -123,7 +122,7 @@ import plugin from 'unplugin-example/rolldown'
 迁移后，请仔细检查您的配置，确保其符合您的预期。
 
 > [!TIP]
-> 可安装 AI skill 获取迁移引导：`npx skills add rolldown/tsdown-migrate`
+> 可安装 AI skill 获取迁移引导：`npx skills add rolldown/tsdown --skill tsdown-migrate`
 
 ## 致谢
 

@@ -4,8 +4,16 @@ Agent skill that teaches AI coding agents how to migrate projects from [tsup](ht
 
 ## Installation
 
+This skill is included when you install the tsdown skills:
+
 ```bash
-npx skills add rolldown/tsdown-migrate
+npx skills add rolldown/tsdown
+```
+
+Or install it separately:
+
+```bash
+npx skills add rolldown/tsdown --skill tsdown-migrate
 ```
 
 ## What's Included

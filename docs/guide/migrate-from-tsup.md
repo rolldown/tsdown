@@ -83,9 +83,6 @@ tsdown uses [Rolldown](https://rolldown.rs/) plugins instead of esbuild plugins.
 ```ts
 // Before (tsup)
 import plugin from 'unplugin-example/esbuild'
-```
-
-```ts
 // After (tsdown)
 import plugin from 'unplugin-example/rolldown'
 ```
@@ -125,7 +122,7 @@ If you find an option missing that you need, please [open an issue](https://gith
 Please review your configuration after migration to ensure it matches your expectations.
 
 > [!TIP]
-> An AI skill is available for guided migration assistance: `npx skills add rolldown/tsdown-migrate`
+> An AI skill is available for guided migration assistance: `npx skills add rolldown/tsdown --skill tsdown-migrate`
 
 ## Acknowledgements
 
