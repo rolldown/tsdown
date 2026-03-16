@@ -83,7 +83,6 @@ tsdown 使用 [Rolldown](https://rolldown.rs/) 插件代替 esbuild 插件。如
 ```ts
 // 迁移前 (tsup)
 import plugin from 'unplugin-example/esbuild'
-
 // 迁移后 (tsdown)
 import plugin from 'unplugin-example/rolldown'
 ```
