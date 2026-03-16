@@ -1596,8 +1596,8 @@ describe('css', () => {
       const css = fileMap['style.css']
       expect(css).toContain('.mod_title')
       expect(css).toContain('.mod_content')
-      expect(css).not.toMatch(/(?<![_])\.title\b/)
-      expect(css).not.toMatch(/(?<![_])\.content\b/)
+      expect(css).not.toMatch(/(?<!_)\.title\b/)
+      expect(css).not.toMatch(/(?<!_)\.content\b/)
     })
 
     test('css module with modules=false disables scoping', async (context) => {
