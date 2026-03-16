@@ -23,10 +23,14 @@ This document contains information about how these skills were generated and how
 ```
 skills/
 ├── GENERATION.md               # This file
-└── tsdown/
+├── tsdown/
+│   ├── README.md               # User-facing README
+│   ├── SKILL.md                # Main skill file with quick reference
+│   └── references/             # Detailed reference documentation (36 files)
+└── tsdown-migrate/
     ├── README.md               # User-facing README
-    ├── SKILL.md                # Main skill file with quick reference
-    └── references/             # Detailed reference documentation (36 files)
+    ├── SKILL.md                # Migration knowledge base for AI agents
+    └── references/             # Detailed migration reference (3 files)
 ```
 
 ## File Naming Convention
@@ -149,6 +153,7 @@ git log --oneline 8e3fa9c..HEAD -- docs/
 | Date       | SHA     | Changes                                                                |
 | ---------- | ------- | ---------------------------------------------------------------------- |
 | 2026-03-08 | 8e3fa9c | Full refresh: all docs reviewed, 35 reference files, complete coverage |
+| 2026-03-16 | — | Added tsdown-migrate skill with 3 reference files for AI-driven migration |
 
 ---
 

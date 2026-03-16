@@ -57,6 +57,10 @@ Help me migrate from tsup to tsdown
 Set up a monorepo build with tsdown workspace support
 ```
 
+## Related Skills
+
+- **[tsdown-migrate](https://github.com/rolldown/tsdown/tree/main/skills/tsdown-migrate)** - Dedicated skill for migrating from tsup to tsdown, with complete option mappings, config transformations, and troubleshooting guidance.
+
 ## Documentation
 
 - [tsdown Documentation](https://tsdown.dev)
