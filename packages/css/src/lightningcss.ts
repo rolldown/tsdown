@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { extractLightningCssModuleExports } from './modules.ts'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
 import { getCssResolver, resolveWithResolver } from './resolve.ts'
 import type { LightningCSSOptions, PreprocessorOptions } from './options.ts'
-import type { Targets } from 'lightningcss'
+import type { CSSModulesConfig, Targets } from 'lightningcss'
 import type { Logger } from 'tsdown/internal'
 
 const encoder = new TextEncoder()
@@ -13,12 +14,19 @@ export interface TransformCssOptions {
   target?: string[]
   lightningcss?: LightningCSSOptions
   minify?: boolean
+  cssModules?: boolean | CSSModulesConfig
+}
+
+export interface TransformCssResult {
+  code: string
+  modules?: Record<string, string>
 }
 
 export interface BundleCssOptions {
   target?: string[]
   lightningcss?: LightningCSSOptions
   minify?: boolean
+  cssModules?: boolean | CSSModulesConfig
   preprocessorOptions?: PreprocessorOptions
   logger: Logger
 }
@@ -26,18 +34,24 @@ export interface BundleCssOptions {
 export interface BundleCssResult {
   code: string
   deps: string[]
+  modules?: Record<string, string>
 }
 
 export async function transformWithLightningCSS(
   code: string,
   filename: string,
   options: TransformCssOptions,
-): Promise<string> {
+): Promise<TransformCssResult> {
   const targets =
     options.lightningcss?.targets ??
     (options.target ? esbuildTargetToLightningCSS(options.target) : undefined)
-  if (!targets && !options.lightningcss && !options.minify) {
-    return code
+  if (
+    !targets &&
+    !options.lightningcss &&
+    !options.minify &&
+    !options.cssModules
+  ) {
+    return { code }
   }
 
   const { transform } = await import('lightningcss')
@@ -47,9 +61,15 @@ export async function transformWithLightningCSS(
     ...options.lightningcss,
     targets,
     minify: options.minify,
+    cssModules: options.cssModules,
   })
 
-  return decoder.decode(result.code)
+  return {
+    code: decoder.decode(result.code),
+    modules: result.exports
+      ? extractLightningCssModuleExports(result.exports)
+      : undefined,
+  }
 }
 
 export async function bundleWithLightningCSS(
@@ -69,6 +89,7 @@ export async function bundleWithLightningCSS(
     ...options.lightningcss,
     targets,
     minify: options.minify,
+    cssModules: options.cssModules,
     resolver: {
       async read(filePath: string) {
         let fileCode: string
@@ -108,6 +129,9 @@ export async function bundleWithLightningCSS(
   return {
     code: new TextDecoder().decode(result.code),
     deps,
+    modules: result.exports
+      ? extractLightningCssModuleExports(result.exports)
+      : undefined,
   }
 }
 

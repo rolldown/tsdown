@@ -11,6 +11,51 @@ export type LightningCSSOptions = Omit<
   'filename' | 'code'
 >
 
+export interface CSSModulesOptions {
+  /**
+   * Controls the scoping behavior.
+   * @default 'local'
+   */
+  scopeBehaviour?: 'global' | 'local'
+
+  /**
+   * File paths matching these patterns will use global scoping.
+   */
+  globalModulePaths?: RegExp[]
+
+  /**
+   * Pattern or function to generate scoped class names.
+   * When using `transformer: 'lightningcss'`, only string patterns are supported.
+   */
+  generateScopedName?:
+    | string
+    | ((name: string, filename: string, css: string) => string)
+
+  /**
+   * Prefix added to hashes when generating scoped names.
+   */
+  hashPrefix?: string
+
+  /**
+   * Transform convention for exported class names.
+   */
+  localsConvention?: 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
+
+  /**
+   * Whether to include global class names in the export.
+   */
+  exportGlobals?: boolean
+
+  /**
+   * Callback to receive the generated class name mappings.
+   */
+  getJSON?: (
+    cssFileName: string,
+    json: Record<string, string>,
+    outputFileName: string,
+  ) => void
+}
+
 export interface CssOptions {
   /**
    * Enable/disable CSS code splitting.
@@ -78,6 +123,15 @@ export interface CssOptions {
   inject?: boolean
 
   /**
+   * CSS modules configuration.
+   * When not `false`, `.module.css` files (and preprocessor variants) are
+   * treated as CSS modules with scoped class names.
+   *
+   * @see https://github.com/css-modules/css-modules
+   */
+  modules?: CSSModulesOptions | false
+
+  /**
    * CSS transformer to use. Controls how CSS is processed:
    *
    * - `'lightningcss'` (default): `@import` handled by Lightning CSS
@@ -142,7 +196,7 @@ export type ResolvedCssOptions = Overwrite<
     Required<CssOptions>,
     'preprocessorOptions' | 'lightningcss' | 'postcss'
   >,
-  { target?: string[] }
+  { target?: string[]; modules: CSSModulesOptions | false }
 >
 
 export const defaultCssBundleName = 'style.css'
@@ -166,6 +220,7 @@ export function resolveCssOptions(
     fileName: options.fileName ?? defaultCssBundleName,
     minify: options.minify ?? false,
     inject: options.inject ?? false,
+    modules: options.modules === false ? false : (options.modules ?? {}),
     target: cssTarget,
     preprocessorOptions: options.preprocessorOptions,
     lightningcss: options.lightningcss,

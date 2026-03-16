@@ -1572,4 +1572,72 @@ describe('css', () => {
       expect(asyncBCode).not.toContain('.mjs"')
     })
   })
+
+  describe('css modules', () => {
+    test('basic css module exports scoped class names', async (context) => {
+      const { fileMap, outputFiles } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as styles } from './app.module.css'`,
+          'app.module.css': `.title { color: red }\n.content { font-size: 14px }`,
+        },
+      })
+      expect(outputFiles).toContain('style.css')
+      expect(outputFiles).toContain('index.mjs')
+
+      const js = fileMap['index.mjs']
+      expect(js).toContain('export')
+      expect(js).toContain('title')
+      expect(js).toContain('content')
+
+      const css = fileMap['style.css']
+      expect(css).not.toContain('.title')
+      expect(css).not.toContain('.content')
+    })
+
+    test('css module with modules=false disables scoping', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './app.module.css'`,
+          'app.module.css': `.title { color: red }`,
+        },
+        options: {
+          css: { modules: false },
+        },
+      })
+      const css = fileMap['style.css']
+      expect(css).toContain('.title')
+    })
+
+    test('non-module css is not affected', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './app.css'`,
+          'app.css': `.title { color: red }`,
+        },
+      })
+      const css = fileMap['style.css']
+      expect(css).toContain('.title')
+    })
+
+    test('css module with splitting', async (context) => {
+      const { fileMap, outputFiles } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as styles } from './app.module.css'`,
+          'app.module.css': `.title { color: red }`,
+        },
+        options: {
+          css: { splitting: true },
+        },
+      })
+      expect(outputFiles).toContain('index.css')
+      expect(outputFiles).toContain('index.mjs')
+
+      const js = fileMap['index.mjs']
+      expect(js).toContain('title')
+    })
+  })
 })

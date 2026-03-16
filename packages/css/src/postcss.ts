@@ -1,5 +1,5 @@
 import { importWithError } from 'tsdown/internal'
-import type { PostCSSOptions } from './options.ts'
+import type { CSSModulesOptions, PostCSSOptions } from './options.ts'
 
 interface PostCSSConfigResult {
   options: Record<string, any>
@@ -9,6 +9,12 @@ interface PostCSSConfigResult {
 interface PostCSSProcessResult {
   code: string
   deps: string[]
+  modules?: Record<string, string>
+}
+
+export interface PostCSSModulesOptions {
+  isModule: boolean
+  config?: CSSModulesOptions
 }
 
 const fileConfigCache = new Map<
@@ -63,10 +69,35 @@ export async function processWithPostCSS(
   postcssOption: PostCSSOptions | undefined,
   cwd: string,
   injectImport?: boolean,
+  modulesOptions?: PostCSSModulesOptions,
 ): Promise<PostCSSProcessResult> {
   const config = await resolvePostCSSConfig(postcssOption, cwd)
 
   const plugins: any[] = []
+
+  let modules: Record<string, string> | undefined
+
+  if (modulesOptions?.isModule) {
+    const postcssModules: any = await importWithError('postcss-modules')
+    const {
+      localsConvention: _,
+      getJSON: userGetJSON,
+      ...rest
+    } = modulesOptions.config ?? {}
+    plugins.push(
+      (postcssModules.default ?? postcssModules)({
+        ...rest,
+        getJSON(
+          cssFileName: string,
+          json: Record<string, string>,
+          outputFileName: string,
+        ) {
+          modules = json
+          userGetJSON?.(cssFileName, json, outputFileName)
+        },
+      }),
+    )
+  }
 
   if (injectImport) {
     const postcssImport: any = await importWithError('postcss-import')
@@ -100,5 +131,5 @@ export async function processWithPostCSS(
     }
   }
 
-  return { code: result.css, deps }
+  return { code: result.css, deps, modules }
 }

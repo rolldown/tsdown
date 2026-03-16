@@ -4,17 +4,24 @@ import {
   bundleWithLightningCSS,
   transformWithLightningCSS,
 } from './lightningcss.ts'
-import { resolveCssOptions, type ResolvedCssOptions } from './options.ts'
+import { applyLocalsConvention, modulesToEsm } from './modules.ts'
+import {
+  resolveCssOptions,
+  type CSSModulesOptions,
+  type ResolvedCssOptions,
+} from './options.ts'
 import { CssPostPlugin, type CssStyles } from './post.ts'
 import { processWithPostCSS as runPostCSS } from './postcss.ts'
 import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
 import {
   CSS_LANGS_RE,
+  CSS_MODULE_RE,
   getCleanId,
   RE_CSS,
   RE_CSS_INLINE,
   RE_INLINE,
 } from './utils.ts'
+import type { CSSModulesConfig } from 'lightningcss'
 import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
@@ -87,19 +94,37 @@ export function CssPlugin(
         // where the clean path itself is not a CSS file.
         if (id !== cleanId && !isInline && CSS_LANGS_RE.test(cleanId)) return
 
+        const isModule =
+          !isInline &&
+          cssConfig.css.modules !== false &&
+          CSS_MODULE_RE.test(cleanId)
+
         const deps: string[] = []
+        let modules: Record<string, string> | undefined
 
         if (cssConfig.css.transformer === 'lightningcss') {
-          code = await processWithLightningCSS(
+          const result = await processWithLightningCSS(
             code,
             id,
             cleanId,
             deps,
             cssConfig,
             logger,
+            isModule,
           )
+          code = result.code
+          modules = result.modules
         } else {
-          code = await processWithPostCSS(code, id, cleanId, deps, cssConfig)
+          const result = await processWithPostCSS(
+            code,
+            id,
+            cleanId,
+            deps,
+            cssConfig,
+            isModule,
+          )
+          code = result.code
+          modules = result.modules
         }
 
         for (const dep of deps) {
@@ -110,6 +135,20 @@ export function CssPlugin(
           code += '\n'
         }
 
+        if (modules) {
+          const modulesConfig =
+            typeof cssConfig.css.modules === 'object'
+              ? cssConfig.css.modules
+              : undefined
+          if (modulesConfig?.localsConvention) {
+            modules = applyLocalsConvention(
+              modules,
+              modulesConfig.localsConvention,
+            )
+          }
+          modulesConfig?.getJSON?.(cleanId, modules, cleanId)
+        }
+
         if (isInline) {
           return {
             code: `export default ${JSON.stringify(code)};`,
@@ -118,7 +157,18 @@ export function CssPlugin(
           }
         }
 
-        styles.set(id, code)
+        if (code.length) {
+          styles.set(id, code)
+        }
+
+        if (modules) {
+          return {
+            code: modulesToEsm(modules),
+            moduleSideEffects: false,
+            moduleType: 'js',
+          }
+        }
+
         return {
           code: '',
           moduleSideEffects: 'no-treeshake',
@@ -226,6 +276,36 @@ export function CssPlugin(
   return plugins
 }
 
+interface ProcessResult {
+  code: string
+  modules?: Record<string, string>
+}
+
+function resolveCssModulesConfig(
+  modulesOptions: CSSModulesOptions | false | undefined,
+  isModule: boolean,
+  logger: Logger,
+): boolean | CSSModulesConfig | undefined {
+  if (!isModule) return undefined
+
+  const config = typeof modulesOptions === 'object' ? modulesOptions : undefined
+  if (!config) return true
+
+  const cssModulesConfig: CSSModulesConfig = {}
+  if (typeof config.generateScopedName === 'string') {
+    cssModulesConfig.pattern = config.generateScopedName
+  } else if (typeof config.generateScopedName === 'function') {
+    logger.warn(
+      '[@tsdown/css] `generateScopedName` as a function is not supported with `transformer: "lightningcss"`. Use a string pattern or switch to `transformer: "postcss"`.',
+    )
+  }
+  if (config.scopeBehaviour === 'global') {
+    cssModulesConfig.pattern = '[local]'
+  }
+
+  return Object.keys(cssModulesConfig).length > 0 ? cssModulesConfig : true
+}
+
 async function processWithLightningCSS(
   code: string,
   id: string,
@@ -233,8 +313,14 @@ async function processWithLightningCSS(
   deps: string[],
   config: CssPluginConfig,
   logger: Logger,
-): Promise<string> {
+  isModule: boolean,
+): Promise<ProcessResult> {
   const lang = getPreprocessorLang(cleanId)
+  const cssModules = resolveCssModulesConfig(
+    config.css.modules,
+    isModule,
+    logger,
+  )
 
   if (lang) {
     const preResult = await compilePreprocessor(
@@ -249,6 +335,7 @@ async function processWithLightningCSS(
       target: config.css.target,
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
+      cssModules,
     })
   }
 
@@ -259,6 +346,7 @@ async function processWithLightningCSS(
       target: config.css.target,
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
+      cssModules,
     })
   }
 
@@ -269,16 +357,17 @@ async function processWithLightningCSS(
         target: config.css.target,
         lightningcss: config.css.lightningcss,
         minify: config.css.minify,
+        cssModules,
         preprocessorOptions: config.css.preprocessorOptions,
         logger,
       },
       code,
     )
     deps.push(...bundleResult.deps)
-    return bundleResult.code
+    return { code: bundleResult.code, modules: bundleResult.modules }
   }
 
-  return ''
+  return { code: '' }
 }
 
 async function processWithPostCSS(
@@ -287,7 +376,8 @@ async function processWithPostCSS(
   cleanId: string,
   deps: string[],
   config: CssPluginConfig,
-): Promise<string> {
+  isModule: boolean,
+): Promise<ProcessResult> {
   const lang = getPreprocessorLang(cleanId)
 
   if (lang) {
@@ -301,6 +391,9 @@ async function processWithPostCSS(
     deps.push(...preResult.deps)
   }
 
+  const modulesConfig =
+    typeof config.css.modules === 'object' ? config.css.modules : undefined
+
   const needInlineImport = code.includes('@import')
   const postcssResult = await runPostCSS(
     code,
@@ -308,15 +401,18 @@ async function processWithPostCSS(
     config.css.postcss,
     config.cwd,
     needInlineImport,
+    isModule ? { isModule: true, config: modulesConfig } : undefined,
   )
   code = postcssResult.code
   deps.push(...postcssResult.deps)
 
-  return transformWithLightningCSS(code, cleanId, {
+  const transformResult = await transformWithLightningCSS(code, cleanId, {
     target: config.css.target,
     lightningcss: config.css.lightningcss,
     minify: config.css.minify,
   })
+
+  return { code: transformResult.code, modules: postcssResult.modules }
 }
 
 function isEmptyChunkCode(code: string): boolean {

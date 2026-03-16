@@ -10,6 +10,7 @@ describe('resolveCssOptions', () => {
       fileName: defaultCssBundleName,
       minify: false,
       inject: false,
+      modules: {},
       target: undefined,
       preprocessorOptions: undefined,
       lightningcss: undefined,
@@ -42,6 +43,26 @@ describe('resolveCssOptions', () => {
     expect(result.target).toBeUndefined()
   })
 
+  test('modules defaults to empty object', () => {
+    const result = resolveCssOptions()
+    expect(result.modules).toEqual({})
+  })
+
+  test('modules=false disables CSS modules', () => {
+    const result = resolveCssOptions({ modules: false })
+    expect(result.modules).toBe(false)
+  })
+
+  test('modules config is passed through', () => {
+    const result = resolveCssOptions({
+      modules: { localsConvention: 'camelCase', hashPrefix: 'app' },
+    })
+    expect(result.modules).toEqual({
+      localsConvention: 'camelCase',
+      hashPrefix: 'app',
+    })
+  })
+
   test('custom options are passed through', () => {
     const result = resolveCssOptions({
       transformer: 'postcss',
@@ -59,6 +80,7 @@ describe('resolveCssOptions', () => {
       fileName: 'custom.css',
       minify: true,
       inject: true,
+      modules: {},
       target: undefined,
       preprocessorOptions: { scss: { additionalData: '$x: 1;' } },
       lightningcss: { drafts: { customMedia: true } },
