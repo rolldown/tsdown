@@ -1,7 +1,7 @@
 ## index.css
 
 ```css
-.hDoHta_title {
+.mod_title {
   color: red;
 }
 
@@ -11,7 +11,7 @@
 
 ```mjs
 //#region app.module.css
-var app_module_default = { "title": "hDoHta_title" };
+var app_module_default = { "title": "mod_title" };
 //#endregion
 export { app_module_default as styles };
 

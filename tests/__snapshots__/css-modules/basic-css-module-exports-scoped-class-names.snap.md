@@ -3,8 +3,8 @@
 ```mjs
 //#region app.module.css
 var app_module_default = {
-	"content": "foLDzW_content",
-	"title": "foLDzW_title"
+	"content": "mod_content",
+	"title": "mod_title"
 };
 //#endregion
 export { app_module_default as styles };
@@ -14,11 +14,11 @@ export { app_module_default as styles };
 ## style.css
 
 ```css
-.foLDzW_title {
+.mod_title {
   color: red;
 }
 
-.foLDzW_content {
+.mod_content {
   font-size: 14px;
 }
 

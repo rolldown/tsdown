@@ -1581,18 +1581,23 @@ describe('css', () => {
           'index.ts': `export { default as styles } from './app.module.css'`,
           'app.module.css': `.title { color: red }\n.content { font-size: 14px }`,
         },
+        options: {
+          css: { modules: { generateScopedName: 'mod_[local]' } },
+        },
       })
       expect(outputFiles).toContain('style.css')
       expect(outputFiles).toContain('index.mjs')
 
       const js = fileMap['index.mjs']
       expect(js).toContain('export')
-      expect(js).toContain('title')
-      expect(js).toContain('content')
+      expect(js).toContain('mod_title')
+      expect(js).toContain('mod_content')
 
       const css = fileMap['style.css']
-      expect(css).not.toContain('.title')
-      expect(css).not.toContain('.content')
+      expect(css).toContain('.mod_title')
+      expect(css).toContain('.mod_content')
+      expect(css).not.toMatch(/(?<![_])\.title\b/)
+      expect(css).not.toMatch(/(?<![_])\.content\b/)
     })
 
     test('css module with modules=false disables scoping', async (context) => {
@@ -1630,14 +1635,17 @@ describe('css', () => {
           'app.module.css': `.title { color: red }`,
         },
         options: {
-          css: { splitting: true },
+          css: {
+            splitting: true,
+            modules: { generateScopedName: 'mod_[local]' },
+          },
         },
       })
       expect(outputFiles).toContain('index.css')
       expect(outputFiles).toContain('index.mjs')
 
       const js = fileMap['index.mjs']
-      expect(js).toContain('title')
+      expect(js).toContain('mod_title')
     })
   })
 })
