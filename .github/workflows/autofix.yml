@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   autofix:
+    if: github.repository == 'rolldown/tsdown'
     uses: sxzz/workflows/.github/workflows/autofix.yml@v1
     with:
       command: pnpm run format && pnpm run lint --fix && pnpm build
