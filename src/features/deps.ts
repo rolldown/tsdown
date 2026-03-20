@@ -39,7 +39,7 @@ export interface DepsConfig {
    */
   neverBundle?: ExternalOption
   /**
-   * Force dependencies to be bundled, even if they are in `dependencies` or `peerDependencies`.
+   * Force dependencies to be bundled, even if they are in `dependencies`, `peerDependencies`, or `optionalDependencies`.
    */
   alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn
   /**
@@ -361,5 +361,6 @@ function getProductionDeps(pkg: PackageJson): Set<string> {
   return new Set([
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
+    ...Object.keys(pkg.optionalDependencies || {}),
   ])
 }

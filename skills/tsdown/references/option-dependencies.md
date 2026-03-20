@@ -14,6 +14,7 @@ These are **NOT bundled** by default:
 
 - **`dependencies`** - Installed automatically with your package
 - **`peerDependencies`** - User must install manually
+- **`optionalDependencies`** - May or may not be installed depending on platform/config
 
 ### Conditionally Bundled
 
@@ -319,7 +320,7 @@ export default defineConfig({
 
 ### Missing Dependency at Runtime
 
-Ensure it's in `dependencies` or `peerDependencies`:
+Ensure it's in `dependencies`, `peerDependencies`, or `optionalDependencies`:
 
 ```json
 {
@@ -354,7 +355,7 @@ export default defineConfig({
 ## Summary
 
 **Default behavior:**
-- `dependencies` & `peerDependencies` → External
+- `dependencies`, `peerDependencies`, & `optionalDependencies` → External
 - `devDependencies` & phantom deps → Bundled if imported
 
 **Override (under `deps`):**

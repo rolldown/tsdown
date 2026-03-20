@@ -4,12 +4,13 @@
 
 ## 默认行为
 
-### `dependencies` 和 `peerDependencies`
+### `dependencies`、`peerDependencies` 和 `optionalDependencies`
 
-默认情况下，`tsdown` **不会打包** 在 `package.json` 中 `dependencies` 和 `peerDependencies` 下列出的依赖：
+默认情况下，`tsdown` **不会打包** 在 `package.json` 中 `dependencies`、`peerDependencies` 和 `optionalDependencies` 下列出的依赖：
 
 - **`dependencies`**：这些依赖会被视为外部依赖，不会被包含在打包文件中。当用户安装您的库时，npm（或其他包管理器）会自动安装这些依赖。
 - **`peerDependencies`**：这些依赖同样被视为外部依赖。您的库的使用者需要手动安装这些依赖，尽管某些包管理器可能会自动处理。
+- **`optionalDependencies`**：这些依赖同样被视为外部依赖。它们可能根据用户的平台和配置安装或不安装。
 
 ### `devDependencies` 和幻影依赖
 
@@ -99,7 +100,7 @@ export default defineConfig({
 
 ### `deps.alwaysBundle`
 
-`alwaysBundle` 选项允许您强制将某些依赖打包，即使它们被列为 `dependencies` 或 `peerDependencies`。例如：
+`alwaysBundle` 选项允许您强制将某些依赖打包，即使它们被列为 `dependencies`、`peerDependencies` 或 `optionalDependencies`。例如：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -148,7 +149,7 @@ export default defineConfig({
 ## 总结
 
 - **默认行为**：
-  - `dependencies` 和 `peerDependencies` 被视为外部依赖，不会被打包。
+  - `dependencies`、`peerDependencies` 和 `optionalDependencies` 被视为外部依赖，不会被打包。
   - `devDependencies` 和幻影依赖只有在代码中实际使用时才会被打包。
 - **自定义**：
   - 使用 `deps.onlyBundle` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。

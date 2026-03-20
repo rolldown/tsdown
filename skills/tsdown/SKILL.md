@@ -89,7 +89,7 @@ export default defineConfig({
 | Always bundle | `deps: { alwaysBundle: ['dep-to-bundle'] }` | [option-dependencies](references/option-dependencies.md) |
 | Only bundle | `deps: { onlyBundle: ['cac', 'bumpp'] }` - Whitelist | [option-dependencies](references/option-dependencies.md) |
 | Skip node_modules | `deps: { skipNodeModulesBundle: true }` | [option-dependencies](references/option-dependencies.md) |
-| Auto external | Automatic peer/dependency externalization | [option-dependencies](references/option-dependencies.md) |
+| Auto external | Automatic dependency/peer/optional externalization | [option-dependencies](references/option-dependencies.md) |
 
 ## Output Enhancement
 
