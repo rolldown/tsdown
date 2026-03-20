@@ -6,7 +6,7 @@ on:
 
 jobs:
   comment:
-    if: github.event.label.name == 'needs reproduction'
+    if: github.repository == 'rolldown/tsdown' && github.event.label.name == 'needs reproduction'
     runs-on: ubuntu-slim
     permissions:
       issues: write
