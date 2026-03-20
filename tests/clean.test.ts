@@ -251,4 +251,41 @@ describe('clean', () => {
     expect(logExists).toBe(false)
     expect(keepExists).toBe(true) // This file should be preserved
   })
+
+  test('should clean format-specific outDir when clean is true', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const esmPath = path.join(testDir, 'esm')
+    const cjsPath = path.join(testDir, 'cjs')
+
+    await mkdir(esmPath, { recursive: true })
+    await mkdir(cjsPath, { recursive: true })
+    await writeFile(path.join(esmPath, 'a.css'), 'junk')
+    await writeFile(path.join(cjsPath, 'b.css'), 'junk')
+
+    await testBuild({
+      context,
+      files,
+      snapshot: false,
+      options: {
+        clean: true,
+        format: {
+          esm: {
+            outDir: 'esm',
+          },
+          cjs: {
+            outDir: 'cjs',
+          },
+        },
+      },
+    })
+
+    expect(await fsExists(esmPath)).toBe(true)
+    expect(await fsExists(cjsPath)).toBe(true)
+    expect(await fsExists(path.join(esmPath, 'a.css'))).toBe(false)
+    expect(await fsExists(path.join(cjsPath, 'b.css'))).toBe(false)
+  })
 })

@@ -92,6 +92,7 @@ export async function resolveUserConfig(
     write = true,
     exe = false,
   } = userConfig
+  const rawClean = clean
 
   const pkg = await readPackageJson(cwd)
   if (workspace) {
@@ -326,6 +327,13 @@ export async function resolveUserConfig(
   return formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
     const overrides = objectFormat ? format[fmt] : undefined
+    const resolvedOutDir =
+      overrides?.outDir == null ? outDir : path.resolve(cwd, overrides.outDir)
+    const resolvedClean = resolveClean(
+      overrides && 'clean' in overrides ? overrides.clean : rawClean,
+      resolvedOutDir,
+      cwd,
+    )
     return {
       ...config,
       // only copy once
@@ -334,6 +342,8 @@ export async function resolveUserConfig(
       onSuccess: once ? config.onSuccess : undefined,
       format: normalizeFormat(fmt),
       ...overrides,
+      clean: resolvedClean,
+      outDir: resolvedOutDir,
     }
   })
 }
