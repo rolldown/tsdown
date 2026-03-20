@@ -25,6 +25,7 @@ catalogs:
     bumpp: ^11.0.1
     dedent: ^1.7.2
     eslint: ^10.0.3
+    less: ^4.4.2
     memfs: ^4.56.11
     pkg-types: ^2.3.0
     postcss: ^8.5.8
@@ -33,6 +34,7 @@ catalogs:
     rolldown-plugin-dts-snapshot: ^0.4.0
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.98.0
+    stylus: ^0.64.0
     typescript: ~5.9.3
     unplugin-ast: ^0.16.0
     unplugin-raw: ^0.6.4

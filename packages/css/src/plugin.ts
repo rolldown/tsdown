@@ -315,7 +315,7 @@ async function processWithLightningCSS(
   logger: Logger,
   isModule: boolean,
 ): Promise<ProcessResult> {
-  const lang = getPreprocessorLang(cleanId)
+  const lang = getPreprocessorLang(id)
   const cssModules = resolveCssModulesConfig(
     config.css.modules,
     isModule,
@@ -326,12 +326,12 @@ async function processWithLightningCSS(
     const preResult = await compilePreprocessor(
       lang,
       code,
-      cleanId,
+      id,
       config.css.preprocessorOptions,
     )
     deps.push(...preResult.deps)
 
-    return transformWithLightningCSS(preResult.code, cleanId, {
+    return transformWithLightningCSS(preResult.code, preResult.filename, {
       target: config.css.target,
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
@@ -378,17 +378,19 @@ async function processWithPostCSS(
   config: CssPluginConfig,
   isModule: boolean,
 ): Promise<ProcessResult> {
-  const lang = getPreprocessorLang(cleanId)
+  const lang = getPreprocessorLang(id)
+  let cssFilename = cleanId
 
   if (lang) {
     const preResult = await compilePreprocessor(
       lang,
       code,
-      cleanId,
+      id,
       config.css.preprocessorOptions,
     )
     code = preResult.code
     deps.push(...preResult.deps)
+    cssFilename = preResult.filename
   }
 
   const modulesConfig =
@@ -397,7 +399,7 @@ async function processWithPostCSS(
   const needInlineImport = code.includes('@import')
   const postcssResult = await runPostCSS(
     code,
-    cleanId,
+    cssFilename,
     config.css.postcss,
     config.cwd,
     needInlineImport,

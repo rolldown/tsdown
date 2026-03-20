@@ -48,14 +48,19 @@
     "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "peerDependencies": {
+    "less": "*",
     "postcss": "^8.4.0",
     "postcss-import": "^16.0.0",
     "postcss-modules": "^6.0.0",
     "sass": "*",
     "sass-embedded": "*",
+    "stylus": "*",
     "tsdown": "workspace:*"
   },
   "peerDependenciesMeta": {
+    "less": {
+      "optional": true
+    },
     "postcss": {
       "optional": true
     },
@@ -69,6 +74,9 @@
       "optional": true
     },
     "sass-embedded": {
+      "optional": true
+    },
+    "stylus": {
       "optional": true
     }
   },

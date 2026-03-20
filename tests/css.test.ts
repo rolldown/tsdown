@@ -1,5 +1,40 @@
-import { describe, expect, test } from 'vitest'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { describe, expect, test, type TestContext } from 'vitest'
 import { testBuild } from './utils.ts'
+
+async function expectVueSfcStyleLang(
+  context: TestContext,
+  lang: 'scss' | 'less' | 'stylus',
+  style: string,
+  expected: string[],
+  unexpected: string[],
+) {
+  const Vue = (await import('unplugin-vue/rolldown')).default
+  const { outputDir } = await testBuild({
+    context,
+    files: {
+      'index.ts': `export { default as MyButton } from './MyButton.vue'`,
+      'MyButton.vue': `<template><button class="btn">Click</button></template>
+<style lang="${lang}">
+${style}
+</style>`,
+    },
+    options: {
+      plugins: [Vue({ isProduction: true })],
+      deps: { skipNodeModulesBundle: true },
+    },
+    snapshot: false,
+  })
+
+  const css = await readFile(path.join(outputDir, 'style.css'), 'utf8')
+  for (const value of expected) {
+    expect(css).toContain(value)
+  }
+  for (const value of unexpected) {
+    expect(css).not.toContain(value)
+  }
+}
 
 describe('css', () => {
   test('basic', async (context) => {
@@ -149,6 +184,59 @@ describe('css', () => {
       },
     })
     expect(outputFiles).toEqual(['index.css', 'index.d.mts', 'index.mjs'])
+  })
+
+  test('vue sfc style lang scss is preprocessed', async (context) => {
+    await expectVueSfcStyleLang(
+      context,
+      'scss',
+      `@mixin button-base($radius) {
+  border-radius: $radius;
+  padding: 10px 20px;
+}
+
+.btn {
+  @include button-base(5px);
+  color: red;
+}`,
+      ['border-radius: 5px', 'padding: 10px 20px'],
+      ['@mixin', '@include'],
+    )
+  })
+
+  test('vue sfc style lang less is preprocessed', async (context) => {
+    await expectVueSfcStyleLang(
+      context,
+      'less',
+      `@radius: 6px;
+.button-base(@radius) {
+  border-radius: @radius;
+  padding: 10px 20px;
+}
+
+.btn {
+  .button-base(@radius);
+  color: red;
+}`,
+      ['border-radius: 6px', 'padding: 10px 20px'],
+      ['.button-base(@radius)', '@radius: 6px;'],
+    )
+  })
+
+  test('vue sfc style lang stylus is preprocessed', async (context) => {
+    await expectVueSfcStyleLang(
+      context,
+      'stylus',
+      `button-base(radius)
+  border-radius radius
+  padding 10px 20px
+
+.btn
+  button-base(7px)
+  color red`,
+      ['border-radius: 7px', 'padding: 10px 20px'],
+      ['button-base(radius)', 'color red'],
+    )
   })
 
   test.for([true, false])(

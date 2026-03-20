@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { getSassResolver, resolveWithResolver } from './resolve.ts'
+import { getCleanId, PREPROCESSOR_QUERY_LANG_RE } from './utils.ts'
 import type { PreprocessorOptions } from './options.ts'
 
 export type PreprocessorLang = 'sass' | 'scss' | 'less' | 'styl' | 'stylus'
@@ -17,21 +18,35 @@ const PREPROCESSOR_LANGS: Record<string, PreprocessorLang> = {
 export interface PreprocessResult {
   code: string
   deps: string[]
+  filename: string
 }
 
-export function getPreprocessorLang(
-  filename: string,
-): PreprocessorLang | undefined {
-  const ext = path.extname(filename).slice(1)
-  return PREPROCESSOR_LANGS[ext]
+export function getPreprocessorLang(id: string): PreprocessorLang | undefined {
+  const cleanId = getCleanId(id)
+  const ext = path.extname(cleanId).slice(1)
+  const lang = PREPROCESSOR_LANGS[ext]
+  if (lang) return lang
+
+  const queryLang = id.match(PREPROCESSOR_QUERY_LANG_RE)?.[1]
+  return queryLang ? PREPROCESSOR_LANGS[queryLang] : undefined
 }
 
 export function compilePreprocessor(
   lang: PreprocessorLang,
   code: string,
-  filename: string,
+  id: string,
   options?: PreprocessorOptions,
 ): Promise<PreprocessResult> {
+  const cleanId = getCleanId(id)
+  const extname = path.extname(cleanId)
+  const currentLang = extname ? PREPROCESSOR_LANGS[extname.slice(1)] : undefined
+  const filename =
+    currentLang === lang
+      ? cleanId
+      : extname
+        ? `${cleanId.slice(0, -extname.length)}.${lang}`
+        : `${cleanId}.${lang}`
+
   switch (lang) {
     case 'scss':
     case 'sass':
@@ -301,6 +316,7 @@ async function compileSass(
     deps: result.loadedUrls
       .filter((url: URL) => url.protocol === 'file:')
       .map((url: URL) => fileURLToPath(url)),
+    filename,
   }
 }
 
@@ -392,6 +408,7 @@ async function compileLess(
   return {
     code: result.css,
     deps: result.imports || [],
+    filename,
   }
 }
 
@@ -450,6 +467,7 @@ async function compileStylus(
         resolve({
           code: css,
           deps: ref.deps(),
+          filename,
         })
       }
     })
