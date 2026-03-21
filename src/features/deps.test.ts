@@ -19,8 +19,6 @@ describe('getTypesPackageName', () => {
   })
 
   it('maps deep imports from scoped packages to the scoped DefinitelyTyped package', () => {
-    expect(getTypesPackageName('@scope/pkg/subpath')).toBe(
-      '@types/scope__pkg',
-    )
+    expect(getTypesPackageName('@scope/pkg/subpath')).toBe('@types/scope__pkg')
   })
 })
