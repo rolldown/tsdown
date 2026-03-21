@@ -170,14 +170,8 @@ async function parseBundledDep(
   if (lastNmIdx === -1) return
 
   const afterNm = slashed.slice(lastNmIdx + 14 /* '/node_modules/'.length */)
-  const parts = afterNm.split('/')
-
-  let name: string
-  if (parts[0][0] === '@') {
-    name = `${parts[0]}/${parts[1]}`
-  } else {
-    name = parts[0]
-  }
+  const name = getPackageName(afterNm)
+  if (!name) return
 
   const root = slashed.slice(
     0,
@@ -190,6 +184,24 @@ async function parseBundledDep(
     )
     return { name, pkgName: json.name, version: json.version }
   } catch {}
+}
+
+export function getPackageName(id: string): string | undefined {
+  const [first, second] = id.split('/', 3)
+  if (!first) return
+
+  if (first[0] === '@') {
+    return second ? `${first}/${second}` : undefined
+  }
+
+  return first
+}
+
+export function getTypesPackageName(id: string): string | undefined {
+  const packageName = getPackageName(id)
+  if (!packageName) return
+
+  return `@types/${packageName.replace(/^@/, '').replace('/', '__')}`
 }
 
 export function DepPlugin(
@@ -343,8 +355,8 @@ export function DepPlugin(
       }
 
       if (importer && RE_DTS.test(importer) && !id.startsWith('@types/')) {
-        const typesName = `@types/${id.replace(/^@/, '').replaceAll('/', '__')}`
-        if (deps.includes(typesName)) {
+        const typesName = getTypesPackageName(id)
+        if (typesName && deps.includes(typesName)) {
           return true
         }
       }
