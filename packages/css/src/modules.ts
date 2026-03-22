@@ -1,13 +1,17 @@
 import type { CSSModuleExports } from 'lightningcss'
 
-const VALID_ID_RE = /^[$_a-z][$\w]*$/i
-
 export function modulesToEsm(modules: Record<string, string>): string {
   const lines: string[] = []
+  let index = 0
   for (const [key, value] of Object.entries(modules)) {
-    if (VALID_ID_RE.test(key)) {
-      lines.push(`export const ${key} = ${JSON.stringify(value)};`)
+    if (key === 'default') {
+      continue
     }
+    const binding = `_key${index++}`
+    lines.push(
+      `const ${binding} = ${JSON.stringify(value)};`,
+      `export { ${binding} as ${JSON.stringify(key)} };`,
+    )
   }
   lines.push(`export default ${JSON.stringify(modules)};`)
   return lines.join('\n')
