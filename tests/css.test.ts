@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises'
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
@@ -1650,7 +1649,7 @@ describe('css', () => {
     })
 
     test('css module supports class named default', async (context) => {
-      const { outputDir } = await testBuild({
+      const { fileMap } = await testBuild({
         context,
         files: {
           'index.ts': `import styles from './app.module.css'\nconsole.log(styles.default)`,
@@ -1661,11 +1660,11 @@ describe('css', () => {
             modules: { generateScopedName: 'design-system-[local]' },
           },
         },
-        snapshot: false,
+        snapshot: true,
       })
 
-      const js = await readFile(`${outputDir}/index.mjs`, 'utf8')
-      const css = await readFile(`${outputDir}/style.css`, 'utf8')
+      const js = fileMap['index.mjs']
+      const css = fileMap['style.css']
 
       expect(js).not.toContain('export const default')
       expect(js).toMatch(/"default"\s*:\s*"design-system-default"/)
