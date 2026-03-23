@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises'
+import path from 'node:path'
 import { bold, green } from 'ansis'
 import { clearRequireCache } from 'import-without-cache'
 import {
@@ -289,7 +291,7 @@ async function buildSingle(
     }
 
     const configs: BuildOptions[] = [buildOptions]
-    if (format === 'cjs' && dts) {
+    if (format === 'cjs' && dts && (!isDualFormat || !dts.cjsReexport)) {
       configs.push(
         await getBuildOptions(
           config,
@@ -308,6 +310,11 @@ async function buildSingle(
   async function postBuild() {
     await copy(config)
     await buildExe(config, chunks)
+
+    if (format === 'cjs' && dts && dts.cjsReexport && isDualFormat) {
+      await writeCjsDtsReexports(chunks, outDir, config.write !== false)
+    }
+
     if (!hasBuilt) {
       await done(bundle)
     }
@@ -317,5 +324,29 @@ async function buildSingle(
 
     ab?.abort()
     ab = executeOnSuccess(config)
+  }
+}
+
+async function writeCjsDtsReexports(
+  chunks: RolldownChunk[],
+  outDir: string,
+  write: boolean,
+): Promise<void> {
+  for (const chunk of chunks) {
+    if (chunk.type !== 'chunk') continue
+
+    // Match CJS JS output files: .cjs (fixed extension) or .js (non-fixed)
+    const match = chunk.fileName.match(/^(.*)\.(cjs|js)$/)
+    if (!match) continue
+
+    const baseName = match[1]
+    const dCtsName =
+      match[2] === 'cjs' ? `${baseName}.d.cts` : `${baseName}.d.ts`
+    const dMtsBasename = path.basename(`${baseName}.d.mts`)
+    const content = `export * from './${dMtsBasename}'\n`
+
+    if (write) {
+      await writeFile(path.join(outDir, dCtsName), content)
+    }
   }
 }

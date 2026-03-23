@@ -117,9 +117,10 @@ async function resolveInputOptions(
 
   if (dts) {
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
+    const { cjsReexport: _, ...dtsPluginOptions } = dts
     const options: DtsOptions = {
       tsconfig,
-      ...dts,
+      ...dtsPluginOptions,
     }
 
     if (format === 'es') {
