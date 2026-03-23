@@ -1,3 +1,4 @@
+import { transformWithLightningCSS } from './lightningcss.ts'
 import { defaultCssBundleName, type ResolvedCssOptions } from './options.ts'
 import { removePureCssChunks } from './pure-chunk.ts'
 import type { Plugin } from 'rolldown'
@@ -5,10 +6,27 @@ import type { Plugin } from 'rolldown'
 export type CssStyles = Map<string, string>
 
 export function CssPostPlugin(
-  config: Pick<ResolvedCssOptions, 'splitting' | 'fileName'>,
+  config: Pick<
+    ResolvedCssOptions,
+    'splitting' | 'fileName' | 'minify' | 'target' | 'lightningcss'
+  >,
   styles: CssStyles,
 ): Plugin {
   const collectedCSS: string[] = []
+
+  async function finalizeCss(css: string): Promise<string> {
+    if (!config.minify) return css
+    const result = await transformWithLightningCSS(css, defaultCssBundleName, {
+      target: config.target,
+      lightningcss: config.lightningcss,
+      minify: true,
+    })
+    let code = result.code
+    if (code.length && !code.endsWith('\n')) {
+      code += '\n'
+    }
+    return code
+  }
 
   return {
     name: 'tsdown:css-post',
@@ -32,7 +50,7 @@ export function CssPostPlugin(
       collectedCSS.push(chunkCSS)
     },
 
-    generateBundle(_outputOptions, bundle) {
+    async generateBundle(_outputOptions, bundle) {
       if (config.splitting) {
         // Emit CSS assets in generateBundle where chunk fileNames are resolved
         for (const chunk of Object.values(bundle)) {
@@ -51,6 +69,8 @@ export function CssPostPlugin(
             chunkCSS += '\n'
           }
 
+          chunkCSS = await finalizeCss(chunkCSS)
+
           const cssAssetFileName = chunk.fileName.replace(/\.[cm]?js$/, '.css')
           this.emitFile({
             type: 'asset',
@@ -59,8 +79,9 @@ export function CssPostPlugin(
           })
         }
       } else if (collectedCSS.length > 0) {
-        const allCSS = collectedCSS.join('')
+        let allCSS = collectedCSS.join('')
         if (allCSS) {
+          allCSS = await finalizeCss(allCSS)
           this.emitFile({
             type: 'asset',
             fileName: config.fileName,

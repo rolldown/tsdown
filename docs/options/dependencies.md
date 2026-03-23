@@ -4,12 +4,13 @@ When bundling with `tsdown`, dependencies are handled intelligently to ensure yo
 
 ## Default Behavior
 
-### `dependencies` and `peerDependencies`
+### `dependencies`, `peerDependencies`, and `optionalDependencies`
 
-By default, `tsdown` **does not bundle dependencies** listed in your `package.json` under `dependencies` and `peerDependencies`:
+By default, `tsdown` **does not bundle dependencies** listed in your `package.json` under `dependencies`, `peerDependencies`, and `optionalDependencies`:
 
 - **`dependencies`**: These are treated as external and will not be included in the bundle. Instead, they will be installed automatically by npm (or other package managers) when your library is installed.
 - **`peerDependencies`**: These are also treated as external. Users of your library are expected to install these dependencies manually, although some package managers may handle this automatically.
+- **`optionalDependencies`**: These are also treated as external. They may or may not be installed depending on the user's platform and configuration.
 
 ### `devDependencies` and Phantom Dependencies
 
@@ -99,7 +100,7 @@ In this example, `lodash` and all packages under the `@my-scope` namespace will 
 
 ### `deps.alwaysBundle`
 
-The `alwaysBundle` option allows you to force certain dependencies to be bundled, even if they are listed in `dependencies` or `peerDependencies`. For example:
+The `alwaysBundle` option allows you to force certain dependencies to be bundled, even if they are listed in `dependencies`, `peerDependencies`, or `optionalDependencies`. For example:
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -148,7 +149,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
 ## Summary
 
 - **Default Behavior**:
-  - `dependencies` and `peerDependencies` are treated as external and not bundled.
+  - `dependencies`, `peerDependencies`, and `optionalDependencies` are treated as external and not bundled.
   - `devDependencies` and phantom dependencies are only bundled if they are actually used in your code.
 - **Customization**:
   - Use `deps.onlyBundle` to whitelist dependencies allowed to be bundled, and throw an error for any others.
