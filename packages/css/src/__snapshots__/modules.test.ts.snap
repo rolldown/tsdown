@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`modulesToEsm > exports arbitrary module keys via aliased bindings 1`] = `
+"const _key0 = "mod_title";
+export { _key0 as "title" };
+const _key1 = "mod_await";
+export { _key1 as "await" };
+const _key2 = "mod_foo_bar";
+export { _key2 as "foo-bar" };
+export default {"default":"mod_default","title":"mod_title","await":"mod_await","foo-bar":"mod_foo_bar"};"
+`;

@@ -10,6 +10,7 @@ describe('modulesToEsm', () => {
       'foo-bar': 'mod_foo_bar',
     })
 
+    expect(code).matchSnapshot()
     expect(code).toContain('const _key0 = "mod_title";')
     expect(code).toContain('export { _key0 as "title" };')
     expect(code).not.toContain('const _default = "mod_default";')
