@@ -1,6 +1,7 @@
 import { transformWithLightningCSS } from './lightningcss.ts'
 import { defaultCssBundleName, type ResolvedCssOptions } from './options.ts'
 import { removePureCssChunks } from './pure-chunk.ts'
+import { toCssFileName } from './utils.ts'
 import type { Plugin } from 'rolldown'
 
 export type CssStyles = Map<string, string>
@@ -71,7 +72,7 @@ export function CssPostPlugin(
 
           chunkCSS = await finalizeCss(chunkCSS)
 
-          const cssAssetFileName = chunk.fileName.replace(/\.[cm]?js$/, '.css')
+          const cssAssetFileName = toCssFileName(chunk.fileName)
           this.emitFile({
             type: 'asset',
             fileName: cssAssetFileName,

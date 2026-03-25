@@ -23,6 +23,7 @@ import {
   RE_CSS,
   RE_CSS_INLINE,
   RE_INLINE,
+  toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
 import type { Plugin } from 'rolldown'
@@ -231,7 +232,7 @@ export function CssPlugin(
                 /[.*+?^${}()|[\]\\]/g,
                 String.raw`\$&`,
               )
-              const cssBasename = basename.replace(/\.[cm]?js$/, '.css')
+              const cssBasename = toCssFileName(basename)
               const importRE = new RegExp(
                 String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`,
               )
@@ -239,7 +240,7 @@ export function CssPlugin(
             }
             // Direct CSS modules in this chunk need a prepended import
             if (chunk.moduleIds.some((id) => styles.has(id))) {
-              const cssFile = chunk.fileName.replace(/\.[cm]?js$/, '.css')
+              const cssFile = toCssFileName(chunk.fileName)
               const relativePath = path.posix.relative(
                 path.posix.dirname(chunk.fileName),
                 cssFile,

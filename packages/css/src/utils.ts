@@ -7,6 +7,10 @@ export const RE_CSS_INLINE: RegExp =
 export const CSS_MODULE_RE: RegExp =
   /\.module\.(?:css|less|sass|scss|styl|stylus)(?:$|\?)/
 
+export function toCssFileName(jsFileName: string): string {
+  return jsFileName.replace(/(?:\.module)?(\.[cm]?js)$/, '.css')
+}
+
 export function getCleanId(id: string): string {
   const queryIndex = id.indexOf('?')
   return queryIndex === -1 ? id : id.slice(0, queryIndex)
