@@ -2,7 +2,7 @@
 import module from 'node:module'
 import process from 'node:process'
 import { yellow } from 'ansis'
-import lt from 'semver/functions/lt.js'
+import lt from 'semver/functions/lt'
 import { runCLI } from './cli.ts'
 
 if (lt(process.version, '22.18.0')) {
