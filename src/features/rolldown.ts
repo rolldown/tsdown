@@ -16,7 +16,7 @@ import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
 import { importWithError, pkgExists } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
-import { DepPlugin } from './deps.ts'
+import { DepsPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
@@ -112,7 +112,7 @@ async function resolveInputOptions(
   }
 
   if (config.pkg || config.deps.skipNodeModulesBundle) {
-    plugins.push(DepPlugin(config, bundle))
+    plugins.push(DepsPlugin(config, bundle))
   }
 
   if (dts) {

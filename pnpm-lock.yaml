@@ -13,9 +13,6 @@ catalogs:
       specifier: ^3.1.2
       version: 3.1.2
   dev:
-    '@publint/pack':
-      specifier: ^0.1.4
-      version: 0.1.4
     '@sxzz/eslint-config':
       specifier: ^7.8.3
       version: 7.8.3
@@ -280,9 +277,6 @@ importers:
       '@arethetypeswrong/core':
         specifier: catalog:peer
         version: 0.18.2
-      '@publint/pack':
-        specifier: catalog:dev
-        version: 0.1.4
       '@sxzz/eslint-config':
         specifier: catalog:dev
         version: 7.8.3(@typescript-eslint/eslint-plugin@8.57.2(@typescript-eslint/parser@8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/parser@8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/rule-tester@8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@typescript-eslint/typescript-estree@8.57.2(typescript@6.0.2))(@typescript-eslint/utils@8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(@unocss/eslint-plugin@66.6.7(eslint@10.1.0(jiti@2.6.1))(typescript@6.0.2))(eslint@10.1.0(jiti@2.6.1))(prettier@3.8.1)(typescript@6.0.2)
