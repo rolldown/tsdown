@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { getSassResolver, resolveWithResolver } from './resolve.ts'
+import { CSS_LANGS_RE } from './utils.ts'
 import type { PreprocessorOptions } from './options.ts'
 
 export type PreprocessorLang = 'sass' | 'scss' | 'less' | 'styl' | 'stylus'
@@ -24,6 +25,14 @@ export function getPreprocessorLang(
 ): PreprocessorLang | undefined {
   const ext = path.extname(filename).slice(1)
   return PREPROCESSOR_LANGS[ext]
+}
+
+export function getPreprocessorLangFromId(
+  id: string,
+): PreprocessorLang | undefined {
+  const match = CSS_LANGS_RE.exec(id)
+  if (!match) return
+  return PREPROCESSOR_LANGS[match[1]]
 }
 
 export function compilePreprocessor(

@@ -197,6 +197,38 @@ describe('issues', () => {
     expect(fileMap['style.css']).toContain('.btn')
   })
 
+  test('#848', async (context) => {
+    const Vue = (await import('unplugin-vue/rolldown')).default
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `export { default as App } from './App.vue'`,
+        'App.vue': `<template><button>Click</button></template>
+<style lang="scss">
+@mixin mybtn {
+  padding: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+button {
+  @include mybtn;
+  font-size: 1.2em;
+}
+</style>`,
+      },
+      options: {
+        plugins: [Vue({ isProduction: true })],
+        deps: { skipNodeModulesBundle: true },
+      },
+    })
+    expect(outputFiles).toContain('style.css')
+    const css = fileMap['style.css']
+    expect(css).toContain('padding')
+    expect(css).toContain('border-radius')
+    expect(css).not.toContain('@mixin')
+    expect(css).not.toContain('@include')
+  })
+
   test('#772', async (context) => {
     const { fileMap, outputFiles } = await testBuild({
       context,

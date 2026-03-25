@@ -12,7 +12,10 @@ import {
 } from './options.ts'
 import { CssPostPlugin, type CssStyles } from './post.ts'
 import { processWithPostCSS as runPostCSS } from './postcss.ts'
-import { compilePreprocessor, getPreprocessorLang } from './preprocessors.ts'
+import {
+  compilePreprocessor,
+  getPreprocessorLangFromId,
+} from './preprocessors.ts'
 import {
   CSS_LANGS_RE,
   CSS_MODULE_RE,
@@ -315,7 +318,7 @@ async function processWithLightningCSS(
   logger: Logger,
   isModule: boolean,
 ): Promise<ProcessResult> {
-  const lang = getPreprocessorLang(cleanId)
+  const lang = getPreprocessorLangFromId(id)
   const cssModules = resolveCssModulesConfig(
     config.css.modules,
     isModule,
@@ -378,7 +381,7 @@ async function processWithPostCSS(
   config: CssPluginConfig,
   isModule: boolean,
 ): Promise<ProcessResult> {
-  const lang = getPreprocessorLang(cleanId)
+  const lang = getPreprocessorLangFromId(id)
 
   if (lang) {
     const preResult = await compilePreprocessor(

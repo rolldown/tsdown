@@ -1,7 +1,6 @@
 export const RE_CSS: RegExp = /\.css$/
 export const RE_INLINE: RegExp = /[?&]inline\b/
-export const CSS_LANGS_RE: RegExp =
-  /\.(?:css|less|sass|scss|styl|stylus)(?:$|\?)/
+export const CSS_LANGS_RE: RegExp = /\.(css|less|sass|scss|styl|stylus)(?:$|\?)/
 export const RE_CSS_INLINE: RegExp =
   /\.(?:css|less|sass|scss|styl|stylus)\?(?:.*&)?inline\b/
 
