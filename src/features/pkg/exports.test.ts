@@ -18,12 +18,15 @@ function generateExports(
   options: {
     exports?: ResolvedConfig['exports']
     css?: ResolvedConfig['css']
+    logger?: ResolvedConfig['logger']
   } = {},
+  pkg = FAKE_PACKAGE_JSON,
 ) {
-  return _generateExports(FAKE_PACKAGE_JSON, chunks, {
+  return _generateExports(pkg, chunks, {
     exports: {},
     logger: globalLogger,
     css: DEFAULT_CSS_OPTIONS,
+    cwd,
     ...options,
   })
 }
@@ -33,6 +36,7 @@ describe('generateExports', () => {
     const results = generateExports()
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           "./package.json": "./package.json",
         },
@@ -54,6 +58,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./main.js",
           "./package.json": "./package.json",
@@ -73,6 +78,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./foo": "./foo.js",
@@ -93,6 +99,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./foo": "./foo/index.js",
@@ -113,6 +120,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           "./bar": "./bar.js",
           "./foo": "./foo.js",
@@ -134,6 +142,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": {
             "import": "./foo.js",
@@ -157,6 +166,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": {
             "import": "./foo.js",
@@ -180,6 +190,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": {
             "import": "./index.mjs",
@@ -236,6 +247,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./SRC/index.js",
           "./package.json": "./package.json",
@@ -330,6 +342,7 @@ describe('generateExports', () => {
 
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./foo": "./foo.js",
@@ -356,6 +369,7 @@ describe('generateExports', () => {
 
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./foo": "./foo.js",
@@ -380,6 +394,7 @@ describe('generateExports', () => {
 
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           "./package.json": "./package.json",
         },
@@ -401,6 +416,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": {
             "import": "./index.js",
@@ -428,6 +444,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./*": "./*",
@@ -456,6 +473,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./*": "./*",
@@ -483,6 +501,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./*": "./*",
@@ -509,6 +528,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./bar/baz": "./bar/baz.js",
@@ -547,6 +567,7 @@ describe('generateExports', () => {
     })
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": {
             "import": "./index.js",
@@ -581,6 +602,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./package.json": "./package.json",
@@ -607,6 +629,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./package.json": "./package.json",
@@ -630,6 +653,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./custom.css": "./custom.css",
@@ -654,6 +678,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": "./index.js",
           "./package.json": "./package.json",
@@ -668,6 +693,179 @@ describe('generateExports', () => {
     `)
   })
 
+  test('bin: true with single shebang entry', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            undefined,
+            '#!/usr/bin/env node\nconsole.log("hello")',
+          ),
+        ],
+      },
+      { exports: { bin: true } },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: { 'fake-pkg': './cli.js' },
+    })
+  })
+
+  test('bin: true with no shebangs warns', async ({ expect }) => {
+    const warnings: string[] = []
+    const logger = {
+      ...globalLogger,
+      warn: (...msgs: any[]) => {
+        warnings.push(msgs.join(' '))
+      },
+    }
+    const results = await generateExports(
+      { es: [genChunk('index.js', true, undefined, 'console.log("hello")')] },
+      { exports: { bin: true }, logger },
+    )
+    expect(results.bin).toBeUndefined()
+    expect(
+      warnings.some((w) => w.includes('no entry chunks with shebangs')),
+    ).toBe(true)
+  })
+
+  test('bin: true with multiple shebangs throws', async ({ expect }) => {
+    await expect(
+      generateExports(
+        {
+          es: [
+            genChunk('cli.js', true, undefined, '#!/usr/bin/env node\n'),
+            genChunk('tool.js', true, undefined, '#!/usr/bin/env node\n'),
+          ],
+        },
+        { exports: { bin: true } },
+      ),
+    ).rejects.toThrow('Multiple entry chunks with shebangs found')
+  })
+
+  test('bin: true prefers ESM over CJS', async ({ expect }) => {
+    const facadeId = path.resolve('./SRC/cli.js')
+    const results = generateExports(
+      {
+        es: [genChunk('cli.mjs', true, facadeId, '#!/usr/bin/env node\n')],
+        cjs: [genChunk('cli.cjs', true, facadeId, '#!/usr/bin/env node\n')],
+      },
+      { exports: { bin: true } },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: { 'fake-pkg': './cli.mjs' },
+    })
+  })
+
+  test('bin: string form', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+        ],
+      },
+      { exports: { bin: './src/cli.ts' } },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: { 'fake-pkg': './cli.js' },
+    })
+  })
+
+  test('bin: string form warns without shebang', async ({ expect }) => {
+    const warnings: string[] = []
+    const logger = {
+      ...globalLogger,
+      warn: (...msgs: any[]) => {
+        warnings.push(msgs.join(' '))
+      },
+    }
+    const results = await generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            'console.log("hello")',
+          ),
+        ],
+      },
+      { exports: { bin: './src/cli.ts' }, logger },
+    )
+    expect(results.bin).toEqual({ 'fake-pkg': './cli.js' })
+    expect(
+      warnings.some((w) => w.includes('does not contain a shebang line')),
+    ).toBe(true)
+  })
+
+  test('bin: string form throws when no matching chunk', async ({ expect }) => {
+    await expect(
+      generateExports(
+        { es: [genChunk('index.js')] },
+        { exports: { bin: './src/cli.ts' } },
+      ),
+    ).rejects.toThrow(
+      'Could not find output chunk for bin entry "./src/cli.ts"',
+    )
+  })
+
+  test('bin: object form', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+          genChunk(
+            'tool.js',
+            true,
+            path.resolve('./src/tool.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+        ],
+      },
+      {
+        exports: {
+          bin: {
+            mycli: './src/cli.ts',
+            mytool: './src/tool.ts',
+          },
+        },
+      },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: {
+        mycli: './cli.js',
+        mytool: './tool.js',
+      },
+    })
+  })
+
+  test('bin: scoped package name', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('cli.js', true, undefined, '#!/usr/bin/env node\n')],
+      },
+      { exports: { bin: true } },
+      {
+        name: '@scope/my-tool',
+        packageJsonPath: path.join(cwd, 'package.json'),
+      },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: { 'my-tool': './cli.js' },
+    })
+  })
+
   test('generate css publish exports', async ({ expect }) => {
     const results = generateExports(
       { es: [genChunk('index.js'), genAsset('style.css')] },
@@ -680,6 +878,7 @@ describe('generateExports', () => {
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
       {
+        "bin": undefined,
         "exports": {
           ".": {
             "default": "./index.js",
@@ -702,7 +901,12 @@ describe('generateExports', () => {
   })
 })
 
-function genChunk(fileName: string, isEntry = true, facadeModuleId?: string) {
+function genChunk(
+  fileName: string,
+  isEntry = true,
+  facadeModuleId?: string,
+  code = '',
+) {
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return {
     type: 'chunk',
@@ -710,6 +914,7 @@ function genChunk(fileName: string, isEntry = true, facadeModuleId?: string) {
     isEntry,
     facadeModuleId: facadeModuleId ?? path.resolve(`./SRC/${fileName}`),
     outDir: cwd,
+    code,
   } as RolldownChunk
 }
 

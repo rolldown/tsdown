@@ -41,6 +41,7 @@ export default defineConfig([
       customExports: {
         './client': './client.d.ts',
       },
+      bin: true,
     },
     plugins: [
       RequireCJS(),
