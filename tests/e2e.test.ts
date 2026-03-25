@@ -881,6 +881,68 @@ test('externalize @types/foo', async (context) => {
   expect(fileMap['index.d.mts']).toContain('from "foo"')
 })
 
+test('externalize deep imports covered by @types/foo', async (context) => {
+  const node_modules = {
+    'node_modules/foo/index.js': `export default function foo() {}`,
+    'node_modules/foo/lib/token.mjs': `export default class Token {}`,
+    'node_modules/foo/package.json': JSON.stringify({
+      name: 'foo',
+      version: '1.0.0',
+      main: 'index.js',
+    }),
+
+    'node_modules/bar/index.js': `export default function bar() {}`,
+    'node_modules/bar/types/index.d.ts': `
+      import { default as Token } from 'foo/lib/token.mjs'
+
+      export interface AnchorOptions {
+        getTokensText?(tokens: Token[]): string
+      }
+
+      declare function bar(): void
+
+      export default bar
+    `,
+    'node_modules/bar/package.json': JSON.stringify({
+      name: 'bar',
+      version: '1.0.0',
+      main: 'index.js',
+      types: 'types/index.d.ts',
+    }),
+
+    'node_modules/@types/foo/index.d.ts': `export default interface Foo {}`,
+    'node_modules/@types/foo/lib/token.d.ts': `
+      export default class Token {
+        tag: string
+      }
+    `,
+    'node_modules/@types/foo/package.json': JSON.stringify({
+      name: '@types/foo',
+      version: '1.0.0',
+      types: 'index.d.ts',
+    }),
+  }
+
+  const { fileMap } = await testBuild({
+    context,
+    files: {
+      ...node_modules,
+      'index.ts': `export type { AnchorOptions } from 'bar'`,
+      'package.json': JSON.stringify({
+        name: 'test-pkg',
+        version: '1.0.0',
+        dependencies: {
+          '@types/foo': '^1.0.0',
+        },
+      }),
+    },
+    options: { dts: true },
+  })
+
+  expect(fileMap['index.d.mts']).toContain('from "foo/lib/token.mjs"')
+  expect(fileMap['index.d.mts']).not.toContain('class Token')
+})
+
 test('failOnWarn', async (context) => {
   const files = {
     'index.ts': `import 'unresolved'`,
