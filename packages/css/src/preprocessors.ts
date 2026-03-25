@@ -27,16 +27,11 @@ export function getPreprocessorLang(
   return PREPROCESSOR_LANGS[ext]
 }
 
-/**
- * Extract preprocessor lang from a module id (including query string).
- * Handles virtual modules like Vue SFC style blocks where the lang
- * is encoded in the query (e.g. `App.vue?vue&type=style&lang.scss`).
- */
 export function getPreprocessorLangFromId(
   id: string,
 ): PreprocessorLang | undefined {
   const match = CSS_LANGS_RE.exec(id)
-  if (!match) return undefined
+  if (!match) return
   return PREPROCESSOR_LANGS[match[1]]
 }
 
