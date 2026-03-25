@@ -19,7 +19,7 @@ export async function resolveWorkspace(
   config: UserConfig,
   inlineConfig: InlineConfig,
 ): Promise<{ configs: UserConfig[]; files?: string[] }> {
-  const normalized = { ...config, ...inlineConfig }
+  const normalized: UserConfig = { ...config, ...inlineConfig }
   const rootCwd = normalized.cwd || process.cwd()
 
   let { workspace } = normalized
@@ -74,6 +74,7 @@ export async function resolveWorkspace(
             cwd,
           },
           cwd,
+          normalized,
         )
         if (file) {
           debug('loaded workspace config file %s', file)

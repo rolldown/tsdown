@@ -619,7 +619,7 @@ export interface InlineConfig extends UserConfig {
 
 export type UserConfigFn = (
   inlineConfig: InlineConfig,
-  context: { ci: boolean },
+  context: { ci: boolean; rootConfig?: UserConfig },
 ) => Awaitable<Arrayable<UserConfig>>
 
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>

@@ -57,6 +57,7 @@ const configPrefix = 'tsdown.config'
 export async function loadConfigFile(
   inlineConfig: InlineConfig,
   workspace?: string,
+  rootConfig?: UserConfig,
 ): Promise<{
   configs: UserConfig[]
   file?: string
@@ -119,7 +120,7 @@ export async function loadConfigFile(
 
     exported = await exported
     if (typeof exported === 'function') {
-      exported = await exported(inlineConfig, { ci: isInCi })
+      exported = await exported(inlineConfig, { ci: isInCi, rootConfig })
     }
   }
 
