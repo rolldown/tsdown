@@ -1647,5 +1647,28 @@ describe('css', () => {
       const js = fileMap['index.mjs']
       expect(js).toContain('mod_title')
     })
+
+    test('css module supports class named default', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import styles from './app.module.css'\nconsole.log(styles.default)`,
+          'app.module.css': `.default { color: red }`,
+        },
+        options: {
+          css: {
+            modules: { generateScopedName: 'design-system-[local]' },
+          },
+        },
+      })
+
+      const js = fileMap['index.mjs']
+      const css = fileMap['style.css']
+
+      expect(js).not.toContain('export const default')
+      expect(js).toMatch(/"default"\s*:\s*"design-system-default"/)
+      expect(js).toContain('.default')
+      expect(css).toContain('.design-system-default')
+    })
   })
 })
