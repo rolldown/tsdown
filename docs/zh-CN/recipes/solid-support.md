@@ -1,6 +1,6 @@
 # Solid 支持
 
-`tsdown` 通过集成 [`rolldown-plugin-solid`](https://github.com/g-mero/rolldown-plugin-solid) 或 [`unplugin-solid`](https://github.com/unplugin/unplugin-solid)，简化了 Solid 组件库的开发流程。该集成让您能够打包 Solid 组件，并使用现代 TypeScript 工具自动生成类型声明。
+`tsdown` 通过集成 [`rolldown-plugin-solid`](https://npmx.dev/package/rolldown-plugin-solid) 或 [`unplugin-solid`](https://github.com/unplugin/unplugin-solid)，简化了 Solid 组件库的开发流程。该集成让您能够打包 Solid 组件，并使用现代 TypeScript 工具自动生成类型声明。
 
 ## 快速上手
 
