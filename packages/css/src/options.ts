@@ -61,7 +61,8 @@ export interface CssOptions {
    * Enable/disable CSS code splitting.
    * When set to `false`, all CSS in the entire project will be extracted into a single CSS file named by {@link fileName}.
    * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
-   * @default false (`true` when `unbundle` is enabled)
+   *
+   * Defaults to `false`, but if `unbundle` is `true`, it defaults to `true` to preserve chunk splitting.
    */
   splitting?: boolean
 
