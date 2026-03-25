@@ -11,7 +11,6 @@ export default defineConfig([
     name: 'tsdown',
     deps: {
       onlyBundle: [
-        '@publint/pack',
         'is-in-ci',
         'package-manager-detector',
         'pkg-types', // type-only

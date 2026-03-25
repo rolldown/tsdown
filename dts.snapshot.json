@@ -103,7 +103,7 @@
     "ShebangPlugin": "declare function ShebangPlugin(_: Logger, _: string, _: string, _: boolean): Plugin",
     "WatchPlugin": "declare function WatchPlugin(_: string[], _: TsdownBundle): Plugin",
     "#exports": [
-      "DepPlugin",
+      "DepsPlugin",
       "NodeProtocolPlugin",
       "ReportPlugin",
       "ShebangPlugin",
@@ -124,8 +124,8 @@
     "CopyEntry": "interface CopyEntry {\n from: string | string[]\n to?: string\n flatten?: boolean\n verbose?: boolean\n rename?: string | ((_: string, _: string, _: string) => string)\n}",
     "CopyOptions": "type CopyOptions = Arrayable<string | CopyEntry>",
     "CopyOptionsFn": "type CopyOptionsFn = (_: ResolvedConfig) => Awaitable<CopyOptions>",
-    "DepPlugin": "declare function DepPlugin(_: ResolvedConfig, _: TsdownBundle): Plugin",
     "DepsConfig": "interface DepsConfig {\n neverBundle?: ExternalOption\n alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn\n onlyBundle?: Arrayable<string | RegExp> | false\n onlyAllowBundle?: Arrayable<string | RegExp> | false\n skipNodeModulesBundle?: boolean\n}",
+    "DepsPlugin": "declare function DepsPlugin(_: ResolvedConfig, _: TsdownBundle): Plugin",
     "DevtoolsOptions": "interface DevtoolsOptions extends NonNullable<InputOptions['devtools']> {\n ui?: boolean | Partial<StartOptions>\n clean?: boolean\n}",
     "ExeOptions": "interface ExeOptions extends ExeExtensionOptions {\n seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>\n fileName?: string | ((_: RolldownChunk) => string)\n outDir?: string\n}",
     "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: Record<string, any> | ((_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>)\n inlinedDependencies?: boolean\n}",

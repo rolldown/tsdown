@@ -18,14 +18,9 @@ import type { TsdownBundle } from '../utils/chunks.ts'
 import type { Logger } from '../utils/logger.ts'
 import type { Arrayable } from '../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
-import type {
-  ExternalOption,
-  Plugin,
-  PluginContext,
-  ResolveIdExtraOptions,
-} from 'rolldown'
+import type { ExternalOption, Plugin, ResolvedId } from 'rolldown'
 
-const debug = createDebug('tsdown:dep')
+const debug = createDebug('tsdown:deps')
 
 export type NoExternalFn = (
   id: string,
@@ -162,37 +157,7 @@ export function resolveDepsConfig(
   }
 }
 
-async function parseBundledDep(
-  moduleId: string,
-): Promise<{ name: string; pkgName: string; version: string } | undefined> {
-  const slashed = slash(moduleId)
-  const lastNmIdx = slashed.lastIndexOf('/node_modules/')
-  if (lastNmIdx === -1) return
-
-  const afterNm = slashed.slice(lastNmIdx + 14 /* '/node_modules/'.length */)
-  const parts = afterNm.split('/')
-
-  let name: string
-  if (parts[0][0] === '@') {
-    name = `${parts[0]}/${parts[1]}`
-  } else {
-    name = parts[0]
-  }
-
-  const root = slashed.slice(
-    0,
-    lastNmIdx + 14 /* '/node_modules/'.length */ + name.length,
-  )
-
-  try {
-    const json = JSON.parse(
-      await readFile(path.join(root, 'package.json'), 'utf8'),
-    )
-    return { name, pkgName: json.name, version: json.version }
-  } catch {}
-}
-
-export function DepPlugin(
+export function DepsPlugin(
   {
     pkg,
     deps: { alwaysBundle, onlyBundle, skipNodeModulesBundle },
@@ -204,20 +169,25 @@ export function DepPlugin(
   const deps = pkg && Array.from(getProductionDeps(pkg))
 
   return {
-    name: 'tsdown:external',
+    name: 'tsdown:deps',
     resolveId: {
       filter: [include(and(id(/^[^.]/), importerId(/./)))],
       async handler(id, importer, extraOptions) {
         if (extraOptions.isEntry) return
         typeAssert(importer)
 
-        const shouldExternal = await externalStrategy(
-          this,
-          id,
-          importer,
-          extraOptions,
-        )
+        const resolved = await this.resolve(id, importer, {
+          ...extraOptions,
+          skipSelf: true,
+        })
+        let shouldExternal = await externalStrategy(id, importer, resolved)
+        if (Array.isArray(shouldExternal)) {
+          debug('custom resolved id for %o -> %o', id, shouldExternal[1])
+          id = shouldExternal[1]
+          shouldExternal = shouldExternal[0]
+        }
         const nodeBuiltinModule = isBuiltin(id)
+        const moduleSideEffects = nodeBuiltinModule ? false : undefined
 
         debug('shouldExternal: %o = %o', id, shouldExternal)
 
@@ -225,7 +195,14 @@ export function DepPlugin(
           return {
             id,
             external: shouldExternal,
-            moduleSideEffects: nodeBuiltinModule ? false : undefined,
+            moduleSideEffects,
+          }
+        }
+
+        if (resolved) {
+          return {
+            ...resolved,
+            moduleSideEffects,
           }
         }
       },
@@ -311,35 +288,34 @@ export function DepPlugin(
 
   /**
    * - `true`: always external
+   * - `[true, resolvedId]`: external with custom resolved ID
    * - `false`: skip, let other plugins handle it
    * - `'absolute'`: external as absolute path
    * - `'no-external'`: skip, but mark as non-external for inlineOnly check
    */
   async function externalStrategy(
-    context: PluginContext,
     id: string,
     importer: string | undefined,
-    extraOptions: ResolveIdExtraOptions,
-  ): Promise<boolean | 'absolute' | 'no-external'> {
+    resolved: ResolvedId | null,
+  ): Promise<boolean | [true, string] | 'absolute' | 'no-external'> {
     if (id === shimFile) return false
 
     if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }
 
-    if (skipNodeModulesBundle) {
-      const resolved = await context.resolve(id, importer, extraOptions)
-      if (
-        resolved &&
-        (resolved.external || RE_NODE_MODULES.test(resolved.id))
-      ) {
-        return true
-      }
+    if (
+      skipNodeModulesBundle &&
+      resolved &&
+      (resolved.external || RE_NODE_MODULES.test(resolved.id))
+    ) {
+      return true
     }
 
     if (deps) {
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
-        return true
+        const resolvedDep = await resolveDepPath(id, resolved)
+        return resolvedDep ? [true, resolvedDep] : true
       }
 
       if (importer && RE_DTS.test(importer) && !id.startsWith('@types/')) {
@@ -352,6 +328,75 @@ export function DepPlugin(
 
     return false
   }
+}
+
+function parseDepPath(
+  id: string,
+): [name: string, subpath: string, root: string] | undefined {
+  const slashed = slash(id)
+  const lastNmIdx = slashed.lastIndexOf('/node_modules/')
+  if (lastNmIdx === -1) return
+
+  const afterNm = slashed.slice(lastNmIdx + 14 /* '/node_modules/'.length */)
+  const parts = afterNm.split('/')
+
+  let name: string
+  if (parts[0][0] === '@') {
+    name = `${parts[0]}/${parts[1]}`
+  } else {
+    name = parts[0]
+  }
+
+  const root = slashed.slice(
+    0,
+    lastNmIdx + 14 /* '/node_modules/'.length */ + name.length,
+  )
+
+  return [name, afterNm.slice(name.length), root]
+}
+
+async function parseBundledDep(
+  moduleId: string,
+): Promise<{ name: string; pkgName: string; version: string } | undefined> {
+  const parsed = parseDepPath(moduleId)
+  if (!parsed) return
+
+  const [name, , root] = parsed
+
+  try {
+    const json = JSON.parse(
+      await readFile(path.join(root, 'package.json'), 'utf8'),
+    )
+    return { name, pkgName: json.name, version: json.version }
+  } catch {}
+}
+
+async function resolveDepPath(id: string, resolved: ResolvedId | null) {
+  if (!resolved?.packageJsonPath) return
+
+  const parts = id.split('/')
+  // ignore scope
+  if (parts[0][0] === '@') parts.shift()
+  // ignore no subpath or file imports
+  if (parts.length === 1 || parts.at(-1)!.includes('.')) return
+
+  let pkgJson: Record<string, any>
+  try {
+    pkgJson = JSON.parse(await readFile(resolved.packageJsonPath, 'utf8'))
+  } catch {
+    return
+  }
+
+  // no `exports` field
+  if (pkgJson.exports) return
+
+  const parsed = parseDepPath(resolved.id)
+  if (!parsed) return
+
+  const result = parsed[0] + parsed[1]
+  if (result === id) return
+
+  return result
 }
 
 /*
