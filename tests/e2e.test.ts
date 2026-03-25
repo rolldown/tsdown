@@ -959,6 +959,62 @@ test('failOnWarn', async (context) => {
   ).rejects.toThrow('Module not found')
 })
 
+describe('resolve dep subpath without exports field', () => {
+  test('dep/file should resolve to dep/file.js', async (context) => {
+    const node_modules = {
+      'node_modules/my-dep/package.json': JSON.stringify({
+        name: 'my-dep',
+        version: '1.0.0',
+        main: 'index.js',
+      }),
+      'node_modules/my-dep/index.js': `export const main = 1`,
+      'node_modules/my-dep/functions/lt.js': `export const lt = () => {}`,
+    }
+
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { lt } from 'my-dep/functions/lt'`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          dependencies: { 'my-dep': '^1.0.0' },
+        }),
+      },
+    })
+
+    expect(fileMap['index.mjs']).toContain('my-dep/functions/lt.js')
+  })
+
+  test('dep/folder should resolve to dep/folder/index.js', async (context) => {
+    const node_modules = {
+      'node_modules/my-dep/package.json': JSON.stringify({
+        name: 'my-dep',
+        version: '1.0.0',
+        main: 'index.js',
+      }),
+      'node_modules/my-dep/index.js': `export const main = 1`,
+      'node_modules/my-dep/folder/index.js': `export const folder = 42`,
+    }
+
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { folder } from 'my-dep/folder'`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          dependencies: { 'my-dep': '^1.0.0' },
+        }),
+      },
+    })
+
+    expect(fileMap['index.mjs']).toContain('my-dep/folder/index.js')
+  })
+})
+
 test('.node file bundle', async (context) => {
   const files = {
     'index.ts': `

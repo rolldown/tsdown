@@ -2,7 +2,7 @@
   "name": "tsdown",
   "type": "module",
   "version": "0.21.4",
-  "packageManager": "pnpm@10.32.1",
+  "packageManager": "pnpm@10.33.0",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -91,7 +91,7 @@
     "@tsdown/exe": "workspace:*",
     "@vitejs/devtools": "*",
     "publint": "^0.3.0",
-    "typescript": "^5.0.0",
+    "typescript": "^5.0.0 || ^6.0.0",
     "unplugin-unused": "^0.5.0"
   },
   "peerDependenciesMeta": {
@@ -142,7 +142,6 @@
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
-    "@publint/pack": "catalog:dev",
     "@sxzz/eslint-config": "catalog:dev",
     "@sxzz/prettier-config": "catalog:dev",
     "@sxzz/test-utils": "catalog:dev",

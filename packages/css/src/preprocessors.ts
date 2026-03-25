@@ -292,8 +292,8 @@ async function compileSass(
     url: pathToFileURL(filename),
     sourceMap: false,
     syntax: lang === 'sass' ? 'indented' : 'scss',
-    importers: [internalImporter, ...(sassOptions.importers ?? [])],
     ...sassOptions,
+    importers: [internalImporter, ...(sassOptions.importers ?? [])],
   })
 
   return {
