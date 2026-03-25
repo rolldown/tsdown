@@ -4,6 +4,7 @@ import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
 import { slash } from '../utils/general.ts'
 import { loadConfigFile } from './file.ts'
+import { mergeConfig } from './options.ts'
 import type { InlineConfig, UserConfig } from './types.ts'
 
 const debug = createDebug('tsdown:config:workspace')
@@ -19,7 +20,7 @@ export async function resolveWorkspace(
   config: UserConfig,
   inlineConfig: InlineConfig,
 ): Promise<{ configs: UserConfig[]; files?: string[] }> {
-  const normalized: UserConfig = { ...config, ...inlineConfig }
+  const normalized = mergeConfig(config, inlineConfig)
   const rootCwd = normalized.cwd || process.cwd()
 
   let { workspace } = normalized
@@ -82,9 +83,7 @@ export async function resolveWorkspace(
         } else {
           debug('no workspace config file found in %s', cwd)
         }
-        return configs.map(
-          (config): UserConfig => ({ ...normalized, ...config }),
-        )
+        return configs.map((config) => mergeConfig(normalized, config))
       }),
     )
   ).flat()
