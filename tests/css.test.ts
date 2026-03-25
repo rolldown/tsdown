@@ -1660,7 +1660,6 @@ describe('css', () => {
             modules: { generateScopedName: 'design-system-[local]' },
           },
         },
-        snapshot: true,
       })
 
       const js = fileMap['index.mjs']
