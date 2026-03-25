@@ -1,7 +1,7 @@
 {
   "config-!~{00d}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
-    "mergeConfig": "declare function mergeConfig(_: InlineConfig, _: InlineConfig): InlineConfig",
+    "mergeConfig": "declare function mergeConfig(_: InlineConfig, ...overrides: InlineConfig[]): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
   },
   "config.d.mts": {
