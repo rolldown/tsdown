@@ -218,7 +218,7 @@ export function DepsPlugin(
           if (chunk.type === 'asset') continue
 
           for (const id of chunk.moduleIds) {
-            const parsed = await parseBundledDep(id)
+            const parsed = await readBundledDepInfo(id)
             if (!parsed) continue
 
             deps.add(parsed.name)
@@ -314,7 +314,7 @@ export function DepsPlugin(
 
     if (deps) {
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
-        const resolvedDep = await resolveDepPath(id, resolved)
+        const resolvedDep = await resolveDepSubpath(id, resolved)
         return resolvedDep ? [true, resolvedDep] : true
       }
 
@@ -330,35 +330,35 @@ export function DepsPlugin(
   }
 }
 
-function parseDepPath(
+export function parsePackageSpecifier(id: string): [name: string, subpath: string] {
+  const [first, second] = id.split('/', 3)
+
+  const name = first[0] === '@' && second ? `${first}/${second}` : first
+  const subpath = id.slice(name.length)
+
+  return [name, subpath]
+}
+
+const NODE_MODULES = '/node_modules/'
+export function parseNodeModulesPath(
   id: string,
 ): [name: string, subpath: string, root: string] | undefined {
   const slashed = slash(id)
-  const lastNmIdx = slashed.lastIndexOf('/node_modules/')
+  const lastNmIdx = slashed.lastIndexOf(NODE_MODULES)
   if (lastNmIdx === -1) return
 
-  const afterNm = slashed.slice(lastNmIdx + 14 /* '/node_modules/'.length */)
-  const parts = afterNm.split('/')
+  const afterNm = slashed.slice(lastNmIdx + NODE_MODULES.length)
 
-  let name: string
-  if (parts[0][0] === '@') {
-    name = `${parts[0]}/${parts[1]}`
-  } else {
-    name = parts[0]
-  }
+  const [name, subpath] = parsePackageSpecifier(afterNm)
+  const root = slashed.slice(0, lastNmIdx + NODE_MODULES.length + name.length)
 
-  const root = slashed.slice(
-    0,
-    lastNmIdx + 14 /* '/node_modules/'.length */ + name.length,
-  )
-
-  return [name, afterNm.slice(name.length), root]
+  return [name, subpath, root]
 }
 
-async function parseBundledDep(
+async function readBundledDepInfo(
   moduleId: string,
 ): Promise<{ name: string; pkgName: string; version: string } | undefined> {
-  const parsed = parseDepPath(moduleId)
+  const parsed = parseNodeModulesPath(moduleId)
   if (!parsed) return
 
   const [name, , root] = parsed
@@ -371,25 +371,14 @@ async function parseBundledDep(
   } catch {}
 }
 
-export function getPackageName(id: string): string | undefined {
-  const [first, second] = id.split('/', 3)
-  if (!first) return
-
-  if (first[0] === '@') {
-    return second ? `${first}/${second}` : undefined
-  }
-
-  return first
-}
-
 export function getTypesPackageName(id: string): string | undefined {
-  const packageName = getPackageName(id)
-  if (!packageName) return
+  const name = parsePackageSpecifier(id)[0]
+  if (!name) return
 
-  return `@types/${packageName.replace(/^@/, '').replace('/', '__')}`
+  return `@types/${name.replace(/^@/, '').replace('/', '__')}`
 }
 
-async function resolveDepPath(id: string, resolved: ResolvedId | null) {
+async function resolveDepSubpath(id: string, resolved: ResolvedId | null) {
   if (!resolved?.packageJsonPath) return
 
   const parts = id.split('/')
@@ -408,7 +397,7 @@ async function resolveDepPath(id: string, resolved: ResolvedId | null) {
   // no `exports` field
   if (pkgJson.exports) return
 
-  const parsed = parseDepPath(resolved.id)
+  const parsed = parseNodeModulesPath(resolved.id)
   if (!parsed) return
 
   const result = parsed[0] + parsed[1]
