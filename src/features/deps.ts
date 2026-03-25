@@ -330,7 +330,9 @@ export function DepsPlugin(
   }
 }
 
-export function parsePackageSpecifier(id: string): [name: string, subpath: string] {
+export function parsePackageSpecifier(
+  id: string,
+): [name: string, subpath: string] {
   const [first, second] = id.split('/', 3)
 
   const name = first[0] === '@' && second ? `${first}/${second}` : first

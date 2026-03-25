@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { getTypesPackageName, parseNodeModulesPath, parsePackageSpecifier } from './deps.ts'
+import {
+  getTypesPackageName,
+  parseNodeModulesPath,
+  parsePackageSpecifier,
+} from './deps.ts'
 
 describe('parsePackageSpecifier', () => {
   it('parses a simple package name', () => {
@@ -31,15 +35,15 @@ describe('parsePackageSpecifier', () => {
 
 describe('parseNodeModulesPath', () => {
   it('returns undefined for paths without node_modules', () => {
-    expect(parseNodeModulesPath('/project/project/src/index.ts')).toBeUndefined()
+    expect(
+      parseNodeModulesPath('/project/project/src/index.ts'),
+    ).toBeUndefined()
   })
 
   it('parses a simple package in node_modules', () => {
-    expect(parseNodeModulesPath('/project/node_modules/lodash/index.js')).toEqual([
-      'lodash',
-      '/index.js',
-      '/project/node_modules/lodash',
-    ])
+    expect(
+      parseNodeModulesPath('/project/node_modules/lodash/index.js'),
+    ).toEqual(['lodash', '/index.js', '/project/node_modules/lodash'])
   })
 
   it('parses a scoped package in node_modules', () => {
@@ -54,7 +58,9 @@ describe('parseNodeModulesPath', () => {
 
   it('uses the last node_modules segment for nested deps', () => {
     expect(
-      parseNodeModulesPath('/project/node_modules/foo/node_modules/bar/lib/utils.js'),
+      parseNodeModulesPath(
+        '/project/node_modules/foo/node_modules/bar/lib/utils.js',
+      ),
     ).toEqual([
       'bar',
       '/lib/utils.js',
