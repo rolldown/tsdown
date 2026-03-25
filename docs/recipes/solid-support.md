@@ -1,6 +1,6 @@
 # Solid Support
 
-`tsdown` streamlines the development of Solid component libraries by integrating with [`rolldown-plugin-solid`](https://npmx.dev/package/rolldown-plugin-solid) or [`unplugin-solid`](https://github.com/unplugin/unplugin-solid). This integration allows you to bundle Solid components and automatically generate type declarations using modern TypeScript tools.
+`tsdown` streamlines the development of Solid component libraries by integrating with [`unplugin-solid`](https://github.com/unplugin/unplugin-solid). This integration allows you to bundle Solid components and automatically generate type declarations using modern TypeScript tools.
 
 ## Quick Start
 
@@ -15,8 +15,8 @@ npx create-tsdown@latest -t solid
 To configure `tsdown` for a Solid library, use the following setup in your `tsdown.config.ts`:
 
 ```ts [tsdown.config.ts]
-import solid from 'rolldown-plugin-solid' // or use 'unplugin-solid/rolldown'
 import { defineConfig } from 'tsdown'
+import solid from 'unplugin-solid/rolldown'
 
 export default defineConfig({
   entry: ['./src/index.ts'],
@@ -52,28 +52,6 @@ export { MyButton } from './MyButton'
 ```
 
 Install the required dependencies:
-
-::: code-group
-
-```sh [npm]
-npm install -D rolldown-plugin-solid
-```
-
-```sh [pnpm]
-pnpm add -D rolldown-plugin-solid
-```
-
-```sh [yarn]
-yarn add -D rolldown-plugin-solid
-```
-
-```sh [bun]
-bun add -D rolldown-plugin-solid
-```
-
-:::
-
-or, if you prefer to use `unplugin-solid`:
 
 ::: code-group
 
