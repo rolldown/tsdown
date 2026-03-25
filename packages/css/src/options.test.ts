@@ -63,6 +63,16 @@ describe('resolveCssOptions', () => {
     })
   })
 
+  test('splitting defaults to true when unbundle is true', () => {
+    const result = resolveCssOptions({}, undefined, true)
+    expect(result.splitting).toBe(true)
+  })
+
+  test('explicit splitting=false overrides unbundle default', () => {
+    const result = resolveCssOptions({ splitting: false }, undefined, true)
+    expect(result.splitting).toBe(false)
+  })
+
   test('custom options are passed through', () => {
     const result = resolveCssOptions({
       transformer: 'postcss',

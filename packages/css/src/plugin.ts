@@ -40,7 +40,7 @@ export function CssPlugin(
   { logger }: { logger: Logger },
 ): Plugin[] {
   const cssConfig: CssPluginConfig = {
-    css: resolveCssOptions(config.css, config.target),
+    css: resolveCssOptions(config.css, config.target, config.unbundle),
     cwd: config.cwd,
     target: config.target,
   }
@@ -197,9 +197,7 @@ export function CssPlugin(
           if (
             chunk.type !== 'chunk' ||
             chunk.exports.length ||
-            !chunk.moduleIds.length ||
-            chunk.isEntry ||
-            chunk.isDynamicEntry
+            !chunk.moduleIds.length
           )
             continue
           // Strict: all modules are CSS
@@ -207,9 +205,11 @@ export function CssPlugin(
             pureCssChunks.add(chunk.fileName)
             continue
           }
-          // Relaxed: chunk has CSS modules and code is trivially empty
+          // Relaxed: non-entry chunk has CSS modules and code is trivially empty
           // (e.g. a JS file whose only purpose is `import './foo.css'`)
           if (
+            !chunk.isEntry &&
+            !chunk.isDynamicEntry &&
             chunk.moduleIds.some((id) => styles.has(id)) &&
             isEmptyChunkCode(chunk.code)
           ) {

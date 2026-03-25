@@ -1523,6 +1523,24 @@ describe('css', () => {
       expect(asyncCode).not.toContain('empty css')
     })
 
+    test('with unbundle=true', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './button.css'\nexport const a = 1`,
+          'button.css': `.button { color: red }`,
+        },
+        options: {
+          unbundle: true,
+          css: { inject: true },
+        },
+      })
+      expect(outputFiles).toContain('button.css')
+      expect(outputFiles).toContain('index.mjs')
+      expect(fileMap['index.mjs']).toContain('import "./button.css"')
+      expect(fileMap['index.mjs']).not.toContain('empty css')
+    })
+
     test('rewrites shared css-only chunk imports to css files', async (context) => {
       const { outputFiles, fileMap } = await testBuild({
         context,
