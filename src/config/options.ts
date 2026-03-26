@@ -5,6 +5,7 @@ import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
+import { parseTsconfig } from 'rolldown-plugin-dts/internal'
 import { resolveClean } from '../features/clean.ts'
 import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
@@ -156,7 +157,16 @@ export async function resolveUserConfig(
   exe = resolveFeatureOption(exe, {})
 
   if (dts == null) {
-    dts = exe ? false : !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
+    if (exe) {
+      dts = false
+    } else if (pkg?.types || pkg?.typings || hasExportsTypes(pkg)) {
+      dts = true
+    } else if (tsconfig) {
+      const parsed = parseTsconfig(tsconfig)
+      dts = !!parsed.compilerOptions?.declaration
+    } else {
+      dts = false
+    }
   }
   dts = resolveFeatureOption(dts, {})
 
