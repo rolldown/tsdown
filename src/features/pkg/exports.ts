@@ -10,6 +10,7 @@ import type {
   RolldownChunk,
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
+import type { Logger } from '../../utils/logger.ts'
 import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
@@ -94,6 +95,23 @@ export interface ExportsOptions {
    * @see {@link https://github.com/e18e/ecosystem-issues/issues/237}
    */
   inlinedDependencies?: boolean
+
+  /**
+   * Auto-generate the `bin` field in package.json.
+   *
+   * - `true`: Auto-detect entry chunks with shebangs. Uses package name (without scope) as bin name.
+   *   Errors if multiple shebang entries are found.
+   * - `string`: Source file path to use as the bin entry. Bin name defaults to package name (without scope).
+   * - `Record<string, string>`: Map of bin command names to source file paths.
+   *
+   * @example
+   * bin: true
+   * @example
+   * bin: './src/cli.ts'
+   * @example
+   * bin: { tool: './src/cli-tool.ts' }
+   */
+  bin?: boolean | string | Record<string, string>
 }
 
 export async function writeExports(
@@ -104,7 +122,7 @@ export async function writeExports(
   typeAssert(options.pkg)
 
   const { pkg } = options
-  const { publishExports, ...generated } = await generateExports(
+  const { publishExports, bin, ...generated } = await generateExports(
     pkg,
     chunks,
     options,
@@ -114,6 +132,7 @@ export async function writeExports(
   const updatedPkg = {
     ...pkg,
     ...generated,
+    ...(bin === undefined ? {} : { bin }),
     packageJsonPath: undefined,
   }
 
@@ -146,13 +165,14 @@ function shouldExclude(
 export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
-  options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger'>,
+  options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger' | 'cwd'>,
   inlinedDeps?: Record<string, string | string[]>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
   types: string | undefined
   exports: Record<string, any>
+  bin?: string | Record<string, string>
   inlinedDependencies?: Record<string, string | string[]>
   publishExports?: Record<string, any>
 }> {
@@ -166,9 +186,11 @@ export async function generateExports(
       customExports,
       legacy,
       inlinedDependencies: emitInlinedDeps = true,
+      bin,
     },
     css,
     logger,
+    cwd,
   } = options
 
   const pkgRoot = path.dirname(pkg.packageJsonPath)
@@ -312,6 +334,7 @@ export async function generateExports(
     module: legacy ? module || pkg.module : undefined,
     types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
+    bin: generateBin(bin, pkg, chunks, pkgRoot, logger, cwd),
     inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     publishExports,
   }
@@ -400,6 +423,101 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
   }
 
   return false
+}
+
+const RE_SHEBANG = /^#!.*/
+
+function generateBin(
+  bin: ExportsOptions['bin'],
+  pkg: PackageJson,
+  chunks: ChunksByFormat,
+  pkgRoot: string,
+  logger: Logger,
+  cwd: string,
+): string | Record<string, string> | undefined {
+  if (!bin) return
+
+  if (bin === true || typeof bin === 'string') {
+    if (!pkg.name)
+      throw new Error(
+        'Package name is required when using string form for `bin`',
+      )
+
+    const binName = pkg.name[0] === '@' ? pkg.name.split('/', 2)[1] : pkg.name
+
+    if (bin === true) {
+      let detected: string | undefined
+      const seen = new Set<string>()
+
+      for (const format of ['es', 'cjs'] as const) {
+        const formatChunks = chunks[format]
+        if (!formatChunks) continue
+        for (const chunk of formatChunks) {
+          if (chunk.type !== 'chunk' || !chunk.isEntry || !chunk.facadeModuleId)
+            continue
+          if (!RE_SHEBANG.test(chunk.code)) continue
+          if (seen.has(chunk.facadeModuleId)) continue
+          seen.add(chunk.facadeModuleId)
+
+          if (detected) {
+            throw new Error(
+              'Multiple entry chunks with shebangs found. Use `exports.bin: { name: "./src/file.ts" }` to specify which one to use.',
+            )
+          }
+          detected = join(pkgRoot, chunk.outDir, slash(chunk.fileName))
+        }
+      }
+
+      if (detected == null) {
+        logger.warn(
+          '`exports.bin` is true but no entry chunks with shebangs were found',
+        )
+        return
+      }
+      return { [binName]: detected }
+    }
+
+    if (typeof bin === 'string') {
+      const match = findChunkBySource(bin)
+      if (!match) {
+        throw new Error(`Could not find output chunk for bin entry "${bin}"`)
+      }
+      return { [binName]: match }
+    }
+  }
+
+  // Object form: { commandName: './src/file.ts' }
+  const result: Record<string, string> = {}
+  for (const [cmdName, sourcePath] of Object.entries(bin)) {
+    const match = findChunkBySource(sourcePath)
+    if (!match) {
+      throw new Error(
+        `Could not find output chunk for bin entry "${cmdName}": "${sourcePath}"`,
+      )
+    }
+    result[cmdName] = match
+  }
+  return result
+
+  function findChunkBySource(sourcePath: string): string | undefined {
+    const resolved = path.resolve(cwd, sourcePath)
+
+    for (const format of ['es', 'cjs'] as const) {
+      const formatChunks = chunks[format]
+      if (!formatChunks) continue
+      for (const chunk of formatChunks) {
+        if (chunk.type !== 'chunk' || !chunk.isEntry) continue
+        if (chunk.facadeModuleId !== resolved) continue
+
+        if (!RE_SHEBANG.test(chunk.code)) {
+          logger.warn(
+            `Bin entry "${sourcePath}" does not contain a shebang line`,
+          )
+        }
+        return join(pkgRoot, chunk.outDir, slash(chunk.fileName))
+      }
+    }
+  }
 }
 
 function getExportName(
