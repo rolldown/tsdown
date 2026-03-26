@@ -133,6 +133,8 @@ async function resolveInputOptions(
           cjsDefault,
         }),
       )
+    } else if (dts.cjsReexport && isDualFormat) {
+      plugins.push(CjsDtsReexportPlugin())
     }
   }
   let cssPostPlugins: Plugin[] | undefined
@@ -337,6 +339,28 @@ function handlePluginInspect(plugins: RolldownPluginOption) {
         return `"rolldown plugin: ${plugins.name}"`
       }
     }
+  }
+}
+
+export function CjsDtsReexportPlugin(): Plugin {
+  return {
+    name: 'tsdown:cjs-dts-reexport',
+    generateBundle(_options, bundle) {
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type !== 'chunk') continue
+
+        const match = chunk.fileName.match(/^(.*)\.(cjs|js)$/)
+        if (!match) continue
+
+        const baseName = match[1]
+        const dCtsName =
+          match[2] === 'cjs' ? `${baseName}.d.cts` : `${baseName}.d.ts`
+        const dMtsBasename = path.basename(`${baseName}.d.mts`)
+        const content = `export * from './${dMtsBasename}'\n`
+
+        this.emitFile({ type: 'asset', fileName: dCtsName, source: content })
+      }
+    },
   }
 }
 

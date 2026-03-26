@@ -127,6 +127,7 @@
     "DepsConfig": "interface DepsConfig {\n neverBundle?: ExternalOption\n alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn\n onlyBundle?: Arrayable<string | RegExp> | false\n onlyAllowBundle?: Arrayable<string | RegExp> | false\n skipNodeModulesBundle?: boolean\n}",
     "DepsPlugin": "declare function DepsPlugin(_: ResolvedConfig, _: TsdownBundle): Plugin",
     "DevtoolsOptions": "interface DevtoolsOptions extends NonNullable<InputOptions['devtools']> {\n ui?: boolean | Partial<StartOptions>\n clean?: boolean\n}",
+    "DtsOptions": "interface DtsOptions extends Options$1 {\n cjsReexport?: boolean\n}",
     "ExeOptions": "interface ExeOptions extends ExeExtensionOptions {\n seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>\n fileName?: string | ((_: RolldownChunk) => string)\n outDir?: string\n}",
     "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: Record<string, any> | ((_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>)\n inlinedDependencies?: boolean\n bin?: boolean | string | Record<string, string>\n}",
     "Format": "type Format = ModuleFormat",
