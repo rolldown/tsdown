@@ -4,7 +4,6 @@ export default {
   name: 'migrate',
   entry: ['./src/{index,run}.ts'],
   exports: {
-    devExports: 'dev',
     bin: true,
   },
 } satisfies UserConfig
