@@ -229,6 +229,29 @@ button {
     expect(css).not.toContain('@include')
   })
 
+  test('#837', async (context) => {
+    const Vue = (await import('unplugin-vue/rolldown')).default
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `export { default as MyButton } from './MyButton.vue'`,
+        'MyButton.vue': `<template><button class="btn">Click</button></template>
+<style scoped>
+.btn { color: red; }
+</style>`,
+      },
+      options: {
+        plugins: [Vue({ isProduction: true })],
+        deps: { skipNodeModulesBundle: true },
+      },
+    })
+    expect(outputFiles).toContain('index.mjs')
+    expect(outputFiles).toContain('style.css')
+    const css = fileMap['style.css']
+    expect(css).toContain('.btn')
+    expect(css).toMatch(/\[data-v-[\da-f]+\]/)
+  })
+
   test('#772', async (context) => {
     const { fileMap, outputFiles } = await testBuild({
       context,
