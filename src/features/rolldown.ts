@@ -134,6 +134,7 @@ async function resolveInputOptions(
       )
     }
   }
+  let cssPostPlugins: Plugin[] | undefined
   if (!cjsDts) {
     if (unused) {
       const { Unused } =
@@ -150,7 +151,9 @@ async function resolveInputOptions(
 
     if (pkgExists('@tsdown/css')) {
       const { CssPlugin } = await import('@tsdown/css')
-      plugins.push(CssPlugin(config, { logger }))
+      const cssPlugins = CssPlugin(config, { logger })
+      plugins.push(...cssPlugins.pre)
+      cssPostPlugins = cssPlugins.post
     } else {
       plugins.push(CssGuardPlugin())
     }
@@ -171,6 +174,12 @@ async function resolveInputOptions(
 
   if (!cjsDts) {
     plugins.push(userPlugins)
+  }
+
+  // CSS post plugins must run AFTER user plugins so that user transforms
+  // (e.g. Vue scoped CSS) are applied before CSS is collected and emitted.
+  if (cssPostPlugins) {
+    plugins.push(...cssPostPlugins)
   }
 
   const define = {

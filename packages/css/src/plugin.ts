@@ -36,22 +36,42 @@ interface CssPluginConfig {
   target?: string[]
 }
 
+interface CssPluginResult {
+  /** Plugins that run BEFORE user plugins (CSS compilation) */
+  pre: Plugin[]
+  /** Plugins that run AFTER user plugins (CSS collection & emission) */
+  post: Plugin[]
+}
+
+function shouldSkipTransform(id: string, cleanId: string): boolean {
+  const isInline = RE_INLINE.test(id)
+  // Skip CSS files with non-inline queries (e.g. ?raw handled by other plugins),
+  // but allow through virtual CSS from other plugins (e.g. Vue SFC `lang.css`)
+  // where the clean path itself is not a CSS file.
+  return id !== cleanId && !isInline && CSS_LANGS_RE.test(cleanId)
+}
+
 export function CssPlugin(
   config: ResolvedConfig,
   { logger }: { logger: Logger },
-): Plugin[] {
+): CssPluginResult {
   const cssConfig: CssPluginConfig = {
     css: resolveCssOptions(config.css, config.target, config.unbundle),
     cwd: config.cwd,
     target: config.target,
   }
   const styles: CssStyles = new Map()
+  const modulesMap = new Map<string, Record<string, string>>()
 
-  const transformPlugin: Plugin = {
+  // Pre-user plugin: compiles CSS (preprocessors, LightningCSS/PostCSS)
+  // but does NOT convert to JS — allows user plugins (e.g. Vue scoped CSS)
+  // to transform the compiled CSS before collection.
+  const cssCompilePlugin: Plugin = {
     name: '@tsdown/css',
 
     buildStart() {
       styles.clear()
+      modulesMap.clear()
     },
 
     resolveId: {
@@ -91,13 +111,9 @@ export function CssPlugin(
       filter: { id: CSS_LANGS_RE },
       async handler(code, id) {
         const cleanId = getCleanId(id)
+        if (shouldSkipTransform(id, cleanId)) return
+
         const isInline = RE_INLINE.test(id)
-
-        // Skip CSS files with non-inline queries (e.g. ?raw handled by other plugins),
-        // but allow through virtual CSS from other plugins (e.g. Vue SFC `lang.css`)
-        // where the clean path itself is not a CSS file.
-        if (id !== cleanId && !isInline && CSS_LANGS_RE.test(cleanId)) return
-
         const isModule =
           !isInline &&
           cssConfig.css.modules !== false &&
@@ -151,7 +167,29 @@ export function CssPlugin(
             )
           }
           modulesConfig?.getJSON?.(cleanId, modules, cleanId)
+          modulesMap.set(id, modules)
         }
+
+        // Return compiled CSS without converting to JS.
+        // User plugins can still transform this CSS (e.g. Vue scoped styles).
+        return { code }
+      },
+    },
+  }
+
+  // Post-user plugin: collects final CSS (after user plugin transforms)
+  // and converts CSS modules to JS exports.
+  const cssCollectPlugin: Plugin = {
+    name: '@tsdown/css:collect',
+
+    transform: {
+      filter: { id: CSS_LANGS_RE },
+      handler(code, id) {
+        const cleanId = getCleanId(id)
+        if (shouldSkipTransform(id, cleanId)) return
+
+        const isInline = RE_INLINE.test(id)
+        const modules = modulesMap.get(id)
 
         if (isInline) {
           return {
@@ -182,7 +220,7 @@ export function CssPlugin(
     },
   }
 
-  const plugins: Plugin[] = [transformPlugin]
+  const postPlugins: Plugin[] = [cssCollectPlugin]
 
   if (cssConfig.css.inject) {
     // Inject plugin runs BEFORE CssPostPlugin so it can see pure CSS chunks
@@ -273,11 +311,15 @@ export function CssPlugin(
         }
       },
     }
-    plugins.push(injectPlugin)
+    postPlugins.push(injectPlugin)
   }
 
-  plugins.push(CssPostPlugin(cssConfig.css, styles))
-  return plugins
+  postPlugins.push(CssPostPlugin(cssConfig.css, styles))
+
+  return {
+    pre: [cssCompilePlugin],
+    post: postPlugins,
+  }
 }
 
 interface ProcessResult {
