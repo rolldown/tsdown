@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
+import { RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { describe, expect, test, vi } from 'vitest'
 import { resolveConfig, type UserConfig } from '../src/config/index.ts'
 import { slash } from '../src/utils/general.ts'

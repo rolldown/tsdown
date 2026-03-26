@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { RE_CSS, RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
+import { RE_CSS, RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'

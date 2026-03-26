@@ -1,4 +1,4 @@
-import { RE_CSS, RE_DTS, RE_JS } from 'rolldown-plugin-dts/filename'
+import { RE_CSS, RE_DTS, RE_JS } from 'rolldown-plugin-dts/internal'
 import { getPackageType, type PackageType } from '../utils/package.ts'
 import type {
   Format,

@@ -3,7 +3,7 @@ import { isBuiltin } from 'node:module'
 import path from 'node:path'
 import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
-import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/filename'
+import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { and, id, importerId, include } from 'rolldown/filter'
 import {
   matchPattern,
