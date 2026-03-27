@@ -44,8 +44,26 @@ import type {
   OutputOptions,
   TreeshakingOptions,
 } from 'rolldown'
-import type { Options as DtsOptions } from 'rolldown-plugin-dts'
+import type { Options as RolldownPluginDtsOptions } from 'rolldown-plugin-dts'
 import type { Options as UnusedOptions } from 'unplugin-unused'
+
+export interface DtsOptions extends RolldownPluginDtsOptions {
+  /**
+   * When building dual ESM+CJS formats, generate a `.d.cts` re-export stub
+   * instead of running a full second TypeScript compilation pass.
+   *
+   * The stub re-exports everything from the corresponding `.d.mts` file,
+   * ensuring CJS and ESM consumers share the same type declarations. This
+   * eliminates the TypeScript "dual module hazard" where separate `.d.cts`
+   * and `.d.mts` declarations cause `TS2352` ("neither type sufficiently
+   * overlaps") errors when casting between types derived from the same class.
+   *
+   * Only applies when building both `esm` and `cjs` formats simultaneously.
+   *
+   * @default false
+   */
+  cjsReexport?: boolean
+}
 
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
@@ -83,7 +101,6 @@ export type {
   CopyOptionsFn,
   DepsConfig,
   DevtoolsOptions,
-  DtsOptions,
   ExeOptions,
   ExportsOptions,
   NoExternalFn,
