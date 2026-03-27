@@ -1,5 +1,5 @@
 {
-  "config-!~{00d}~.d.mts": {
+  "config-!~{00c}~.d.mts": {
     "defineConfig": "declare function defineConfig(_: UserConfigExport): UserConfigExport",
     "mergeConfig": "declare function mergeConfig(_: InlineConfig, ...overrides: InlineConfig[]): InlineConfig",
     "resolveUserConfig": "declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>"
@@ -73,7 +73,7 @@
   "internal.d.mts": {
     "fsExists": "declare function fsExists(_: string): Promise<boolean>",
     "fsRemove": "declare function fsRemove(_: string): Promise<void>",
-    "importWithError": "declare function importWithError<T>(_: string, _: string[]): Promise<T>",
+    "importWithError": "declare function importWithError<T>(_: string): Promise<T>",
     "resolveComma": "declare function resolveComma<T extends string>(_: T[]): T[]",
     "toArray": "declare function toArray<T>(_: T | T[] | null | undefined, _: T): T[]",
     "#exports": [
@@ -87,7 +87,7 @@
       "toArray"
     ]
   },
-  "logger-!~{00b}~.d.mts": {
+  "logger-!~{00a}~.d.mts": {
     "Arrayable": "type Arrayable<T> = T | T[]",
     "Awaitable": "type Awaitable<T> = T | Promise<T>",
     "globalLogger": "Logger",
@@ -113,8 +113,8 @@
   "run.d.mts": {
     "#exports": []
   },
-  "types-!~{00c}~.d.mts": {
-    "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
+  "types-!~{00b}~.d.mts": {
+    "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n module?: typeof _$_arethetypeswrong_core0\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
     "BuildContext": "interface BuildContext {\n options: ResolvedConfig\n hooks: Hookable<TsdownHooks>\n}",
     "ChunkAddon": "type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string",
     "ChunkAddonFunction": "type ChunkAddonFunction = (_: { format: Format; fileName: string }) => ChunkAddonObject | string | undefined",
@@ -151,7 +151,7 @@
     "PackageJsonScriptWithPreAndPost": "type PackageJsonScriptWithPreAndPost<S extends string> = S | `${'pre' | 'post'}${S}`",
     "PackageJsonWithPath": "interface PackageJsonWithPath extends PackageJson {\n packageJsonPath: string\n}",
     "PackageType": "type PackageType = 'module' | 'commonjs' | undefined",
-    "PublintOptions": "interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {}",
+    "PublintOptions": "interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {\n module?: [typeof _$publint, typeof _$publint_utils0]\n}",
     "ReportOptions": "interface ReportOptions {\n gzip?: boolean\n brotli?: boolean\n maxCompressSize?: number\n}",
     "ReportPlugin": "declare function ReportPlugin(_: ResolvedConfig, _: boolean, _: boolean): Plugin",
     "ResolvedConfig": "type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, 'workspace' | 'fromVite' | 'publicDir' | 'bundle' | 'injectStyle' | 'removeNodeProtocol' | 'external' | 'noExternal' | 'inlineOnly' | 'skipNodeModulesBundle' | 'logLevel' | 'failOnWarn' | 'customLogger' | 'envFile' | 'envPrefix'>, 'globalName' | 'inputOptions' | 'outputOptions' | 'minify' | 'define' | 'alias' | 'onSuccess' | 'outExtensions' | 'hooks' | 'copy' | 'loader' | 'name' | 'banner' | 'footer' | 'checks' | 'css'>, { entry: Record<string, string>; rawEntry?: TsdownInputOption; nameLabel: string | undefined; format: NormalizedFormat; target?: string[]; clean: string[]; pkg?: PackageJsonWithPath; nodeProtocol: 'strip' | boolean; logger: Logger; ignoreWatch: Array<string | RegExp>; deps: ResolvedDepsConfig; root: string; dts: false | DtsOptions; report: false | ReportOptions; tsconfig: false | string; exports: false | ExportsOptions; devtools: false | DevtoolsOptions; publint: false | PublintOptions; attw: false | AttwOptions; unused: false | UnusedOptions; exe: false | ExeOptions }>",
@@ -163,7 +163,7 @@
     "TsdownBundle": "interface TsdownBundle extends AsyncDisposable {\n chunks: RolldownChunk[]\n config: ResolvedConfig\n inlinedDeps: Map<string, Set<string>>\n}",
     "TsdownHooks": "interface TsdownHooks {\n 'build:prepare': (_: BuildContext) => void | Promise<void>\n 'build:before': (_: BuildContext & RolldownContext) => void | Promise<void>\n 'build:done': (_: BuildContext & { chunks: RolldownChunk[] }) => void | Promise<void>\n}",
     "TsdownInputOption": "type TsdownInputOption = Arrayable<string | Record<string, Arrayable<string>>>",
-    "UserConfig": "interface UserConfig {\n entry?: TsdownInputOption\n deps?: DepsConfig\n external?: ExternalOption\n noExternal?: Arrayable<string | RegExp> | NoExternalFn\n inlineOnly?: Arrayable<string | RegExp> | false\n skipNodeModulesBundle?: boolean\n alias?: Record<string, string>\n tsconfig?: string | boolean\n platform?: 'node' | 'neutral' | 'browser'\n target?: string | string[] | false\n env?: Record<string, any>\n envFile?: string\n envPrefix?: string | string[]\n define?: Record<string, string>\n shims?: boolean\n treeshake?: boolean | TreeshakingOptions\n loader?: ModuleTypes\n removeNodeProtocol?: boolean\n nodeProtocol?: 'strip' | boolean\n checks?: ChecksOptions & { legacyCjs?: boolean }\n plugins?: InputOptions['plugins']\n inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: { cjsDts: boolean }) => Awaitable<InputOptions | void | null>)\n format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>\n globalName?: string\n outDir?: string\n write?: boolean\n sourcemap?: Sourcemap\n clean?: boolean | string[]\n minify?: boolean | 'dce-only' | MinifyOptions\n footer?: ChunkAddon\n banner?: ChunkAddon\n unbundle?: boolean\n root?: string\n bundle?: boolean\n fixedExtension?: boolean\n outExtensions?: OutExtensionFactory\n hash?: boolean\n cjsDefault?: boolean\n outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: { cjsDts: boolean }) => Awaitable<OutputOptions | void | null>)\n cwd?: string\n name?: string\n logLevel?: LogLevel\n failOnWarn?: boolean | CIOption\n customLogger?: Logger\n fromVite?: boolean | 'vitest'\n watch?: boolean | Arrayable<string>\n ignoreWatch?: Arrayable<string | RegExp>\n devtools?: WithEnabled<DevtoolsOptions>\n onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>)\n dts?: WithEnabled<DtsOptions>\n unused?: WithEnabled<UnusedOptions>\n publint?: WithEnabled<PublintOptions>\n attw?: WithEnabled<AttwOptions>\n report?: WithEnabled<ReportOptions>\n globImport?: boolean\n exports?: WithEnabled<ExportsOptions>\n css?: _tsdown_css0.CssOptions\n injectStyle?: boolean\n publicDir?: CopyOptions | CopyOptionsFn\n copy?: CopyOptions | CopyOptionsFn\n hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>)\n exe?: WithEnabled<ExeOptions>\n workspace?: Workspace | Arrayable<string> | true\n}",
+    "UserConfig": "interface UserConfig {\n entry?: TsdownInputOption\n deps?: DepsConfig\n external?: ExternalOption\n noExternal?: Arrayable<string | RegExp> | NoExternalFn\n inlineOnly?: Arrayable<string | RegExp> | false\n skipNodeModulesBundle?: boolean\n alias?: Record<string, string>\n tsconfig?: string | boolean\n platform?: 'node' | 'neutral' | 'browser'\n target?: string | string[] | false\n env?: Record<string, any>\n envFile?: string\n envPrefix?: string | string[]\n define?: Record<string, string>\n shims?: boolean\n treeshake?: boolean | TreeshakingOptions\n loader?: ModuleTypes\n removeNodeProtocol?: boolean\n nodeProtocol?: 'strip' | boolean\n checks?: ChecksOptions & { legacyCjs?: boolean }\n plugins?: InputOptions['plugins']\n inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: { cjsDts: boolean }) => Awaitable<InputOptions | void | null>)\n format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>\n globalName?: string\n outDir?: string\n write?: boolean\n sourcemap?: Sourcemap\n clean?: boolean | string[]\n minify?: boolean | 'dce-only' | MinifyOptions\n footer?: ChunkAddon\n banner?: ChunkAddon\n unbundle?: boolean\n root?: string\n bundle?: boolean\n fixedExtension?: boolean\n outExtensions?: OutExtensionFactory\n hash?: boolean\n cjsDefault?: boolean\n outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: { cjsDts: boolean }) => Awaitable<OutputOptions | void | null>)\n cwd?: string\n name?: string\n logLevel?: LogLevel\n failOnWarn?: boolean | CIOption\n customLogger?: Logger\n fromVite?: boolean | 'vitest'\n watch?: boolean | Arrayable<string>\n ignoreWatch?: Arrayable<string | RegExp>\n devtools?: WithEnabled<DevtoolsOptions>\n onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>)\n dts?: WithEnabled<DtsOptions>\n unused?: WithEnabled<UnusedOptions>\n publint?: WithEnabled<PublintOptions>\n attw?: WithEnabled<AttwOptions>\n report?: WithEnabled<ReportOptions>\n globImport?: boolean\n exports?: WithEnabled<ExportsOptions>\n css?: _$_tsdown_css0.CssOptions\n injectStyle?: boolean\n publicDir?: CopyOptions | CopyOptionsFn\n copy?: CopyOptions | CopyOptionsFn\n hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>)\n exe?: WithEnabled<ExeOptions>\n workspace?: Workspace | Arrayable<string> | true\n}",
     "UserConfigExport": "type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>",
     "UserConfigFn": "type UserConfigFn = (_: InlineConfig, _: { ci: boolean; rootConfig?: UserConfig }) => Awaitable<Arrayable<UserConfig>>",
     "WithEnabled": "type WithEnabled<T> = boolean | undefined | CIOption | (T & { enabled?: boolean | CIOption })",

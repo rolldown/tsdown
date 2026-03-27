@@ -1,4 +1,3 @@
-import { pathToFileURL } from 'node:url'
 import picomatch from 'picomatch'
 
 export function toArray<T>(
@@ -58,19 +57,9 @@ export function pkgExists(moduleName: string): boolean {
   return false
 }
 
-export async function importWithError<T>(
-  moduleName: string,
-  resolvePaths?: string[],
-): Promise<T> {
-  let resolved: string | undefined
-  if (resolvePaths) {
-    resolved = pathToFileURL(
-      require.resolve(moduleName, { paths: resolvePaths }),
-    ).href
-  }
-
+export async function importWithError<T>(moduleName: string): Promise<T> {
   try {
-    return (await import(resolved || moduleName)) as T
+    return (await import(moduleName)) as T
   } catch (error) {
     const final = new Error(
       `Failed to import module "${moduleName}". Please ensure it is installed.`,

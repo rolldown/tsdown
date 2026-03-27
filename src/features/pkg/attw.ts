@@ -29,8 +29,7 @@ const problemFlags: Record<ProblemKind, string> = {
 }
 
 export interface AttwOptions extends CheckPackageOptions {
-  /** @internal */
-  resolvePaths?: string[]
+  module?: typeof import('@arethetypeswrong/core')
 
   /**
    * Profiles select a set of resolution modes to require/ignore. All are evaluated but failures outside
@@ -120,9 +119,11 @@ export async function attw(
   const t = performance.now()
   debug('Running attw check')
 
-  const attwCore = await importWithError<
-    typeof import('@arethetypeswrong/core')
-  >('@arethetypeswrong/core', options.attw.resolvePaths)
+  const attwCore =
+    options.attw.module ||
+    (await importWithError<typeof import('@arethetypeswrong/core')>(
+      '@arethetypeswrong/core',
+    ))
 
   const pkg = attwCore.createPackageFromTarballData(tarball)
   const checkResult = await attwCore.checkPackage(pkg, attwOptions)

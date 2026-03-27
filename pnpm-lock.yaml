@@ -195,8 +195,8 @@ catalogs:
       specifier: ^6.0.1
       version: 6.0.1
     rolldown-plugin-dts:
-      specifier: ^0.23.0
-      version: 0.23.0
+      specifier: ^0.23.1
+      version: 0.23.1
     semver:
       specifier: ^7.7.4
       version: 7.7.4
@@ -254,7 +254,7 @@ importers:
         version: 1.0.0-rc.12
       rolldown-plugin-dts:
         specifier: catalog:prod
-        version: 0.23.0(@typescript/native-preview@7.0.0-dev.20260326.1)(rolldown@1.0.0-rc.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2))
+        version: 0.23.1(@typescript/native-preview@7.0.0-dev.20260326.1)(rolldown@1.0.0-rc.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2))
       semver:
         specifier: catalog:prod
         version: 7.7.4
@@ -3668,8 +3668,8 @@ packages:
     peerDependencies:
       rolldown: 1.0.0-rc.12
 
-  rolldown-plugin-dts@0.23.0:
-    resolution: {integrity: sha512-TQwrD3PEkDOnJWaE3+MWEocSWbLn4BRV0KOW9abn9UPj+NlVCimHGVkNVYKy684VqSJLumLMuFq+hyYo10GWTA==}
+  rolldown-plugin-dts@0.23.1:
+    resolution: {integrity: sha512-VTnvu5cksnumMMOiL7FUvACGpdGtCVNGbeVc6/6KffImIrA0DZOp7/0lBIt0qI6Nu3/K/lL/Dy7piuVGt9ZeGw==}
     engines: {node: '>=20.19.0'}
     peerDependencies:
       '@ts-macro/tsc': ^0.3.6
@@ -7840,7 +7840,7 @@ snapshots:
       rolldown: 1.0.0-rc.12
       unplugin-utils: 0.3.1
 
-  rolldown-plugin-dts@0.23.0(@typescript/native-preview@7.0.0-dev.20260326.1)(rolldown@1.0.0-rc.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2)):
+  rolldown-plugin-dts@0.23.1(@typescript/native-preview@7.0.0-dev.20260326.1)(rolldown@1.0.0-rc.12)(typescript@6.0.2)(vue-tsc@3.2.6(typescript@6.0.2)):
     dependencies:
       '@babel/generator': 8.0.0-rc.3
       '@babel/helper-validator-identifier': 8.0.0-rc.3

@@ -9,8 +9,7 @@ const debug = createDebug('tsdown:publint')
 const label = dim`[publint]`
 
 export interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {
-  /** @internal */
-  resolvePaths?: string[]
+  module?: [typeof import('publint'), typeof import('publint/utils')]
 }
 
 export async function publint(
@@ -29,13 +28,12 @@ export async function publint(
   const t = performance.now()
   debug('Running publint')
 
-  const { publint } = await importWithError<typeof import('publint')>(
-    'publint',
-    options.publint.resolvePaths,
-  )
-  const { formatMessage } = await importWithError<
-    typeof import('publint/utils')
-  >('publint/utils', options.publint.resolvePaths)
+  const { publint } =
+    options.publint.module?.[0] ||
+    (await importWithError<typeof import('publint')>('publint'))
+  const { formatMessage } =
+    options.publint.module?.[1] ||
+    (await importWithError<typeof import('publint/utils')>('publint/utils'))
 
   const { messages } = await publint({
     ...options.publint,

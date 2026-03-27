@@ -51,9 +51,6 @@ export default defineConfig([
         transformer: [RemoveNode((node) => isCallOf(node, 'typeAssert'))],
       }),
     ],
-    onSuccess() {
-      console.info('🙏 Build succeeded!')
-    },
   },
   {
     workspace: {
