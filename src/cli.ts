@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { dim } from 'ansis'
+import { blue, hex } from 'ansis'
 import { cac } from 'cac'
 import { VERSION as rolldownVersion } from 'rolldown'
 import { x } from 'tinyexec'
@@ -84,7 +84,7 @@ cli
   .action(async (input: string[], flags: UserConfig) => {
     globalLogger.level = flags.logLevel || 'info'
     globalLogger.info(
-      `tsdown ${dim`v${pkg.version}`} powered by rolldown ${dim`v${rolldownVersion}`}`,
+      `${blue`tsdown v${pkg.version}`} powered by ${hex('#ff7e17')`rolldown v${rolldownVersion}`}`,
     )
     const { build } = await import('./build.ts')
     if (input.length > 0) flags.entry = input
