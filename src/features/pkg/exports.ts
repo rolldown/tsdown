@@ -140,12 +140,13 @@ export interface ExportsOptions {
   /**
    * Generate the `bin` field in `package.json` for CLI executables.
    *
-   * Controls how command names are mapped to built entry files:
+   * By default, tsdown auto-detects entry chunks with shebangs.
+   * If exactly one is found, it is used as the bin entry.
+   * If multiple are found, a warning is shown.
+   * Set to `false` to disable auto-detection.
    *
-   * - `true`: Auto-detect a single CLI entry from entry chunks that contain
-   *   a shebang (for example, `#!/usr/bin/env node`). The command name is
-   *   derived from the package name without its scope. Throws if multiple
-   *   shebang entries are found. Warns and skips generation if none are found.
+   * - `true`: Auto-detect with strict behavior (errors if multiple shebang entries are found).
+   * - `false`: Disable bin auto-detection.
    * - `string`: Use the given source file path (relative to `cwd`) as the
    *   CLI entry. The command name is derived from the package name without
    *   its scope. Warns if the source file does not contain a shebang.
@@ -505,9 +506,9 @@ function generateBin(
   logger: Logger,
   cwd: string,
 ): string | Record<string, string> | undefined {
-  if (!bin) return
+  if (bin === false) return
 
-  if (bin === true || typeof bin === 'string') {
+  if (bin === true || bin === undefined || typeof bin === 'string') {
     if (!pkg.name)
       throw new Error(
         'Package name is required when using string form for `bin`',
@@ -515,7 +516,7 @@ function generateBin(
 
     const binName = pkg.name[0] === '@' ? pkg.name.split('/', 2)[1] : pkg.name
 
-    if (bin === true) {
+    if (bin === true || bin === undefined) {
       let detected: string | undefined
       const seen = new Set<string>()
 
@@ -530,9 +531,15 @@ function generateBin(
           seen.add(chunk.facadeModuleId)
 
           if (detected) {
-            throw new Error(
-              'Multiple entry chunks with shebangs found. Use `exports.bin: { name: "./src/file.ts" }` to specify which one to use.',
+            if (bin === true) {
+              throw new Error(
+                'Multiple entry chunks with shebangs found. Use `exports.bin: { command: "./src/file.ts" }` to specify which one to use.',
+              )
+            }
+            logger.warn(
+              'Multiple entry chunks with shebangs found. Use `exports.bin: true` or `exports.bin: { command: "./src/file.ts" }` to configure explicitly.',
             )
+            return
           }
           detected = devExports
             ? `./${slash(path.relative(pkgRoot, chunk.facadeModuleId))}`
@@ -541,9 +548,11 @@ function generateBin(
       }
 
       if (detected == null) {
-        logger.warn(
-          '`exports.bin` is true but no entry chunks with shebangs were found',
-        )
+        if (bin === true) {
+          logger.warn(
+            '`exports.bin` is true but no entry chunks with shebangs were found',
+          )
+        }
         return
       }
       return { [binName]: detected }
