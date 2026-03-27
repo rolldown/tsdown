@@ -11,6 +11,7 @@ import {
   type Plugin,
   type RolldownPluginOption,
 } from 'rolldown'
+import { filename_js_to_dts, RE_JS } from 'rolldown-plugin-dts/internal'
 import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
@@ -349,16 +350,19 @@ export function CjsDtsReexportPlugin(): Plugin {
       for (const chunk of Object.values(bundle)) {
         if (chunk.type !== 'chunk') continue
 
-        const match = chunk.fileName.match(/^(.*)\.(cjs|js)$/)
-        if (!match) continue
+        if (!chunk.fileName.endsWith('.cjs') && !chunk.fileName.endsWith('.js'))
+          continue
 
-        const baseName = match[1]
-        const dCtsName =
-          match[2] === 'cjs' ? `${baseName}.d.cts` : `${baseName}.d.ts`
-        const dMtsBasename = path.basename(`${baseName}.d.mts`)
+        const dMtsBasename = path.basename(
+          chunk.fileName.replace(RE_JS, '.d.mts'),
+        )
         const content = `export * from './${dMtsBasename}'\n`
 
-        this.emitFile({ type: 'asset', fileName: dCtsName, source: content })
+        this.emitFile({
+          type: 'prebuilt-chunk',
+          fileName: filename_js_to_dts(chunk.fileName),
+          code: content,
+        })
       }
     },
   }

@@ -1,4 +1,4 @@
-## index.cjs
+## folder/index.cjs
 
 ```cjs
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
@@ -11,14 +11,14 @@ exports.hello = hello;
 
 ```
 
-## index.d.cts
+## folder/index.d.cts
 
 ```cts
 export * from './index.d.mts'
 
 ```
 
-## index.d.mts
+## folder/index.d.mts
 
 ```mts
 //#region index.d.ts
@@ -27,7 +27,7 @@ declare function hello(): void;
 export { hello };
 ```
 
-## index.mjs
+## folder/index.mjs
 
 ```mjs
 //#region index.ts

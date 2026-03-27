@@ -296,7 +296,7 @@ async function buildSingle(
           format,
           configFiles,
           bundle,
-          true,
+          true, // cjsDts
           isDualFormat,
         ),
       )

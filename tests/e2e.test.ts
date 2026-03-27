@@ -108,6 +108,9 @@ test('cjs dts reexport', async (context) => {
     context,
     files,
     options: {
+      entry: {
+        'folder/index': 'index.ts',
+      },
       format: ['esm', 'cjs'],
       dts: { cjsReexport: true },
     },
