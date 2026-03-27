@@ -54,7 +54,7 @@ For specific plugin usage, refer to the plugin's own documentation.
 
 If you want to create a custom plugin for `tsdown`, you can follow Rolldown's plugin development guide. Rolldown's plugin API is highly flexible and similar to Rollup's, making it easy to get started.
 
-Refer to the [Rolldown Plugin Development Guide](https://rolldown.rs/guide/plugin-development) for detailed instructions on writing your own plugins.
+Refer to the [Rolldown Plugin Development Guide](https://rolldown.rs/apis/plugin-api) for detailed instructions on writing your own plugins.
 
 > [!TIP]
 > Plugins are a great way to extend `tsdown`'s functionality. Whether you're using existing plugins or creating your own, they allow you to tailor the bundling process to your project's specific needs.
