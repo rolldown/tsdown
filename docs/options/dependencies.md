@@ -38,7 +38,7 @@ export default defineConfig({
 
 ### `deps.skipNodeModulesBundle`
 
-If you want to **skip resolving and bundling all dependencies from `node_modules`**, you can enable `skipNodeModulesBundle`:
+If you want to **skip bundling all dependencies from `node_modules`**, you can enable `skipNodeModulesBundle`:
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -50,7 +50,7 @@ export default defineConfig({
 })
 ```
 
-This will prevent `tsdown` from parsing and bundling any dependencies from `node_modules`, regardless of how they are referenced in your code.
+This will prevent `tsdown` from bundling any dependencies from `node_modules`, regardless of how they are referenced in your code.
 
 ::: warning
 `skipNodeModulesBundle` cannot be used together with `alwaysBundle`. These options are mutually exclusive.
@@ -155,7 +155,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
   - Use `deps.onlyBundle` to whitelist dependencies allowed to be bundled, and throw an error for any others.
   - Use `deps.neverBundle` to mark specific dependencies as external.
   - Use `deps.alwaysBundle` to force specific dependencies to be bundled.
-  - Use `deps.skipNodeModulesBundle` to skip resolving and bundling all dependencies from `node_modules`.
+  - Use `deps.skipNodeModulesBundle` to skip bundling all dependencies from `node_modules`.
 - **Declaration Files**:
   - The bundling logic for declaration files is now the same as for JavaScript.
   - Use `resolver: 'tsc'` for better compatibility with complex third-party types.

@@ -38,7 +38,7 @@ export default defineConfig({
 
 ### `deps.skipNodeModulesBundle`
 
-如果您希望**跳过解析和打包所有来自 `node_modules` 的依赖**，可以启用 `skipNodeModulesBundle`：
+如果您希望**跳过打包所有来自 `node_modules` 的依赖**，可以启用 `skipNodeModulesBundle`：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -50,7 +50,7 @@ export default defineConfig({
 })
 ```
 
-这样，无论您的代码如何引用，`tsdown` 都不会解析或打包任何来自 `node_modules` 的依赖。
+这样，无论您的代码如何引用，`tsdown` 都不会打包任何来自 `node_modules` 的依赖。
 
 ::: warning
 `skipNodeModulesBundle` 不能与 `alwaysBundle` 一起使用，这两个选项互斥。
@@ -155,7 +155,7 @@ export default defineConfig({
   - 使用 `deps.onlyBundle` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
   - 使用 `deps.neverBundle` 将特定依赖标记为外部依赖。
   - 使用 `deps.alwaysBundle` 强制将特定依赖打包。
-  - 使用 `deps.skipNodeModulesBundle` 跳过解析和打包所有来自 `node_modules` 的依赖。
+  - 使用 `deps.skipNodeModulesBundle` 跳过打包所有来自 `node_modules` 的依赖。
 - **声明文件**：
   - 声明文件的打包逻辑与 JavaScript 保持一致。
   - 使用 `resolver: 'tsc'` 可提升复杂第三方类型的兼容性。

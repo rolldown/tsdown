@@ -98,7 +98,7 @@ export default defineConfig({
 
 ### `deps.skipNodeModulesBundle`
 
-Skip resolving and bundling ALL node_modules:
+Skip bundling ALL node_modules:
 
 ```ts
 export default defineConfig({
@@ -109,7 +109,7 @@ export default defineConfig({
 })
 ```
 
-**Result:** No dependencies from node_modules are parsed or bundled.
+**Result:** No dependencies from node_modules are bundled.
 
 **Note:** Cannot be used together with `alwaysBundle`.
 

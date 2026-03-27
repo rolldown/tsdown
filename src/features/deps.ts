@@ -309,7 +309,8 @@ export function DepsPlugin(
       resolved &&
       (resolved.external || RE_NODE_MODULES.test(resolved.id))
     ) {
-      return true
+      const resolvedDep = await resolveDepSubpath(id, resolved)
+      return resolvedDep ? [true, resolvedDep] : true
     }
 
     if (deps) {
