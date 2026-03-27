@@ -54,7 +54,7 @@ export default defineConfig({
 
 如果您想为 `tsdown` 创建自定义插件，可以参考 Rolldown 的插件开发指南。Rolldown 的插件 API 高度灵活，与 Rollup 的 API 类似，便于快速上手。
 
-详细说明请参阅 [Rolldown 插件开发指南](https://rolldown.rs/guide/plugin-development)。
+详细说明请参阅 [Rolldown 插件开发指南](https://rolldown.rs/apis/plugin-api)。
 
 > [!TIP]
 > 插件是扩展 `tsdown` 功能的绝佳方式。无论是使用现有插件还是自定义插件，都可以让您的打包流程更好地适应项目需求。
