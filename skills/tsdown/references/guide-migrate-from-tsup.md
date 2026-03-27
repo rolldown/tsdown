@@ -182,7 +182,7 @@ tsdown should be faster than tsup. If not:
 
 - [GitHub Issues](https://github.com/rolldown/tsdown/issues) - Report bugs or request features
 - [Documentation](https://tsdown.dev) - Full documentation
-- [Migration Tool](https://github.com/rolldown/tsdown/tree/main/packages/tsdown-migrate) - Source code
+- [Migration Tool](https://github.com/rolldown/tsdown/tree/main/packages/migrate) - Source code
 
 ## Acknowledgements
 

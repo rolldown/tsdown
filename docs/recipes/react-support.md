@@ -57,7 +57,7 @@ There are 2 ways of transforming JSX/TSX files in `tsdown`:
 - **classic**
 - **automatic** (default)
 
-If you need to use classic JSX transformation, you can configure Rolldown's [`inputOptions.jsx`](https://rolldown.rs/reference/config-options#jsx) option in your configuration file:
+If you need to use classic JSX transformation, you can configure Rolldown's [`inputOptions.jsx`](https://rolldown.rs/reference/InputOptions.transform#jsx) option in your configuration file:
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
