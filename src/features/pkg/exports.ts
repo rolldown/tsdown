@@ -99,8 +99,13 @@ export interface ExportsOptions {
   /**
    * Auto-generate the `bin` field in package.json.
    *
-   * - `true`: Auto-detect entry chunks with shebangs. Uses package name (without scope) as bin name.
-   *   Errors if multiple shebang entries are found.
+   * By default, tsdown auto-detects entry chunks with shebangs.
+   * If exactly one is found, it is used as the bin entry.
+   * If multiple are found, a warning is shown.
+   * Set to `false` to disable auto-detection.
+   *
+   * - `true`: Auto-detect with strict behavior (errors if multiple shebang entries are found).
+   * - `false`: Disable bin auto-detection.
    * - `string`: Source file path to use as the bin entry. Bin name defaults to package name (without scope).
    * - `Record<string, string>`: Map of bin command names to source file paths.
    *
@@ -435,9 +440,9 @@ function generateBin(
   logger: Logger,
   cwd: string,
 ): string | Record<string, string> | undefined {
-  if (!bin) return
+  if (bin === false) return
 
-  if (bin === true || typeof bin === 'string') {
+  if (bin === true || bin === undefined || typeof bin === 'string') {
     if (!pkg.name)
       throw new Error(
         'Package name is required when using string form for `bin`',
@@ -445,7 +450,7 @@ function generateBin(
 
     const binName = pkg.name[0] === '@' ? pkg.name.split('/', 2)[1] : pkg.name
 
-    if (bin === true) {
+    if (bin === true || bin === undefined) {
       let detected: string | undefined
       const seen = new Set<string>()
 
@@ -460,18 +465,26 @@ function generateBin(
           seen.add(chunk.facadeModuleId)
 
           if (detected) {
-            throw new Error(
-              'Multiple entry chunks with shebangs found. Use `exports.bin: { name: "./src/file.ts" }` to specify which one to use.',
+            if (bin === true) {
+              throw new Error(
+                'Multiple entry chunks with shebangs found. Use `exports.bin: { name: "./src/file.ts" }` to specify which one to use.',
+              )
+            }
+            logger.warn(
+              'Multiple entry chunks with shebangs found. Use `exports.bin: true` or `exports.bin: { name: "./src/file.ts" }` to configure explicitly.',
             )
+            return
           }
           detected = join(pkgRoot, chunk.outDir, slash(chunk.fileName))
         }
       }
 
       if (detected == null) {
-        logger.warn(
-          '`exports.bin` is true but no entry chunks with shebangs were found',
-        )
+        if (bin === true) {
+          logger.warn(
+            '`exports.bin` is true but no entry chunks with shebangs were found',
+          )
+        }
         return
       }
       return { [binName]: detected }

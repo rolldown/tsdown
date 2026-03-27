@@ -866,6 +866,84 @@ describe('generateExports', () => {
     })
   })
 
+  test('bin: implicit auto-detect with single shebang', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            undefined,
+            '#!/usr/bin/env node\nconsole.log("hello")',
+          ),
+        ],
+      },
+      { exports: {} },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: { 'fake-pkg': './cli.js' },
+    })
+  })
+
+  test('bin: implicit auto-detect with multiple shebangs warns', async ({
+    expect,
+  }) => {
+    const warnings: string[] = []
+    const logger = {
+      ...globalLogger,
+      warn: (...msgs: any[]) => {
+        warnings.push(msgs.join(' '))
+      },
+    }
+    const results = await generateExports(
+      {
+        es: [
+          genChunk('cli.js', true, undefined, '#!/usr/bin/env node\n'),
+          genChunk('tool.js', true, undefined, '#!/usr/bin/env node\n'),
+        ],
+      },
+      { exports: {}, logger },
+    )
+    expect(results.bin).toBeUndefined()
+    expect(
+      warnings.some((w) =>
+        w.includes('Multiple entry chunks with shebangs found'),
+      ),
+    ).toBe(true)
+  })
+
+  test('bin: implicit auto-detect with no shebangs silently skips', async ({
+    expect,
+  }) => {
+    const warnings: string[] = []
+    const logger = {
+      ...globalLogger,
+      warn: (...msgs: any[]) => {
+        warnings.push(msgs.join(' '))
+      },
+    }
+    const results = await generateExports(
+      {
+        es: [genChunk('index.js', true, undefined, 'console.log("hello")')],
+      },
+      { exports: {}, logger },
+    )
+    expect(results.bin).toBeUndefined()
+    expect(warnings.filter((w) => w.includes('bin'))).toHaveLength(0)
+  })
+
+  test('bin: false disables auto-detection', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('cli.js', true, undefined, '#!/usr/bin/env node\n')],
+      },
+      { exports: { bin: false } },
+    )
+    await expect(results).resolves.toMatchObject({
+      bin: undefined,
+    })
+  })
+
   test('generate css publish exports', async ({ expect }) => {
     const results = generateExports(
       { es: [genChunk('index.js'), genAsset('style.css')] },
