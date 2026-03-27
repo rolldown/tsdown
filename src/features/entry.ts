@@ -35,7 +35,7 @@ export async function resolveEntry(
   }
   logger.info(
     nameLabel,
-    `entry: ${color(entries.map((entry) => path.relative(cwd, entry)).join(', '))}`,
+    `entry: ${color(entries.map((entry) => (path.isAbsolute(entry) ? path.relative(cwd, entry) : entry)).join(', '))}`,
   )
   return [entryMap, computedRoot]
 }
