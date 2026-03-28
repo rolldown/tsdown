@@ -20,6 +20,7 @@ export const templateOptions = [
   { value: 'react-compiler', label: 'React with React Compiler' },
   { value: 'solid', label: 'Solid' },
   { value: 'svelte', label: 'Svelte' },
+  { value: 'vite-plus', label: 'Vite Plus' },
 ] as const
 
 type TemplateOption = (typeof templateOptions)[number]['value']
