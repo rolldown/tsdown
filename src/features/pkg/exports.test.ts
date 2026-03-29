@@ -211,7 +211,7 @@ describe('generateExports', () => {
     const results = await generateExports(
       { es: [genChunk('index.js')], cjs: [genChunk('index.cjs')] },
       {
-        exports: { devExports: 'dev' },
+        exports: { devExports: '@my-org/source' },
       },
     )
     // key order matters
@@ -221,7 +221,7 @@ describe('generateExports', () => {
         "module": "./index.js",
         "exports": {
           ".": {
-            "dev": "./SRC/index.js",
+            "@my-org/source": "./SRC/index.js",
             "import": "./index.js",
             "require": "./index.cjs"
           },
@@ -272,7 +272,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js')] },
       {
         exports: {
-          devExports: 'dev',
+          devExports: '@my-org/source',
           customExports(exports: Record<string, any>) {
             exports['./TEST'] = './TEST'
             return Promise.resolve(exports)
@@ -285,7 +285,7 @@ describe('generateExports', () => {
       "{
         "exports": {
           ".": {
-            "dev": "./SRC/index.js",
+            "@my-org/source": "./SRC/index.js",
             "default": "./index.js"
           },
           "./package.json": "./package.json",
@@ -305,7 +305,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js')] },
       {
         exports: {
-          devExports: 'dev',
+          devExports: '@my-org/source',
           customExports: {
             './TEST': './TEST',
           },
@@ -317,7 +317,7 @@ describe('generateExports', () => {
       "{
         "exports": {
           ".": {
-            "dev": "./SRC/index.js",
+            "@my-org/source": "./SRC/index.js",
             "default": "./index.js"
           },
           "./package.json": "./package.json",
@@ -871,7 +871,7 @@ describe('generateExports', () => {
       { es: [genChunk('index.js'), genAsset('style.css')] },
       {
         exports: {
-          devExports: 'dev',
+          devExports: '@my-org/source',
         },
         css: { splitting: false },
       },
@@ -881,8 +881,8 @@ describe('generateExports', () => {
         "bin": undefined,
         "exports": {
           ".": {
+            "@my-org/source": "./SRC/index.js",
             "default": "./index.js",
-            "dev": "./SRC/index.js",
           },
           "./package.json": "./package.json",
           "./style.css": "./style.css",
