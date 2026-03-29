@@ -37,7 +37,7 @@ export default defineConfig([
       profile: 'esm-only',
     },
     exports: {
-      devExports: 'dev',
+      devExports: '@tsdown/source',
       customExports: {
         './client': './client.d.ts',
       },
@@ -67,7 +67,7 @@ export default defineConfig([
       moduleSideEffects: false,
     },
     exports: {
-      devExports: 'dev',
+      devExports: '@tsdown/source',
     },
   },
 ])

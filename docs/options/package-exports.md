@@ -56,7 +56,7 @@ You can also set `exports.devExports` to a string to only link to source code un
 ```ts
 export default defineConfig({
   exports: {
-    devExports: 'development',
+    devExports: '@my-org/source',
   },
 })
 ```

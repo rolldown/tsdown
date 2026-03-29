@@ -56,7 +56,7 @@ export default defineConfig({
 ```ts
 export default defineConfig({
   exports: {
-    devExports: 'development',
+    devExports: '@my-org/source',
   },
 })
 ```

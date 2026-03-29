@@ -17,23 +17,23 @@
   },
   "exports": {
     ".": {
-      "dev": "./src/index.ts",
+      "@tsdown/source": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
     "./config": {
-      "dev": "./src/config.ts",
+      "@tsdown/source": "./src/config.ts",
       "default": "./dist/config.mjs"
     },
     "./internal": {
-      "dev": "./src/internal.ts",
+      "@tsdown/source": "./src/internal.ts",
       "default": "./dist/internal.mjs"
     },
     "./plugins": {
-      "dev": "./src/plugins.ts",
+      "@tsdown/source": "./src/plugins.ts",
       "default": "./dist/plugins.mjs"
     },
     "./run": {
-      "dev": "./src/run.ts",
+      "@tsdown/source": "./src/run.ts",
       "default": "./dist/run.mjs"
     },
     "./package.json": "./package.json",
@@ -74,7 +74,7 @@
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
     "lint:fix": "pnpm run lint --fix",
-    "build": "node -C dev ./src/run.ts",
+    "build": "node -C @tsdown/source ./src/run.ts",
     "dev": "pnpm run build",
     "test": "vitest",
     "typecheck": "tsgo --noEmit",
