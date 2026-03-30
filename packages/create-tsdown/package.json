@@ -17,11 +17,11 @@
   },
   "exports": {
     ".": {
-      "@tsdown/source": "./src/index.ts",
+      "dev": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
     "./run": {
-      "@tsdown/source": "./src/run.ts",
+      "dev": "./src/run.ts",
       "default": "./dist/run.mjs"
     },
     "./package.json": "./package.json"
@@ -54,7 +54,7 @@
   },
   "scripts": {
     "dev": "node ./src/run.ts",
-    "build": "node -C @tsdown/source ../../src/run.ts -c ../../tsdown.config.ts -F ."
+    "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "dependencies": {
     "@clack/prompts": "catalog:create",

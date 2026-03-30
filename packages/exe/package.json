@@ -17,7 +17,7 @@
   },
   "exports": {
     ".": {
-      "@tsdown/source": "./src/index.ts",
+      "dev": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
@@ -45,7 +45,7 @@
     "node": ">=20.19.0"
   },
   "scripts": {
-    "build": "node -C @tsdown/source ../../src/run.ts -c ../../tsdown.config.ts -F ."
+    "build": "node -C dev ../../src/run.ts -c ../../tsdown.config.ts -F ."
   },
   "peerDependencies": {
     "tsdown": "workspace:*"
