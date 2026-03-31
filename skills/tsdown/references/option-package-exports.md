@@ -151,7 +151,7 @@ Use specific condition for dev exports:
 ```ts
 export default defineConfig({
   exports: {
-    devExports: 'development',
+    devExports: '@my-org/source',
   },
 })
 ```
@@ -161,7 +161,7 @@ export default defineConfig({
 {
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "@my-org/source": "./src/index.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     }
@@ -174,7 +174,7 @@ export default defineConfig({
 // tsconfig.json
 {
   "compilerOptions": {
-    "customConditions": ["development"]
+    "customConditions": ["@my-org/source"]
   }
 }
 ```
@@ -227,7 +227,7 @@ export default defineConfig({
   dts: true,
   exports: {
     all: false,  // Only entries
-    devExports: 'development',
+    devExports: '@my-org/source',
   },
 })
 ```
