@@ -13,16 +13,10 @@ var __exportAll = (all, no_symbols) => {
 	return target;
 };
 //#endregion
-//#region modules/a.ts
-var a_exports = /* @__PURE__ */ __exportAll({ a: () => 1 });
-//#endregion
-//#region modules/b.ts
-var b_exports = /* @__PURE__ */ __exportAll({ b: () => 2 });
-//#endregion
 //#region index.ts
 const modules = /* @__PURE__ */ Object.assign({
-	"./modules/a.ts": a_exports,
-	"./modules/b.ts": b_exports
+	"./modules/a.ts": /* @__PURE__ */ __exportAll({ a: () => 1 }),
+	"./modules/b.ts": /* @__PURE__ */ __exportAll({ b: () => 2 })
 });
 //#endregion
 export { modules };

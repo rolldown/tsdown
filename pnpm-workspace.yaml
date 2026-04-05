@@ -9,21 +9,21 @@ overrides:
 
 catalogs:
   create:
-    '@clack/prompts': ^1.1.0
+    '@clack/prompts': ^1.2.0
     giget: ^3.2.0
   dev:
     '@sxzz/eslint-config': ^7.8.4
     '@sxzz/prettier-config': ^2.3.1
     '@sxzz/test-utils': ^0.5.16
-    '@types/node': ^25.5.0
-    '@types/picomatch': ^4.0.2
+    '@types/node': ^25.5.2
+    '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260328.1
+    '@typescript/native-preview': 7.0.0-dev.20260404.1
     '@vitest/coverage-v8': ^4.1.2
     '@vitest/ui': ^4.1.2
     bumpp: ^11.0.1
     dedent: ^1.7.2
-    eslint: ^10.1.0
+    eslint: ^10.2.0
     memfs: ^4.57.1
     pkg-types: ^2.3.0
     postcss: ^8.5.8
@@ -31,10 +31,10 @@ catalogs:
     prettier: ^3.8.1
     rolldown-plugin-dts-snapshot: ^0.4.0
     rolldown-plugin-require-cjs: ^0.4.0
-    sass: ^1.98.0
+    sass: ^1.99.0
     typescript: ~6.0.2
     unplugin-ast: ^0.16.0
-    unplugin-raw: ^0.6.4
+    unplugin-raw: ^0.7.0
     unplugin-vue: ^7.1.1
     vitest: ^4.1.2
   docs:
@@ -42,7 +42,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^4.0.2
     '@unocss/eslint-plugin': ^66.6.7
     '@vueuse/core': ^14.2.1
-    oxc-minify: ^0.121.0
+    oxc-minify: ^0.123.0
     typedoc: ^0.28.18
     typedoc-plugin-markdown: ^4.11.0
     typedoc-vitepress-theme: ^1.1.2
@@ -51,22 +51,22 @@ catalogs:
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.3
     vitepress-plugin-llms: ^1.12.0
-    vue: ^3.5.31
+    vue: ^3.5.32
     vue-tsc: ^3.2.6
   migrate:
     '@antfu/ni': ^30.0.0
-    '@ast-grep/napi': ^0.42.0
+    '@ast-grep/napi': ^0.42.1
     consola: ^3.4.2
     diff: ^8.0.4
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.1.11
+    '@vitejs/devtools': ^0.1.13
     publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
     ansis: ^4.2.0
     cac: ^7.0.0
-    defu: ^6.1.4
+    defu: ^6.1.6
     empathic: ^2.0.0
     hookable: ^6.1.0
     import-without-cache: ^0.2.5
@@ -76,7 +76,7 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
-    rolldown: 1.0.0-rc.12
+    rolldown: 1.0.0-rc.13
     rolldown-plugin-dts: ^0.23.2
     semver: ^7.7.4
     tinyexec: ^1.0.4
