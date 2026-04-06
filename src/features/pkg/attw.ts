@@ -76,7 +76,21 @@ export interface AttwOptions extends CheckPackageOptions {
    * ignoreRules: ['no-resolution', 'false-cjs']
    * ```
    */
-  ignoreRules?: string[]
+  ignoreRules?: (
+    | 'no-resolution'
+    | 'untyped-resolution'
+    | 'false-cjs'
+    | 'false-esm'
+    | 'cjs-resolves-to-esm'
+    | 'fallback-condition'
+    | 'cjs-only-exports-default'
+    | 'named-exports'
+    | 'false-export-default'
+    | 'missing-export-equals'
+    | 'unexpected-module-syntax'
+    | 'internal-resolution-error'
+    | (string & {})
+  )[]
 }
 
 /**
