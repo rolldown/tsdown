@@ -114,7 +114,7 @@
     "#exports": []
   },
   "types-!~{00b}~.d.mts": {
-    "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n module?: typeof _$_arethetypeswrong_core0\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: string[]\n}",
+    "AttwOptions": "interface AttwOptions extends CheckPackageOptions {\n module?: typeof _$_arethetypeswrong_core0\n profile?: 'strict' | 'node16' | 'esm-only'\n level?: 'error' | 'warn'\n ignoreRules?: ('no-resolution' | 'untyped-resolution' | 'false-cjs' | 'false-esm' | 'cjs-resolves-to-esm' | 'fallback-condition' | 'cjs-only-exports-default' | 'named-exports' | 'false-export-default' | 'missing-export-equals' | 'unexpected-module-syntax' | 'internal-resolution-error' | (string & {}))[]\n}",
     "BuildContext": "interface BuildContext {\n options: ResolvedConfig\n hooks: Hookable<TsdownHooks>\n}",
     "ChunkAddon": "type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string",
     "ChunkAddonFunction": "type ChunkAddonFunction = (_: { format: Format; fileName: string }) => ChunkAddonObject | string | undefined",
