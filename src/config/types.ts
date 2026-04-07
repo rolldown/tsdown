@@ -215,7 +215,7 @@ export interface UserConfig {
    * If not set, defaults to the value of `engines.node` in your project's `package.json`.
    * If no `engines.node` field exists, no syntax transformations are applied.
    *
-   * Accepts a single target (e.g., `'es2020'`, `'node18'`), an array of targets, or `false` to disable all transformations.
+   * Accepts a single target (e.g., `'es2020'`, `'node18'`, `'baseline-widely-available'`), an array of targets, or `false` to disable all transformations.
    *
    * @see {@link https://tsdown.dev/options/target#supported-targets} for a list of valid targets and more details.
    *

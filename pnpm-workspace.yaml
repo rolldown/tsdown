@@ -21,6 +21,7 @@ catalogs:
     '@typescript/native-preview': 7.0.0-dev.20260405.1
     '@vitest/coverage-v8': ^4.1.2
     '@vitest/ui': ^4.1.2
+    baseline-browser-mapping: ^2.10.16
     bumpp: ^11.0.1
     dedent: ^1.7.2
     eslint: ^10.2.0

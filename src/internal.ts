@@ -1,3 +1,4 @@
+export { expandBaselineTarget } from './features/target.ts'
 export { fsExists, fsRemove } from './utils/fs.ts'
 export { importWithError, resolveComma, toArray } from './utils/general.ts'
 export type { Logger } from './utils/logger.ts'

@@ -156,6 +156,7 @@
     "@vitest/coverage-v8": "catalog:dev",
     "@vitest/ui": "catalog:dev",
     "@vueuse/core": "catalog:docs",
+    "baseline-browser-mapping": "catalog:dev",
     "bumpp": "catalog:dev",
     "dedent": "catalog:dev",
     "eslint": "catalog:dev",

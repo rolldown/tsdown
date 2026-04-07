@@ -1,5 +1,21 @@
 import { expect, test } from 'vitest'
-import { resolvePackageTarget } from './target.ts'
+import { expandBaselineTarget, resolvePackageTarget } from './target.ts'
+
+test('expandBaselineTarget', () => {
+  expect(expandBaselineTarget(['baseline-widely-available'])).toEqual([
+    'chrome111',
+    'edge111',
+    'firefox114',
+    'safari16.4',
+    'ios16.4',
+  ])
+
+  expect(expandBaselineTarget(['es2020'])).toEqual(['es2020'])
+
+  expect(expandBaselineTarget(['node18', 'baseline-widely-available'])).toEqual(
+    ['node18', 'chrome111', 'edge111', 'firefox114', 'safari16.4', 'ios16.4'],
+  )
+})
 
 test('resolvePackageTarget', () => {
   expect(testVersion('>= 14')).toMatchInlineSnapshot(`"node14.0.0"`)
