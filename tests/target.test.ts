@@ -20,6 +20,15 @@ describe('target', () => {
     expect(snapshot).contain('?.')
   })
 
+  test('baseline-widely-available target', async (context) => {
+    const { snapshot } = await testBuild({
+      context,
+      files: { 'index.ts': 'export const foo: number = a?.b?.()' },
+      options: { target: 'baseline-widely-available' },
+    })
+    expect(snapshot).contain('?.')
+  })
+
   test('target: false disables all syntax transformations', async (context) => {
     const { snapshot } = await testBuild({
       context,

@@ -40,6 +40,9 @@ catalogs:
     '@vitest/ui':
       specifier: ^4.1.2
       version: 4.1.2
+    baseline-browser-mapping:
+      specifier: ^2.10.16
+      version: 2.10.16
     bumpp:
       specifier: ^11.0.1
       version: 11.0.1
@@ -319,6 +322,9 @@ importers:
       '@vueuse/core':
         specifier: catalog:docs
         version: 14.2.1(vue@3.5.32(typescript@6.0.2))
+      baseline-browser-mapping:
+        specifier: catalog:dev
+        version: 2.10.16
       bumpp:
         specifier: catalog:dev
         version: 11.0.1
@@ -2171,8 +2177,8 @@ packages:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
     engines: {node: 18 || 20 || >=22}
 
-  baseline-browser-mapping@2.10.14:
-    resolution: {integrity: sha512-fOVLPAsFTsQfuCkvahZkzq6nf8KvGWanlYoTh0SVA0A/PIUxQGU2AOZAoD95n2gFLVDW/jP6sbGLny95nmEuHA==}
+  baseline-browser-mapping@2.10.16:
+    resolution: {integrity: sha512-Lyf3aK28zpsD1yQMiiHD4RvVb6UdMoo8xzG2XzFIfR9luPzOpcBlAsT/qfB1XWS1bxWT+UtE4WmQgsp297FYOA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -6253,7 +6259,7 @@ snapshots:
 
   balanced-match@4.0.4: {}
 
-  baseline-browser-mapping@2.10.14: {}
+  baseline-browser-mapping@2.10.16: {}
 
   birpc@2.9.0: {}
 
@@ -6272,7 +6278,7 @@ snapshots:
 
   browserslist@4.28.2:
     dependencies:
-      baseline-browser-mapping: 2.10.14
+      baseline-browser-mapping: 2.10.16
       caniuse-lite: 1.0.30001785
       electron-to-chromium: 1.5.331
       node-releases: 2.0.37

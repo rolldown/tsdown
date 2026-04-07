@@ -1,4 +1,5 @@
 import {
+  expandBaselineTarget,
   resolveComma,
   toArray,
   type MarkPartial,
@@ -213,7 +214,7 @@ export function resolveCssOptions(
   } else if (options.target == null) {
     cssTarget = topLevelTarget
   } else {
-    cssTarget = resolveComma(toArray(options.target))
+    cssTarget = expandBaselineTarget(resolveComma(toArray(options.target)))
   }
 
   return {
