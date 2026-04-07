@@ -61,9 +61,11 @@ tsdown --target <target>
 
 ### Supported Targets
 
-- ECMAScript versions: `es2015`, `es2020`, `esnext`, etc.
-- Browser versions: `chrome100`, `safari18`, `firefox110`, etc.
-- Node.js versions: `node20.18`, `node16`, etc.
+tsdown (Rolldown) uses [Oxc](https://oxc.rs/docs/guide/usage/transformer/lowering#target) for syntax lowering. The following environment names are supported (with version numbers, e.g. `chrome100`, `node18`, `es2020`):
+
+- ECMAScript versions: `es2015`, `es2016`, ..., `es2025`, `esnext`
+- Browsers: `chrome`, `edge`, `firefox`, `ie`, `ios`, `opera`, `safari`, `samsung`
+- Runtimes: `node`, `deno`, `hermes`, `rhino`
 
 ### Example
 
