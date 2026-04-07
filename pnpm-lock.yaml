@@ -222,7 +222,7 @@ catalogs:
 overrides:
   '@docsearch/react': '-'
   rolldown: 1.0.0-rc.13
-  vite: ^8.0.3
+  vite: ^8.0.5
 
 importers:
 
@@ -312,7 +312,7 @@ importers:
         version: 66.6.7(eslint@10.2.0(jiti@2.6.1))(typescript@6.0.2)
       '@vitejs/devtools':
         specifier: catalog:peer
-        version: 0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.3)
+        version: 0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.5)
       '@vitest/coverage-v8':
         specifier: catalog:dev
         version: 4.1.2(vitest@4.1.2)
@@ -372,7 +372,7 @@ importers:
         version: 6.0.2
       unocss:
         specifier: catalog:docs
-        version: 66.6.7(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(vite@8.0.3)
+        version: 66.6.7(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(vite@8.0.5)
       unplugin-ast:
         specifier: catalog:dev
         version: 0.16.0
@@ -386,11 +386,11 @@ importers:
         specifier: catalog:dev
         version: 7.1.1(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(vue@3.5.32(typescript@6.0.2))(yaml@2.8.3)
       vite:
-        specifier: ^8.0.3
-        version: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+        specifier: ^8.0.5
+        version: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       vitest:
         specifier: catalog:dev
-        version: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.3)
+        version: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.5)
       vue:
         specifier: catalog:docs
         version: 3.5.32(typescript@6.0.2)
@@ -423,14 +423,14 @@ importers:
         specifier: catalog:docs
         version: 1.1.2(typedoc-plugin-markdown@4.11.0(typedoc@0.28.18(typescript@6.0.2)))
       vite:
-        specifier: ^8.0.3
-        version: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+        specifier: ^8.0.5
+        version: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       vitepress:
         specifier: catalog:docs
         version: 2.0.0-alpha.17(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(change-case@5.4.4)(jiti@2.6.1)(oxc-minify@0.123.0(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1))(postcss@8.5.8)(sass-embedded@1.99.0)(sass@1.99.0)(typescript@6.0.2)(yaml@2.8.3)
       vitepress-plugin-group-icons:
         specifier: catalog:docs
-        version: 1.7.3(vite@8.0.3)
+        version: 1.7.3(vite@8.0.5)
       vitepress-plugin-llms:
         specifier: catalog:docs
         version: 1.12.0
@@ -1935,12 +1935,12 @@ packages:
   '@unocss/vite@66.6.7':
     resolution: {integrity: sha512-8AHrVzAecnQaPLJv3/mpyFt5j2iL3gEwkZcZ8HzjH5ttK2XON1YE9vgujN5NS/yvZwlJxCMNPxn0S410/Ek61A==}
     peerDependencies:
-      vite: ^8.0.3
+      vite: ^8.0.5
 
   '@vitejs/devtools-kit@0.1.13':
     resolution: {integrity: sha512-8TqyrrPTB8KNGb2ukVHNo4aMhGYJgUypVNMnqOvxaWYln3QAXK6CFxifK3lZGOHWKAUqWAiTmZUsYzV4S0Kn7g==}
     peerDependencies:
-      vite: ^8.0.3
+      vite: ^8.0.5
 
   '@vitejs/devtools-rolldown@0.1.13':
     resolution: {integrity: sha512-VScSr/0+1+s3TBt5RFhv1dcRJSjWDUH3yJ8nc9+8zTOijzuKTjVo5yqfx0ISBro9CCeoPyXHuXntPqBSIhTTCA==}
@@ -1957,13 +1957,13 @@ packages:
     resolution: {integrity: sha512-0PWKOrYyDiP+UFI0Sfqn3uTxRwQMnvFyA6t4vnj+0SpCEk+XNEP2igqjCp7/F9wU0JDH3SiWhfMe41za9BtwkA==}
     hasBin: true
     peerDependencies:
-      vite: ^8.0.3
+      vite: ^8.0.5
 
   '@vitejs/plugin-vue@6.0.5':
     resolution: {integrity: sha512-bL3AxKuQySfk1iGcBsQnoRVexTPJq0Z/ixFVM8OhVJAP6ZXXXLtM7NFKWhLl30Kg7uTBqIaPXbh+nuQCuBDedg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     peerDependencies:
-      vite: ^8.0.3
+      vite: ^8.0.5
       vue: ^3.2.25
 
   '@vitest/coverage-v8@4.1.2':
@@ -1982,7 +1982,7 @@ packages:
     resolution: {integrity: sha512-Ize4iQtEALHDttPRCmN+FKqOl2vxTiNUhzobQFFt/BM1lRUTG7zRCLOykG/6Vo4E4hnUdfVLo5/eqKPukcWW7Q==}
     peerDependencies:
       msw: ^2.4.9
-      vite: ^8.0.3
+      vite: ^8.0.5
     peerDependenciesMeta:
       msw:
         optional: true
@@ -4326,14 +4326,14 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  vite@8.0.3:
-    resolution: {integrity: sha512-B9ifbFudT1TFhfltfaIPgjo9Z3mDynBTJSUYxTjOQruf/zHH+ezCQKcoqO+h7a9Pw9Nm/OtlXAiGT1axBgwqrQ==}
+  vite@8.0.5:
+    resolution: {integrity: sha512-nmu43Qvq9UopTRfMx2jOYW5l16pb3iDC1JH6yMuPkpVbzK0k+L7dfsEDH4jRgYFmsg0sTAqkojoZgzLMlwHsCQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
       '@types/node': ^20.19.0 || >=22.12.0
       '@vitejs/devtools': ^0.1.0
-      esbuild: ^0.27.0
+      esbuild: ^0.27.0 || ^0.28.0
       jiti: '>=1.21.0'
       less: ^4.0.0
       sass: ^1.70.0
@@ -4372,7 +4372,7 @@ packages:
   vitepress-plugin-group-icons@1.7.3:
     resolution: {integrity: sha512-Nj2znOveQC7KH1CQ1k2WlVvEDAuymhumcUvD51ognVUv2yjrfAhOzL1VEESPzoJN0kWoRxXK+iu+OKNLe7unGQ==}
     peerDependencies:
-      vite: ^8.0.3
+      vite: ^8.0.5
     peerDependenciesMeta:
       vite:
         optional: true
@@ -4410,7 +4410,7 @@ packages:
       '@vitest/ui': 4.1.2
       happy-dom: '*'
       jsdom: '*'
-      vite: ^8.0.3
+      vite: ^8.0.5
     peerDependenciesMeta:
       '@edge-runtime/vm':
         optional: true
@@ -5544,7 +5544,7 @@ snapshots:
     dependencies:
       tinyglobby: 0.2.15
       unplugin-utils: 0.3.1
-      vitest: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.3)
+      vitest: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.5)
     optionalDependencies:
       '@volar/typescript': 2.4.28
       '@vue/language-core': 3.2.6
@@ -5885,7 +5885,7 @@ snapshots:
     dependencies:
       '@unocss/core': 66.6.7
 
-  '@unocss/vite@66.6.7(vite@8.0.3)':
+  '@unocss/vite@66.6.7(vite@8.0.5)':
     dependencies:
       '@jridgewell/remapping': 2.3.5
       '@unocss/config': 66.6.7
@@ -5896,24 +5896,24 @@ snapshots:
       pathe: 2.0.3
       tinyglobby: 0.2.15
       unplugin-utils: 0.3.1
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
 
-  '@vitejs/devtools-kit@0.1.13(typescript@6.0.2)(vite@8.0.3)(ws@8.20.0)':
+  '@vitejs/devtools-kit@0.1.13(typescript@6.0.2)(vite@8.0.5)(ws@8.20.0)':
     dependencies:
       '@vitejs/devtools-rpc': 0.1.13(typescript@6.0.2)(ws@8.20.0)
       birpc: 4.0.0
       ohash: 2.0.11
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - typescript
       - ws
 
-  '@vitejs/devtools-rolldown@0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.3)(vue@3.5.32(typescript@6.0.2))':
+  '@vitejs/devtools-rolldown@0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.5)(vue@3.5.32(typescript@6.0.2))':
     dependencies:
       '@floating-ui/dom': 1.7.6
       '@pnpm/read-project-manifest': 1001.2.6(@pnpm/logger@1001.0.1)
       '@rolldown/debug': 1.0.0-rc.13
-      '@vitejs/devtools-kit': 0.1.13(typescript@6.0.2)(vite@8.0.3)(ws@8.20.0)
+      '@vitejs/devtools-kit': 0.1.13(typescript@6.0.2)(vite@8.0.5)(ws@8.20.0)
       '@vitejs/devtools-rpc': 0.1.13(typescript@6.0.2)(ws@8.20.0)
       ansis: 4.2.0
       birpc: 4.0.0
@@ -5975,10 +5975,10 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@vitejs/devtools@0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.3)':
+  '@vitejs/devtools@0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.5)':
     dependencies:
-      '@vitejs/devtools-kit': 0.1.13(typescript@6.0.2)(vite@8.0.3)(ws@8.20.0)
-      '@vitejs/devtools-rolldown': 0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.3)(vue@3.5.32(typescript@6.0.2))
+      '@vitejs/devtools-kit': 0.1.13(typescript@6.0.2)(vite@8.0.5)(ws@8.20.0)
+      '@vitejs/devtools-rolldown': 0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.5)(vue@3.5.32(typescript@6.0.2))
       '@vitejs/devtools-rpc': 0.1.13(typescript@6.0.2)(ws@8.20.0)
       birpc: 4.0.0
       cac: 7.0.0
@@ -5992,7 +5992,7 @@ snapshots:
       perfect-debounce: 2.1.0
       sirv: 3.0.2
       tinyexec: 1.0.4
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       vue: 3.5.32(typescript@6.0.2)
       ws: 8.20.0
     transitivePeerDependencies:
@@ -6020,10 +6020,10 @@ snapshots:
       - uploadthing
       - utf-8-validate
 
-  '@vitejs/plugin-vue@6.0.5(vite@8.0.3)(vue@3.5.32(typescript@6.0.2))':
+  '@vitejs/plugin-vue@6.0.5(vite@8.0.5)(vue@3.5.32(typescript@6.0.2))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.2
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       vue: 3.5.32(typescript@6.0.2)
 
   '@vitest/coverage-v8@4.1.2(vitest@4.1.2)':
@@ -6038,7 +6038,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.3)
+      vitest: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.5)
 
   '@vitest/expect@4.1.2':
     dependencies:
@@ -6049,13 +6049,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.2(vite@8.0.3)':
+  '@vitest/mocker@4.1.2(vite@8.0.5)':
     dependencies:
       '@vitest/spy': 4.1.2
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
 
   '@vitest/pretty-format@4.1.2':
     dependencies:
@@ -6084,7 +6084,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vitest: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.3)
+      vitest: 4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.5)
 
   '@vitest/utils@4.1.2':
     dependencies:
@@ -8417,7 +8417,7 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  unocss@66.6.7(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(vite@8.0.3):
+  unocss@66.6.7(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(vite@8.0.5):
     dependencies:
       '@unocss/cli': 66.6.7
       '@unocss/core': 66.6.7
@@ -8435,7 +8435,7 @@ snapshots:
       '@unocss/transformer-compile-class': 66.6.7
       '@unocss/transformer-directives': 66.6.7
       '@unocss/transformer-variant-group': 66.6.7
-      '@unocss/vite': 66.6.7(vite@8.0.3)
+      '@unocss/vite': 66.6.7(vite@8.0.5)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -8474,7 +8474,7 @@ snapshots:
       '@vue/reactivity': 3.5.32
       obug: 2.1.1
       unplugin: 3.0.0
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       vue: 3.5.32(typescript@6.0.2)
     transitivePeerDependencies:
       - '@types/node'
@@ -8550,7 +8550,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3):
+  vite@8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -8559,20 +8559,20 @@ snapshots:
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 25.5.2
-      '@vitejs/devtools': 0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.3)
+      '@vitejs/devtools': 0.1.13(@pnpm/logger@1001.0.1)(typescript@6.0.2)(vite@8.0.5)
       fsevents: 2.3.3
       jiti: 2.6.1
       sass: 1.99.0
       sass-embedded: 1.99.0
       yaml: 2.8.3
 
-  vitepress-plugin-group-icons@1.7.3(vite@8.0.3):
+  vitepress-plugin-group-icons@1.7.3(vite@8.0.5):
     dependencies:
       '@iconify-json/logos': 1.2.11
       '@iconify-json/vscode-icons': 1.2.45
       '@iconify/utils': 3.1.0
     optionalDependencies:
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
 
   vitepress-plugin-llms@1.12.0:
     dependencies:
@@ -8603,7 +8603,7 @@ snapshots:
       '@shikijs/transformers': 3.23.0
       '@shikijs/types': 3.23.0
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 6.0.5(vite@8.0.3)(vue@3.5.32(typescript@6.0.2))
+      '@vitejs/plugin-vue': 6.0.5(vite@8.0.5)(vue@3.5.32(typescript@6.0.2))
       '@vue/devtools-api': 8.1.1
       '@vue/shared': 3.5.32
       '@vueuse/core': 14.2.1(vue@3.5.32(typescript@6.0.2))
@@ -8612,7 +8612,7 @@ snapshots:
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 3.23.0
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       vue: 3.5.32(typescript@6.0.2)
     optionalDependencies:
       oxc-minify: 0.123.0(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
@@ -8643,10 +8643,10 @@ snapshots:
       - universal-cookie
       - yaml
 
-  vitest@4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.3):
+  vitest@4.1.2(@types/node@25.5.2)(@vitest/ui@4.1.2)(vite@8.0.5):
     dependencies:
       '@vitest/expect': 4.1.2
-      '@vitest/mocker': 4.1.2(vite@8.0.3)
+      '@vitest/mocker': 4.1.2(vite@8.0.5)
       '@vitest/pretty-format': 4.1.2
       '@vitest/runner': 4.1.2
       '@vitest/snapshot': 4.1.2
@@ -8663,7 +8663,7 @@ snapshots:
       tinyexec: 1.0.4
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vite: 8.0.3(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
+      vite: 8.0.5(@types/node@25.5.2)(@vitejs/devtools@0.1.13)(jiti@2.6.1)(sass-embedded@1.99.0)(sass@1.99.0)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 25.5.2
