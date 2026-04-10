@@ -1,5 +1,5 @@
-import { DtsSnapshot } from 'rolldown-plugin-dts-snapshot'
 import { RequireCJS } from 'rolldown-plugin-require-cjs'
+import ApiSnapshot from 'tsnapi/rolldown'
 import { isCallOf } from 'unplugin-ast/ast-kit'
 import AST from 'unplugin-ast/rolldown'
 import { RemoveNode } from 'unplugin-ast/transformers'
@@ -45,7 +45,7 @@ export default defineConfig([
     },
     plugins: [
       RequireCJS(),
-      DtsSnapshot(),
+      ApiSnapshot(),
       AST({
         exclude: ['**/*.d.ts'],
         transformer: [RemoveNode((node) => isCallOf(node, 'typeAssert'))],
