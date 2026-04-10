@@ -866,6 +866,160 @@ describe('generateExports', () => {
     })
   })
 
+  test('jsExtension adds .js to subpath export keys', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')],
+      },
+      {
+        exports: { jsExtension: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "bin": undefined,
+        "exports": {
+          ".": "./index.js",
+          "./bar.js": "./bar.js",
+          "./foo.js": "./foo.js",
+          "./package.json": "./package.json",
+        },
+        "inlinedDependencies": undefined,
+        "main": undefined,
+        "module": undefined,
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('jsExtension with directory index entries', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('index.js'), genChunk('foo/index.js')],
+      },
+      {
+        exports: { jsExtension: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "bin": undefined,
+        "exports": {
+          ".": "./index.js",
+          "./foo.js": "./foo/index.js",
+          "./package.json": "./package.json",
+        },
+        "inlinedDependencies": undefined,
+        "main": undefined,
+        "module": undefined,
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('jsExtension with dual formats', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('index.js'), genChunk('utils.js')],
+        cjs: [genChunk('index.cjs'), genChunk('utils.cjs')],
+      },
+      {
+        exports: { jsExtension: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "bin": undefined,
+        "exports": {
+          ".": {
+            "import": "./index.js",
+            "require": "./index.cjs",
+          },
+          "./package.json": "./package.json",
+          "./utils.js": {
+            "import": "./utils.js",
+            "require": "./utils.cjs",
+          },
+        },
+        "inlinedDependencies": undefined,
+        "main": "./index.cjs",
+        "module": "./index.js",
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('jsExtension does not affect root export', async ({ expect }) => {
+    const results = generateExports(
+      {
+        es: [genChunk('main.js')],
+      },
+      {
+        exports: { jsExtension: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "bin": undefined,
+        "exports": {
+          ".": "./main.js",
+          "./package.json": "./package.json",
+        },
+        "inlinedDependencies": undefined,
+        "main": undefined,
+        "module": undefined,
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
+
+  test('jsExtension with devExports', async ({ expect }) => {
+    const results = await generateExports(
+      {
+        es: [genChunk('index.js'), genChunk('utils.js')],
+        cjs: [genChunk('index.cjs'), genChunk('utils.cjs')],
+      },
+      {
+        exports: { jsExtension: true, devExports: '@my-org/source' },
+      },
+    )
+    // key order matters
+    expect(JSON.stringify(results, undefined, 2)).toMatchInlineSnapshot(`
+      "{
+        "main": "./index.cjs",
+        "module": "./index.js",
+        "exports": {
+          ".": {
+            "@my-org/source": "./SRC/index.js",
+            "import": "./index.js",
+            "require": "./index.cjs"
+          },
+          "./utils.js": {
+            "@my-org/source": "./SRC/utils.js",
+            "import": "./utils.js",
+            "require": "./utils.cjs"
+          },
+          "./package.json": "./package.json"
+        },
+        "publishExports": {
+          ".": {
+            "import": "./index.js",
+            "require": "./index.cjs"
+          },
+          "./utils.js": {
+            "import": "./utils.js",
+            "require": "./utils.cjs"
+          },
+          "./package.json": "./package.json"
+        }
+      }"
+    `)
+  })
+
   test('generate css publish exports', async ({ expect }) => {
     const results = generateExports(
       { es: [genChunk('index.js'), genAsset('style.css')] },
