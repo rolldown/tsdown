@@ -143,7 +143,7 @@
     "DevtoolsOptions": "interface DevtoolsOptions extends NonNullable<InputOptions['devtools']> {\n ui?: boolean | Partial<StartOptions>\n clean?: boolean\n}",
     "DtsOptions": "interface DtsOptions extends Options$1 {\n cjsReexport?: boolean\n}",
     "ExeOptions": "interface ExeOptions extends ExeExtensionOptions {\n seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>\n fileName?: string | ((_: RolldownChunk) => string)\n outDir?: string\n}",
-    "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: Record<string, any> | ((_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>)\n inlinedDependencies?: boolean\n jsExtension?: boolean\n bin?: boolean | string | Record<string, string>\n}",
+    "ExportsOptions": "interface ExportsOptions {\n devExports?: boolean | string\n packageJson?: boolean\n all?: boolean\n exclude?: (RegExp | string)[]\n legacy?: boolean\n customExports?: Record<string, any> | ((_: Record<string, any>, _: { pkg: PackageJson; chunks: ChunksByFormat; isPublish: boolean }) => Awaitable<Record<string, any>>)\n inlinedDependencies?: boolean\n extensions?: boolean\n bin?: boolean | string | Record<string, string>\n}",
     "Format": "type Format = ModuleFormat",
     "InlineConfig": "interface InlineConfig extends UserConfig {\n config?: boolean | string\n configLoader?: 'auto' | 'native' | 'unrun'\n filter?: RegExp | Arrayable<string>\n}",
     "NoExternalFn": "type NoExternalFn = (_: string, _: string | undefined) => boolean | null | undefined | void",
