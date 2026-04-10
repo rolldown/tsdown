@@ -112,6 +112,12 @@ export interface ExportsOptions {
    * bin: { tool: './src/cli-tool.ts' }
    */
   bin?: boolean | string | Record<string, string>
+
+  /**
+   * Add .js extension to all subpath exports.
+   * @default false
+   */
+  subpathExtension?: boolean
 }
 
 export async function writeExports(
@@ -187,6 +193,7 @@ export async function generateExports(
       legacy,
       inlinedDependencies: emitInlinedDeps = true,
       bin,
+      subpathExtension,
     },
     css,
     logger,
@@ -291,10 +298,13 @@ export async function generateExports(
   )
 
   let exports: Record<string, any> = Object.fromEntries(
-    sortedExportsMap.map(([name, subExport]) => [
-      name,
-      genSubExport(devExports, subExport),
-    ]),
+    sortedExportsMap.map(([name, subExport]) => {
+      let finalName = name
+      if (subpathExtension && name !== '.' && !/\.[^/]+$/.test(name)) {
+        finalName = `${name}.js`
+      }
+      return [finalName, genSubExport(devExports, subExport)]
+    }),
   )
   exportMeta(exports, all, packageJson)
   exportCss(exports, chunks, css, pkgRoot)
@@ -311,10 +321,13 @@ export async function generateExports(
   let publishExports: Record<string, any> | undefined
   if (devExports) {
     publishExports = Object.fromEntries(
-      sortedExportsMap.map(([name, subExport]) => [
-        name,
-        genSubExport(false, subExport),
-      ]),
+      sortedExportsMap.map(([name, subExport]) => {
+        let finalName = name
+        if (subpathExtension && name !== '.' && !/\.[^/]+$/.test(name)) {
+          finalName = `${name}.js`
+        }
+        return [finalName, genSubExport(false, subExport)]
+      }),
     )
     exportMeta(publishExports, all, packageJson)
     exportCss(publishExports, chunks, css, pkgRoot)

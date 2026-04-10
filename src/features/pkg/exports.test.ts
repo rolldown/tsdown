@@ -899,6 +899,30 @@ describe('generateExports', () => {
       }
     `)
   })
+
+  test('subpathExtension', async ({ expect }) => {
+    const results = generateExports(
+      { es: [genChunk('index.js'), genChunk('foo.js')] },
+      {
+        exports: { subpathExtension: true },
+      },
+    )
+    await expect(results).resolves.toMatchInlineSnapshot(`
+      {
+        "bin": undefined,
+        "exports": {
+          ".": "./index.js",
+          "./foo.js": "./foo.js",
+          "./package.json": "./package.json",
+        },
+        "inlinedDependencies": undefined,
+        "main": undefined,
+        "module": undefined,
+        "publishExports": undefined,
+        "types": undefined,
+      }
+    `)
+  })
 })
 
 function genChunk(
