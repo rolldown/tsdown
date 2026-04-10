@@ -97,6 +97,19 @@ export interface ExportsOptions {
   inlinedDependencies?: boolean
 
   /**
+   * Add file extensions to subpath export keys.
+   *
+   * When enabled, all subpath exports (except the root `"."`) will include
+   * a `.js` extension in the key (e.g., `"./utils.js"` instead of `"./utils"`).
+   *
+   * This follows the Node.js recommendation for subpath exports:
+   * @see {@link https://nodejs.org/api/packages.html#extensions-in-subpaths}
+   *
+   * @default false
+   */
+  extensions?: boolean
+
+  /**
    * Auto-generate the `bin` field in package.json.
    *
    * - `true`: Auto-detect entry chunks with shebangs. Uses package name (without scope) as bin name.
@@ -185,6 +198,7 @@ export async function generateExports(
       exclude,
       customExports,
       legacy,
+      extensions,
       inlinedDependencies: emitInlinedDeps = true,
       bin,
     },
@@ -266,6 +280,10 @@ export async function generateExports(
         name = `./${name.slice(0, -6)}`
       } else {
         name = `./${name}`
+      }
+
+      if (extensions && name !== '.') {
+        name = `${name}.js`
       }
 
       let subExport = exportsMap.get(name)
