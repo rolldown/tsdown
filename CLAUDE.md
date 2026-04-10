@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Key technologies:**
 
 - **Rolldown**: Core bundler (Rust-based Rollup alternative)
-- **pnpm**: Package manager (v10.28.1)
+- **pnpm**: Package manager (v10.33.0)
 - **Vitest**: Testing framework
 - **TypeScript**: Strict mode with isolated declarations enabled
 - **ESM**: Pure ESM package (`"type": "module"`)
@@ -133,9 +133,14 @@ Three-phase lifecycle using `hookable` library (`src/features/hooks.ts`):
 
 Each feature is self-contained and modular:
 
+**Core:**
+
+- `rolldown.ts` - Rolldown build options construction
+- `hooks.ts` - Hook system implementation using `hookable`
+
 **Rolldown Plugins:**
 
-- `dep.ts` - Dependency management, external/inline validation
+- `deps.ts` - Dependency management, external/inline validation
 - `node-protocol.ts` - Handles `node:` protocol additions/stripping
 - `shebang.ts` - Preserves shebang lines in output
 - `report.ts` - Bundle size reporting
@@ -156,10 +161,13 @@ Each feature is self-contained and modular:
 
 **Advanced Features:**
 
+- `pkg/index.ts` - Package bundling orchestration
 - `pkg/exports.ts` - Auto-generate package.json exports field
 - `pkg/publint.ts` - Package linting
 - `pkg/attw.ts` - "Are the types wrong" integration
+- `debug.ts` - Debug namespace management
 - `devtools.ts` - Vite DevTools integration
+- `exe.ts` - Executable bundling (SEA support)
 - `shims.ts` - ESM/CJS shim injection
 - `shortcuts.ts` - Watch mode keyboard shortcuts
 
@@ -167,7 +175,7 @@ Each feature is self-contained and modular:
 
 Plugins follow Rolldown's interface. Internal plugins are added based on config, user plugins append last. The build supports dual-format output (ESM + CJS) with a second pass for CJS type declarations (`cjsDts`).
 
-Public plugin exports in `src/plugins.ts`: `DepPlugin`, `NodeProtocolPlugin`, `ReportPlugin`, `ShebangPlugin`, `WatchPlugin`
+Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `ReportPlugin`, `ShebangPlugin`, `WatchPlugin`
 
 ### Key Architectural Patterns
 
@@ -286,21 +294,15 @@ tsdown detects `package.json` in the working directory to:
 - All exports must have explicit types
 - `verbatimModuleSyntax: true` enforces explicit import types
 
-### File System Utilities
+### Utilities (`src/utils/`)
 
-Use utilities from `src/utils/fs.ts` instead of Node.js fs directly:
-
-- `fsExists()`, `fsStat()` - Safe stat/exists checks
-- `fsRemove()` - Recursive remove
-- Path utilities respect platform differences
-
-### Logging
-
-Use `src/utils/logger.ts` for all logging:
-
-- `logger.error()`, `logger.warn()`, `logger.info()`, `logger.debug()`
-- Respects `logLevel` config option
-- Structured logging with colors via `ansis`
+- `fs.ts` - File system utilities (`fsExists()`, `fsStat()`, `fsRemove()`); use instead of Node.js fs directly
+- `logger.ts` - Structured logging (`logger.error()`, `.warn()`, `.info()`, `.debug()`) with colours via `ansis`; respects `logLevel` config
+- `chunks.ts` - Chunk manipulation utilities
+- `format.ts` - Formatting utilities (byte sizes, etc.)
+- `general.ts` - General utilities (glob resolution, type checking, etc.)
+- `package.ts` - Package.json reading and manipulation
+- `types.ts` - Shared TypeScript type definitions
 
 ### Watch Mode
 
