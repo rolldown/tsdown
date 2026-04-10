@@ -866,13 +866,13 @@ describe('generateExports', () => {
     })
   })
 
-  test('jsExtension adds .js to subpath export keys', async ({ expect }) => {
+  test('extensions adds .js to subpath export keys', async ({ expect }) => {
     const results = generateExports(
       {
         es: [genChunk('index.js'), genChunk('foo.js'), genChunk('bar.js')],
       },
       {
-        exports: { jsExtension: true },
+        exports: { extensions: true },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -893,13 +893,13 @@ describe('generateExports', () => {
     `)
   })
 
-  test('jsExtension with directory index entries', async ({ expect }) => {
+  test('extensions with directory index entries', async ({ expect }) => {
     const results = generateExports(
       {
         es: [genChunk('index.js'), genChunk('foo/index.js')],
       },
       {
-        exports: { jsExtension: true },
+        exports: { extensions: true },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -919,14 +919,14 @@ describe('generateExports', () => {
     `)
   })
 
-  test('jsExtension with dual formats', async ({ expect }) => {
+  test('extensions with dual formats', async ({ expect }) => {
     const results = generateExports(
       {
         es: [genChunk('index.js'), genChunk('utils.js')],
         cjs: [genChunk('index.cjs'), genChunk('utils.cjs')],
       },
       {
-        exports: { jsExtension: true },
+        exports: { extensions: true },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -952,13 +952,13 @@ describe('generateExports', () => {
     `)
   })
 
-  test('jsExtension does not affect root export', async ({ expect }) => {
+  test('extensions does not affect root export', async ({ expect }) => {
     const results = generateExports(
       {
         es: [genChunk('main.js')],
       },
       {
-        exports: { jsExtension: true },
+        exports: { extensions: true },
       },
     )
     await expect(results).resolves.toMatchInlineSnapshot(`
@@ -977,14 +977,14 @@ describe('generateExports', () => {
     `)
   })
 
-  test('jsExtension with devExports', async ({ expect }) => {
+  test('extensions with devExports', async ({ expect }) => {
     const results = await generateExports(
       {
         es: [genChunk('index.js'), genChunk('utils.js')],
         cjs: [genChunk('index.cjs'), genChunk('utils.cjs')],
       },
       {
-        exports: { jsExtension: true, devExports: '@my-org/source' },
+        exports: { extensions: true, devExports: '@my-org/source' },
       },
     )
     // key order matters

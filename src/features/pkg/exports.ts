@@ -97,7 +97,7 @@ export interface ExportsOptions {
   inlinedDependencies?: boolean
 
   /**
-   * Add `.js` extension to subpath export keys.
+   * Add file extensions to subpath export keys.
    *
    * When enabled, all subpath exports (except the root `"."`) will include
    * a `.js` extension in the key (e.g., `"./utils.js"` instead of `"./utils"`).
@@ -107,7 +107,7 @@ export interface ExportsOptions {
    *
    * @default false
    */
-  jsExtension?: boolean
+  extensions?: boolean
 
   /**
    * Auto-generate the `bin` field in package.json.
@@ -198,7 +198,7 @@ export async function generateExports(
       exclude,
       customExports,
       legacy,
-      jsExtension,
+      extensions,
       inlinedDependencies: emitInlinedDeps = true,
       bin,
     },
@@ -282,7 +282,7 @@ export async function generateExports(
         name = `./${name}`
       }
 
-      if (jsExtension && name !== '.') {
+      if (extensions && name !== '.') {
         name = `${name}.js`
       }
 
