@@ -14,7 +14,7 @@ exports.hello = hello;
 ## folder/index.d.cts
 
 ```cts
-export * from './index.d.mts'
+export type * from './index.d.mts'
 
 ```
 
