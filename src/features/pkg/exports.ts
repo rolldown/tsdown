@@ -361,9 +361,7 @@ export async function generateExports(
     types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
     bin: generatedBin.bin,
-    ...(generatedBin.publishBin === undefined
-      ? {}
-      : { publishBin: generatedBin.publishBin }),
+    publishBin: generatedBin.publishBin,
     inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     publishExports,
   }

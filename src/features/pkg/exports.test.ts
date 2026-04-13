@@ -43,6 +43,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -66,6 +67,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -87,6 +89,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -108,6 +111,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -129,6 +133,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -153,6 +158,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./foo.cjs",
         "module": "./foo.js",
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -177,6 +183,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./foo.cjs",
         "module": "./foo.js",
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": "./foo.d.cts",
       }
@@ -201,6 +208,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.mjs",
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": "./index.d.cts",
       }
@@ -255,6 +263,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
+        "publishBin": undefined,
         "publishExports": {
           ".": {
             "import": "./index.js",
@@ -351,6 +360,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -378,6 +388,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -401,6 +412,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -427,6 +439,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -453,6 +466,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -481,6 +495,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -509,6 +524,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -538,6 +554,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -586,6 +603,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": "./index.d.cts",
       }
@@ -611,6 +629,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -637,6 +656,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -662,6 +682,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -687,6 +708,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -953,7 +975,7 @@ describe('generateExports', () => {
     expect(results).toMatchObject({
       bin: { 'fake-pkg': './cli.js' },
     })
-    expect(results).not.toHaveProperty('publishBin')
+    expect(results.publishBin).toBeUndefined()
   })
 
   test('bin: scoped package name', async ({ expect }) => {
@@ -993,6 +1015,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -1019,6 +1042,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -1052,6 +1076,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": "./index.cjs",
         "module": "./index.js",
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -1077,6 +1102,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": undefined,
         "types": undefined,
       }
@@ -1150,6 +1176,7 @@ describe('generateExports', () => {
         "inlinedDependencies": undefined,
         "main": undefined,
         "module": undefined,
+        "publishBin": undefined,
         "publishExports": {
           ".": "./index.js",
           "./package.json": "./package.json",
