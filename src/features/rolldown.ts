@@ -356,7 +356,7 @@ export function CjsDtsReexportPlugin(): Plugin {
         const dMtsBasename = path.basename(
           chunk.fileName.replace(RE_JS, '.d.mts'),
         )
-        const content = `export * from './${dMtsBasename}'\n`
+        const content = `export type * from './${dMtsBasename}'\n`
 
         this.emitFile({
           type: 'prebuilt-chunk',
