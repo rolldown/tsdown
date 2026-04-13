@@ -1,7 +1,7 @@
 {
   "name": "@tsdown/exe",
   "type": "module",
-  "version": "0.21.7",
+  "version": "0.21.8",
   "description": "Cross-platform executable building for tsdown",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
