@@ -218,6 +218,7 @@ export function DepsPlugin(
           if (chunk.type === 'asset') continue
 
           for (const id of chunk.moduleIds) {
+            if (id === shimFile) continue
             const parsed = await readBundledDepInfo(id)
             if (!parsed) continue
 
