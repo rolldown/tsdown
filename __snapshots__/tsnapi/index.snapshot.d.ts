@@ -54,6 +54,7 @@ export interface ExportsOptions {
     isPublish: boolean;
   }) => Awaitable<Record<string, any>>);
   inlinedDependencies?: boolean;
+  extensions?: boolean;
   bin?: boolean | string | Record<string, string>;
 }
 export interface InlineConfig extends UserConfig {
