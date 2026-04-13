@@ -15,40 +15,40 @@ catalogs:
     '@sxzz/eslint-config': ^7.8.4
     '@sxzz/prettier-config': ^2.3.1
     '@sxzz/test-utils': ^0.5.16
-    '@types/node': ^25.5.2
+    '@types/node': ^25.6.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260405.1
-    '@vitest/coverage-v8': ^4.1.2
-    '@vitest/ui': ^4.1.2
-    baseline-browser-mapping: ^2.10.16
+    '@typescript/native-preview': 7.0.0-dev.20260413.1
+    '@vitest/coverage-v8': ^4.1.4
+    '@vitest/ui': ^4.1.4
+    baseline-browser-mapping: ^2.10.18
     bumpp: ^11.0.1
     dedent: ^1.7.2
     eslint: ^10.2.0
     memfs: ^4.57.1
     pkg-types: ^2.3.0
-    postcss: ^8.5.8
+    postcss: ^8.5.9
     postcss-import: ^16.1.1
-    prettier: ^3.8.1
+    prettier: ^3.8.2
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.99.0
-    tsnapi: ^0.1.1
+    tsnapi: ^0.1.2
     typescript: ~6.0.2
     unplugin-ast: ^0.16.0
     unplugin-raw: ^0.7.0
     unplugin-vue: ^7.1.1
-    vitest: ^4.1.2
+    vitest: ^4.1.4
   docs:
     '@iconify-json/logos': ^1.2.11
     '@shikijs/vitepress-twoslash': ^4.0.2
-    '@unocss/eslint-plugin': ^66.6.7
+    '@unocss/eslint-plugin': ^66.6.8
     '@vueuse/core': ^14.2.1
-    oxc-minify: ^0.123.0
-    typedoc: ^0.28.18
+    oxc-minify: ^0.125.0
+    typedoc: ^0.28.19
     typedoc-plugin-markdown: ^4.11.0
     typedoc-vitepress-theme: ^1.1.2
-    unocss: ^66.6.7
-    vite: ^8.0.5
+    unocss: ^66.6.8
+    vite: ^8.0.8
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.3
     vitepress-plugin-llms: ^1.12.0
@@ -58,7 +58,7 @@ catalogs:
     '@antfu/ni': ^30.0.0
     '@ast-grep/napi': ^0.42.1
     consola: ^3.4.2
-    diff: ^8.0.4
+    diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.2
     '@vitejs/devtools': ^0.1.13
@@ -67,7 +67,7 @@ catalogs:
   prod:
     ansis: ^4.2.0
     cac: ^7.0.0
-    defu: ^6.1.6
+    defu: ^6.1.7
     empathic: ^2.0.0
     hookable: ^6.1.0
     import-without-cache: ^0.2.5
@@ -77,11 +77,11 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
-    rolldown: 1.0.0-rc.13
+    rolldown: 1.0.0-rc.15
     rolldown-plugin-dts: ^0.23.2
     semver: ^7.7.4
-    tinyexec: ^1.0.4
-    tinyglobby: ^0.2.15
+    tinyexec: ^1.1.1
+    tinyglobby: ^0.2.16
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
     unrun: ^0.2.34
