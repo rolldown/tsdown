@@ -135,12 +135,8 @@ export async function writeExports(
   typeAssert(options.pkg)
 
   const { pkg } = options
-  const { publishExports, bin, ...generated } = await generateExports(
-    pkg,
-    chunks,
-    options,
-    inlinedDeps,
-  )
+  const { publishExports, publishBin, bin, ...generated } =
+    await generateExports(pkg, chunks, options, inlinedDeps)
 
   const updatedPkg = {
     ...pkg,
@@ -149,9 +145,10 @@ export async function writeExports(
     packageJsonPath: undefined,
   }
 
-  if (publishExports) {
+  if (publishExports || publishBin) {
     updatedPkg.publishConfig ||= {}
-    updatedPkg.publishConfig.exports = publishExports
+    if (publishExports) updatedPkg.publishConfig.exports = publishExports
+    if (publishBin) updatedPkg.publishConfig.bin = publishBin
   }
 
   const original = readFileSync(pkg.packageJsonPath, 'utf8')
@@ -188,6 +185,7 @@ export async function generateExports(
   bin?: string | Record<string, string>
   inlinedDependencies?: Record<string, string | string[]>
   publishExports?: Record<string, any>
+  publishBin?: string | Record<string, string>
 }> {
   typeAssert(options.exports)
   let {
@@ -295,7 +293,7 @@ export async function generateExports(
       if (!isDts) {
         subExport[format] = distFile
         if (chunk.facadeModuleId && !subExport.src) {
-          subExport.src = `./${slash(path.relative(pkgRoot, chunk.facadeModuleId))}`
+          subExport.src = relativePackagePath(pkgRoot, chunk.facadeModuleId)
         }
       }
     }
@@ -347,12 +345,25 @@ export async function generateExports(
     }
   }
 
+  const generatedBin = generateBin(
+    bin,
+    pkg,
+    chunks,
+    pkgRoot,
+    logger,
+    cwd,
+    devExports,
+  )
+
   return {
     main: legacy ? main || module || pkg.main : undefined,
     module: legacy ? module || pkg.module : undefined,
     types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
-    bin: generateBin(bin, pkg, chunks, pkgRoot, logger, cwd),
+    bin: generatedBin.bin,
+    ...(generatedBin.publishBin === undefined
+      ? {}
+      : { publishBin: generatedBin.publishBin }),
     inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     publishExports,
   }
@@ -445,6 +456,11 @@ export function hasExportsTypes(pkg?: PackageJson): boolean {
 
 const RE_SHEBANG = /^#!.*/
 
+type GeneratedBin = {
+  bin?: string | Record<string, string>
+  publishBin?: string | Record<string, string>
+}
+
 function generateBin(
   bin: ExportsOptions['bin'],
   pkg: PackageJson,
@@ -452,8 +468,11 @@ function generateBin(
   pkgRoot: string,
   logger: Logger,
   cwd: string,
-): string | Record<string, string> | undefined {
-  if (!bin) return
+  devExports: ExportsOptions['devExports'],
+): GeneratedBin {
+  if (!bin) return {}
+
+  const useSourceBin = devExports === true
 
   if (bin === true || typeof bin === 'string') {
     if (!pkg.name)
@@ -464,7 +483,7 @@ function generateBin(
     const binName = pkg.name[0] === '@' ? pkg.name.split('/', 2)[1] : pkg.name
 
     if (bin === true) {
-      let detected: string | undefined
+      let detected: { dist: string; source: string } | undefined
       const seen = new Set<string>()
 
       for (const format of ['es', 'cjs'] as const) {
@@ -482,7 +501,10 @@ function generateBin(
               'Multiple entry chunks with shebangs found. Use `exports.bin: { name: "./src/file.ts" }` to specify which one to use.',
             )
           }
-          detected = join(pkgRoot, chunk.outDir, slash(chunk.fileName))
+          detected = {
+            dist: join(pkgRoot, chunk.outDir, slash(chunk.fileName)),
+            source: relativePackagePath(pkgRoot, chunk.facadeModuleId),
+          }
         }
       }
 
@@ -490,9 +512,9 @@ function generateBin(
         logger.warn(
           '`exports.bin` is true but no entry chunks with shebangs were found',
         )
-        return
+        return {}
       }
-      return { [binName]: detected }
+      return genBin(binName, detected)
     }
 
     if (typeof bin === 'string') {
@@ -500,12 +522,13 @@ function generateBin(
       if (!match) {
         throw new Error(`Could not find output chunk for bin entry "${bin}"`)
       }
-      return { [binName]: match }
+      return genBin(binName, match)
     }
   }
 
   // Object form: { commandName: './src/file.ts' }
   const result: Record<string, string> = {}
+  const publishResult: Record<string, string> = {}
   for (const [cmdName, sourcePath] of Object.entries(bin)) {
     const match = findChunkBySource(sourcePath)
     if (!match) {
@@ -513,11 +536,26 @@ function generateBin(
         `Could not find output chunk for bin entry "${cmdName}": "${sourcePath}"`,
       )
     }
-    result[cmdName] = match
+    result[cmdName] = useSourceBin ? match.source : match.dist
+    if (useSourceBin) publishResult[cmdName] = match.dist
   }
-  return result
+  return useSourceBin
+    ? { bin: result, publishBin: publishResult }
+    : { bin: result }
 
-  function findChunkBySource(sourcePath: string): string | undefined {
+  function genBin(
+    binName: string,
+    match: { dist: string; source: string },
+  ): GeneratedBin {
+    const generatedBin = { [binName]: useSourceBin ? match.source : match.dist }
+    return useSourceBin
+      ? { bin: generatedBin, publishBin: { [binName]: match.dist } }
+      : { bin: generatedBin }
+  }
+
+  function findChunkBySource(
+    sourcePath: string,
+  ): { dist: string; source: string } | undefined {
     const resolved = path.resolve(cwd, sourcePath)
 
     for (const format of ['es', 'cjs'] as const) {
@@ -532,7 +570,10 @@ function generateBin(
             `Bin entry "${sourcePath}" does not contain a shebang line`,
           )
         }
-        return join(pkgRoot, chunk.outDir, slash(chunk.fileName))
+        return {
+          dist: join(pkgRoot, chunk.outDir, slash(chunk.fileName)),
+          source: relativePackagePath(pkgRoot, resolved),
+        }
       }
     }
   }
@@ -555,4 +596,8 @@ function getExportName(
 function join(pkgRoot: string, outDir: string, fileName: string) {
   const outDirRelative = slash(path.relative(pkgRoot, outDir))
   return `${outDirRelative ? `./${outDirRelative}` : '.'}/${fileName}`
+}
+
+function relativePackagePath(pkgRoot: string, filePath: string) {
+  return `./${slash(path.relative(pkgRoot, filePath))}`
 }

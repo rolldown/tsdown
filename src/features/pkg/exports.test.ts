@@ -836,18 +836,124 @@ describe('generateExports', () => {
       {
         exports: {
           bin: {
-            mycli: './src/cli.ts',
-            mytool: './src/tool.ts',
+            'my-cli': './src/cli.ts',
+            'my-tool': './src/tool.ts',
           },
         },
       },
     )
     await expect(results).resolves.toMatchObject({
       bin: {
-        mycli: './cli.js',
-        mytool: './tool.js',
+        'my-cli': './cli.js',
+        'my-tool': './tool.js',
       },
     })
+  })
+
+  test('bin: true with devExports true adds publish bin', async ({
+    expect,
+  }) => {
+    const results = await generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+        ],
+      },
+      { exports: { devExports: true, bin: true } },
+    )
+    expect(results).toMatchObject({
+      bin: { 'fake-pkg': './src/cli.ts' },
+      publishBin: { 'fake-pkg': './cli.js' },
+    })
+  })
+
+  test('bin: string form with devExports true adds publish bin', async ({
+    expect,
+  }) => {
+    const results = await generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+        ],
+      },
+      { exports: { devExports: true, bin: './src/cli.ts' } },
+    )
+    expect(results).toMatchObject({
+      bin: { 'fake-pkg': './src/cli.ts' },
+      publishBin: { 'fake-pkg': './cli.js' },
+    })
+  })
+
+  test('bin: object form with devExports true adds publish bin', async ({
+    expect,
+  }) => {
+    const results = await generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+          genChunk(
+            'tool.js',
+            true,
+            path.resolve('./src/tool.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+        ],
+      },
+      {
+        exports: {
+          devExports: true,
+          bin: {
+            'my-cli': './src/cli.ts',
+            'my-tool': './src/tool.ts',
+          },
+        },
+      },
+    )
+    expect(results).toMatchObject({
+      bin: {
+        'my-cli': './src/cli.ts',
+        'my-tool': './src/tool.ts',
+      },
+      publishBin: {
+        'my-cli': './cli.js',
+        'my-tool': './tool.js',
+      },
+    })
+  })
+
+  test('bin with conditional devExports keeps dist bin', async ({ expect }) => {
+    const results = await generateExports(
+      {
+        es: [
+          genChunk(
+            'cli.js',
+            true,
+            path.resolve('./src/cli.ts'),
+            '#!/usr/bin/env node\n',
+          ),
+        ],
+      },
+      { exports: { devExports: 'dev', bin: './src/cli.ts' } },
+    )
+    expect(results).toMatchObject({
+      bin: { 'fake-pkg': './cli.js' },
+    })
+    expect(results).not.toHaveProperty('publishBin')
   })
 
   test('bin: scoped package name', async ({ expect }) => {
