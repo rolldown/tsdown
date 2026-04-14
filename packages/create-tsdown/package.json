@@ -36,7 +36,7 @@
     }
   },
   "bin": {
-    "create-tsdown": "./dist/run.mjs"
+    "create-tsdown": "./src/run.ts"
   },
   "files": [
     "dist"
@@ -47,6 +47,9 @@
       ".": "./dist/index.mjs",
       "./run": "./dist/run.mjs",
       "./package.json": "./package.json"
+    },
+    "bin": {
+      "create-tsdown": "./dist/run.mjs"
     }
   },
   "engines": {
