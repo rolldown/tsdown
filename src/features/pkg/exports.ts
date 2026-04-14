@@ -135,12 +135,8 @@ export async function writeExports(
   typeAssert(options.pkg)
 
   const { pkg } = options
-  const { publishExports, bin, ...generated } = await generateExports(
-    pkg,
-    chunks,
-    options,
-    inlinedDeps,
-  )
+  const { publishExports, publishBin, bin, ...generated } =
+    await generateExports(pkg, chunks, options, inlinedDeps)
 
   const updatedPkg = {
     ...pkg,
@@ -149,9 +145,14 @@ export async function writeExports(
     packageJsonPath: undefined,
   }
 
-  if (publishExports) {
+  if (publishExports || publishBin) {
     updatedPkg.publishConfig ||= {}
-    updatedPkg.publishConfig.exports = publishExports
+    if (publishExports) {
+      updatedPkg.publishConfig.exports = publishExports
+    }
+    if (publishBin) {
+      updatedPkg.publishConfig.bin = publishBin
+    }
   }
 
   const original = readFileSync(pkg.packageJsonPath, 'utf8')
@@ -186,6 +187,7 @@ export async function generateExports(
   types: string | undefined
   exports: Record<string, any>
   bin?: string | Record<string, string>
+  publishBin?: string | Record<string, string>
   inlinedDependencies?: Record<string, string | string[]>
   publishExports?: Record<string, any>
 }> {
@@ -347,12 +349,27 @@ export async function generateExports(
     }
   }
 
+  const binResult = generateBin(
+    bin,
+    !!devExports,
+    pkg,
+    chunks,
+    pkgRoot,
+    logger,
+    cwd,
+  )
+  const publishBin =
+    devExports && binResult
+      ? generateBin(bin, false, pkg, chunks, pkgRoot, logger, cwd)
+      : undefined
+
   return {
     main: legacy ? main || module || pkg.main : undefined,
     module: legacy ? module || pkg.module : undefined,
     types: legacy ? cjsTypes || esmTypes || pkg.types : pkg.types,
     exports,
-    bin: generateBin(bin, pkg, chunks, pkgRoot, logger, cwd),
+    bin: binResult,
+    publishBin,
     inlinedDependencies: emitInlinedDeps ? inlinedDeps : undefined,
     publishExports,
   }
@@ -447,6 +464,7 @@ const RE_SHEBANG = /^#!.*/
 
 function generateBin(
   bin: ExportsOptions['bin'],
+  devExports: boolean,
   pkg: PackageJson,
   chunks: ChunksByFormat,
   pkgRoot: string,
@@ -482,7 +500,9 @@ function generateBin(
               'Multiple entry chunks with shebangs found. Use `exports.bin: { name: "./src/file.ts" }` to specify which one to use.',
             )
           }
-          detected = join(pkgRoot, chunk.outDir, slash(chunk.fileName))
+          detected = devExports
+            ? `./${slash(path.relative(pkgRoot, chunk.facadeModuleId))}`
+            : join(pkgRoot, chunk.outDir, slash(chunk.fileName))
         }
       }
 
@@ -500,7 +520,7 @@ function generateBin(
       if (!match) {
         throw new Error(`Could not find output chunk for bin entry "${bin}"`)
       }
-      return { [binName]: match }
+      return { [binName]: devExports ? normalizeSource(bin) : match }
     }
   }
 
@@ -513,9 +533,14 @@ function generateBin(
         `Could not find output chunk for bin entry "${cmdName}": "${sourcePath}"`,
       )
     }
-    result[cmdName] = match
+    result[cmdName] = devExports ? normalizeSource(sourcePath) : match
   }
   return result
+
+  function normalizeSource(sourcePath: string): string {
+    const resolved = path.resolve(cwd, sourcePath)
+    return `./${slash(path.relative(pkgRoot, resolved))}`
+  }
 
   function findChunkBySource(sourcePath: string): string | undefined {
     const resolved = path.resolve(cwd, sourcePath)

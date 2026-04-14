@@ -36,7 +36,7 @@
     }
   },
   "bin": {
-    "tsdown-migrate": "./dist/run.mjs"
+    "tsdown-migrate": "./src/run.ts"
   },
   "files": [
     "dist"
@@ -47,6 +47,9 @@
       ".": "./dist/index.mjs",
       "./run": "./dist/run.mjs",
       "./package.json": "./package.json"
+    },
+    "bin": {
+      "tsdown-migrate": "./dist/run.mjs"
     }
   },
   "engines": {
