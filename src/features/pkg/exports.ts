@@ -1,9 +1,8 @@
-import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { RE_CSS, RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
-import { detectIndentation } from '../../utils/format.ts'
 import { stripExtname } from '../../utils/fs.ts'
 import { matchPattern, slash, typeAssert } from '../../utils/general.ts'
+import { writeJsonFile } from '../../utils/json.ts'
 import type { NormalizedFormat, ResolvedConfig } from '../../config/types.ts'
 import type {
   ChunksByFormat,
@@ -155,15 +154,7 @@ export async function writeExports(
     }
   }
 
-  const original = readFileSync(pkg.packageJsonPath, 'utf8')
-  let contents = JSON.stringify(updatedPkg, null, detectIndentation(original))
-  if (original.includes('\r\n')) {
-    contents = contents.replaceAll('\n', '\r\n')
-  }
-  if (original.endsWith('\n')) contents += '\n'
-  if (contents !== original) {
-    writeFileSync(pkg.packageJsonPath, contents, 'utf8')
-  }
+  writeJsonFile(pkg.packageJsonPath, updatedPkg)
 }
 
 type SubExport = Partial<Record<'cjs' | 'es' | 'src', string>>
