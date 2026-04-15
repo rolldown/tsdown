@@ -1,6 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { isDeepStrictEqual } from 'node:util'
-import { detectIndentation } from './format.ts'
 
 export function writeJsonFile(filePath: string, content: unknown): void {
   let originalContent: unknown = undefined
@@ -36,4 +35,20 @@ export function writeJsonFile(filePath: string, content: unknown): void {
   }
 
   writeFileSync(filePath, jsonString, 'utf8')
+}
+
+export function detectIndentation(jsonText: string): string | number {
+  const lines = jsonText.split(/\r?\n/)
+
+  for (const line of lines) {
+    const match = line.match(/^(\s+)\S/)
+    if (!match) continue
+
+    if (match[1].includes('\t')) {
+      return '\t'
+    }
+    return match[1].length
+  }
+
+  return 2
 }

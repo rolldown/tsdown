@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import consola from 'consola'
 import { createPatch } from 'diff'
-import { detectIndentation } from '../../../../src/utils/format.ts'
+import { detectIndentation } from '../../../../src/utils/json.ts'
 import pkg from '../../package.json' with { type: 'json' }
 import { outputDiff, renameKey } from '../utils.ts'
 
