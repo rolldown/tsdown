@@ -36,7 +36,7 @@ const debug = createDebug('tsdown:rolldown')
 export async function getBuildOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
-  configFiles: string[],
+  configDeps: Set<string>,
   bundle: TsdownBundle,
   cjsDts: boolean = false,
   isDualFormat?: boolean,
@@ -44,7 +44,7 @@ export async function getBuildOptions(
   const inputOptions = await resolveInputOptions(
     config,
     format,
-    configFiles,
+    configDeps,
     bundle,
     cjsDts,
     isDualFormat,
@@ -74,7 +74,7 @@ export async function getBuildOptions(
 async function resolveInputOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
-  configFiles: string[],
+  configDeps: Set<string>,
   bundle: TsdownBundle,
   cjsDts: boolean,
   isDualFormat?: boolean,
@@ -173,7 +173,7 @@ async function resolveInputOptions(
   }
 
   if (watch) {
-    plugins.push(WatchPlugin(configFiles, bundle))
+    plugins.push(WatchPlugin(configDeps, bundle))
   }
 
   if (!cjsDts) {

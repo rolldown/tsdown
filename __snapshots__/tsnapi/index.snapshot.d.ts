@@ -233,6 +233,7 @@ export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" 
   ignoreWatch: Array<string | RegExp>;
   deps: ResolvedDepsConfig;
   root: string;
+  configDeps: Set<string>;
   dts: false | DtsOptions;
   report: false | ReportOptions;
   tsconfig: false | string;
@@ -262,11 +263,11 @@ export type WithEnabled<T> = boolean | undefined | CIOption | (T & {
 
 // Functions
 export declare function build(_?: InlineConfig): Promise<TsdownBundle[]>;
-export declare function buildWithConfigs(_: ResolvedConfig[], _: string[], _: () => void): Promise<TsdownBundle[]>;
+export declare function buildWithConfigs(_: ResolvedConfig[], _: Set<string>, _: () => void): Promise<TsdownBundle[]>;
 export declare function defineConfig(_: UserConfigExport): UserConfigExport;
 export declare function enableDebug(_?: boolean | Arrayable<string>): void;
 export declare function mergeConfig(_: InlineConfig, ..._: InlineConfig[]): InlineConfig;
-export declare function resolveUserConfig(_: UserConfig, _: InlineConfig): Promise<ResolvedConfig[]>;
+export declare function resolveUserConfig(_: UserConfig, _: InlineConfig, _: Set<string>): Promise<ResolvedConfig[]>;
 
 // Variables
 export declare const globalLogger: Logger;

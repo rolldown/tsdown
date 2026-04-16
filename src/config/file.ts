@@ -3,7 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
-import { init, isSupported } from 'import-without-cache'
+import { depsStore, init, isSupported } from 'import-without-cache'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
@@ -23,11 +23,13 @@ export async function loadViteConfig(
   prefix: string,
   cwd: string,
   configLoader: InlineConfig['configLoader'],
-): Promise<ViteUserConfig | undefined> {
+): Promise<{ config: ViteUserConfig; deps?: Set<string> } | undefined> {
   const loader = resolveConfigLoader(configLoader)
   debug('Loading Vite config via loader: ', loader)
   const parser = createParser(loader)
-  const [result] = await createConfigCoreLoader<ViteUserConfigExport>({
+  const [result] = await createConfigCoreLoader<
+    [exported: ViteUserConfigExport, deps: Set<string>]
+  >({
     sources: [
       {
         files: [`${prefix}.config`],
@@ -39,17 +41,24 @@ export async function loadViteConfig(
   }).load(true)
   if (!result) return
 
-  const { config, source } = result
+  let {
+    config: [exported, deps],
+    source,
+  } = result
   globalLogger.info(`Using Vite config: ${underline(source)}`)
 
-  const resolved = await config
-  if (typeof resolved === 'function') {
-    return resolved({
+  exported = await exported
+  if (typeof exported === 'function') {
+    exported = await exported({
       command: 'build',
       mode: 'production',
     } satisfies ConfigEnv)
   }
-  return resolved
+
+  return {
+    config: exported,
+    deps,
+  }
 }
 
 const configPrefix = 'tsdown.config'
@@ -60,7 +69,7 @@ export async function loadConfigFile(
   rootConfig?: UserConfig,
 ): Promise<{
   configs: UserConfig[]
-  file?: string
+  deps?: Set<string>
 }> {
   let cwd = inlineConfig.cwd || process.cwd()
   let overrideConfig = false
@@ -103,7 +112,9 @@ export async function loadConfigFile(
         { files: ['package.json'], parser },
       ]
 
-  const [result] = await createConfigCoreLoader<UserConfigExport>({
+  const [result] = await createConfigCoreLoader<
+    [exported: UserConfigExport, deps: Set<string>]
+  >({
     sources,
     cwd,
     stopAt: workspace && path.dirname(workspace),
@@ -111,8 +122,13 @@ export async function loadConfigFile(
 
   let exported: UserConfigExport = []
   let file: string | undefined
+  let deps: Set<string> | undefined
   if (result) {
-    ;({ config: exported, source: file } = result)
+    ;({
+      config: [exported, deps],
+      source: file,
+    } = result)
+
     globalLogger.info(
       `config file: ${underline(file)}`,
       loader === 'native' ? '' : `(${loader})`,
@@ -140,7 +156,7 @@ export async function loadConfigFile(
       ...config,
       cwd: config.cwd ? path.resolve(cwd, config.cwd) : cwd,
     })),
-    file,
+    deps,
   }
 }
 
@@ -169,21 +185,19 @@ function createParser(loader: Parser) {
     if (isJSON) {
       const contents = await readFile(filepath, 'utf8')
       const parsed = JSON.parse(contents)
-      if (isPkgJson) {
-        return parsed?.tsdown
-      }
-      return parsed
+      const config = isPkgJson ? parsed?.tsdown : parsed
+      return [config, new Set([filepath])]
     }
 
-    if (loader === 'native') {
-      return nativeImport(filepath)
-    }
-
-    return unrunImport(filepath)
+    return (loader === 'native' ? nativeImport : unrunImport)(filepath)
   }
 }
 
-async function nativeImport(id: string) {
+async function nativeImport(
+  id: string,
+): Promise<[module: unknown, deps: Set<string>]> {
+  const deps = new Set<string>()
+
   const url = pathToFileURL(id)
   const importAttributes: Record<string, string> = Object.create(null)
   if (isSupported) {
@@ -193,39 +207,45 @@ async function nativeImport(id: string) {
     url.searchParams.set('no-cache', crypto.randomUUID())
   }
 
-  const mod = await import(url.href, {
-    with: importAttributes,
-  }).catch((error) => {
-    const cannotFindModule = error?.message?.includes?.('Cannot find module')
-    if (cannotFindModule) {
-      const configError = new Error(
-        `Failed to load the config file. Try setting the --config-loader CLI flag to \`unrun\`.\n\n${error.message}`,
-        { cause: error },
-      )
-      throw configError
-    }
+  const mod = await depsStore.run(deps, () =>
+    import(url.href, {
+      with: importAttributes,
+    }).catch((error) => {
+      const cannotFindModule = error?.message?.includes?.('Cannot find module')
+      if (cannotFindModule) {
+        const configError = new Error(
+          `Failed to load the config file. Try setting the --config-loader CLI flag to \`unrun\`.\n\n${error.message}`,
+          { cause: error },
+        )
+        throw configError
+      }
 
-    const nodeInternalBug =
-      typeof error?.stack === 'string' &&
-      error.stack.includes('node:internal/modules/esm/translators')
-    if (nodeInternalBug) {
-      const configError = new Error(
-        `Failed to load the config file due to a known Node.js bug. Try setting the --config-loader CLI flag to \`unrun\` or upgrading Node.js to v24.11.1 or later.\n\n${error.message}`,
-        { cause: error },
-      )
-      throw configError
-    }
+      const nodeInternalBug =
+        typeof error?.stack === 'string' &&
+        error.stack.includes('node:internal/modules/esm/translators')
+      if (nodeInternalBug) {
+        const configError = new Error(
+          `Failed to load the config file due to a known Node.js bug. Try setting the --config-loader CLI flag to \`unrun\` or upgrading Node.js to v24.11.1 or later.\n\n${error.message}`,
+          { cause: error },
+        )
+        throw configError
+      }
 
-    throw error
-  })
+      throw error
+    }),
+  )
+
   const config = mod.default || mod
-  return config
+  return [config, deps]
 }
 
-async function unrunImport(id: string) {
+async function unrunImport(
+  id: string,
+): Promise<[module: unknown, deps: Set<string>]> {
   const { unrun } = await import('unrun')
-  const { module } = await unrun({
+  const { module, dependencies } = await unrun({
     path: pathToFileURL(id).href,
   })
-  return module
+
+  return [module, new Set(dependencies)]
 }

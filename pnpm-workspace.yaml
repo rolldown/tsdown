@@ -70,7 +70,7 @@ catalogs:
     defu: ^6.1.7
     empathic: ^2.0.0
     hookable: ^6.1.1
-    import-without-cache: ^0.3.0
+    import-without-cache: ^0.3.3
     is-in-ci: ^2.0.0
     lightningcss: ^1.32.0
     obug: ^2.1.1

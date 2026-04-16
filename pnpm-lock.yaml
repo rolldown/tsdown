@@ -177,8 +177,8 @@ catalogs:
       specifier: ^6.1.1
       version: 6.1.1
     import-without-cache:
-      specifier: ^0.3.0
-      version: 0.3.0
+      specifier: ^0.3.3
+      version: 0.3.3
     is-in-ci:
       specifier: ^2.0.0
       version: 2.0.0
@@ -245,7 +245,7 @@ importers:
         version: 6.1.1
       import-without-cache:
         specifier: catalog:prod
-        version: 0.3.0
+        version: 0.3.3
       obug:
         specifier: catalog:prod
         version: 2.1.1
@@ -2970,8 +2970,8 @@ packages:
   import-meta-resolve@4.2.0:
     resolution: {integrity: sha512-Iqv2fzaTQN28s/FwZAoFq0ZSs/7hMAHJVX+w8PZl3cY19Pxk6jFFalxQoIfW2826i/fDLXv8IiEZRIT0lDuWcg==}
 
-  import-without-cache@0.3.0:
-    resolution: {integrity: sha512-cHk6lns6un55r3vS1H2L7OjM0wGWmwcwgOlCRd7FlW/2HdtvBb/reYsV+yuy5jcnOp63xjAgFxbFJDLkUBu1ow==}
+  import-without-cache@0.3.3:
+    resolution: {integrity: sha512-bDxwDdF04gm550DfZHgffvlX+9kUlcz32UD0AeBTmVPFiWkrexF2XVmiuFFbDhiFuP8fQkrkvI2KdSNPYWAXkQ==}
     engines: {node: '>=20.19.0'}
 
   imurmurhash@0.1.4:
@@ -7091,7 +7091,7 @@ snapshots:
 
   import-meta-resolve@4.2.0: {}
 
-  import-without-cache@0.3.0: {}
+  import-without-cache@0.3.3: {}
 
   imurmurhash@0.1.4: {}
 

@@ -6,5 +6,5 @@ export { defineConfig }
 export function enableDebug(_) {}
 export var globalLogger /* const */
 export function mergeConfig(_, ..._) {}
-export async function resolveUserConfig(_, _) {}
+export async function resolveUserConfig(_, _, _) {}
 export { Rolldown }

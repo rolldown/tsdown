@@ -44,6 +44,7 @@ const parseEnv = process.getBuiltinModule('node:util').parseEnv
 export async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,
+  configDeps: Set<string>,
 ): Promise<ResolvedConfig[]> {
   // Dispatch `tsdownConfig` hook on user plugins before any resolution work.
   // Plugins are snapshotted: new plugins added by a hook don't re-dispatch,
@@ -238,6 +239,8 @@ export async function resolveUserConfig(
   }
   debug(`Environment variables: %O`, env)
 
+  configDeps = new Set(configDeps)
+
   if (fromVite) {
     const viteUserConfig = await loadViteConfig(
       fromVite === true ? 'vite' : fromVite,
@@ -245,8 +248,10 @@ export async function resolveUserConfig(
       inlineConfig.configLoader,
     )
     if (viteUserConfig) {
-      const viteAlias = viteUserConfig.resolve?.alias
+      const { config, deps } = viteUserConfig
+      deps?.forEach((dep) => configDeps.add(dep))
 
+      const viteAlias = config.resolve?.alias
       if ((Array.isArray as (arg: any) => arg is readonly any[])(viteAlias)) {
         throw new TypeError(
           'Unsupported resolve.alias in Vite config. Use object instead of array',
@@ -256,8 +261,8 @@ export async function resolveUserConfig(
         alias = { ...alias, ...viteAlias }
       }
 
-      if (viteUserConfig.plugins) {
-        plugins = [viteUserConfig.plugins as any, plugins]
+      if (config.plugins) {
+        plugins = [config.plugins as any, plugins]
       }
     }
   }
@@ -291,6 +296,7 @@ export async function resolveUserConfig(
     attw,
     cjsDefault,
     clean,
+    configDeps,
     copy: publicDir || copy,
     css,
     cwd,

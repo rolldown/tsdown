@@ -697,6 +697,7 @@ export type ResolvedConfig = Overwrite<
     deps: ResolvedDepsConfig
     /** Resolved root directory of input files */
     root: string
+    configDeps: Set<string>
 
     dts: false | DtsOptions
     report: false | ReportOptions
