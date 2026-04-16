@@ -10,6 +10,7 @@ import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { validateSea } from '../features/exe.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
+import { flattenPlugins } from '../features/plugin.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
@@ -44,6 +45,19 @@ export async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,
 ): Promise<ResolvedConfig[]> {
+  // Dispatch `tsdownConfig` hook on user plugins before any resolution work.
+  // Plugins are snapshotted: new plugins added by a hook don't re-dispatch,
+  // preventing infinite recursion and matching Vite's `config` semantics.
+  {
+    const flat = await flattenPlugins(userConfig.plugins)
+    for (const plugin of flat) {
+      const result = await plugin.tsdownConfig?.(userConfig, inlineConfig)
+      if (result) {
+        userConfig = mergeConfig(userConfig, result)
+      }
+    }
+  }
+
   let {
     entry,
     format,
@@ -323,7 +337,7 @@ export async function resolveUserConfig(
     ? (Object.keys(format) as Format[])
     : resolveComma(toArray<Format>(format, 'esm'))
 
-  return formats.map((fmt, idx): ResolvedConfig => {
+  const resolvedConfigs = formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
     const overrides = objectFormat ? format[fmt] : undefined
     return {
@@ -336,6 +350,18 @@ export async function resolveUserConfig(
       ...overrides,
     }
   })
+
+  // Dispatch `tsdownConfigResolved` hook. Re-flatten from the final plugin
+  // list so plugins added during `tsdownConfig` (via fromVite or in-place
+  // mutation) still participate. Fires once per resolved format.
+  for (const resolved of resolvedConfigs) {
+    const finalPlugins = await flattenPlugins(resolved.plugins)
+    for (const plugin of finalPlugins) {
+      await plugin.tsdownConfigResolved?.(resolved)
+    }
+  }
+
+  return resolvedConfigs
 }
 
 /** filter env variables by prefixes */
