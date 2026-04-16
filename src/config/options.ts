@@ -354,8 +354,8 @@ export async function resolveUserConfig(
   // Dispatch `tsdownConfigResolved` hook. Re-flatten from the final plugin
   // list so plugins added during `tsdownConfig` (via fromVite or in-place
   // mutation) still participate. Fires once per resolved format.
-  const finalPlugins = await flattenPlugins(config.plugins)
   for (const resolved of resolvedConfigs) {
+    const finalPlugins = await flattenPlugins(resolved.plugins)
     for (const plugin of finalPlugins) {
       await plugin.tsdownConfigResolved?.(resolved)
     }
