@@ -9,15 +9,16 @@ import type { Plugin, RolldownPluginOption } from 'rolldown'
 /**
  * Environment context passed to the {@link TsdownPlugin.tsdownConfig} hook.
  *
- * Analogous to Vite's `ConfigEnv`.
+ * Analogous to Vite's `ConfigEnv`. Only carries information that is not
+ * already reachable through the first `config` argument.
  */
 export interface TsdownConfigEnv {
-  /** Whether tsdown is running in watch mode. */
-  watch: boolean
-  /** The original inline config passed to `build()` (CLI flags etc.). */
+  /**
+   * The original inline config passed to `build()` — typically the CLI flags.
+   * Use this to distinguish values that came from the command line vs. the
+   * config file.
+   */
   inlineConfig: InlineConfig
-  /** Working directory of the current config being resolved. */
-  cwd: string
 }
 
 /**
@@ -59,11 +60,6 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
   tsdownConfigResolved?: (resolvedConfig: ResolvedConfig) => Awaitable<void>
 }
 
-/**
- * Recursively flatten a {@link RolldownPluginOption} — which may be a nested
- * array, a promise, `false`, `null`, or `undefined` — into a flat array of
- * plugin objects.
- */
 export async function flattenPlugins(
   plugins: RolldownPluginOption,
 ): Promise<Plugin[]> {

@@ -119,9 +119,7 @@ export interface TsdownBundle extends AsyncDisposable {
   inlinedDeps: Map<string, Set<string>>;
 }
 export interface TsdownConfigEnv {
-  watch: boolean;
   inlineConfig: InlineConfig;
-  cwd: string;
 }
 export interface TsdownHooks {
   "build:prepare": (_: BuildContext) => void | Promise<void>;

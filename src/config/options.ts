@@ -54,11 +54,7 @@ export async function resolveUserConfig(
   // Plugins are snapshotted: new plugins added by a hook don't re-dispatch,
   // preventing infinite recursion and matching Vite's `config` semantics.
   {
-    const env: TsdownConfigEnv = {
-      watch: !!(userConfig.watch ?? inlineConfig.watch),
-      inlineConfig,
-      cwd: userConfig.cwd || inlineConfig.cwd || process.cwd(),
-    }
+    const env: TsdownConfigEnv = { inlineConfig }
     const flat = await flattenPlugins(userConfig.plugins)
     for (const plugin of flat) {
       if (!hasTsdownConfig(plugin)) continue

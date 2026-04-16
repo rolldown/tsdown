@@ -103,7 +103,7 @@ describe('tsdownConfig hook', () => {
     }
   })
 
-  test('receives env with watch, cwd, inlineConfig', async (context) => {
+  test('receives env with inlineConfig', async (context) => {
     const spy = vi.fn()
     const plugin: TsdownPlugin = { name: 'env', tsdownConfig: spy }
     const { testDir } = await writeFixtures(context, { 'index.ts': '' })
@@ -115,14 +115,11 @@ describe('tsdownConfig hook', () => {
         config: false,
         logLevel: 'silent' as const,
         tsconfig: false as const,
-        watch: true,
       }
       await resolveConfig(inline)
       expect(spy).toHaveBeenCalledTimes(1)
       const env = spy.mock.calls[0][1]
-      expect(env.watch).toBe(true)
       expect(env.inlineConfig).toBe(inline)
-      expect(env.cwd).toBeTypeOf('string')
     } finally {
       restoreCwd()
     }
