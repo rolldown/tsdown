@@ -59,36 +59,21 @@ export type TsdownPluginOption<A = any> = Awaitable<
   | TsdownPlugin<A>
   | RolldownPlugin<A>
   | { name: string }
-  | null
   | undefined
+  | null
+  | void
   | false
   | TsdownPluginOption<A>[]
 >
 
 export async function flattenPlugins(
-  plugins: TsdownPluginOption | RolldownPluginOption,
-): Promise<Plugin[]> {
+  plugins: TsdownPluginOption,
+): Promise<TsdownPlugin[]> {
   const awaited = await plugins
   if (!awaited) return []
   if (Array.isArray(awaited)) {
     const nested = await Promise.all(awaited.map(flattenPlugins))
     return nested.flat()
   }
-  return [awaited as Plugin]
-}
-
-/** Type guard: does this plugin implement {@link TsdownPlugin.tsdownConfig}? */
-export function hasTsdownConfig(plugin: Plugin): plugin is TsdownPlugin & {
-  tsdownConfig: NonNullable<TsdownPlugin['tsdownConfig']>
-} {
-  return typeof (plugin as TsdownPlugin).tsdownConfig === 'function'
-}
-
-/** Type guard: does this plugin implement {@link TsdownPlugin.tsdownConfigResolved}? */
-export function hasTsdownConfigResolved(
-  plugin: Plugin,
-): plugin is TsdownPlugin & {
-  tsdownConfigResolved: NonNullable<TsdownPlugin['tsdownConfigResolved']>
-} {
-  return typeof (plugin as TsdownPlugin).tsdownConfigResolved === 'function'
+  return [awaited as TsdownPlugin]
 }

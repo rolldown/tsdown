@@ -10,11 +10,7 @@ import { resolveDepsConfig } from '../features/deps.ts'
 import { resolveEntry } from '../features/entry.ts'
 import { validateSea } from '../features/exe.ts'
 import { hasExportsTypes } from '../features/pkg/exports.ts'
-import {
-  flattenPlugins,
-  hasTsdownConfig,
-  hasTsdownConfigResolved,
-} from '../features/plugin.ts'
+import { flattenPlugins } from '../features/plugin.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import {
@@ -55,8 +51,7 @@ export async function resolveUserConfig(
   {
     const flat = await flattenPlugins(userConfig.plugins)
     for (const plugin of flat) {
-      if (!hasTsdownConfig(plugin)) continue
-      const result = await plugin.tsdownConfig(userConfig, inlineConfig)
+      const result = await plugin.tsdownConfig?.(userConfig, inlineConfig)
       if (result) {
         userConfig = mergeConfig(userConfig, result)
       }
@@ -362,9 +357,7 @@ export async function resolveUserConfig(
   const finalPlugins = await flattenPlugins(config.plugins)
   for (const resolved of resolvedConfigs) {
     for (const plugin of finalPlugins) {
-      if (hasTsdownConfigResolved(plugin)) {
-        await plugin.tsdownConfigResolved(resolved)
-      }
+      await plugin.tsdownConfigResolved?.(resolved)
     }
   }
 

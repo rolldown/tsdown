@@ -1,12 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import { chdir, writeFixtures } from '../../tests/utils.ts'
 import { resolveConfig } from '../config/index.ts'
-import {
-  flattenPlugins,
-  hasTsdownConfig,
-  hasTsdownConfigResolved,
-  type TsdownPlugin,
-} from './plugin.ts'
+import { flattenPlugins, type TsdownPlugin } from './plugin.ts'
 import type { Plugin } from 'rolldown'
 
 describe('flattenPlugins', () => {
@@ -40,20 +35,6 @@ describe('flattenPlugins', () => {
     const userPlugin: Plugin = { name: 'user' }
     const result = await flattenPlugins([[vitePlugin], [userPlugin]])
     expect(result).toEqual([vitePlugin, userPlugin])
-  })
-})
-
-describe('hasTsdownConfig / hasTsdownConfigResolved', () => {
-  test('identify plugins that implement the hooks', () => {
-    const plain: Plugin = { name: 'plain' }
-    const config: TsdownPlugin = { name: 'c', tsdownConfig() {} }
-    const resolved: TsdownPlugin = { name: 'r', tsdownConfigResolved() {} }
-    expect(hasTsdownConfig(plain)).toBe(false)
-    expect(hasTsdownConfigResolved(plain)).toBe(false)
-    expect(hasTsdownConfig(config)).toBe(true)
-    expect(hasTsdownConfigResolved(config)).toBe(false)
-    expect(hasTsdownConfig(resolved)).toBe(false)
-    expect(hasTsdownConfigResolved(resolved)).toBe(true)
   })
 })
 
