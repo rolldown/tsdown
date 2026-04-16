@@ -21,7 +21,7 @@ export interface CopyEntry {
   to?: string;
   flatten?: boolean;
   verbose?: boolean;
-  rename?: string | ((name: string, extension: string, fullPath: string) => string);
+  rename?: string | ((_: string, _: string, _: string) => string);
 }
 export interface DepsConfig {
   neverBundle?: ExternalOption;
@@ -39,7 +39,7 @@ export interface DtsOptions extends Options$1 {
 }
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, "main" | "output" | "mainFormat">;
-  fileName?: string | ((chunk: RolldownChunk) => string);
+  fileName?: string | ((_: RolldownChunk) => string);
   outDir?: string;
 }
 export interface ExportsOptions {
@@ -48,7 +48,7 @@ export interface ExportsOptions {
   all?: boolean;
   exclude?: (RegExp | string)[];
   legacy?: boolean;
-  customExports?: Record<string, any> | ((exports: Record<string, any>, context: {
+  customExports?: Record<string, any> | ((_: Record<string, any>, _: {
     pkg: PackageJson;
     chunks: ChunksByFormat;
     isPublish: boolean;
@@ -65,12 +65,12 @@ export interface InlineConfig extends UserConfig {
 export interface Logger {
   level: LogLevel;
   options?: LoggerOptions;
-  info: (...args: any[]) => void;
-  warn: (...args: any[]) => void;
-  warnOnce: (...args: any[]) => void;
-  error: (...args: any[]) => void;
-  success: (...args: any[]) => void;
-  clearScreen: (type: LogType) => void;
+  info: (..._: any[]) => void;
+  warn: (..._: any[]) => void;
+  warnOnce: (..._: any[]) => void;
+  error: (..._: any[]) => void;
+  success: (..._: any[]) => void;
+  clearScreen: (_: LogType) => void;
 }
 export interface OutExtensionContext {
   options: InputOptions;
@@ -119,9 +119,9 @@ export interface TsdownBundle extends AsyncDisposable {
   inlinedDeps: Map<string, Set<string>>;
 }
 export interface TsdownHooks {
-  "build:prepare": (ctx: BuildContext) => void | Promise<void>;
-  "build:before": (ctx: BuildContext & RolldownContext) => void | Promise<void>;
-  "build:done": (ctx: BuildContext & {
+  "build:prepare": (_: BuildContext) => void | Promise<void>;
+  "build:before": (_: BuildContext & RolldownContext) => void | Promise<void>;
+  "build:done": (_: BuildContext & {
     chunks: RolldownChunk[];
   }) => void | Promise<void>;
 }
@@ -149,7 +149,7 @@ export interface UserConfig {
     legacyCjs?: boolean;
   };
   plugins?: InputOptions["plugins"];
-  inputOptions?: InputOptions | ((options: InputOptions, format: NormalizedFormat, context: {
+  inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<InputOptions | void | null>);
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>;
@@ -168,7 +168,7 @@ export interface UserConfig {
   outExtensions?: OutExtensionFactory;
   hash?: boolean;
   cjsDefault?: boolean;
-  outputOptions?: OutputOptions | ((options: OutputOptions, format: NormalizedFormat, context: {
+  outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<OutputOptions | void | null>);
   cwd?: string;
@@ -180,7 +180,7 @@ export interface UserConfig {
   watch?: boolean | Arrayable<string>;
   ignoreWatch?: Arrayable<string | RegExp>;
   devtools?: WithEnabled<DevtoolsOptions>;
-  onSuccess?: string | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>);
+  onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>);
   dts?: WithEnabled<DtsOptions>;
   unused?: WithEnabled<UnusedOptions>;
   publint?: WithEnabled<PublintOptions>;
@@ -192,7 +192,7 @@ export interface UserConfig {
   injectStyle?: boolean;
   publicDir?: CopyOptions | CopyOptionsFn;
   copy?: CopyOptions | CopyOptionsFn;
-  hooks?: Partial<TsdownHooks> | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>);
+  hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>);
   exe?: WithEnabled<ExeOptions>;
   workspace?: Workspace | Arrayable<string> | true;
 }
@@ -204,17 +204,17 @@ export interface Workspace {
 
 // Types
 export type ChunkAddon = ChunkAddonObject | ChunkAddonFunction | string;
-export type ChunkAddonFunction = (ctx: {
+export type ChunkAddonFunction = (_: {
   format: Format;
   fileName: string;
 }) => ChunkAddonObject | string | undefined;
 export type CIOption = "ci-only" | "local-only";
 export type CopyOptions = Arrayable<string | CopyEntry>;
-export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>;
+export type CopyOptionsFn = (_: ResolvedConfig) => Awaitable<CopyOptions>;
 export type Format = ModuleFormat;
-export type NoExternalFn = (id: string, importer: string | undefined) => boolean | null | undefined | void;
+export type NoExternalFn = (_: string, _: string | undefined) => boolean | null | undefined | void;
 export type NormalizedFormat = InternalModuleFormat;
-export type OutExtensionFactory = (context: OutExtensionContext) => OutExtensionObject | undefined;
+export type OutExtensionFactory = (_: OutExtensionContext) => OutExtensionObject | undefined;
 export type PackageType = "module" | "commonjs" | undefined;
 export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "external" | "noExternal" | "inlineOnly" | "skipNodeModulesBundle" | "logLevel" | "failOnWarn" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
   entry: Record<string, string>;
@@ -245,7 +245,7 @@ export type RolldownChunk = (OutputChunk | OutputAsset) & {
 export type Sourcemap = boolean | "inline" | "hidden";
 export type TsdownInputOption = Arrayable<string | Record<string, Arrayable<string>>>;
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>;
-export type UserConfigFn = (inlineConfig: InlineConfig, context: {
+export type UserConfigFn = (_: InlineConfig, _: {
   ci: boolean;
   rootConfig?: UserConfig;
 }) => Awaitable<Arrayable<UserConfig>>;

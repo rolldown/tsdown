@@ -25,7 +25,7 @@ export interface UserConfig {
     legacyCjs?: boolean;
   };
   plugins?: InputOptions["plugins"];
-  inputOptions?: InputOptions | ((options: InputOptions, format: NormalizedFormat, context: {
+  inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<InputOptions | void | null>);
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>;
@@ -44,7 +44,7 @@ export interface UserConfig {
   outExtensions?: OutExtensionFactory;
   hash?: boolean;
   cjsDefault?: boolean;
-  outputOptions?: OutputOptions | ((options: OutputOptions, format: NormalizedFormat, context: {
+  outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<OutputOptions | void | null>);
   cwd?: string;
@@ -56,7 +56,7 @@ export interface UserConfig {
   watch?: boolean | Arrayable<string>;
   ignoreWatch?: Arrayable<string | RegExp>;
   devtools?: WithEnabled<DevtoolsOptions>;
-  onSuccess?: string | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>);
+  onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>);
   dts?: WithEnabled<DtsOptions>;
   unused?: WithEnabled<UnusedOptions>;
   publint?: WithEnabled<PublintOptions>;
@@ -68,14 +68,14 @@ export interface UserConfig {
   injectStyle?: boolean;
   publicDir?: CopyOptions | CopyOptionsFn;
   copy?: CopyOptions | CopyOptionsFn;
-  hooks?: Partial<TsdownHooks> | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>);
+  hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>);
   exe?: WithEnabled<ExeOptions>;
   workspace?: Workspace | Arrayable<string> | true;
 }
 
 // Types
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>;
-export type UserConfigFn = (inlineConfig: InlineConfig, context: {
+export type UserConfigFn = (_: InlineConfig, _: {
   ci: boolean;
   rootConfig?: UserConfig;
 }) => Awaitable<Arrayable<UserConfig>>;

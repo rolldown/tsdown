@@ -4,12 +4,12 @@
 export interface Logger {
   level: LogLevel;
   options?: LoggerOptions;
-  info: (...args: any[]) => void;
-  warn: (...args: any[]) => void;
-  warnOnce: (...args: any[]) => void;
-  error: (...args: any[]) => void;
-  success: (...args: any[]) => void;
-  clearScreen: (type: LogType) => void;
+  info: (..._: any[]) => void;
+  warn: (..._: any[]) => void;
+  warnOnce: (..._: any[]) => void;
+  error: (..._: any[]) => void;
+  success: (..._: any[]) => void;
+  clearScreen: (_: LogType) => void;
 }
 
 // Types
