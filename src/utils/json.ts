@@ -1,5 +1,4 @@
 import { readFileSync, writeFileSync } from 'node:fs'
-import { isDeepStrictEqual } from 'node:util'
 
 export function writeJsonFile(filePath: string, content: unknown): void {
   let originalContent: unknown = undefined
@@ -21,7 +20,10 @@ export function writeJsonFile(filePath: string, content: unknown): void {
     // File doesn't exist or isn't valid JSON, we'll overwrite it with our content
   }
 
-  if (originalContent && isDeepStrictEqual(originalContent, content)) {
+  if (
+    originalContent &&
+    JSON.stringify(originalContent) === JSON.stringify(content)
+  ) {
     // The content is the same. We just return without updating the file format
     return
   }
