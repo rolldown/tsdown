@@ -35,7 +35,7 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
   tsdownConfig?: (
     config: UserConfig,
     inlineConfig: InlineConfig,
-  ) => Awaitable<UserConfig | Partial<UserConfig> | void | null>
+  ) => Awaitable<UserConfig | void | null>
   /**
    * Called after tsdown has fully resolved the user config. Analogous to
    * Vite's [`configResolved`](https://vite.dev/guide/api-plugin.html#configresolved)

@@ -126,7 +126,7 @@ export interface TsdownHooks {
   }) => void | Promise<void>;
 }
 export interface TsdownPlugin<A = any> extends Plugin<A> {
-  tsdownConfig?: (_: UserConfig, _: InlineConfig) => Awaitable<UserConfig | Partial<UserConfig> | void | null>;
+  tsdownConfig?: (_: UserConfig, _: InlineConfig) => Awaitable<UserConfig | void | null>;
   tsdownConfigResolved?: (_: ResolvedConfig) => Awaitable<void>;
 }
 export interface UserConfig {
