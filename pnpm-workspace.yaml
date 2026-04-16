@@ -18,7 +18,7 @@ catalogs:
     '@types/node': ^25.6.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260415.1
+    '@typescript/native-preview': 7.0.0-dev.20260416.1
     '@vitest/coverage-v8': ^4.1.4
     '@vitest/ui': ^4.1.4
     baseline-browser-mapping: ^2.10.19
@@ -32,7 +32,7 @@ catalogs:
     prettier: ^3.8.3
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.99.0
-    tsnapi: ^0.2.0
+    tsnapi: ^0.2.2
     typescript: ~6.0.2
     unplugin-ast: ^0.16.0
     unplugin-raw: ^0.7.0
@@ -70,7 +70,7 @@ catalogs:
     defu: ^6.1.7
     empathic: ^2.0.0
     hookable: ^6.1.1
-    import-without-cache: ^0.2.5
+    import-without-cache: ^0.3.0
     is-in-ci: ^2.0.0
     lightningcss: ^1.32.0
     obug: ^2.1.1
