@@ -4,7 +4,7 @@ import type {
   UserConfig,
 } from '../config/types.ts'
 import type { Awaitable } from '../utils/types.ts'
-import type { Plugin, RolldownPluginOption } from 'rolldown'
+import type { Plugin, RolldownPlugin, RolldownPluginOption } from 'rolldown'
 
 /**
  * A tsdown-aware plugin. Extends Rolldown's `Plugin` with tsdown-specific
@@ -49,8 +49,24 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
   tsdownConfigResolved?: (resolvedConfig: ResolvedConfig) => Awaitable<void>
 }
 
+/**
+ * A tsdown plugin slot — accepts tsdown plugins, any Rolldown plugin form,
+ * `null`/`undefined`/`false`, promises, and nested arrays. Mirrors Rolldown's
+ * {@link RolldownPluginOption} but with {@link TsdownPlugin} as the atom so
+ * that tsdown-specific hooks are type-checked.
+ */
+export type TsdownPluginOption<A = any> = Awaitable<
+  | TsdownPlugin<A>
+  | RolldownPlugin<A>
+  | { name: string }
+  | null
+  | undefined
+  | false
+  | TsdownPluginOption<A>[]
+>
+
 export async function flattenPlugins(
-  plugins: RolldownPluginOption,
+  plugins: TsdownPluginOption | RolldownPluginOption,
 ): Promise<Plugin[]> {
   const awaited = await plugins
   if (!awaited) return []

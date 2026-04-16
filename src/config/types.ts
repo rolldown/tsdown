@@ -22,7 +22,7 @@ import type {
 import type { AttwOptions } from '../features/pkg/attw.ts'
 import type { ExportsOptions } from '../features/pkg/exports.ts'
 import type { PublintOptions } from '../features/pkg/publint.ts'
-import type { TsdownPlugin } from '../features/plugin.ts'
+import type { TsdownPlugin, TsdownPluginOption } from '../features/plugin.ts'
 import type { ReportOptions } from '../features/report.ts'
 import type { RolldownChunk, TsdownBundle } from '../utils/chunks.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
@@ -120,6 +120,7 @@ export type {
   TsdownBundle,
   TsdownHooks,
   TsdownPlugin,
+  TsdownPluginOption,
   UnusedOptions,
 }
 
@@ -330,7 +331,7 @@ export interface UserConfig {
     legacyCjs?: boolean
   }
 
-  plugins?: InputOptions['plugins']
+  plugins?: TsdownPluginOption
 
   /**
    * Use with caution; ensure you understand the implications.

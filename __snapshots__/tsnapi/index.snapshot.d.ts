@@ -152,7 +152,7 @@ export interface UserConfig {
   checks?: ChecksOptions & {
     legacyCjs?: boolean;
   };
-  plugins?: InputOptions["plugins"];
+  plugins?: TsdownPluginOption;
   inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<InputOptions | void | null>);
@@ -248,6 +248,9 @@ export type RolldownChunk = (OutputChunk | OutputAsset) & {
 };
 export type Sourcemap = boolean | "inline" | "hidden";
 export type TsdownInputOption = Arrayable<string | Record<string, Arrayable<string>>>;
+export type TsdownPluginOption<A = any> = Awaitable<TsdownPlugin<A> | RolldownPlugin<A> | {
+  name: string;
+} | null | undefined | false | TsdownPluginOption<A>[]>;
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>;
 export type UserConfigFn = (_: InlineConfig, _: {
   ci: boolean;

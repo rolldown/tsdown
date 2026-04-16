@@ -11,7 +11,7 @@ export declare function DepsPlugin({
   logger,
   nameLabel
 }: ResolvedConfig, _: TsdownBundle): Plugin;
-export declare function flattenPlugins(_: RolldownPluginOption): Promise<Plugin[]>;
+export declare function flattenPlugins(_: TsdownPluginOption | RolldownPluginOption): Promise<Plugin[]>;
 export declare function NodeProtocolPlugin(_: "strip" | true): Plugin;
 export declare function ReportPlugin(_: ResolvedConfig, _?: boolean, _?: boolean): Plugin;
 export declare function ShebangPlugin(_: Logger, _: string, _?: string, _?: boolean): Plugin;

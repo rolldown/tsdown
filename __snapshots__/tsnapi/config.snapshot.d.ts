@@ -24,7 +24,7 @@ export interface UserConfig {
   checks?: ChecksOptions & {
     legacyCjs?: boolean;
   };
-  plugins?: InputOptions["plugins"];
+  plugins?: TsdownPluginOption;
   inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<InputOptions | void | null>);
