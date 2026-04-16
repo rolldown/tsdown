@@ -7,21 +7,6 @@ import type { Awaitable } from '../utils/types.ts'
 import type { Plugin, RolldownPluginOption } from 'rolldown'
 
 /**
- * Environment context passed to the {@link TsdownPlugin.tsdownConfig} hook.
- *
- * Analogous to Vite's `ConfigEnv`. Only carries information that is not
- * already reachable through the first `config` argument.
- */
-export interface TsdownConfigEnv {
-  /**
-   * The original inline config passed to `build()` — typically the CLI flags.
-   * Use this to distinguish values that came from the command line vs. the
-   * config file.
-   */
-  inlineConfig: InlineConfig
-}
-
-/**
  * A tsdown-aware plugin. Extends Rolldown's `Plugin` with tsdown-specific
  * lifecycle hooks.
  *
@@ -38,6 +23,10 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
    * replaced (not concatenated) during merging — to append plugins, mutate
    * `config.plugins` in place.
    *
+   * The second argument is the original {@link InlineConfig} passed to
+   * `build()` (typically the CLI flags), useful for distinguishing values
+   * that came from the command line vs. the config file.
+   *
    * Plugins injected via `fromVite` do not receive this hook, because they
    * are loaded after the tsdownConfig phase. Likewise, new plugins added by
    * another plugin's `tsdownConfig` do not themselves receive this hook
@@ -45,7 +34,7 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
    */
   tsdownConfig?: (
     config: UserConfig,
-    env: TsdownConfigEnv,
+    inlineConfig: InlineConfig,
   ) => Awaitable<UserConfig | Partial<UserConfig> | void | null>
   /**
    * Called after tsdown has fully resolved the user config. Analogous to
