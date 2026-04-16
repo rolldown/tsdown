@@ -1,5 +1,7 @@
 export { DepsPlugin } from './features/deps.ts'
 export { NodeProtocolPlugin } from './features/node-protocol.ts'
+export { flattenPlugins } from './features/plugin.ts'
 export { ReportPlugin } from './features/report.ts'
 export { ShebangPlugin } from './features/shebang.ts'
 export { WatchPlugin } from './features/watch.ts'
+export type { TsdownConfigEnv, TsdownPlugin } from './features/plugin.ts'

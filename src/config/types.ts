@@ -120,6 +120,7 @@ export type {
   TsdownHooks,
   UnusedOptions,
 }
+export type { TsdownConfigEnv, TsdownPlugin } from '../features/plugin.ts'
 
 export interface Workspace {
   /**

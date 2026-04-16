@@ -118,12 +118,21 @@ export interface TsdownBundle extends AsyncDisposable {
   config: ResolvedConfig;
   inlinedDeps: Map<string, Set<string>>;
 }
+export interface TsdownConfigEnv {
+  watch: boolean;
+  inlineConfig: InlineConfig;
+  cwd: string;
+}
 export interface TsdownHooks {
   "build:prepare": (_: BuildContext) => void | Promise<void>;
   "build:before": (_: BuildContext & RolldownContext) => void | Promise<void>;
   "build:done": (_: BuildContext & {
     chunks: RolldownChunk[];
   }) => void | Promise<void>;
+}
+export interface TsdownPlugin<A = any> extends Plugin<A> {
+  tsdownConfig?: (_: UserConfig, _: TsdownConfigEnv) => Awaitable<UserConfig | Partial<UserConfig> | void | null>;
+  tsdownConfigResolved?: (_: ResolvedConfig) => Awaitable<void>;
 }
 export interface UserConfig {
   entry?: TsdownInputOption;
