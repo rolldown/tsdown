@@ -2,19 +2,20 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { isDeepStrictEqual } from 'node:util'
 
 export function writeJsonFile(filePath: string, content: unknown): void {
-  let originalContent: unknown = undefined
+  let originalText: string | undefined
+  let originalJson: unknown = undefined
   let originalIndent: string | number = 2
   let originalEOL: string = '\n'
   let originalHasTrailingNewline: boolean = false
 
   try {
-    const text = readFileSync(filePath, 'utf8')
-    originalContent = JSON.parse(text)
-    originalIndent = detectIndentation(text)
-    if (text.includes('\r\n')) {
+    originalText = readFileSync(filePath, 'utf8')
+    originalJson = JSON.parse(originalText)
+    originalIndent = detectIndentation(originalText)
+    if (originalText.includes('\r\n')) {
       originalEOL = '\r\n'
     }
-    if (text.endsWith('\n')) {
+    if (originalText.endsWith('\n')) {
       originalHasTrailingNewline = true
     }
   } catch {
@@ -22,9 +23,9 @@ export function writeJsonFile(filePath: string, content: unknown): void {
   }
 
   if (
-    originalContent &&
-    (isDeepStrictEqual(originalContent, content) ||
-      JSON.stringify(originalContent) === JSON.stringify(content))
+    originalJson &&
+    (isDeepStrictEqual(originalJson, content) ||
+      JSON.stringify(originalJson) === JSON.stringify(content))
   ) {
     // The content is the same. We just return without updating the file format
     return
@@ -38,6 +39,7 @@ export function writeJsonFile(filePath: string, content: unknown): void {
     jsonString += originalEOL
   }
 
+  if (originalText === jsonString) return
   writeFileSync(filePath, jsonString, 'utf8')
 }
 
