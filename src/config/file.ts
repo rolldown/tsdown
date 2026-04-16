@@ -196,7 +196,7 @@ function createParser(loader: Parser) {
 async function nativeImport(
   id: string,
 ): Promise<[module: unknown, deps: Set<string>]> {
-  const deps = new Set<string>()
+  const deps = new Set<string>([id])
 
   const url = pathToFileURL(id)
   const importAttributes: Record<string, string> = Object.create(null)
