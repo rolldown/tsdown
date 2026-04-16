@@ -19,7 +19,7 @@ const debug = createDebug('tsdown:config')
 
 export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
   configs: ResolvedConfig[]
-  files: string[]
+  deps: Set<string>
 }> {
   debug('inline config %O', inlineConfig)
 
@@ -27,34 +27,31 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
     inlineConfig.cwd = path.resolve(inlineConfig.cwd)
   }
 
-  const { configs: rootConfigs, file } = await loadConfigFile(inlineConfig)
-  const files: string[] = []
-  if (file) {
-    files.push(file)
-    debug('loaded root user config file %s', file)
-    debug('root user configs %O', rootConfigs)
-  } else {
-    debug('no root user config file found')
-  }
+  const { configs: rootConfigs, deps: rootDeps } =
+    await loadConfigFile(inlineConfig)
+  const globalDeps = new Set<string>(rootDeps)
 
   const configs: ResolvedConfig[] = (
     await Promise.all(
       rootConfigs.map(async (rootConfig): Promise<ResolvedConfig[]> => {
-        const { configs: workspaceConfigs, files: workspaceFiles } =
-          await resolveWorkspace(rootConfig, inlineConfig)
+        const { configs: workspaceConfigs, deps: workspaceDeps } =
+          await resolveWorkspace(rootConfig, inlineConfig, rootDeps)
         debug('workspace configs %O', workspaceConfigs)
-        if (workspaceFiles) {
-          files.push(...workspaceFiles)
-        }
-        return (
+
+        const configs = (
           await Promise.all(
             workspaceConfigs
               .filter((config) => !config.workspace || config.entry)
-              .map((config) => resolveUserConfig(config, inlineConfig)),
+              .map((config) =>
+                resolveUserConfig(config, inlineConfig, workspaceDeps),
+              ),
           )
         )
           .flat()
           .filter((config) => !!config)
+
+        workspaceDeps.forEach((dep) => globalDeps.add(dep))
+        return configs
       }),
     )
   ).flat()
@@ -64,5 +61,5 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
     throw new Error('No valid configuration found.')
   }
 
-  return { configs, files }
+  return { configs, deps: globalDeps }
 }

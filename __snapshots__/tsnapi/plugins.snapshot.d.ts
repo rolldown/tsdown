@@ -14,7 +14,7 @@ export declare function DepsPlugin({
 export declare function NodeProtocolPlugin(_: "strip" | true): Plugin;
 export declare function ReportPlugin(_: ResolvedConfig, _?: boolean, _?: boolean): Plugin;
 export declare function ShebangPlugin(_: Logger, _: string, _?: string, _?: boolean): Plugin;
-export declare function WatchPlugin(_: string[], {
+export declare function WatchPlugin(_: Set<string>, {
   config,
   chunks
 }: TsdownBundle): Plugin;

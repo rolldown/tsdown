@@ -19,12 +19,19 @@ const DEFAULT_EXCLUDE_WORKSPACE = [
 export async function resolveWorkspace(
   config: UserConfig,
   inlineConfig: InlineConfig,
-): Promise<{ configs: UserConfig[]; files?: string[] }> {
+  rootDeps?: Set<string>,
+): Promise<{ configs: UserConfig[]; deps: Set<string> }> {
   const normalized = mergeConfig(config, inlineConfig)
   const rootCwd = normalized.cwd || process.cwd()
+  const deps = new Set<string>(rootDeps)
 
   let { workspace } = normalized
-  if (!workspace) return { configs: [normalized], files: [] }
+  if (!workspace) {
+    return {
+      configs: [normalized],
+      deps,
+    }
+  }
 
   if (workspace === true) {
     workspace = {}
@@ -63,12 +70,11 @@ export async function resolveWorkspace(
     throw new Error('No workspace packages found, please check your config')
   }
 
-  const files: string[] = []
   const configs = (
     await Promise.all(
       packages.map(async (cwd) => {
         debug('loading workspace config %s', cwd)
-        const { configs, file } = await loadConfigFile(
+        const { configs, deps: workspaceDeps } = await loadConfigFile(
           {
             ...inlineConfig,
             config: workspaceConfig,
@@ -77,16 +83,11 @@ export async function resolveWorkspace(
           cwd,
           normalized,
         )
-        if (file) {
-          debug('loaded workspace config file %s', file)
-          files.push(file)
-        } else {
-          debug('no workspace config file found in %s', cwd)
-        }
+        workspaceDeps?.forEach((dep) => deps.add(dep))
         return configs.map((config) => mergeConfig(normalized, config))
       }),
     )
   ).flat()
 
-  return { configs, files }
+  return { configs, deps }
 }

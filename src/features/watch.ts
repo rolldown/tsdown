@@ -8,7 +8,7 @@ export const endsWithConfig: RegExp =
   /[\\/](?:tsdown\.config.*|package\.json|tsconfig\.json)$/
 
 export function WatchPlugin(
-  configFiles: string[],
+  configDeps: Set<string>,
   { config, chunks }: TsdownBundle,
 ): Plugin {
   return {
@@ -22,7 +22,7 @@ export function WatchPlugin(
       : undefined,
     async buildStart() {
       config.tsconfig && this.addWatchFile(config.tsconfig)
-      for (const file of configFiles) {
+      for (const file of configDeps) {
         this.addWatchFile(file)
       }
       if (typeof config.watch !== 'boolean') {

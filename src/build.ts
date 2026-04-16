@@ -44,9 +44,9 @@ export async function build(
   inlineConfig: InlineConfig = {},
 ): Promise<TsdownBundle[]> {
   globalLogger.level = inlineConfig.logLevel || 'info'
-  const { configs, files: configFiles } = await resolveConfig(inlineConfig)
+  const { configs, deps: configDeps } = await resolveConfig(inlineConfig)
 
-  return buildWithConfigs(configs, configFiles, () => build(inlineConfig))
+  return buildWithConfigs(configs, configDeps, () => build(inlineConfig))
 }
 
 /**
@@ -57,7 +57,7 @@ export async function build(
  */
 export async function buildWithConfigs(
   configs: ResolvedConfig[],
-  configFiles: string[],
+  configDeps: Set<string>,
   _restart: () => void,
 ): Promise<TsdownBundle[]> {
   let cleanPromise: Promise<void> | undefined
@@ -91,7 +91,7 @@ export async function buildWithConfigs(
         : true
       return buildSingle(
         options,
-        configFiles,
+        configDeps,
         isDualFormat,
         clean,
         restart,
@@ -126,7 +126,7 @@ export async function buildWithConfigs(
  */
 async function buildSingle(
   config: ResolvedConfig,
-  configFiles: string[],
+  configDeps: Set<string>,
   isDualFormat: boolean,
   clean: () => Promise<void>,
   restart: () => void,
@@ -199,7 +199,7 @@ async function buildSingle(
         debouncedPostBuild.cancel()
         ab?.abort()
       }
-      if (configFiles.includes(id) || endsWithConfig.test(id)) {
+      if (configDeps.has(id) || endsWithConfig.test(id)) {
         globalLogger.info(`Reload config: ${id}, restarting...`)
         restart()
       }
@@ -270,7 +270,7 @@ async function buildSingle(
     const buildOptions = await getBuildOptions(
       config,
       format,
-      configFiles,
+      configDeps,
       bundle,
       false,
       isDualFormat,
@@ -294,7 +294,7 @@ async function buildSingle(
         await getBuildOptions(
           config,
           format,
-          configFiles,
+          configDeps,
           bundle,
           true, // cjsDts
           isDualFormat,
