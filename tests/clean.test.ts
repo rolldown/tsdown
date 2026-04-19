@@ -220,6 +220,43 @@ describe('clean', () => {
     expect(oldFileExists).toBe(false)
   })
 
+  test('should clean per-format outDir when using object format', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    // Create per-format directories and stale files first
+    const testDir = getTestDir(context.task)
+    const esmPath = path.join(testDir, 'esm')
+    const cjsPath = path.join(testDir, 'cjs')
+
+    await mkdir(esmPath, { recursive: true })
+    await mkdir(cjsPath, { recursive: true })
+
+    await writeFile(path.join(esmPath, 'old-esm.js'), 'old esm')
+    await writeFile(path.join(cjsPath, 'old-cjs.js'), 'old cjs')
+
+    // Run build with per-format outDir overrides and clean: true
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: true,
+        format: {
+          esm: { outDir: 'esm' },
+          cjs: { outDir: 'cjs' },
+        },
+      },
+      snapshot: false,
+    })
+
+    // Verify each per-format outDir was cleaned and new output was produced
+    expect(await fsExists(path.join(esmPath, 'old-esm.js'))).toBe(false)
+    expect(await fsExists(path.join(cjsPath, 'old-cjs.js'))).toBe(false)
+    expect(await fsExists(path.join(esmPath, 'index.mjs'))).toBe(true)
+    expect(await fsExists(path.join(cjsPath, 'index.cjs'))).toBe(true)
+  })
+
   test('should clean files with specific extensions', async (context) => {
     const files = {
       'index.ts': 'export const hello = "world"',
