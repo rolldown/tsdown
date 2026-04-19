@@ -1,6 +1,6 @@
 import process from 'node:process'
+import { styleText } from 'node:util'
 import { getCliCommand, parseNi, run } from '@antfu/ni'
-import { green, greenBright, underline } from 'ansis'
 import consola from 'consola'
 import { glob } from 'tinyglobby'
 import { migratePackageJson } from './helpers/package-json.ts'
@@ -16,8 +16,8 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
     consola.info('Dry run enabled. No changes were made.')
   } else {
     const confirm = await consola.prompt(
-      `Before proceeding, review the migration guide at ${underline`https://tsdown.dev/guide/migrate-from-tsup`}, as this process will modify your files.\n` +
-        `Uncommitted changes will be lost. Use the ${green`--dry-run`} flag to preview changes without applying them.\n\n` +
+      `Before proceeding, review the migration guide at ${styleText('underline', 'https://tsdown.dev/guide/migrate-from-tsup')}, as this process will modify your files.\n` +
+        `Uncommitted changes will be lost. Use the ${styleText('green', '--dry-run')} flag to preview changes without applying them.\n\n` +
         'Continue?',
       { type: 'confirm' },
     )
@@ -52,7 +52,7 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
     for (const dir of cwds) {
       process.chdir(dir)
 
-      const dirLabel = greenBright(dir)
+      const dirLabel = styleText('greenBright', dir)
       consola.info(`Processing ${dirLabel}`)
 
       let migrated = await migratePackageJson(dryRun)
