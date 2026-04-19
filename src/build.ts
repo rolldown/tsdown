@@ -1,4 +1,3 @@
-import { bold, green } from 'ansis'
 import { clearRequireCache } from 'import-without-cache'
 import {
   build as rolldownBuild,
@@ -33,6 +32,7 @@ import {
 } from './utils/chunks.ts'
 import { debounce, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
+import { bold, green } from './utils/style.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
   Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
