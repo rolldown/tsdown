@@ -121,7 +121,6 @@
     }
   },
   "dependencies": {
-    "ansis": "catalog:prod",
     "cac": "catalog:prod",
     "defu": "catalog:prod",
     "empathic": "catalog:prod",

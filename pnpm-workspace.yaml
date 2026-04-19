@@ -65,7 +65,6 @@ catalogs:
     publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
-    ansis: ^4.2.0
     cac: ^7.0.0
     defu: ^6.1.7
     empathic: ^2.0.0

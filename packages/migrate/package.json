@@ -62,7 +62,6 @@
   "dependencies": {
     "@antfu/ni": "catalog:migrate",
     "@ast-grep/napi": "catalog:migrate",
-    "ansis": "catalog:prod",
     "cac": "catalog:prod",
     "consola": "catalog:migrate",
     "diff": "catalog:migrate",

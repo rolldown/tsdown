@@ -161,9 +161,6 @@ catalogs:
       specifier: ^0.5.7
       version: 0.5.7
   prod:
-    ansis:
-      specifier: ^4.2.0
-      version: 4.2.0
     cac:
       specifier: ^7.0.0
       version: 7.0.0
@@ -228,9 +225,6 @@ importers:
 
   .:
     dependencies:
-      ansis:
-        specifier: catalog:prod
-        version: 4.2.0
       cac:
         specifier: catalog:prod
         version: 7.0.0
@@ -506,9 +500,6 @@ importers:
       '@ast-grep/napi':
         specifier: catalog:migrate
         version: 0.42.1
-      ansis:
-        specifier: catalog:prod
-        version: 4.2.0
       cac:
         specifier: catalog:prod
         version: 7.0.0
