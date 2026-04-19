@@ -18,22 +18,22 @@ catalogs:
     '@types/node': ^25.6.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260416.1
+    '@typescript/native-preview': 7.0.0-dev.20260419.1
     '@vitest/coverage-v8': ^4.1.4
     '@vitest/ui': ^4.1.4
-    baseline-browser-mapping: ^2.10.19
+    baseline-browser-mapping: ^2.10.20
     bumpp: ^11.0.1
     dedent: ^1.7.2
-    eslint: ^10.2.0
-    memfs: ^4.57.1
+    eslint: ^10.2.1
+    memfs: ^4.57.2
     pkg-types: ^2.3.0
     postcss: ^8.5.10
     postcss-import: ^16.1.1
     prettier: ^3.8.3
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.99.0
-    tsnapi: ^0.3.0
-    typescript: ~6.0.2
+    tsnapi: ^0.3.2
+    typescript: ~6.0.3
     unplugin-ast: ^0.16.0
     unplugin-raw: ^0.7.0
     unplugin-vue: ^7.1.1
@@ -53,7 +53,7 @@ catalogs:
     vitepress-plugin-group-icons: ^1.7.5
     vitepress-plugin-llms: ^1.12.1
     vue: ^3.5.32
-    vue-tsc: ^3.2.6
+    vue-tsc: ^3.2.7
   migrate:
     '@antfu/ni': ^30.0.0
     '@ast-grep/napi': ^0.42.1
@@ -61,7 +61,7 @@ catalogs:
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.1.13
+    '@vitejs/devtools': ^0.1.14
     publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
