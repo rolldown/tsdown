@@ -1,3 +1,4 @@
+import { stripVTControlCharacters } from 'node:util'
 import { describe, expect, test, vi } from 'vitest'
 import {
   createLogger,
@@ -147,14 +148,14 @@ describe('createLogger', () => {
 
 describe('getNameLabel', () => {
   test('returns undefined for empty name', () => {
-    const ansis = (s: string) => s
-    expect(getNameLabel(ansis as any)).toBeUndefined()
-    expect(getNameLabel(ansis as any, '')).toBeUndefined()
+    expect(getNameLabel('blue')).toBeUndefined()
+    expect(getNameLabel('blue', '')).toBeUndefined()
   })
 
-  test('wraps name in brackets using ansis', () => {
-    const ansis = (s: string) => `styled:${s}`
-    expect(getNameLabel(ansis as any, 'mylib')).toBe('styled:[mylib]')
+  test('wraps name in brackets using styleText', () => {
+    expect(stripVTControlCharacters(getNameLabel('blue', 'mylib')!)).toBe(
+      '[mylib]',
+    )
   })
 })
 
