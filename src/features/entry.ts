@@ -5,14 +5,14 @@ import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
 import { slash, toArray } from '../utils/general.ts'
 import type { TsdownInputOption, UserConfig } from '../config/types.ts'
 import type { Logger } from '../utils/logger.ts'
+import { colorize, type StyleTextFormat } from '../utils/style.ts'
 import type { Arrayable } from '../utils/types.ts'
-import type { Ansis } from 'ansis'
 
 export async function resolveEntry(
   logger: Logger,
   entry: UserConfig['entry'],
   cwd: string,
-  color: Ansis,
+  color: StyleTextFormat,
   nameLabel?: string,
   root?: string,
 ): Promise<[entry: Record<string, string>, root: string]> {
@@ -35,7 +35,14 @@ export async function resolveEntry(
   }
   logger.info(
     nameLabel,
-    `entry: ${color(entries.map((entry) => (path.isAbsolute(entry) ? path.relative(cwd, entry) : entry)).join(', '))}`,
+    `entry: ${colorize(
+      color,
+      entries
+        .map((entry) =>
+          path.isAbsolute(entry) ? path.relative(cwd, entry) : entry,
+        )
+        .join(', '),
+    )}`,
   )
   return [entryMap, computedRoot]
 }

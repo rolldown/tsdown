@@ -2,12 +2,11 @@ import { Buffer } from 'node:buffer'
 import path from 'node:path'
 import { promisify } from 'node:util'
 import { brotliCompress, gzip } from 'node:zlib'
-import { bold, dim, green } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
 import { formatBytes } from '../utils/format.ts'
-import { noop } from '../utils/general.ts'
 import { prettyFormat } from '../utils/logger.ts'
+import { bold, dim, green } from '../utils/style.ts'
 import type { ResolvedConfig } from '../config/types.ts'
 import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
@@ -132,14 +131,14 @@ export async function outputReport(
     isDualFormat && prettyFormat(cjsDts ? 'cjs' : config.format)
 
   for (const size of sizes) {
-    const filenameColor = size.dts ? green : noop
     const filename = path.normalize(size.filename)
+    const styledFilename = size.isEntry ? bold(filename) : filename
 
     config.logger.info(
       config.nameLabel,
       formatLabel,
       dim(outDir + path.sep) +
-        filenameColor((size.isEntry ? bold : noop)(filename)),
+        (size.dts ? green(styledFilename) : styledFilename),
       ` `.repeat(filenameLength - size.filename.length),
       dim(size.rawText),
       options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,

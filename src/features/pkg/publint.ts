@@ -1,6 +1,6 @@
-import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { importWithError } from '../../utils/general.ts'
+import { dim } from '../../utils/style.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type { Buffer } from 'node:buffer'
 import type { Options } from 'publint'

@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { isBuiltin } from 'node:module'
 import path from 'node:path'
-import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { and, id, importerId, include } from 'rolldown/filter'
@@ -12,6 +11,7 @@ import {
   toArray,
   typeAssert,
 } from '../utils/general.ts'
+import { blue, underline, yellow } from '../utils/style.ts'
 import { shimFile } from './shims.ts'
 import type { ResolvedConfig, UserConfig } from '../config/types.ts'
 import type { TsdownBundle } from '../utils/chunks.ts'
@@ -267,7 +267,7 @@ export function DepsPlugin(
             logger.info(
               nameLabel,
               `The following entries in ${blue`deps.onlyBundle`} are not used in the bundle:\n${unusedPatterns
-                .map((pattern) => `- ${yellow(pattern)}`)
+                .map((pattern) => `- ${yellow(String(pattern))}`)
                 .join(
                   '\n',
                 )}\nConsider removing them to keep your configuration clean.`,
