@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
@@ -21,6 +20,7 @@ import {
 } from '../utils/general.ts'
 import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
+import { blue, colorize } from '../utils/style.ts'
 import { loadViteConfig } from './file.ts'
 import type { Awaitable } from '../utils/types.ts'
 import type {
@@ -226,7 +226,7 @@ export async function resolveUserConfig(
       )
     }
     const resolvedPath = path.resolve(cwd, envFile)
-    logger.info(nameLabel, `env file: ${color(resolvedPath)}`)
+    logger.info(nameLabel, `env file: ${colorize(color, resolvedPath)}`)
 
     const parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
     const envFromFile = filterEnv(parsed, envPrefix)
