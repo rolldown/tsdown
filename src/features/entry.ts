@@ -3,9 +3,9 @@ import picomatch from 'picomatch'
 import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
 import { slash, toArray } from '../utils/general.ts'
+import { colorize, type StyleTextFormat } from '../utils/style.ts'
 import type { TsdownInputOption, UserConfig } from '../config/types.ts'
 import type { Logger } from '../utils/logger.ts'
-import { colorize, type StyleTextFormat } from '../utils/style.ts'
 import type { Arrayable } from '../utils/types.ts'
 
 export async function resolveEntry(

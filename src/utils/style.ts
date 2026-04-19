@@ -23,8 +23,8 @@ function getText(value: StyleValue, values: unknown[]): string {
   }
 
   let text = value[0]
-  for (let i = 0; i < values.length; i++) {
-    text += String(values[i]) + value[i + 1]
+  for (const [i, value_] of values.entries()) {
+    text += String(value_) + value[i + 1]
   }
   return text
 }
