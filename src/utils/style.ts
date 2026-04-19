@@ -1,14 +1,16 @@
 import { styleText } from 'node:util'
 
 /**
- * Formats accepted by Node.js `util.styleText`.
+ * The color/style names that Node's `styleText` knows how to apply.
  */
 export type StyleTextFormat = Parameters<typeof styleText>[0]
 
 type StyleValue = string | TemplateStringsArray
 
 /**
- * Small `styleText` wrapper that supports both function and template-tag calls.
+ * A tiny convenience wrapper around `styleText`.
+ * It keeps call sites compact and supports the tag style that `ansis` used,
+ * so existing messages can stay readable while using Node's built-in styling.
  */
 export type Styler = {
   (text: string): string
@@ -28,7 +30,8 @@ function getText(value: StyleValue, values: unknown[]): string {
 }
 
 /**
- * Apply a dynamic style format to text.
+ * Style text when the format is chosen at runtime.
+ * Prefer the named helpers below for fixed colors like `blue('text')`.
  */
 export function colorize(format: StyleTextFormat, text: string): string {
   return styleText(format, text)
@@ -39,6 +42,9 @@ function createStyler(format: StyleTextFormat): Styler {
     styleText(format, getText(value, values))) as Styler
 }
 
+/**
+ * colors
+ */
 export const bgRed: Styler = createStyler('bgRed')
 export const bgYellow: Styler = createStyler('bgYellow')
 export const blue: Styler = createStyler('blue')
