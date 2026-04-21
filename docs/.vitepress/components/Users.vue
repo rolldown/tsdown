@@ -24,6 +24,11 @@ const users = computed(() => {
       url: 'https://vite.dev',
     },
     {
+      name: 'Vite Plus',
+      logo: `${voidzeroBase}/vite+/vite+-logo-color-${theme}.svg`,
+      url: 'https://viteplus.dev',
+    },
+    {
       name: 'Vitest',
       logo: `${voidzeroBase}/vitest/vitest-logo-color-${theme}.svg`,
       url: 'https://vitest.dev',
@@ -76,6 +81,18 @@ const users = computed(() => {
       logo: `${jsdelivrBase}/lobehub/lobe-icons/packages/static-png/dark/baidu-brand-color.png`,
       url: 'https://www.baidu.com',
       class: 'h8 scale-120',
+    },
+    {
+      name: 'LobeHub',
+      logo: `${jsdelivrBase}/lobehub/lobe-icons/packages/static-svg/icons/lobehub-color.svg`,
+      url: 'https://lobehub.com',
+      class: 'h12',
+    },
+    {
+      name: 'OpenClaw',
+      logo: 'https://openclaw.ai/favicon.svg',
+      url: 'https://openclaw.ai',
+      class: 'h12',
     },
 
     {
@@ -138,32 +155,34 @@ const users = computed(() => {
       <h3>{{ t('Who uses tsdown?') }}</h3>
     </a>
 
-    <Marquee
-      :velocity="40"
-      class="dark-zebra-pattern"
-      w-full
-      rounded-xl
-      py-6
-      dark:bg-zinc:30
-    >
-      <div min-w-full flex items-center gap10 px>
-        <a
-          v-for="user of users"
-          :key="user.name"
-          :href="user.url"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            v-if="user.logo.startsWith('https://')"
-            :src="user.logo"
-            :alt="user.name"
-            :class="user.class || 'h6'"
-          />
-          <div v-else :class="[user.logo, user.class || 'text-3xl']" />
-        </a>
-      </div>
-    </Marquee>
+    <ClientOnly>
+      <Marquee
+        :velocity="40"
+        class="dark-zebra-pattern"
+        w-full
+        rounded-xl
+        py-6
+        dark:bg-zinc:30
+      >
+        <div min-w-full flex items-center gap10 px>
+          <a
+            v-for="user of users"
+            :key="user.name"
+            :href="user.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              v-if="user.logo.startsWith('https://')"
+              :src="user.logo"
+              :alt="user.name"
+              :class="user.class || 'h6'"
+            />
+            <div v-else :class="[user.logo, user.class || 'text-3xl']" />
+          </a>
+        </div>
+      </Marquee>
+    </ClientOnly>
   </div>
 </template>
 
