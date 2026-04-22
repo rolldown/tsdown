@@ -10,7 +10,7 @@ import type {
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
 import type { Logger } from '../../utils/logger.ts'
-import type { Arrayable, Awaitable } from '../../utils/types.ts'
+import type { Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
 export interface ExportsOptions {
@@ -22,7 +22,7 @@ export interface ExportsOptions {
   devExports?: boolean | string
 
   /**
-   * Generate exports for `package.json` file.
+   * Generate `exports` for `package.json` file.
    *
    * @example
    * ```json
@@ -42,7 +42,7 @@ export interface ExportsOptions {
   packageJson?: boolean
 
   /**
-   * Generate exports for all files.
+   * Generate `exports` for all files.
    *
    * @example
    * ```json
@@ -158,7 +158,7 @@ export interface ExportsOptions {
 export async function writeExports(
   options: ResolvedConfig,
   chunks: ChunksByFormat,
-  inlinedDeps?: Record<string, Arrayable<string>>,
+  inlinedDeps?: Record<string, string | string[]>,
 ): Promise<void> {
   typeAssert(options.pkg)
 
@@ -200,7 +200,7 @@ export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
   options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger' | 'cwd'>,
-  inlinedDeps?: Record<string, Arrayable<string>>,
+  inlinedDeps?: Record<string, string | string[]>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -208,7 +208,7 @@ export async function generateExports(
   exports: Record<string, any>
   bin?: string | Record<string, string>
   publishBin?: string | Record<string, string>
-  inlinedDependencies?: Record<string, Arrayable<string>>
+  inlinedDependencies?: Record<string, string | string[]>
   publishExports?: Record<string, any>
 }> {
   typeAssert(options.exports)

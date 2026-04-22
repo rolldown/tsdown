@@ -1,6 +1,6 @@
+import { bold, dim } from 'ansis'
 import process from 'node:process'
 import readline from 'node:readline'
-import { bold, dim } from 'ansis'
 import { globalLogger } from '../utils/logger.ts'
 import type { Awaitable } from '../utils/types.ts'
 

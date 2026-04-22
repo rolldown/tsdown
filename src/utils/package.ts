@@ -4,14 +4,9 @@ import { createDebug } from 'obug'
 import type { Format, NormalizedFormat } from '../config/index.ts'
 import type { PackageJson } from 'pkg-types'
 
-/**
- * @ref https://json.schemastore.org/package.json
- */
-type PackageJsonTypes = PackageJson
-
 const debug = createDebug('tsdown:package')
 
-export interface PackageJsonWithPath extends PackageJsonTypes {
+export interface PackageJsonWithPath extends PackageJson {
   packageJsonPath: string
 }
 
@@ -28,8 +23,8 @@ export async function readPackageJson(
   }
 }
 
-export type PackageType = NonNullable<PackageJsonTypes['type']> | undefined
-export function getPackageType(pkg: PackageJsonTypes | undefined): PackageType {
+export type PackageType = 'module' | 'commonjs' | undefined
+export function getPackageType(pkg: PackageJson | undefined): PackageType {
   if (pkg?.type) {
     if (!['module', 'commonjs'].includes(pkg.type)) {
       throw new Error(`Invalid package.json type: ${pkg.type}`)

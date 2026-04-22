@@ -60,7 +60,8 @@ export interface CSSModulesOptions {
 export interface CssOptions {
   /**
    * Enable/disable CSS code splitting.
-   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file named by {@linkcode fileName}.
+   * When set to `false`, all CSS in the entire project will be extracted into
+   * a single CSS file named by {@linkcode fileName}.
    * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
    *
    * Defaults to `false`, but if `unbundle` is `true`, it defaults to `true` to preserve chunk splitting.
@@ -70,7 +71,9 @@ export interface CssOptions {
   splitting?: boolean
 
   /**
-   * Specify the name of the CSS file generated when {@linkcode splitting} is `false`.
+   * Specify the name of the CSS file generated when {@linkcode splitting} is
+   * `false`.
+   *
    * @default 'style.css'
    */
   fileName?: string
@@ -81,6 +84,7 @@ export interface CssOptions {
    * Defaults to the top-level `target` option.
    *
    * @see https://vite.dev/config/build-options#build-csstarget
+   * @default tsdownConfig.target
    */
   target?: string | string[] | false
 
@@ -131,8 +135,9 @@ export interface CssOptions {
    * When not `false`, `.module.css` files (and preprocessor variants) are
    * treated as CSS modules with scoped class names.
    *
-   * @default options.modules === false ? false : (options.modules ?? {})
    * @see https://github.com/css-modules/css-modules
+   *
+   * @default cssOptions.modules === false ? false : (cssOptions.modules ?? {})
    */
   modules?: CSSModulesOptions | false
 

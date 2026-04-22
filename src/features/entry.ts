@@ -67,7 +67,7 @@ export function isGlobEntry(entry: TsdownInputOption | undefined): boolean {
 }
 
 async function resolveObjectEntry(
-  entries: Record<string, Arrayable<string>>,
+  entries: Record<string, string | string[]>,
   cwd: string,
 ): Promise<[entry: Record<string, string>, root: string]> {
   const entry = Object.fromEntries(

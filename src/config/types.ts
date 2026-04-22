@@ -36,13 +36,14 @@ import type {
 import type { CssOptions } from '@tsdown/css'
 import type { Hookable } from 'hookable'
 import type {
-  BuildOptions,
   ChecksOptions,
+  ExternalOption,
   InputOptions,
   InternalModuleFormat,
+  MinifyOptions,
   ModuleFormat,
+  ModuleTypes,
   OutputOptions,
-  TransformOptions,
   TreeshakingOptions,
 } from 'rolldown'
 import type { Options as RolldownPluginDtsOptions } from 'rolldown-plugin-dts'
@@ -185,20 +186,20 @@ export interface UserConfig {
   /**
    * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle} instead.
    */
-  external?: DepsConfig['neverBundle']
+  external?: ExternalOption
   /**
    * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
    */
-  noExternal?: DepsConfig['alwaysBundle']
+  noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
    * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
    */
-  inlineOnly?: DepsConfig['onlyBundle']
+  inlineOnly?: Arrayable<string | RegExp> | false
   /**
    * @deprecated Use {@linkcode DepsConfig.skipNodeModulesBundle | deps.skipNodeModulesBundle} instead.
    * @default false
    */
-  skipNodeModulesBundle?: DepsConfig['skipNodeModulesBundle']
+  skipNodeModulesBundle?: boolean
 
   alias?: Record<string, string>
 
@@ -249,7 +250,7 @@ export interface UserConfig {
    * { "target": false }
    * ```
    */
-  target?: Arrayable<string> | false
+  target?: string | string[] | false
 
   /**
    * Compile-time env variables, which can be accessed via `import.meta.env` or `process.env`.
@@ -274,8 +275,8 @@ export interface UserConfig {
    * When loading env variables from `envFile`, only include variables with these prefixes.
    * @default 'TSDOWN_'
    */
-  envPrefix?: Arrayable<string>
-  define?: TransformOptions['define']
+  envPrefix?: string | string[]
+  define?: Record<string, string>
 
   /**
    * @default false
@@ -287,7 +288,7 @@ export interface UserConfig {
    * @see {@link https://rolldown.rs/options/treeshake} for more details.
    * @default true
    */
-  treeshake?: InputOptions['treeshake']
+  treeshake?: boolean | TreeshakingOptions
 
   /**
    * Sets how input files are processed.
@@ -298,7 +299,7 @@ export interface UserConfig {
    * { ".jpg": "asset", ".png": "base64" }
    * ```
    */
-  loader?: InputOptions['moduleTypes']
+  loader?: ModuleTypes
 
   /**
    * If enabled, strips the `node:` protocol prefix from import source.
@@ -368,8 +369,8 @@ export interface UserConfig {
    *
    * @default ['esm']
    */
-  format?: Arrayable<Format> | Partial<Record<Format, Partial<ResolvedConfig>>>
-  globalName?: OutputOptions['name']
+  format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
+  globalName?: string
   /**
    * @default 'dist'
    */
@@ -379,7 +380,7 @@ export interface UserConfig {
    * This option is incompatible with watch mode.
    * @default true
    */
-  write?: BuildOptions['write']
+  write?: boolean
   /**
    * Whether to generate source map files.
    *
@@ -389,7 +390,7 @@ export interface UserConfig {
    *
    * @default false
    */
-  sourcemap?: OutputOptions['sourcemap']
+  sourcemap?: Sourcemap
   /**
    * Clean directories before build.
    *
@@ -400,7 +401,7 @@ export interface UserConfig {
   /**
    * @default false
    */
-  minify?: OutputOptions['minify']
+  minify?: boolean | 'dce-only' | MinifyOptions
   footer?: ChunkAddon
   banner?: ChunkAddon
 
@@ -472,7 +473,7 @@ export interface UserConfig {
   /**
    * The working directory of the config file.
    * - Defaults to {@linkcode process.cwd | process.cwd()} for root config.
-   * - Defaults to the package directory for workspace config.
+   * - Defaults to the package directory for {@linkcode workspace} config.
    *
    * @default process.cwd()
    */
@@ -533,7 +534,7 @@ export interface UserConfig {
    */
   onSuccess?:
     | string
-    | ((config: ResolvedConfig, signal: AbortSignal) => Awaitable<void>)
+    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
 
   /**
    * Enables generation of TypeScript declaration files (`.d.ts`).

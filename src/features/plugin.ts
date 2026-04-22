@@ -27,10 +27,10 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
    * {@linkcode build | build()} (typically the CLI flags), useful for
    * distinguishing values that came from the command line vs. the config file.
    *
-   * Plugins injected via {@linkcode fromVite} do not receive this hook,
-   * because they are loaded after the {@linkcode tsdownConfig} phase.
-   * Likewise, new plugins added by another plugin's {@linkcode tsdownConfig}
-   * do not themselves receive this hook
+   * Plugins injected via {@linkcode UserConfig.fromVite | fromVite} do not
+   * receive this hook, because they are loaded after the
+   * {@linkcode tsdownConfig} phase. Likewise, new plugins added by another
+   * plugin's {@linkcode tsdownConfig} do not themselves receive this hook
    * (plugins are snapshotted before dispatch).
    */
   tsdownConfig?: (

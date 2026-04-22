@@ -10,7 +10,6 @@ import { writeExports } from './exports.ts'
 import { publint } from './publint.ts'
 import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
-import type { Arrayable } from '../../utils/types.ts'
 import type { Buffer } from 'node:buffer'
 import type { DetectResult } from 'package-manager-detector'
 
@@ -160,7 +159,7 @@ function dedupeConfigs<K extends 'publint' | 'attw' | 'exports'>(
 
 function mergeInlinedDeps(
   bundles: TsdownBundle[],
-): Record<string, Arrayable<string>> | undefined {
+): Record<string, string | string[]> | undefined {
   const merged = new Map<string, Set<string>>()
   for (const bundle of bundles) {
     for (const [pkgName, versions] of bundle.inlinedDeps) {
@@ -178,7 +177,7 @@ function mergeInlinedDeps(
     a.localeCompare(b),
   )
 
-  const result: Record<string, Arrayable<string>> = {}
+  const result: Record<string, string | string[]> = {}
   for (const [pkgName, versions] of sorted) {
     result[pkgName] =
       versions.size === 1 ? [...versions][0] : [...versions].toSorted()

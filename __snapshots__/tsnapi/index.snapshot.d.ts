@@ -18,7 +18,7 @@ export interface ChunkAddonObject {
   dts?: string;
 }
 export interface CopyEntry {
-  from: Arrayable<string>;
+  from: string | string[];
   to?: string;
   flatten?: boolean;
   verbose?: boolean;
@@ -82,7 +82,7 @@ export interface OutExtensionObject {
   js?: string;
   dts?: string;
 }
-export interface PackageJsonWithPath extends PackageJsonTypes {
+export interface PackageJsonWithPath extends PackageJson {
   packageJsonPath: string;
 }
 export interface PublintOptions extends Omit<Options, "pack" | "pkgDir"> {
@@ -120,11 +120,11 @@ export interface TsdownBundle extends AsyncDisposable {
   inlinedDeps: Map<string, Set<string>>;
 }
 export interface TsdownHooks {
-  "build:prepare": (_: BuildContext) => Awaitable<void>;
-  "build:before": (_: BuildContext & RolldownContext) => Awaitable<void>;
+  "build:prepare": (_: BuildContext) => void | Promise<void>;
+  "build:before": (_: BuildContext & RolldownContext) => void | Promise<void>;
   "build:done": (_: BuildContext & {
     chunks: RolldownChunk[];
-  }) => Awaitable<void>;
+  }) => void | Promise<void>;
 }
 export interface TsdownPlugin<A = any> extends Plugin<A> {
   tsdownConfig?: (_: UserConfig, _: InlineConfig) => Awaitable<UserConfig | void | null>;
@@ -133,21 +133,21 @@ export interface TsdownPlugin<A = any> extends Plugin<A> {
 export interface UserConfig {
   entry?: TsdownInputOption;
   deps?: DepsConfig;
-  external?: DepsConfig["neverBundle"];
-  noExternal?: DepsConfig["alwaysBundle"];
-  inlineOnly?: DepsConfig["onlyBundle"];
-  skipNodeModulesBundle?: DepsConfig["skipNodeModulesBundle"];
+  external?: ExternalOption;
+  noExternal?: Arrayable<string | RegExp> | NoExternalFn;
+  inlineOnly?: Arrayable<string | RegExp> | false;
+  skipNodeModulesBundle?: boolean;
   alias?: Record<string, string>;
   tsconfig?: string | boolean;
   platform?: "node" | "neutral" | "browser";
-  target?: Arrayable<string> | false;
+  target?: string | string[] | false;
   env?: Record<string, any>;
   envFile?: string;
-  envPrefix?: Arrayable<string>;
-  define?: TransformOptions["define"];
+  envPrefix?: string | string[];
+  define?: Record<string, string>;
   shims?: boolean;
-  treeshake?: InputOptions["treeshake"];
-  loader?: InputOptions["moduleTypes"];
+  treeshake?: boolean | TreeshakingOptions;
+  loader?: ModuleTypes;
   removeNodeProtocol?: boolean;
   nodeProtocol?: "strip" | boolean;
   checks?: ChecksOptions & {
@@ -157,13 +157,13 @@ export interface UserConfig {
   inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<InputOptions | void | null>);
-  format?: Arrayable<Format> | Partial<Record<Format, Partial<ResolvedConfig>>>;
-  globalName?: OutputOptions["name"];
+  format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>;
+  globalName?: string;
   outDir?: string;
-  write?: BuildOptions["write"];
-  sourcemap?: OutputOptions["sourcemap"];
+  write?: boolean;
+  sourcemap?: Sourcemap;
   clean?: boolean | string[];
-  minify?: OutputOptions["minify"];
+  minify?: boolean | "dce-only" | MinifyOptions;
   footer?: ChunkAddon;
   banner?: ChunkAddon;
   unbundle?: boolean;
@@ -185,7 +185,7 @@ export interface UserConfig {
   watch?: boolean | Arrayable<string>;
   ignoreWatch?: Arrayable<string | RegExp>;
   devtools?: WithEnabled<DevtoolsOptions>;
-  onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => Awaitable<void>);
+  onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>);
   dts?: WithEnabled<DtsOptions>;
   unused?: WithEnabled<UnusedOptions>;
   publint?: WithEnabled<PublintOptions>;
@@ -221,7 +221,7 @@ export type Format = ModuleFormat;
 export type NoExternalFn = (_: string, _: string | undefined) => boolean | null | undefined | void;
 export type NormalizedFormat = InternalModuleFormat;
 export type OutExtensionFactory = (_: OutExtensionContext) => OutExtensionObject | undefined;
-export type PackageType = NonNullable<PackageJsonTypes["type"]> | undefined;
+export type PackageType = "module" | "commonjs" | undefined;
 export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "external" | "noExternal" | "inlineOnly" | "skipNodeModulesBundle" | "logLevel" | "failOnWarn" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
   entry: Record<string, string>;
   rawEntry?: TsdownInputOption;

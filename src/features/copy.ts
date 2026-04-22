@@ -9,7 +9,7 @@ export interface CopyEntry {
   /**
    * Source path or glob pattern.
    */
-  from: Arrayable<string>
+  from: string | string[]
   /**
    * Destination path.
    * If not specified, defaults to the output directory ("outDir").

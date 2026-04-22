@@ -40,7 +40,7 @@ export interface SeaConfig {
   executable?: string
   output?: string
   /**
-   * @default config.format === 'es' ? 'module' : 'commonjs'
+   * @default tsdownConfig.format === 'es' ? 'module' : 'commonjs'
    */
   mainFormat?: 'commonjs' | 'module'
   /**
