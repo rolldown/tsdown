@@ -33,16 +33,16 @@ import type {
   MarkPartial,
   Overwrite,
 } from '../utils/types.ts'
+import type { CssOptions } from '@tsdown/css'
 import type { Hookable } from 'hookable'
 import type {
+  BuildOptions,
   ChecksOptions,
-  ExternalOption,
   InputOptions,
   InternalModuleFormat,
-  MinifyOptions,
   ModuleFormat,
-  ModuleTypes,
   OutputOptions,
+  TransformOptions,
   TreeshakingOptions,
 } from 'rolldown'
 import type { Options as RolldownPluginDtsOptions } from 'rolldown-plugin-dts'
@@ -130,10 +130,12 @@ export interface Workspace {
    * - `auto`: Automatically detect `package.json` files in the workspace.
    * @default 'auto'
    */
-  include?: Arrayable<string> | 'auto'
+  include?: 'auto' | (string & {}) | string[]
   /**
    * Exclude directories from workspace.
    * Defaults to all `node_modules`, `dist`, `test`, `tests`, `temp`, and `tmp` directories.
+   *
+   * @default ['**\/node_modules/**', '**\/dist/**', '**\/test?(s)/**', '**\/t?(e)mp/**']
    */
   exclude?: Arrayable<string>
 
@@ -147,10 +149,11 @@ export type CIOption = 'ci-only' | 'local-only'
 
 export type WithEnabled<T> =
   | boolean
-  | undefined
   | CIOption
   | (T & {
-      /** @default true */
+      /**
+       * @default true
+       */
       enabled?: boolean | CIOption
     })
 
@@ -169,6 +172,8 @@ export interface UserConfig {
    *   "hooks/*": ["./src/hooks/*.ts", "!./src/hooks/index.ts"],
    * }
    * ```
+   *
+   * @default { index: 'src/index.ts'}
    */
   entry?: TsdownInputOption
 
@@ -178,24 +183,28 @@ export interface UserConfig {
   deps?: DepsConfig
 
   /**
-   * @deprecated Use `deps.neverBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle} instead.
    */
-  external?: ExternalOption
+  external?: DepsConfig['neverBundle']
   /**
-   * @deprecated Use `deps.alwaysBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
    */
-  noExternal?: Arrayable<string | RegExp> | NoExternalFn
+  noExternal?: DepsConfig['alwaysBundle']
   /**
-   * @deprecated Use `deps.onlyBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
    */
-  inlineOnly?: Arrayable<string | RegExp> | false
+  inlineOnly?: DepsConfig['onlyBundle']
   /**
-   * @deprecated Use `deps.skipNodeModulesBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.skipNodeModulesBundle | deps.skipNodeModulesBundle} instead.
    * @default false
    */
-  skipNodeModulesBundle?: boolean
+  skipNodeModulesBundle?: DepsConfig['skipNodeModulesBundle']
 
   alias?: Record<string, string>
+
+  /**
+   * @default 'tsconfig.json'
+   */
   tsconfig?: string | boolean
 
   /**
@@ -240,7 +249,7 @@ export interface UserConfig {
    * { "target": false }
    * ```
    */
-  target?: string | string[] | false
+  target?: Arrayable<string> | false
 
   /**
    * Compile-time env variables, which can be accessed via `import.meta.env` or `process.env`.
@@ -251,6 +260,8 @@ export interface UserConfig {
    *   "NODE_ENV": "production"
    * }
    * ```
+   *
+   * @default {}
    */
   env?: Record<string, any>
   /**
@@ -263,10 +274,12 @@ export interface UserConfig {
    * When loading env variables from `envFile`, only include variables with these prefixes.
    * @default 'TSDOWN_'
    */
-  envPrefix?: string | string[]
-  define?: Record<string, string>
+  envPrefix?: Arrayable<string>
+  define?: TransformOptions['define']
 
-  /** @default false */
+  /**
+   * @default false
+   */
   shims?: boolean
 
   /**
@@ -274,7 +287,7 @@ export interface UserConfig {
    * @see {@link https://rolldown.rs/options/treeshake} for more details.
    * @default true
    */
-  treeshake?: boolean | TreeshakingOptions
+  treeshake?: InputOptions['treeshake']
 
   /**
    * Sets how input files are processed.
@@ -282,10 +295,10 @@ export interface UserConfig {
    * Lets you import or require files like images or fonts.
    * @example
    * ```json
-   * { '.jpg': 'asset', '.png': 'base64' }
+   * { ".jpg": "asset", ".png": "base64" }
    * ```
    */
-  loader?: ModuleTypes
+  loader?: InputOptions['moduleTypes']
 
   /**
    * If enabled, strips the `node:` protocol prefix from import source.
@@ -353,28 +366,30 @@ export interface UserConfig {
    * - `iife`: IIFE
    * - `umd`: UMD
    *
-   * Defaults to ESM.
+   * @default ['esm']
    */
-  format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
-  globalName?: string
-  /** @default 'dist' */
+  format?: Arrayable<Format> | Partial<Record<Format, Partial<ResolvedConfig>>>
+  globalName?: OutputOptions['name']
+  /**
+   * @default 'dist'
+   */
   outDir?: string
   /**
    * Whether to write the files to disk.
    * This option is incompatible with watch mode.
    * @default true
    */
-  write?: boolean
+  write?: BuildOptions['write']
   /**
    * Whether to generate source map files.
    *
    * Note that this option will always be `true` if you have
-   * [`declarationMap`](https://www.typescriptlang.org/tsconfig/#declarationMap)
+   * {@link https://www.typescriptlang.org/tsconfig/#declarationMap | `declarationMap`}
    * option enabled in your `tsconfig.json`.
    *
    * @default false
    */
-  sourcemap?: Sourcemap
+  sourcemap?: OutputOptions['sourcemap']
   /**
    * Clean directories before build.
    *
@@ -385,13 +400,13 @@ export interface UserConfig {
   /**
    * @default false
    */
-  minify?: boolean | 'dce-only' | MinifyOptions
+  minify?: OutputOptions['minify']
   footer?: ChunkAddon
   banner?: ChunkAddon
 
   /**
-   * Determines whether unbundle mode is enabled.
-   * When set to true, the output files will mirror the input file structure.
+   * Determines whether `unbundle` mode is enabled.
+   * When set to `true`, the output files will mirror the input file structure.
    * @default false
    */
   unbundle?: boolean
@@ -407,7 +422,7 @@ export interface UserConfig {
   root?: string
 
   /**
-   * @deprecated Use `unbundle` instead.
+   * @deprecated Use {@linkcode unbundle} instead.
    * @default true
    */
   bundle?: boolean
@@ -417,13 +432,16 @@ export interface UserConfig {
    * The extension will always be `.cjs` or `.mjs`.
    * Otherwise, it will depend on the package type.
    *
-   * Defaults to `true` if `platform` is set to `node`, `false` otherwise.
+   * Defaults to `true` if {@linkcode platform} is set to `node`,
+   * `false` otherwise.
+   *
+   * @default platform === 'node'
    */
   fixedExtension?: boolean
 
   /**
    * Custom extensions for output files.
-   * `fixedExtension` will be overridden by this option.
+   * {@linkcode fixedExtension} will be overridden by this option.
    */
   outExtensions?: OutExtensionFactory
 
@@ -453,8 +471,10 @@ export interface UserConfig {
 
   /**
    * The working directory of the config file.
-   * - Defaults to `process.cwd()` for root config.
+   * - Defaults to {@linkcode process.cwd | process.cwd()} for root config.
    * - Defaults to the package directory for workspace config.
+   *
+   * @default process.cwd()
    */
   cwd?: string
 
@@ -498,7 +518,7 @@ export interface UserConfig {
   /**
    * **[experimental]** Enable devtools.
    *
-   *DevTools is still under development, and this is for early testers only.
+   * DevTools is still under development, and this is for early testers only.
    *
    * This may slow down the build process significantly.
    *
@@ -513,13 +533,13 @@ export interface UserConfig {
    */
   onSuccess?:
     | string
-    | ((config: ResolvedConfig, signal: AbortSignal) => void | Promise<void>)
+    | ((config: ResolvedConfig, signal: AbortSignal) => Awaitable<void>)
 
   /**
    * Enables generation of TypeScript declaration files (`.d.ts`).
    *
    * By default, this option is auto-detected based on your project's `package.json`:
-   * - If {@link exe} is enabled, declaration file generation is disabled by default.
+   * - If {@linkcode exe} is enabled, declaration file generation is disabled by default.
    * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
    * - Otherwise, declaration file generation is disabled by default.
    */
@@ -533,7 +553,7 @@ export interface UserConfig {
   unused?: WithEnabled<UnusedOptions>
 
   /**
-   * Run publint after bundling.
+   * Run `publint` after bundling.
    * Requires `publint` to be installed.
    * @default false
    */
@@ -566,6 +586,8 @@ export interface UserConfig {
    *
    * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
    * to point to the generated files.
+   *
+   * @default false
    */
   exports?: WithEnabled<ExportsOptions>
 
@@ -573,15 +595,16 @@ export interface UserConfig {
    * **[experimental]** CSS options.
    * Requires `@tsdown/css` to be installed.
    */
-  css?: import('@tsdown/css').CssOptions
+  css?: CssOptions
 
   /**
-   * @deprecated Use `css.inject` instead.
+   * @deprecated Use {@linkcode CssOptions.inject | css.inject} instead.
    */
   injectStyle?: boolean
 
   /**
-   * @deprecated Alias for `copy`, will be removed in the future.
+   * @alias copy
+   * @deprecated Alias for {@linkcode copy}, will be removed in the future.
    */
   publicDir?: CopyOptions | CopyOptionsFn
 
@@ -609,6 +632,8 @@ export interface UserConfig {
    *
    * This will bundle the output into a single executable file using Node.js SEA.
    * Note that this is only supported on Node.js 25.7.0 and later, and is not supported in Bun or Deno.
+   *
+   * @default false
    */
   exe?: WithEnabled<ExeOptions>
 
@@ -682,9 +707,13 @@ export type ResolvedConfig = Overwrite<
     | 'css'
   >,
   {
-    /** Resolved entry map (after glob expansion) */
+    /**
+     * Resolved entry map (after glob expansion)
+     */
     entry: Record<string, string>
-    /** Original entry config before glob resolution (for watch mode re-globbing) */
+    /**
+     * Original entry config before glob resolution (for watch mode re-globbing)
+     */
     rawEntry?: TsdownInputOption
     nameLabel: string | undefined
     format: NormalizedFormat
@@ -695,7 +724,9 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     deps: ResolvedDepsConfig
-    /** Resolved root directory of input files */
+    /**
+     * Resolved root directory of input files
+     */
     root: string
     configDeps: Set<string>
 

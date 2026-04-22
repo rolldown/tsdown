@@ -15,7 +15,9 @@ import type {
 export interface OutExtensionContext {
   options: InputOptions
   format: NormalizedFormat
-  /** "type" field in project's package.json */
+  /**
+   * `"type"` field in project's `package.json`.
+   */
   pkgType?: PackageType
 }
 export interface OutExtensionObject {

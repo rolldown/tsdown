@@ -34,18 +34,31 @@ export interface ExeOptions extends ExeExtensionOptions {
  */
 export interface SeaConfig {
   main?: string
-  /** Optional, if not specified, uses the current Node.js binary */
+  /**
+   * Optional, if not specified, uses the current Node.js binary
+   */
   executable?: string
   output?: string
+  /**
+   * @default config.format === 'es' ? 'module' : 'commonjs'
+   */
   mainFormat?: 'commonjs' | 'module'
-  /** @default true */
+  /**
+   * @default true
+   */
   disableExperimentalSEAWarning?: boolean
-  /** @default false */
+  /**
+   * @default false
+   */
   useSnapshot?: boolean
-  /** @default false */
+  /**
+   * @default false
+   */
   useCodeCache?: boolean
   execArgv?: string[]
-  /** @default "env" */
+  /**
+   * @default 'env'
+   */
   execArgvExtension?: 'none' | 'env' | 'cli'
   assets?: Record<string, string>
 }

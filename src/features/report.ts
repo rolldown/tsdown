@@ -1,15 +1,15 @@
+import { bold, dim, green } from 'ansis'
 import { Buffer } from 'node:buffer'
 import path from 'node:path'
 import { promisify } from 'node:util'
 import { brotliCompress, gzip } from 'node:zlib'
-import { bold, dim, green } from 'ansis'
 import { createDebug } from 'obug'
+import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
+import type { ResolvedConfig } from '../config/types.ts'
 import { formatBytes } from '../utils/format.ts'
 import { noop } from '../utils/general.ts'
 import { prettyFormat } from '../utils/logger.ts'
-import type { ResolvedConfig } from '../config/types.ts'
-import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 const debug = createDebug('tsdown:report')
 const brotliCompressAsync = promisify(brotliCompress)
@@ -46,7 +46,7 @@ export interface ReportOptions {
 
   /**
    * Skip reporting compressed size for files larger than this size.
-   * @default 1_000_000 // 1MB
+   * @default 1_000_000 // 1 MB
    */
   maxCompressSize?: number
 }
@@ -55,7 +55,7 @@ const defaultOptions = {
   gzip: true,
   brotli: false,
   maxCompressSize: 1_000_000,
-}
+} as const satisfies Required<ReportOptions>
 
 export function ReportPlugin(
   config: ResolvedConfig,

@@ -10,25 +10,50 @@ import type {
   RolldownCodeChunk,
 } from '../../utils/chunks.ts'
 import type { Logger } from '../../utils/logger.ts'
-import type { Awaitable } from '../../utils/types.ts'
+import type { Arrayable, Awaitable } from '../../utils/types.ts'
 import type { PackageJson } from 'pkg-types'
 
 export interface ExportsOptions {
   /**
    * Generate exports that link to source code during development.
-   * - string: add as a custom condition.
-   * - true: all conditions point to source files, and add dist exports to `publishConfig`.
+   * - `string`: add as a custom condition.
+   * - `true`: all conditions point to source files, and add `dist` exports to `publishConfig`.
    */
   devExports?: boolean | string
 
   /**
-   * Exports for package.json file.
+   * Generate exports for `package.json` file.
+   *
+   * @example
+   * ```json
+   * {
+   *   "exports": {
+   *      ".": {
+   *         "types": "./dist/index.d.mts",
+   *         "import": "./dist/index.mjs"
+   *      },
+   *     "./package.json": "./package.json"
+   *   }
+   * }
+   * ```
+   *
    * @default true
    */
   packageJson?: boolean
 
   /**
-   * Exports for all files.
+   * Generate exports for all files.
+   *
+   * @example
+   * ```json
+   * {
+   *   "exports": {
+   *    "./*": "./*"
+   *   }
+   * }
+   * ```
+   *
+   * @default false
    */
   all?: boolean
 
@@ -39,7 +64,9 @@ export interface ExportsOptions {
    * **Note:** Do not include file extensions, and paths should be relative to the dist directory.
    *
    * @example
+   * ```ts
    * exclude: ['cli', '**\/*.test', /internal/]
+   * ```
    */
   exclude?: (RegExp | string)[]
 
@@ -58,10 +85,12 @@ export interface ExportsOptions {
    * Use this to add additional exports in the exported package, such as workers or assets.
    *
    * @example
+   * ```ts
    * customExports(exports) {
    *   exports['./worker.js'] = './dist/worker.js';
    *   return exports;
    * }
+   * ```
    *
    * @example
    * ```jsonc
@@ -87,7 +116,7 @@ export interface ExportsOptions {
       ) => Awaitable<Record<string, any>>)
 
   /**
-   * Generate `inlinedDependencies` field in package.json.
+   * Generate `inlinedDependencies` field in `package.json`.
    * Lists dependencies that are physically inlined into the bundle with their exact versions.
    *
    * @default true
@@ -109,7 +138,7 @@ export interface ExportsOptions {
   extensions?: boolean
 
   /**
-   * Auto-generate the `bin` field in package.json.
+   * Auto-generate the `bin` field in `package.json`.
    *
    * - `true`: Auto-detect entry chunks with shebangs. Uses package name (without scope) as bin name.
    *   Errors if multiple shebang entries are found.
@@ -129,7 +158,7 @@ export interface ExportsOptions {
 export async function writeExports(
   options: ResolvedConfig,
   chunks: ChunksByFormat,
-  inlinedDeps?: Record<string, string | string[]>,
+  inlinedDeps?: Record<string, Arrayable<string>>,
 ): Promise<void> {
   typeAssert(options.pkg)
 
@@ -171,7 +200,7 @@ export async function generateExports(
   pkg: PackageJson,
   chunks: ChunksByFormat,
   options: Pick<ResolvedConfig, 'exports' | 'css' | 'logger' | 'cwd'>,
-  inlinedDeps?: Record<string, string | string[]>,
+  inlinedDeps?: Record<string, Arrayable<string>>,
 ): Promise<{
   main: string | undefined
   module: string | undefined
@@ -179,7 +208,7 @@ export async function generateExports(
   exports: Record<string, any>
   bin?: string | Record<string, string>
   publishBin?: string | Record<string, string>
-  inlinedDependencies?: Record<string, string | string[]>
+  inlinedDependencies?: Record<string, Arrayable<string>>
   publishExports?: Record<string, any>
 }> {
   typeAssert(options.exports)

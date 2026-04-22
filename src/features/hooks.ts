@@ -3,6 +3,7 @@ import { Hookable } from 'hookable'
 import { exec } from 'tinyexec'
 import treeKill from 'tree-kill'
 import type { ResolvedConfig, RolldownChunk } from '../config/index.ts'
+import type { Awaitable } from '../utils/types.ts'
 import type { BuildOptions } from 'rolldown'
 
 export interface BuildContext {
@@ -22,20 +23,20 @@ export interface TsdownHooks {
    * Invoked before each tsdown build starts.
    * Use this hook to perform setup or preparation tasks.
    */
-  'build:prepare': (ctx: BuildContext) => void | Promise<void>
+  'build:prepare': (ctx: BuildContext) => Awaitable<void>
   /**
    * Invoked before each Rolldown build.
    * For dual-format builds, this hook is called for each format.
    * Useful for configuring or modifying the build context before bundling.
    */
-  'build:before': (ctx: BuildContext & RolldownContext) => void | Promise<void>
+  'build:before': (ctx: BuildContext & RolldownContext) => Awaitable<void>
   /**
    * Invoked after each tsdown build completes.
    * Use this hook for cleanup or post-processing tasks.
    */
   'build:done': (
     ctx: BuildContext & { chunks: RolldownChunk[] },
-  ) => void | Promise<void>
+  ) => Awaitable<void>
 }
 
 export async function createHooks(options: ResolvedConfig): Promise<{

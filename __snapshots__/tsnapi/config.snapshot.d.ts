@@ -5,21 +5,21 @@
 export interface UserConfig {
   entry?: TsdownInputOption;
   deps?: DepsConfig;
-  external?: ExternalOption;
-  noExternal?: Arrayable<string | RegExp> | NoExternalFn;
-  inlineOnly?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
+  external?: DepsConfig["neverBundle"];
+  noExternal?: DepsConfig["alwaysBundle"];
+  inlineOnly?: DepsConfig["onlyBundle"];
+  skipNodeModulesBundle?: DepsConfig["skipNodeModulesBundle"];
   alias?: Record<string, string>;
   tsconfig?: string | boolean;
   platform?: "node" | "neutral" | "browser";
-  target?: string | string[] | false;
+  target?: Arrayable<string> | false;
   env?: Record<string, any>;
   envFile?: string;
-  envPrefix?: string | string[];
-  define?: Record<string, string>;
+  envPrefix?: Arrayable<string>;
+  define?: TransformOptions["define"];
   shims?: boolean;
-  treeshake?: boolean | TreeshakingOptions;
-  loader?: ModuleTypes;
+  treeshake?: InputOptions["treeshake"];
+  loader?: InputOptions["moduleTypes"];
   removeNodeProtocol?: boolean;
   nodeProtocol?: "strip" | boolean;
   checks?: ChecksOptions & {
@@ -29,13 +29,13 @@ export interface UserConfig {
   inputOptions?: InputOptions | ((_: InputOptions, _: NormalizedFormat, _: {
     cjsDts: boolean;
   }) => Awaitable<InputOptions | void | null>);
-  format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>;
-  globalName?: string;
+  format?: Arrayable<Format> | Partial<Record<Format, Partial<ResolvedConfig>>>;
+  globalName?: OutputOptions["name"];
   outDir?: string;
-  write?: boolean;
-  sourcemap?: Sourcemap;
+  write?: BuildOptions["write"];
+  sourcemap?: OutputOptions["sourcemap"];
   clean?: boolean | string[];
-  minify?: boolean | "dce-only" | MinifyOptions;
+  minify?: OutputOptions["minify"];
   footer?: ChunkAddon;
   banner?: ChunkAddon;
   unbundle?: boolean;
@@ -57,7 +57,7 @@ export interface UserConfig {
   watch?: boolean | Arrayable<string>;
   ignoreWatch?: Arrayable<string | RegExp>;
   devtools?: WithEnabled<DevtoolsOptions>;
-  onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => void | Promise<void>);
+  onSuccess?: string | ((_: ResolvedConfig, _: AbortSignal) => Awaitable<void>);
   dts?: WithEnabled<DtsOptions>;
   unused?: WithEnabled<UnusedOptions>;
   publint?: WithEnabled<PublintOptions>;
@@ -65,7 +65,7 @@ export interface UserConfig {
   report?: WithEnabled<ReportOptions>;
   globImport?: boolean;
   exports?: WithEnabled<ExportsOptions>;
-  css?: _$_tsdown_css0.CssOptions;
+  css?: CssOptions;
   injectStyle?: boolean;
   publicDir?: CopyOptions | CopyOptionsFn;
   copy?: CopyOptions | CopyOptionsFn;

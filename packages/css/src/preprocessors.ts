@@ -5,7 +5,7 @@ import { getSassResolver, resolveWithResolver } from './resolve.ts'
 import { CSS_LANGS_RE } from './utils.ts'
 import type { PreprocessorOptions } from './options.ts'
 
-export type PreprocessorLang = 'sass' | 'scss' | 'less' | 'styl' | 'stylus'
+export type PreprocessorLang = keyof PreprocessorOptions
 
 const PREPROCESSOR_LANGS: Record<string, PreprocessorLang> = {
   sass: 'sass',

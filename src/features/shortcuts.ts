@@ -2,13 +2,14 @@ import process from 'node:process'
 import readline from 'node:readline'
 import { bold, dim } from 'ansis'
 import { globalLogger } from '../utils/logger.ts'
+import type { Awaitable } from '../utils/types.ts'
 
 // Copied from https://github.com/vitejs/vite/blob/main/packages/vite/src/node/shortcuts.ts - MIT License
 
 export interface Shortcut {
   key: string
   description: string
-  action: () => void | Promise<void>
+  action: () => Awaitable<void>
 }
 
 export function shortcuts(restart: () => void): () => void {

@@ -60,15 +60,17 @@ export interface CSSModulesOptions {
 export interface CssOptions {
   /**
    * Enable/disable CSS code splitting.
-   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file named by {@link fileName}.
+   * When set to `false`, all CSS in the entire project will be extracted into a single CSS file named by {@linkcode fileName}.
    * When set to `true`, CSS imported in async JS chunks will be preserved as chunks.
    *
    * Defaults to `false`, but if `unbundle` is `true`, it defaults to `true` to preserve chunk splitting.
+   *
+   * @default false
    */
   splitting?: boolean
 
   /**
-   * Specify the name of the CSS file generated when `splitting` is `false`.
+   * Specify the name of the CSS file generated when {@linkcode splitting} is `false`.
    * @default 'style.css'
    */
   fileName?: string
@@ -109,7 +111,7 @@ export interface CssOptions {
    * - `object`: Inline PostCSS options with optional `plugins` array.
    * - Omitted: Auto-detect PostCSS config from the project root.
    *
-   * Only used when `transformer` is `'postcss'`.
+   * Only used when {@linkcode transformer} is `'postcss'`.
    * Requires `postcss` to be installed.
    *
    * @see https://github.com/postcss/postcss
@@ -129,6 +131,7 @@ export interface CssOptions {
    * When not `false`, `.module.css` files (and preprocessor variants) are
    * treated as CSS modules with scoped class names.
    *
+   * @default options.modules === false ? false : (options.modules ?? {})
    * @see https://github.com/css-modules/css-modules
    */
   modules?: CSSModulesOptions | false
