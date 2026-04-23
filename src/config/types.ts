@@ -204,7 +204,7 @@ export interface UserConfig {
   alias?: Record<string, string>
 
   /**
-   * @default 'tsconfig.json'
+   * @default true
    */
   tsconfig?: string | boolean
 
