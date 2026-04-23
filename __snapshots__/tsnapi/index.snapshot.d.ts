@@ -259,7 +259,7 @@ export type UserConfigFn = (_: InlineConfig, _: {
   ci: boolean;
   rootConfig?: UserConfig;
 }) => Awaitable<Arrayable<UserConfig>>;
-export type WithEnabled<T> = boolean | CIOption | (T & {
+export type WithEnabled<T> = boolean | undefined | CIOption | (T & {
   enabled?: boolean | CIOption;
 });
 // #endregion
