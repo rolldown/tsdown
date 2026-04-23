@@ -314,20 +314,46 @@ export interface UserConfig {
   removeNodeProtocol?: boolean
 
   /**
-   * - If `true`, add `node:` prefix to built-in modules.
-   * - If `'strip'`, strips the `node:` protocol prefix from import source.
-   * - If `false`, does not modify the import source.
+   * Control whether built-in Node.js module imports use the `node:` protocol.
+   *
+   * - `true`: Add the `node:` prefix to built-in module imports.
+   * - `'strip'`: Remove the `node:` prefix from built-in module imports.
+   * - `false`: Do not transform built-in module imports.
    *
    * @default false
    *
    * @example
-   * // With nodeProtocol enabled:
-   * import('fs'); // becomes import('node:fs')
-   * // With nodeProtocol set to 'strip':
-   * import('node:fs'); // becomes import('fs')
-   * // With nodeProtocol set to false:
-   * import('node:fs'); // remains import('node:fs')
+   * <caption>`nodeProtocol: true` — add the `node:` prefix</caption>
    *
+   * ```ts
+   * // Input
+   * import 'fs'
+   *
+   * // Output
+   * import 'node:fs'
+   * ```
+   *
+   * @example
+   * <caption>`nodeProtocol: 'strip'` — remove the `node:` prefix</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'fs'
+   * ```
+   *
+   * @example
+   * <caption>`nodeProtocol: false` — do not transform imports</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'node:fs'
+   * ```
    */
   nodeProtocol?: 'strip' | boolean
 
