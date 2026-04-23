@@ -401,7 +401,7 @@ export interface UserConfig {
    * - `iife`: IIFE
    * - `umd`: UMD
    *
-   * @default ['esm']
+   * @default 'esm'
    */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
