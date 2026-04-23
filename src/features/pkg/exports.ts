@@ -138,19 +138,56 @@ export interface ExportsOptions {
   extensions?: boolean
 
   /**
-   * Auto-generate the `bin` field in `package.json`.
+   * Generate the `bin` field in `package.json` for CLI executables.
    *
-   * - `true`: Auto-detect entry chunks with shebangs. Uses package name (without scope) as bin name.
-   *   Errors if multiple shebang entries are found.
-   * - `string`: Source file path to use as the bin entry. Bin name defaults to package name (without scope).
-   * - `Record<string, string>`: Map of bin command names to source file paths.
+   * Controls how command names are mapped to built entry files:
+   *
+   * - `true`: Auto-detect a single CLI entry from entry chunks that contain
+   *   a shebang (for example, `#!/usr/bin/env node`). The command name is
+   *   derived from the package name without its scope. Throws if multiple
+   *   shebang entries are found. Warns and skips generation if none are found.
+   * - `string`: Use the given source file path (relative to `cwd`) as the
+   *   CLI entry. The command name is derived from the package name without
+   *   its scope. Warns if the source file does not contain a shebang.
+   * - `Record<string, string>`: Explicitly map command names to source file
+   *   paths (relative to `cwd`). Warns for each source file that does not
+   *   contain a shebang.
+   *
+   * When {@link ExportsOptions.devExports} is enabled, the `bin` field in
+   * `package.json` points to source files during local development, while
+   * `publishConfig.bin` points to built output paths for publishing.
    *
    * @example
-   * bin: true
+   * <caption>Auto-detect a CLI entry from a shebang</caption>
+   *
+   * ```ts
+   * {
+   *   bin: true
+   * }
+   * ```
+   *
    * @example
-   * bin: './src/cli.ts'
+   * <caption>Single CLI command with an explicit source entry</caption>
+   *
+   * ```ts
+   * {
+   *   bin: './src/cli.ts'
+   * }
+   * ```
+   *
    * @example
-   * bin: { tool: './src/cli-tool.ts' }
+   * <caption>Multiple named CLI commands</caption>
+   *
+   * ```ts
+   * {
+   *   bin: {
+   *     tool: './src/cli.ts',
+   *     serve: './src/cli-extra.ts',
+   *   },
+   * }
+   * ```
+   *
+   * @see {@link https://docs.npmjs.com/cli/v11/configuring-npm/package-json#bin | npm documentation for the `bin` field}
    */
   bin?: boolean | string | Record<string, string>
 }
