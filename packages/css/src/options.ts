@@ -135,7 +135,7 @@ export interface CssOptions {
    *
    * @see https://github.com/css-modules/css-modules
    *
-   * @default cssOptions.modules === false ? false : (cssOptions.modules ?? {})
+   * @default {}
    */
   modules?: CSSModulesOptions | false
 
