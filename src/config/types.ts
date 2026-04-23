@@ -302,14 +302,22 @@ export interface UserConfig {
   loader?: ModuleTypes
 
   /**
-   * If enabled, strips the `node:` protocol prefix from import source.
+   * Remove the `node:` prefix from built-in Node.js module imports.
+   * When enabled, rewrites import sources like `node:fs` to `fs`.
    *
    * @default false
-   * @deprecated Use `nodeProtocol: 'strip'` instead.
+   * @deprecated Use {@linkcode nodeProtocol | nodeProtocol: 'strip'} instead.
    *
    * @example
-   * // With removeNodeProtocol enabled:
-   * import('node:fs'); // becomes import('fs')
+   * <caption>`removeNodeProtocol: true` — remove the `node:` prefix</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'fs'
+   * ```
    */
   removeNodeProtocol?: boolean
 
