@@ -440,7 +440,7 @@ export interface UserConfig {
   banner?: ChunkAddon
 
   /**
-   * Determines whether `unbundle` mode is enabled.
+   * Determines whether `unbundle` is enabled.
    * When set to `true`, the output files will mirror the input file structure.
    * @default false
    */
