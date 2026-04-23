@@ -35,8 +35,8 @@ jobs:
       - name: Lint
         run: pnpm run lint --fix
 
-      - name: Build
-        run: pnpm build
+      - name: Update API snapshots
+        run: pnpm build --update-snapshot
 
       - name: Commit
         uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a # v1.3.4
