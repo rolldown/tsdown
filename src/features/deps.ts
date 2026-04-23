@@ -30,7 +30,8 @@ export type NoExternalFn = (
 export interface DepsConfig {
   /**
    * Mark dependencies as external (not bundled).
-   * Accepts strings, regular expressions, or Rolldown's `ExternalOption`.
+   * Accepts strings, regular expressions, or Rolldown's
+   * {@linkcode ExternalOption}.
    */
   neverBundle?: ExternalOption
   /**
@@ -48,13 +49,13 @@ export interface DepsConfig {
    */
   onlyBundle?: Arrayable<string | RegExp> | false
   /**
-   * @deprecated Use {@link onlyBundle} instead.
+   * @deprecated Use {@linkcode onlyBundle} instead.
    */
   onlyAllowBundle?: Arrayable<string | RegExp> | false
   /**
    * Skip bundling all `node_modules` dependencies.
    *
-   * **Note:** This option cannot be used together with `alwaysBundle`.
+   * **Note:** This option cannot be used together with {@linkcode alwaysBundle}.
    *
    * @default false
    */

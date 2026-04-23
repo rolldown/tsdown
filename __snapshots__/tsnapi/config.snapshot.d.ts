@@ -65,7 +65,7 @@ export interface UserConfig {
   report?: WithEnabled<ReportOptions>;
   globImport?: boolean;
   exports?: WithEnabled<ExportsOptions>;
-  css?: _$_tsdown_css0.CssOptions;
+  css?: CssOptions;
   injectStyle?: boolean;
   publicDir?: CopyOptions | CopyOptionsFn;
   copy?: CopyOptions | CopyOptionsFn;

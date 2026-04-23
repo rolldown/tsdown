@@ -33,6 +33,7 @@ import type {
   MarkPartial,
   Overwrite,
 } from '../utils/types.ts'
+import type { CssOptions } from '@tsdown/css'
 import type { Hookable } from 'hookable'
 import type {
   ChecksOptions,
@@ -130,10 +131,12 @@ export interface Workspace {
    * - `auto`: Automatically detect `package.json` files in the workspace.
    * @default 'auto'
    */
-  include?: Arrayable<string> | 'auto'
+  include?: 'auto' | (string & {}) | string[]
   /**
    * Exclude directories from workspace.
    * Defaults to all `node_modules`, `dist`, `test`, `tests`, `temp`, and `tmp` directories.
+   *
+   * @default ['**\/node_modules/**', '**\/dist/**', '**\/test?(s)/**', '**\/t?(e)mp/**']
    */
   exclude?: Arrayable<string>
 
@@ -150,7 +153,9 @@ export type WithEnabled<T> =
   | undefined
   | CIOption
   | (T & {
-      /** @default true */
+      /**
+       * @default true
+       */
       enabled?: boolean | CIOption
     })
 
@@ -169,6 +174,8 @@ export interface UserConfig {
    *   "hooks/*": ["./src/hooks/*.ts", "!./src/hooks/index.ts"],
    * }
    * ```
+   *
+   * @default { index: 'src/index.ts'}
    */
   entry?: TsdownInputOption
 
@@ -178,24 +185,28 @@ export interface UserConfig {
   deps?: DepsConfig
 
   /**
-   * @deprecated Use `deps.neverBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle} instead.
    */
   external?: ExternalOption
   /**
-   * @deprecated Use `deps.alwaysBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
    */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
   /**
-   * @deprecated Use `deps.onlyBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**
-   * @deprecated Use `deps.skipNodeModulesBundle` instead.
+   * @deprecated Use {@linkcode DepsConfig.skipNodeModulesBundle | deps.skipNodeModulesBundle} instead.
    * @default false
    */
   skipNodeModulesBundle?: boolean
 
   alias?: Record<string, string>
+
+  /**
+   * @default true
+   */
   tsconfig?: string | boolean
 
   /**
@@ -251,6 +262,8 @@ export interface UserConfig {
    *   "NODE_ENV": "production"
    * }
    * ```
+   *
+   * @default {}
    */
   env?: Record<string, any>
   /**
@@ -266,7 +279,9 @@ export interface UserConfig {
   envPrefix?: string | string[]
   define?: Record<string, string>
 
-  /** @default false */
+  /**
+   * @default false
+   */
   shims?: boolean
 
   /**
@@ -282,38 +297,72 @@ export interface UserConfig {
    * Lets you import or require files like images or fonts.
    * @example
    * ```json
-   * { '.jpg': 'asset', '.png': 'base64' }
+   * { ".jpg": "asset", ".png": "base64" }
    * ```
    */
   loader?: ModuleTypes
 
   /**
-   * If enabled, strips the `node:` protocol prefix from import source.
+   * Remove the `node:` prefix from built-in Node.js module imports.
+   * When enabled, rewrites import sources like `node:fs` to `fs`.
    *
    * @default false
-   * @deprecated Use `nodeProtocol: 'strip'` instead.
+   * @deprecated Use {@linkcode nodeProtocol | nodeProtocol: 'strip'} instead.
    *
    * @example
-   * // With removeNodeProtocol enabled:
-   * import('node:fs'); // becomes import('fs')
+   * <caption>`removeNodeProtocol: true` — remove the `node:` prefix</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'fs'
+   * ```
    */
   removeNodeProtocol?: boolean
 
   /**
-   * - If `true`, add `node:` prefix to built-in modules.
-   * - If `'strip'`, strips the `node:` protocol prefix from import source.
-   * - If `false`, does not modify the import source.
+   * Control whether built-in Node.js module imports use the `node:` protocol.
+   *
+   * - `true`: Add the `node:` prefix to built-in module imports.
+   * - `'strip'`: Remove the `node:` prefix from built-in module imports.
+   * - `false`: Do not transform built-in module imports.
    *
    * @default false
    *
    * @example
-   * // With nodeProtocol enabled:
-   * import('fs'); // becomes import('node:fs')
-   * // With nodeProtocol set to 'strip':
-   * import('node:fs'); // becomes import('fs')
-   * // With nodeProtocol set to false:
-   * import('node:fs'); // remains import('node:fs')
+   * <caption>`nodeProtocol: true` — add the `node:` prefix</caption>
    *
+   * ```ts
+   * // Input
+   * import 'fs'
+   *
+   * // Output
+   * import 'node:fs'
+   * ```
+   *
+   * @example
+   * <caption>`nodeProtocol: 'strip'` — remove the `node:` prefix</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'fs'
+   * ```
+   *
+   * @example
+   * <caption>`nodeProtocol: false` — do not transform imports</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'node:fs'
+   * ```
    */
   nodeProtocol?: 'strip' | boolean
 
@@ -353,11 +402,13 @@ export interface UserConfig {
    * - `iife`: IIFE
    * - `umd`: UMD
    *
-   * Defaults to ESM.
+   * @default 'esm'
    */
   format?: Format | Format[] | Partial<Record<Format, Partial<ResolvedConfig>>>
   globalName?: string
-  /** @default 'dist' */
+  /**
+   * @default 'dist'
+   */
   outDir?: string
   /**
    * Whether to write the files to disk.
@@ -369,7 +420,7 @@ export interface UserConfig {
    * Whether to generate source map files.
    *
    * Note that this option will always be `true` if you have
-   * [`declarationMap`](https://www.typescriptlang.org/tsconfig/#declarationMap)
+   * {@link https://www.typescriptlang.org/tsconfig/#declarationMap | `declarationMap`}
    * option enabled in your `tsconfig.json`.
    *
    * @default false
@@ -390,8 +441,8 @@ export interface UserConfig {
   banner?: ChunkAddon
 
   /**
-   * Determines whether unbundle mode is enabled.
-   * When set to true, the output files will mirror the input file structure.
+   * Determines whether `unbundle` is enabled.
+   * When set to `true`, the output files will mirror the input file structure.
    * @default false
    */
   unbundle?: boolean
@@ -407,7 +458,7 @@ export interface UserConfig {
   root?: string
 
   /**
-   * @deprecated Use `unbundle` instead.
+   * @deprecated Use {@linkcode unbundle} instead.
    * @default true
    */
   bundle?: boolean
@@ -417,13 +468,16 @@ export interface UserConfig {
    * The extension will always be `.cjs` or `.mjs`.
    * Otherwise, it will depend on the package type.
    *
-   * Defaults to `true` if `platform` is set to `node`, `false` otherwise.
+   * Defaults to `true` if {@linkcode platform} is set to `node`,
+   * `false` otherwise.
+   *
+   * @default platform === 'node'
    */
   fixedExtension?: boolean
 
   /**
    * Custom extensions for output files.
-   * `fixedExtension` will be overridden by this option.
+   * {@linkcode fixedExtension} will be overridden by this option.
    */
   outExtensions?: OutExtensionFactory
 
@@ -453,8 +507,10 @@ export interface UserConfig {
 
   /**
    * The working directory of the config file.
-   * - Defaults to `process.cwd()` for root config.
-   * - Defaults to the package directory for workspace config.
+   * - Defaults to {@linkcode process.cwd | process.cwd()} for root config.
+   * - Defaults to the package directory for {@linkcode workspace} config.
+   *
+   * @default process.cwd()
    */
   cwd?: string
 
@@ -498,7 +554,7 @@ export interface UserConfig {
   /**
    * **[experimental]** Enable devtools.
    *
-   *DevTools is still under development, and this is for early testers only.
+   * DevTools is still under development, and this is for early testers only.
    *
    * This may slow down the build process significantly.
    *
@@ -519,7 +575,7 @@ export interface UserConfig {
    * Enables generation of TypeScript declaration files (`.d.ts`).
    *
    * By default, this option is auto-detected based on your project's `package.json`:
-   * - If {@link exe} is enabled, declaration file generation is disabled by default.
+   * - If {@linkcode exe} is enabled, declaration file generation is disabled by default.
    * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
    * - Otherwise, declaration file generation is disabled by default.
    */
@@ -533,7 +589,7 @@ export interface UserConfig {
   unused?: WithEnabled<UnusedOptions>
 
   /**
-   * Run publint after bundling.
+   * Run `publint` after bundling.
    * Requires `publint` to be installed.
    * @default false
    */
@@ -566,6 +622,8 @@ export interface UserConfig {
    *
    * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
    * to point to the generated files.
+   *
+   * @default false
    */
   exports?: WithEnabled<ExportsOptions>
 
@@ -573,15 +631,16 @@ export interface UserConfig {
    * **[experimental]** CSS options.
    * Requires `@tsdown/css` to be installed.
    */
-  css?: import('@tsdown/css').CssOptions
+  css?: CssOptions
 
   /**
-   * @deprecated Use `css.inject` instead.
+   * @deprecated Use {@linkcode CssOptions.inject | css.inject} instead.
    */
   injectStyle?: boolean
 
   /**
-   * @deprecated Alias for `copy`, will be removed in the future.
+   * @alias copy
+   * @deprecated Alias for {@linkcode copy}, will be removed in the future.
    */
   publicDir?: CopyOptions | CopyOptionsFn
 
@@ -609,6 +668,8 @@ export interface UserConfig {
    *
    * This will bundle the output into a single executable file using Node.js SEA.
    * Note that this is only supported on Node.js 25.7.0 and later, and is not supported in Bun or Deno.
+   *
+   * @default false
    */
   exe?: WithEnabled<ExeOptions>
 
@@ -682,9 +743,13 @@ export type ResolvedConfig = Overwrite<
     | 'css'
   >,
   {
-    /** Resolved entry map (after glob expansion) */
+    /**
+     * Resolved entry map (after glob expansion)
+     */
     entry: Record<string, string>
-    /** Original entry config before glob resolution (for watch mode re-globbing) */
+    /**
+     * Original entry config before glob resolution (for watch mode re-globbing)
+     */
     rawEntry?: TsdownInputOption
     nameLabel: string | undefined
     format: NormalizedFormat
@@ -695,7 +760,9 @@ export type ResolvedConfig = Overwrite<
     logger: Logger
     ignoreWatch: Array<string | RegExp>
     deps: ResolvedDepsConfig
-    /** Resolved root directory of input files */
+    /**
+     * Resolved root directory of input files
+     */
     root: string
     configDeps: Set<string>
 

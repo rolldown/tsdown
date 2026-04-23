@@ -46,7 +46,7 @@ export interface ReportOptions {
 
   /**
    * Skip reporting compressed size for files larger than this size.
-   * @default 1_000_000 // 1MB
+   * @default 1_000_000 // 1 MB
    */
   maxCompressSize?: number
 }
@@ -55,7 +55,7 @@ const defaultOptions = {
   gzip: true,
   brotli: false,
   maxCompressSize: 1_000_000,
-}
+} as const satisfies Required<ReportOptions>
 
 export function ReportPlugin(
   config: ResolvedConfig,

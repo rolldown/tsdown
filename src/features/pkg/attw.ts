@@ -75,6 +75,10 @@ export interface AttwOptions extends CheckPackageOptions {
    * ```ts
    * ignoreRules: ['no-resolution', 'false-cjs']
    * ```
+   *
+   * @default []
+   *
+   * @uniqueItems
    */
   ignoreRules?: (
     | 'no-resolution'
