@@ -278,8 +278,9 @@ async function resolveOutputOptions(
 }
 
 export async function getDebugRolldownDir(): Promise<string | undefined> {
-  if (!debug.enabled) return
-  return await mkdtemp(path.join(tmpdir(), 'tsdown-config-'))
+  if (debug.enabled) {
+    return await mkdtemp(path.join(tmpdir(), 'tsdown-config-'))
+  }
 }
 
 export async function debugBuildOptions(

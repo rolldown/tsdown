@@ -2,6 +2,7 @@ import { mkdtemp, readdir, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { formatWithOptions } from 'node:util'
+import { createDebug } from 'obug'
 import { x } from 'tinyexec'
 import { fsRemove } from '../../utils/fs.ts'
 import { promiseWithResolvers } from '../../utils/general.ts'
@@ -12,6 +13,8 @@ import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, TsdownBundle } from '../../utils/chunks.ts'
 import type { Buffer } from 'node:buffer'
 import type { DetectResult } from 'package-manager-detector'
+
+const debug = createDebug('tsdown:pkg')
 
 export interface BundleByPkg {
   [pkgPath: string]: {
@@ -122,13 +125,20 @@ async function packTarball(
 
   try {
     const detected = await detect({ cwd: pkgDir })
+    debug('Detected package manager: %o', detected)
     if (detected?.name === 'deno') {
       throw new Error(`Cannot pack tarball for Deno projects at ${pkgDir}`)
     }
     const tarballPath = await pack(pkgDir, detected, destination, true)
+    debug('Packed tarball at %s', tarballPath)
+
     return readFile(tarballPath)
   } finally {
-    await fsRemove(destination)
+    if (debug.enabled) {
+      debug('Preserving pack directory for debugging: %s', destination)
+    } else {
+      await fsRemove(destination)
+    }
   }
 }
 
