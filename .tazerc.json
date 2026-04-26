@@ -1,0 +1,10 @@
+{
+  "$schema": "https://raw.githubusercontent.com/antfu-collective/taze/refs/heads/main/schema.json",
+  "mode": "latest",
+  "write": true,
+  "install": true,
+  "update": true,
+  "recursive": true,
+  "includeLocked": true,
+  "ignorePaths": ["tests/temp"]
+}
