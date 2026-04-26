@@ -171,7 +171,9 @@ export async function resolveUserConfig(
   exe = resolveFeatureOption(exe, {})
 
   if (dts == null) {
-    dts = exe ? false : !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg))
+    dts = exe
+      ? false
+      : !!(pkg?.types || pkg?.typings || hasExportsTypes(pkg?.exports))
   }
   dts = resolveFeatureOption(dts, {})
 

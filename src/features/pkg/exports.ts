@@ -487,34 +487,11 @@ function exportCss(
   }
 }
 
-export function hasExportsTypes(pkg?: PackageJson): boolean {
-  const exports = pkg?.exports
-  if (!exports) return false
-
-  if (
-    typeof exports === 'object' &&
-    exports !== null &&
-    !Array.isArray(exports)
-  ) {
-    // Check if exports.types exists
-    if ('types' in exports) {
-      return true
-    }
-
-    // Check if exports['.'].types exists
-    if ('.' in exports) {
-      const mainExport = exports['.']
-      if (
-        typeof mainExport === 'object' &&
-        mainExport !== null &&
-        'types' in mainExport
-      ) {
-        return true
-      }
-    }
-  }
-
-  return false
+export function hasExportsTypes(value: unknown): boolean {
+  if (value == null || typeof value !== 'object') return false
+  if (Array.isArray(value)) return value.some(hasExportsTypes)
+  if ('types' in value) return true
+  return Object.values(value).some(hasExportsTypes)
 }
 
 const RE_SHEBANG = /^#!.*/

@@ -1,8 +1,11 @@
 import path from 'node:path'
 import process from 'node:process'
-import { describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { globalLogger } from '../../utils/logger.ts'
-import { generateExports as _generateExports } from './exports.ts'
+import {
+  generateExports as _generateExports,
+  hasExportsTypes,
+} from './exports.ts'
 import type { ResolvedConfig } from '../../config/types.ts'
 import type { ChunksByFormat, RolldownChunk } from '../../utils/chunks.ts'
 
@@ -1146,6 +1149,62 @@ describe('generateExports', () => {
         "types": undefined,
       }
     `)
+  })
+})
+
+describe('hasExportsTypes', () => {
+  test('nullish or string', () => {
+    expect(hasExportsTypes(undefined)).toBe(false)
+    expect(hasExportsTypes(null)).toBe(false)
+    expect(hasExportsTypes('./index.js')).toBe(false)
+  })
+
+  test('top-level types condition', () => {
+    expect(
+      hasExportsTypes({ types: './index.d.ts', default: './index.js' }),
+    ).toBe(true)
+  })
+
+  test('types under "."', () => {
+    expect(
+      hasExportsTypes({
+        '.': { types: './index.d.ts', default: './index.js' },
+      }),
+    ).toBe(true)
+  })
+
+  test('types nested under "import" / "require" (issue #885)', () => {
+    expect(
+      hasExportsTypes({
+        '.': {
+          import: { default: './esm/index.js', types: './esm/index.d.ts' },
+          require: { default: './cjs/index.cjs', types: './cjs/index.d.cts' },
+        },
+      }),
+    ).toBe(true)
+  })
+
+  test('types under arbitrary subpath', () => {
+    expect(
+      hasExportsTypes({
+        './utils': { types: './utils.d.ts', default: './utils.js' },
+      }),
+    ).toBe(true)
+  })
+
+  test('types in array fallback', () => {
+    expect(
+      hasExportsTypes({ '.': [{ types: './index.d.ts' }, './index.js'] }),
+    ).toBe(true)
+  })
+
+  test('no types anywhere', () => {
+    expect(
+      hasExportsTypes({
+        '.': { import: './esm/index.js', require: './cjs/index.cjs' },
+        './utils': './utils.js',
+      }),
+    ).toBe(false)
   })
 })
 
