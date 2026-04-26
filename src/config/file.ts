@@ -170,10 +170,7 @@ const autoLoader: Parser =
 function resolveConfigLoader(
   configLoader: InlineConfig['configLoader'] = 'auto',
 ): Parser {
-  if (configLoader === 'auto') {
-    return autoLoader
-  }
-  return configLoader === 'native' ? 'native' : configLoader
+  return configLoader === 'auto' ? autoLoader : configLoader
 }
 
 function createParser(loader: Parser) {

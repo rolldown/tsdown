@@ -140,13 +140,18 @@ export interface ExportsOptions {
   /**
    * Generate the `bin` field in `package.json` for CLI executables.
    *
-   * By default, tsdown auto-detects entry chunks with shebangs.
-   * If exactly one is found, it is used as the bin entry.
-   * If multiple are found, a warning is shown.
-   * Set to `false` to disable auto-detection.
+   * Behavior depends on the value:
    *
-   * - `true`: Auto-detect with strict behavior (errors if multiple shebang entries are found).
-   * - `false`: Disable bin auto-detection.
+   * - *Unset* (default): Soft auto-detect. Scans entry chunks for shebangs
+   *   (e.g. `#!/usr/bin/env node`). If exactly one is found, it is used as
+   *   the bin entry. If multiple are found, a warning is shown and no `bin`
+   *   field is written. If none are found, nothing happens silently.
+   * - `true`: Strict auto-detect. Same as the default, but throws if
+   *   multiple shebang entries are found, and warns if none are found.
+   *   Use this when your package is known to ship a CLI and you want to
+   *   fail fast on misconfiguration.
+   * - `false`: Disable bin generation entirely, even if shebangs are
+   *   present.
    * - `string`: Use the given source file path (relative to `cwd`) as the
    *   CLI entry. The command name is derived from the package name without
    *   its scope. Warns if the source file does not contain a shebang.
