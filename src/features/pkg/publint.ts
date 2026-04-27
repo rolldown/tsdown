@@ -35,7 +35,7 @@ export async function publint(
     options.publint.module?.[1] ||
     (await importWithError<typeof import('publint/utils')>('publint/utils'))
 
-  const { messages } = await publint({
+  const { messages, pkg } = await publint({
     ...options.publint,
     pack: { tarball: tarball.buffer },
   })
@@ -52,7 +52,7 @@ export async function publint(
   }
 
   for (const message of messages) {
-    const formattedMessage = formatMessage(message, options.pkg)
+    const formattedMessage = formatMessage(message, pkg)
     const logType = (
       { error: 'error', warning: 'warn', suggestion: 'info' } as const
     )[message.type]
