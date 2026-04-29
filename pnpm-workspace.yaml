@@ -12,16 +12,16 @@ catalogs:
     '@clack/prompts': ^1.2.0
     giget: ^3.2.0
   dev:
-    '@sxzz/eslint-config': ^7.8.4
+    '@sxzz/eslint-config': ^8.0.0
     '@sxzz/prettier-config': ^2.3.1
     '@sxzz/test-utils': ^0.5.18
     '@types/node': ^25.6.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260428.1
+    '@typescript/native-preview': 7.0.0-dev.20260429.1
     '@vitest/coverage-v8': ^4.1.5
     '@vitest/ui': ^4.1.5
-    baseline-browser-mapping: ^2.10.23
+    baseline-browser-mapping: ^2.10.24
     bumpp: ^11.0.1
     dedent: ^1.7.2
     eslint: ^10.2.1
@@ -79,10 +79,10 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
-    rolldown: 1.0.0-rc.17
+    rolldown: 1.0.0-rc.18
     rolldown-plugin-dts: ^0.24.0-beta.1
     semver: ^7.7.4
-    tinyexec: ^1.1.1
+    tinyexec: ^1.1.2
     tinyglobby: ^0.2.16
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
