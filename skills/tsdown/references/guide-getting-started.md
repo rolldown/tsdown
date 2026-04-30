@@ -14,7 +14,7 @@ pnpm add -D typescript
 ```
 
 **Requirements:**
-- Node.js 20.19 or higher
+- Node.js 22.18.0 or higher
 - Experimental support for Deno and Bun
 
 ## Quick Start Templates

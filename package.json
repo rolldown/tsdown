@@ -1,8 +1,8 @@
 {
   "name": "tsdown",
   "type": "module",
-  "version": "0.21.10",
-  "packageManager": "pnpm@10.33.2",
+  "version": "0.22.0-beta.2",
+  "packageManager": "pnpm@11.0.0",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -72,7 +72,7 @@
     }
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
@@ -93,9 +93,11 @@
     "@tsdown/css": "workspace:*",
     "@tsdown/exe": "workspace:*",
     "@vitejs/devtools": "*",
-    "publint": "^0.3.0",
+    "publint": "^0.3.8",
+    "tsx": "*",
     "typescript": "^5.0.0 || ^6.0.0",
-    "unplugin-unused": "^0.5.0"
+    "unplugin-unused": "^0.5.0",
+    "unrun": "*"
   },
   "peerDependenciesMeta": {
     "@arethetypeswrong/core": {
@@ -113,10 +115,16 @@
     "publint": {
       "optional": true
     },
+    "tsx": {
+      "optional": true
+    },
     "typescript": {
       "optional": true
     },
     "unplugin-unused": {
+      "optional": true
+    },
+    "unrun": {
       "optional": true
     }
   },
@@ -135,13 +143,12 @@
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
     "tree-kill": "catalog:prod",
-    "unconfig-core": "catalog:prod",
-    "unrun": "catalog:prod"
+    "unconfig-core": "catalog:prod"
   },
   "inlinedDependencies": {
     "is-in-ci": "2.0.0",
     "package-manager-detector": "1.6.0",
-    "pkg-types": "2.3.0"
+    "pkg-types": "2.3.1"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
@@ -174,12 +181,14 @@
     "rolldown-plugin-require-cjs": "catalog:dev",
     "sass": "catalog:dev",
     "tsnapi": "catalog:dev",
+    "tsx": "catalog:dev",
     "typescript": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
     "unplugin-raw": "catalog:dev",
     "unplugin-unused": "catalog:peer",
     "unplugin-vue": "catalog:dev",
+    "unrun": "catalog:dev",
     "vite": "catalog:docs",
     "vitest": "catalog:dev",
     "vue": "catalog:docs"

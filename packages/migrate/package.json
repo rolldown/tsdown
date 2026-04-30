@@ -1,7 +1,7 @@
 {
   "name": "tsdown-migrate",
   "type": "module",
-  "version": "0.21.10",
+  "version": "0.22.0-beta.2",
   "description": "A CLI tool to help migrate your project to tsdown.",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -53,7 +53,7 @@
     }
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.18.0"
   },
   "scripts": {
     "dev": "node ./src/run.ts",
