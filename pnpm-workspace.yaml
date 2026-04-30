@@ -9,7 +9,7 @@ overrides:
 
 catalogs:
   create:
-    '@clack/prompts': ^1.2.0
+    '@clack/prompts': ^1.3.0
     giget: ^3.2.0
   dev:
     '@sxzz/eslint-config': ^8.0.0
@@ -18,7 +18,7 @@ catalogs:
     '@types/node': ^25.6.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260429.1
+    '@typescript/native-preview': 7.0.0-dev.20260430.1
     '@vitest/coverage-v8': ^4.1.5
     '@vitest/ui': ^4.1.5
     baseline-browser-mapping: ^2.10.24
@@ -63,7 +63,7 @@ catalogs:
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.1.15
+    '@vitejs/devtools': ^0.1.16
     publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
@@ -80,7 +80,7 @@ catalogs:
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
     rolldown: 1.0.0-rc.18
-    rolldown-plugin-dts: ^0.24.0-beta.1
+    rolldown-plugin-dts: ^0.24.0-beta.2
     semver: ^7.7.4
     tinyexec: ^1.1.2
     tinyglobby: ^0.2.16
