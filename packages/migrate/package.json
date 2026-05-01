@@ -53,7 +53,7 @@
     }
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": "^22.18.0 || >=24.0.0"
   },
   "scripts": {
     "dev": "node ./src/run.ts",
