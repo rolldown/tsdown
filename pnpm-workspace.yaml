@@ -18,7 +18,7 @@ catalogs:
     '@types/node': ^25.6.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260430.1
+    '@typescript/native-preview': 7.0.0-dev.20260501.1
     '@vitest/coverage-v8': ^4.1.5
     '@vitest/ui': ^4.1.5
     baseline-browser-mapping: ^2.10.24
@@ -27,7 +27,7 @@ catalogs:
     eslint: ^10.2.1
     memfs: ^4.57.2
     pkg-types: ^2.3.1
-    postcss: ^8.5.12
+    postcss: ^8.5.13
     postcss-import: ^16.1.1
     prettier: ^3.8.3
     rolldown-plugin-require-cjs: ^0.4.0
@@ -44,7 +44,7 @@ catalogs:
     '@iconify-json/logos': ^1.2.11
     '@shikijs/vitepress-twoslash': ^4.0.2
     '@unocss/eslint-plugin': ^66.6.8
-    '@vueuse/core': ^14.2.1
+    '@vueuse/core': ^14.3.0
     oxc-minify: ^0.128.0
     typedoc: ^0.28.19
     typedoc-plugin-markdown: ^4.11.0
@@ -63,7 +63,7 @@ catalogs:
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.1.16
+    '@vitejs/devtools': ^0.1.17
     publint: ^0.3.18
     unplugin-unused: ^0.5.7
   prod:
@@ -80,7 +80,7 @@ catalogs:
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
     rolldown: 1.0.0-rc.18
-    rolldown-plugin-dts: ^0.24.0-beta.2
+    rolldown-plugin-dts: ^0.24.0
     semver: ^7.7.4
     tinyexec: ^1.1.2
     tinyglobby: ^0.2.16
