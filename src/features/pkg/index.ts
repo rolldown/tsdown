@@ -95,8 +95,9 @@ export async function bundleDone(
   const publintConfigs = dedupeConfigs(configs, 'publint')
   const attwConfigs = dedupeConfigs(configs, 'attw')
 
-  if (publintConfigs.length > 1 || attwConfigs.length > 1) {
-    publintConfigs[1].logger.warn(
+  const dup = publintConfigs[1] ?? attwConfigs[1]
+  if (dup) {
+    dup.logger.warn(
       `Multiple publint or attw configurations found for package at ${pkg.packageJsonPath}. Consider merging them for better consistency and performance.`,
     )
   }
