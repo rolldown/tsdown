@@ -39,6 +39,37 @@ describe('shims', () => {
     ])
   })
 
+  test('esm on node with unbundle', async (context) => {
+    const { snapshot } = await testBuild({
+      context,
+      files: { 'index.ts': code },
+      options: {
+        platform: 'node',
+        shims: true,
+        unbundle: true,
+      },
+    })
+    expect(snapshot).contain('import.meta.dirname')
+    expect(snapshot).contain('import.meta.filename')
+    expect(snapshot).not.contain('esm-shims')
+  })
+
+  test('esm on node with unbundle and user banner', async (context) => {
+    const { snapshot } = await testBuild({
+      context,
+      files: { 'index.ts': code },
+      options: {
+        platform: 'node',
+        shims: true,
+        unbundle: true,
+        banner: '/* custom banner */',
+      },
+    })
+    expect(snapshot).contain('import.meta.dirname')
+    expect(snapshot).contain('/* custom banner */')
+    expect(snapshot).not.contain('esm-shims')
+  })
+
   test('cjs on neutral w/o shims', async (context) => {
     const { snapshot } = await testBuild({
       context,

@@ -22,7 +22,7 @@ import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
-import { getShimsInject } from './shims.ts'
+import { getShimsBanner, getShimsInject } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
 import type {
   DtsOptions,
@@ -195,7 +195,10 @@ async function resolveInputOptions(
       return acc
     }, Object.create(null)),
   }
-  const inject = shims && !cjsDts ? getShimsInject(format, platform) : undefined
+  const inject =
+    shims && !cjsDts
+      ? getShimsInject(format, platform, config.unbundle)
+      : undefined
 
   const inputOptions = await mergeUserOptions(
     {
@@ -249,6 +252,10 @@ async function resolveOutputOptions(
   /// keep-sorted
   const { banner, cjsDefault, footer, minify, outDir, sourcemap, unbundle } =
     config
+  const { platform, shims } = config
+  const shimsBanner =
+    shims && !cjsDts ? getShimsBanner(format, platform, unbundle) : undefined
+  const userBanner = resolveChunkAddon(banner, format)
 
   const [entryFileNames, chunkFileNames] = resolveChunkFilename(
     config,
@@ -267,7 +274,16 @@ async function resolveOutputOptions(
       chunkFileNames,
       preserveModules: unbundle,
       preserveModulesRoot: unbundle ? config.root : undefined,
-      postBanner: resolveChunkAddon(banner, format),
+      postBanner: shimsBanner
+        ? (chunk) => {
+            const userPart =
+              typeof userBanner === 'function'
+                ? userBanner(chunk)
+                : (userBanner ?? '')
+            if (!/\.[mc]?js$/.test(chunk.fileName)) return userPart || ''
+            return userPart ? `${shimsBanner}\n${userPart}` : shimsBanner
+          }
+        : userBanner,
       postFooter: resolveChunkAddon(footer, format),
       codeSplitting: config.exe ? false : undefined,
     },
