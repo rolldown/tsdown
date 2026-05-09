@@ -49,6 +49,50 @@ export async function build(
   return buildWithConfigs(configs, configDeps, () => build(inlineConfig))
 }
 
+function normalizeMaxParallel(
+  maxParallel: number | undefined,
+): number | undefined {
+  if (maxParallel == null) return undefined
+  if (!Number.isInteger(maxParallel) || maxParallel < 1)
+    throw new TypeError('`maxParallel` must be a positive integer.')
+  return maxParallel
+}
+
+function resolveMaxParallel(configs: ResolvedConfig[]): number | undefined {
+  const values = [
+    ...new Set(
+      configs
+        .map((config) => normalizeMaxParallel(config.maxParallel))
+        .filter((value) => value != null),
+    ),
+  ]
+  if (values.length > 1)
+    throw new TypeError(
+      '`maxParallel` must be the same across all workspace configs.',
+    )
+  return values[0]
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  mapper: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  if (items.length === 0) return []
+  const results: R[] = Array.from({ length: items.length })
+  let nextIndex = 0
+  const worker = async () => {
+    while (nextIndex < items.length) {
+      const index = nextIndex++
+      results[index] = await mapper(items[index], index)
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, () => worker()),
+  )
+  return results
+}
+
 /**
  * Build with `ResolvedConfigs`.
  *
@@ -84,21 +128,16 @@ export async function buildWithConfigs(
   }
 
   globalLogger.info('Build start')
-  const bundles = await Promise.all(
-    configs.map((options) => {
-      const isDualFormat = options.pkg
-        ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
-        : true
-      return buildSingle(
-        options,
-        configDeps,
-        isDualFormat,
-        clean,
-        restart,
-        done,
-      )
-    }),
-  )
+  const maxParallel = resolveMaxParallel(configs)
+  const buildConfig = (options: ResolvedConfig) => {
+    const isDualFormat = options.pkg
+      ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
+      : true
+    return buildSingle(options, configDeps, isDualFormat, clean, restart, done)
+  }
+  const bundles = maxParallel
+    ? await mapWithConcurrency(configs, maxParallel, buildConfig)
+    : await Promise.all(configs.map(buildConfig))
 
   const firstDevtoolsConfig = configs.find(
     (config) => config.devtools && config.devtools.ui,
