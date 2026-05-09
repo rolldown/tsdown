@@ -92,7 +92,6 @@ cli
     )
     const { build } = await import('./build.ts')
     if (input.length > 0) flags.entry = input
-    if (flags.maxParallel != null) flags.maxParallel = Number(flags.maxParallel)
     await build(flags)
   })
 

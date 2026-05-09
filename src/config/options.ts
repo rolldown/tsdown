@@ -107,8 +107,11 @@ export async function resolveUserConfig(
     devtools = false,
     write = true,
     exe = false,
-    maxParallel,
+    maxParallel: maxParallelRaw,
   } = userConfig
+
+  const maxParallel =
+    maxParallelRaw == null ? undefined : Number(maxParallelRaw)
 
   const pkg = await readPackageJson(cwd)
   if (workspace) {
