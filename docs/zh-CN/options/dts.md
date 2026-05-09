@@ -95,6 +95,24 @@ export default defineConfig({
 - **ESM 输出**：`.js` 和 `.d.ts` 文件在**同一个构建流程**中生成。如果遇到兼容性问题，请反馈。
 - **CJS 输出**：会使用**单独的构建流程**专门生成 `.d.ts` 文件，以确保兼容性。
 
+## CJS 重导出（`dts.cjsReexport`）
+
+当同时输出 ESM 和 CJS 两种格式时，可以设置 `dts.cjsReexport: true`，跳过独立的 CJS 声明构建流程，改为生成一个简短的 `.d.cts` 桩文件，从对应的 `.d.mts` 文件重导出所有内容。这样可以避免 TypeScript 的「双模块危害」（dual module hazard）问题，并加快构建速度。
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  format: ['esm', 'cjs'],
+  dts: {
+    cjsReexport: true,
+  },
+})
+```
+
+> [!WARNING]
+> 生成的 `.d.cts` 桩文件使用相对路径从对应的 `.d.mts` 文件重导出，因此两种格式必须输出到**同一个** `outDir`。**不支持**将 CJS 和 ESM 分别输出到不同目录（例如 `dist/cjs` 和 `dist/esm`），否则重导出路径将指向不存在的文件。这也与大多数库的常见配置保持一致。
+
 ## 高级选项
 
 `rolldown-plugin-dts` 提供了多个高级选项用于自定义 `.d.ts` 文件的生成。详细说明请参阅 [插件文档](https://github.com/sxzz/rolldown-plugin-dts#options)。

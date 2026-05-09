@@ -62,6 +62,13 @@ export interface DtsOptions extends RolldownPluginDtsOptions {
    *
    * Only applies when building both `esm` and `cjs` formats simultaneously.
    *
+   * @remarks
+   * The generated `.d.cts` stub uses a relative path to re-export from the
+   * corresponding `.d.mts` file, so both formats must be emitted to the
+   * **same** `outDir`. Splitting CJS and ESM outputs into separate
+   * format-specific directories (e.g. `dist/cjs` and `dist/esm`) is not
+   * supported with this option, because the re-export path would be invalid.
+   *
    * @default false
    */
   cjsReexport?: boolean
