@@ -107,6 +107,7 @@ export async function resolveUserConfig(
     devtools = false,
     write = true,
     exe = false,
+    maxParallel,
   } = userConfig
 
   const pkg = await readPackageJson(cwd)
@@ -128,6 +129,13 @@ export async function resolveUserConfig(
 
   if (typeof bundle === 'boolean') {
     logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')
+  }
+
+  if (
+    maxParallel != null &&
+    (!Number.isInteger(maxParallel) || maxParallel < 1)
+  ) {
+    throw new TypeError('`maxParallel` must be a positive integer.')
   }
 
   if (removeNodeProtocol) {

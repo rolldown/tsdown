@@ -49,22 +49,9 @@ export async function build(
   return buildWithConfigs(configs, configDeps, () => build(inlineConfig))
 }
 
-function normalizeMaxParallel(
-  maxParallel: number | undefined,
-): number | undefined {
-  if (maxParallel == null) return undefined
-  if (!Number.isInteger(maxParallel) || maxParallel < 1)
-    throw new TypeError('`maxParallel` must be a positive integer.')
-  return maxParallel
-}
-
 function resolveMaxParallel(configs: ResolvedConfig[]): number | undefined {
   const values = [
-    ...new Set(
-      configs
-        .map((config) => normalizeMaxParallel(config.maxParallel))
-        .filter((value) => value != null),
-    ),
+    ...new Set(configs.map((c) => c.maxParallel).filter((v) => v != null)),
   ]
   if (values.length > 1)
     throw new TypeError(
