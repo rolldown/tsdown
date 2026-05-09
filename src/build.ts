@@ -49,17 +49,6 @@ export async function build(
   return buildWithConfigs(configs, configDeps, () => build(inlineConfig))
 }
 
-function resolveMaxParallel(configs: ResolvedConfig[]): number | undefined {
-  const values = [
-    ...new Set(configs.map((c) => c.maxParallel).filter((v) => v != null)),
-  ]
-  if (values.length > 1)
-    throw new TypeError(
-      '`maxParallel` must be the same across all workspace configs.',
-    )
-  return values[0]
-}
-
 async function mapWithConcurrency<T, R>(
   items: T[],
   limit: number,
@@ -115,7 +104,7 @@ export async function buildWithConfigs(
   }
 
   globalLogger.info('Build start')
-  const maxParallel = resolveMaxParallel(configs)
+  const { maxParallel } = configs[0] ?? {}
   const buildConfig = (options: ResolvedConfig) => {
     const isDualFormat = options.pkg
       ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
