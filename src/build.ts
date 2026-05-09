@@ -69,6 +69,23 @@ async function mapWithConcurrency<T, R>(
   return results
 }
 
+function resolveMaxParallel(configs: ResolvedConfig[]): number | undefined {
+  const configured = configs
+    .map((config) => config.maxParallel)
+    .filter((value): value is number => value != null)
+
+  if (configured.length === 0) return undefined
+
+  const resolved = Math.min(...configured)
+  if (new Set(configured).size > 1) {
+    globalLogger.warn(
+      `Conflicting \`maxParallel\` values detected (${configured.join(', ')}). Using the smallest value: ${resolved}.`,
+    )
+  }
+
+  return resolved
+}
+
 /**
  * Build with `ResolvedConfigs`.
  *
@@ -104,7 +121,7 @@ export async function buildWithConfigs(
   }
 
   globalLogger.info('Build start')
-  const { maxParallel } = configs[0] ?? {}
+  const maxParallel = resolveMaxParallel(configs)
   const buildConfig = (options: ResolvedConfig) => {
     const isDualFormat = options.pkg
       ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1

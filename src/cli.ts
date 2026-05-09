@@ -75,7 +75,7 @@ cli
   .option('-W, --workspace [dir]', 'Enable workspace mode')
   .option(
     '--max-parallel <number>',
-    'Maximum number of workspace builds to run in parallel',
+    'Maximum number of config builds to run in parallel',
   )
   .option(
     '-F, --filter <pattern>',

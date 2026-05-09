@@ -333,6 +333,7 @@ export async function resolveUserConfig(
     hash,
     ignoreWatch,
     logger,
+    maxParallel,
     name,
     nameLabel,
     nodeProtocol,

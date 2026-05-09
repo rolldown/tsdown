@@ -322,4 +322,54 @@ export const loadDynamic = () => import('./dynamic')`,
     expect(fileMap['index.mjs']).toContain('polyfill-uuid')
     expect(fileMap['index.mjs']).not.toMatch(/from ['"]crypto['"]/)
   })
+
+  test('#929', async (context) => {
+    let inFlight = 0
+    let peak = 0
+
+    await testBuild({
+      context,
+      snapshot: false,
+      files: {
+        'package.json': JSON.stringify({
+          name: 'issue-929',
+          private: true,
+        }),
+        'packages/a/package.json': JSON.stringify({
+          name: 'a',
+          version: '1.0.0',
+        }),
+        'packages/a/index.ts': 'export const a = 1',
+        'packages/b/package.json': JSON.stringify({
+          name: 'b',
+          version: '1.0.0',
+        }),
+        'packages/b/index.ts': 'export const b = 1',
+        'packages/c/package.json': JSON.stringify({
+          name: 'c',
+          version: '1.0.0',
+        }),
+        'packages/c/index.ts': 'export const c = 1',
+        'packages/d/package.json': JSON.stringify({
+          name: 'd',
+          version: '1.0.0',
+        }),
+        'packages/d/index.ts': 'export const d = 1',
+      },
+      options: {
+        workspace: 'packages/*',
+        maxParallel: 2,
+        hooks: {
+          'build:prepare': async () => {
+            inFlight++
+            peak = Math.max(peak, inFlight)
+            await new Promise((resolve) => setTimeout(resolve, 50))
+            inFlight--
+          },
+        },
+      },
+    })
+
+    expect(peak).toBeLessThanOrEqual(2)
+  })
 })
