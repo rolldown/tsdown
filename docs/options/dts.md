@@ -95,24 +95,6 @@ If `isolatedDeclarations` is not enabled, `tsdown` will fall back to using the T
 - **For ESM Output**: Both `.js` and `.d.ts` files are generated in the **same build process**. If you encounter compatibility issues, please report them.
 - **For CJS Output**: A **separate build process** is used exclusively for `.d.ts` generation to ensure compatibility.
 
-## CJS Re-export (`dts.cjsReexport`)
-
-When emitting both ESM and CJS formats, you can set `dts.cjsReexport: true` to skip the separate CJS declaration build and instead emit a small `.d.cts` stub that re-exports from the corresponding `.d.mts` file. This avoids TypeScript's "dual module hazard" and speeds up the build.
-
-```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
-
-export default defineConfig({
-  format: ['esm', 'cjs'],
-  dts: {
-    cjsReexport: true,
-  },
-})
-```
-
-> [!WARNING]
-> The generated `.d.cts` stub uses a relative path to re-export from the matching `.d.mts` file, so both formats must be emitted into the **same** `outDir`. Splitting CJS and ESM into separate directories (e.g. `dist/cjs` and `dist/esm`) is **not supported** with this option, because the re-export path would point to a non-existent file. This matches the common setup used by most libraries.
-
 ## Advanced Options
 
 `rolldown-plugin-dts` provides several advanced options to customize `.d.ts` generation. For a detailed explanation of these options, refer to the [plugin's documentation](https://github.com/sxzz/rolldown-plugin-dts#options).

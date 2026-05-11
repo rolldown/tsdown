@@ -30,7 +30,7 @@ tsdown --format iife
 > 您可以在单个命令中指定多个格式，以生成适用于不同环境的输出。例如，结合使用 `esm` 和 `cjs` 格式可以确保同时兼容现代和传统系统。
 
 > [!NOTE]
-> **CJS 处于仅维护模式。** 由于生态系统正在向 ESM 迁移，且 Node.js 已支持 `require(esm)`，`tsdown` 中 CJS 专属的功能（例如 [`dts.cjsReexport`](./dts.md#cjs-重导出-dts-cjsreexport) 与 [`cjsDefault`](./cjs-default.md)）仅保留以确保兼容性，不会再进一步增强或优化。建议新库直接发布为 ESM-only。
+> **CJS 处于仅维护模式。** 由于生态系统正在向 ESM 迁移，且 Node.js 已支持 `require(esm)`，`tsdown` 中 CJS 专属的功能（例如 [`cjsDefault`](./cjs-default.md)）仅保留以确保兼容性，不会再进一步增强或优化。建议新库直接发布为 ESM-only。
 
 ## 按格式覆盖配置
 
