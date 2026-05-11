@@ -36,9 +36,6 @@ export interface DevtoolsOptions extends NonNullable<InputOptions["devtools"]> {
   ui?: boolean | Partial<StartOptions>;
   clean?: boolean;
 }
-export interface DtsOptions extends Options$1 {
-  cjsReexport?: boolean;
-}
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, "main" | "output" | "mainFormat">;
   fileName?: string | ((_: RolldownChunk) => string);
@@ -285,6 +282,7 @@ export declare const globalLogger: Logger;
 // #endregion
 
 // #region Other
+export { DtsOptions }
 export { Rolldown }
 export { TreeshakingOptions }
 export { UnusedOptions }
