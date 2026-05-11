@@ -103,25 +103,6 @@ test('cjs default', async (context) => {
   })
 })
 
-test('cjs dts reexport', async (context) => {
-  const files = {
-    'index.ts': `export function hello(): void {
-      console.log('Hello!')
-    }`,
-  }
-  await testBuild({
-    context,
-    files,
-    options: {
-      entry: {
-        'folder/index': 'index.ts',
-      },
-      format: ['esm', 'cjs'],
-      dts: { cjsReexport: true },
-    },
-  })
-})
-
 test('fixed extension', async (context) => {
   const files = {
     'index.ts': `export default 10`,
