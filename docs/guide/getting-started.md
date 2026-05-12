@@ -55,7 +55,11 @@ bun add -D typescript
 :::
 
 :::tip Compatibility Note
-`tsdown` requires Node.js version 22.18.0 or higher. Please ensure your development environment meets this requirement before installing. While `tsdown` is primarily tested with Node.js, support for Deno and Bun is experimental and may not work as expected.
+`tsdown` requires Node.js version 22.18.0 or higher **to run**. Please ensure your development environment meets this requirement before installing. While `tsdown` is primarily tested with Node.js, support for Deno and Bun is experimental and may not work as expected.
+
+However, this requirement only applies to the build-time environment. The bundled output can target much lower Node.js versions via the [`target`](../options/target.md) option, so libraries built with `tsdown` are not locked to Node.js 22+ at runtime.
+
+If your package needs to support Node.js 18 / 20, the recommended workflow is to **build with Node.js 22+ in CI**, then **test the built output (or the packed tarball) against the lower Node.js versions** you intend to support.
 :::
 
 ### Starter Templates {#starter-templates}

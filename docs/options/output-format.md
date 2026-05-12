@@ -30,7 +30,7 @@ tsdown --format iife
 > You can specify multiple formats in a single command to generate outputs for different environments. For example, combining `esm` and `cjs` ensures compatibility with both modern and legacy systems.
 
 > [!NOTE]
-> **CJS is in maintenance-only mode.** Since the ecosystem is transitioning to ESM and Node.js now supports `require(esm)`, `tsdown`'s CJS-specific features (such as [`dts.cjsReexport`](./dts.md#cjs-re-export-dts-cjsreexport) and [`cjsDefault`](./cjs-default.md)) are kept for compatibility but will not be further enhanced or optimized. New libraries are encouraged to publish ESM-only.
+> **CJS is in maintenance-only mode.** Since the ecosystem is transitioning to ESM and Node.js now supports `require(esm)`, `tsdown`'s CJS-specific features (such as [`cjsDefault`](./cjs-default.md)) are kept for compatibility but will not be further enhanced or optimized. New libraries are encouraged to publish ESM-only.
 
 ## Overriding Configuration by Format
 

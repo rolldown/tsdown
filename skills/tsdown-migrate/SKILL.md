@@ -7,6 +7,15 @@ description: Migrate TypeScript library projects from tsup to tsdown. Provides c
 
 Knowledge base for AI agents to migrate tsup projects to tsdown — the Rolldown-powered library bundler.
 
+## Runtime Requirement
+
+`tsdown` requires **Node.js 22.18.0 or higher to run** (build-time only). The bundled output can still target lower Node.js versions via the [`target`](../tsdown/references/option-target.md) option, so a library that previously supported Node.js 18 / 20 with tsup can continue to do so after migrating.
+
+Recommended workflow when supporting Node.js 18 / 20:
+
+- **Build with Node.js 22+ in CI**, setting an explicit `target` such as `'node18'` or `'node20'`.
+- **Test the built output (or the packed tarball) on the lower Node.js versions** you need to support.
+
 ## When to Use
 
 - Migrating a project from tsup to tsdown

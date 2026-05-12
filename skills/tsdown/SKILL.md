@@ -7,6 +7,15 @@ description: Bundle TypeScript and JavaScript libraries with blazing-fast speed 
 
 Blazing-fast bundler for TypeScript/JavaScript libraries powered by Rolldown and Oxc.
 
+## Runtime Requirement
+
+`tsdown` requires **Node.js 22.18.0 or higher to run** (build-time only). However, the bundled output can target much lower Node.js versions via the [`target`](references/option-target.md) option, so libraries built with tsdown are **not locked to Node.js 22+ at runtime**.
+
+If your package needs to support Node.js 18 / 20:
+
+- **Build with Node.js 22+ in CI** (e.g. set `target: 'node18'` or `target: 'node20'`).
+- **Test the built output (or the packed tarball) on the lower Node.js versions** you intend to support — e.g. using a matrix job that runs the published package's tests on Node.js 18 / 20 / 22.
+
 ## When to Use
 
 - Building TypeScript/JavaScript libraries for npm
