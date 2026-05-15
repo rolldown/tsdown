@@ -8,7 +8,7 @@ interface AnchorOptions {
   getTokensText?(tokens: Token[]): string;
 }
 //#endregion
-export { type AnchorOptions };
+export type { AnchorOptions };
 ```
 
 ## index.mjs

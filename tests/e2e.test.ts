@@ -466,7 +466,7 @@ test('external dependency for dts', async (context) => {
       },
     },
   })
-  expect(snapshot).contain(`export * from "unconfig-core"`)
+  expect(snapshot).contain(`export type * from "unconfig-core"`)
 })
 
 test('resolve paths in tsconfig', async (context) => {

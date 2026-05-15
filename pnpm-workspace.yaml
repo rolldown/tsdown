@@ -9,22 +9,22 @@ overrides:
 
 catalogs:
   create:
-    '@clack/prompts': ^1.3.0
+    '@clack/prompts': ^1.4.0
     giget: ^3.2.0
   dev:
-    '@sxzz/eslint-config': ^8.0.0
+    '@sxzz/eslint-config': ^8.1.0
     '@sxzz/prettier-config': ^2.3.1
     '@sxzz/test-utils': ^0.5.18
-    '@types/node': ^25.6.0
+    '@types/node': ^25.8.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260507.1
-    '@vitest/coverage-v8': ^4.1.5
-    '@vitest/ui': ^4.1.5
-    baseline-browser-mapping: ^2.10.27
+    '@typescript/native-preview': 7.0.0-dev.20260515.1
+    '@vitest/coverage-v8': ^4.1.6
+    '@vitest/ui': ^4.1.6
+    baseline-browser-mapping: ^2.10.29
     bumpp: ^11.1.0
     dedent: ^1.7.2
-    eslint: ^10.3.0
+    eslint: ^10.4.0
     memfs: ^4.57.2
     pkg-types: ^2.3.1
     postcss: ^8.5.14
@@ -32,45 +32,45 @@ catalogs:
     prettier: ^3.8.3
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.99.0
-    tsnapi: ^0.3.2
-    tsx: ^4.21.0
+    tsnapi: ^0.3.3
+    tsx: ^4.22.0
     typescript: ~6.0.3
     unplugin-ast: ^0.17.0
     unplugin-raw: ^0.7.0
     unplugin-vue: ^7.2.0
-    unrun: ^0.2.37
-    vitest: ^4.1.5
+    unrun: ^0.3.0
+    vitest: ^4.1.6
   docs:
     '@iconify-json/logos': ^1.2.11
     '@shikijs/vitepress-twoslash': ^4.0.2
     '@unocss/eslint-plugin': ^66.6.8
     '@vueuse/core': ^14.3.0
-    oxc-minify: ^0.129.0
+    oxc-minify: ^0.131.0
     typedoc: ^0.28.19
     typedoc-plugin-markdown: ^4.11.0
     typedoc-vitepress-theme: ^1.1.2
     unocss: ^66.6.8
-    vite: ^8.0.11
+    vite: ^8.0.13
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.5
     vitepress-plugin-llms: ^1.12.2
     vue: ^3.5.34
-    vue-tsc: ^3.2.8
+    vue-tsc: ^3.2.9
   migrate:
     '@antfu/ni': ^30.1.0
-    '@ast-grep/napi': ^0.42.1
+    '@ast-grep/napi': ^0.42.2
     consola: ^3.4.2
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.2
-    '@vitejs/devtools': ^0.1.19
-    publint: ^0.3.19
+    '@vitejs/devtools': ^0.1.24
+    publint: ^0.3.21
     unplugin-unused: ^0.5.7
   prod:
-    ansis: ^4.2.0
+    ansis: ^4.3.0
     cac: ^7.0.0
     defu: ^6.1.7
-    empathic: ^2.0.0
+    empathic: ^2.0.1
     hookable: ^6.1.1
     import-without-cache: ^0.4.0
     is-in-ci: ^2.0.0
@@ -79,9 +79,9 @@ catalogs:
     package-manager-detector: ^1.6.0
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
-    rolldown: ^1.0.0
-    rolldown-plugin-dts: ^0.25.0
-    semver: ^7.7.4
+    rolldown: ^1.0.1
+    rolldown-plugin-dts: ^0.25.1
+    semver: ^7.8.0
     tinyexec: ^1.1.2
     tinyglobby: ^0.2.16
     tree-kill: ^1.2.2
@@ -92,5 +92,6 @@ allowBuilds:
   esbuild: false
 
 ignoreWorkspaceRootCheck: true
+minimumReleaseAge: 0
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080 # 7 days

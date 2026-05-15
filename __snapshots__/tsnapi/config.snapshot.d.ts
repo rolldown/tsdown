@@ -85,6 +85,10 @@ export type UserConfigFn = (_: InlineConfig, _: {
 // #endregion
 
 // #region Functions
+export declare function defineConfig(_: UserConfig): UserConfig;
+export declare function defineConfig(_: UserConfig[]): UserConfig[];
+export declare function defineConfig(_: UserConfigFn): UserConfigFn;
 export declare function defineConfig(_: UserConfigExport): UserConfigExport;
+export declare function mergeConfig(_: UserConfig, ..._: UserConfig[]): UserConfig;
 export declare function mergeConfig(_: InlineConfig, ..._: InlineConfig[]): InlineConfig;
 // #endregion

@@ -1,7 +1,7 @@
 ## index.d.mts
 
 ```mts
-export * from "unconfig-core";
+export type * from "unconfig-core";
 ```
 
 ## index.mjs
