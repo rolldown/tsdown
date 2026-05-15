@@ -103,6 +103,8 @@ export async function resolveUserConfig(
     globImport = true,
     css,
     injectStyle,
+    outExtension,
+    outExtensions,
     fixedExtension = platform === 'node',
     devtools = false,
     write = true,
@@ -222,6 +224,18 @@ export async function resolveUserConfig(
     }
   }
 
+  if (outExtension) {
+    if (outExtensions) {
+      throw new TypeError(
+        '`outExtension` is deprecated. Cannot be used with `outExtensions`',
+      )
+    }
+    logger.warn(
+      `${blue`outExtension`} is deprecated. Use ${blue`outExtensions`} instead.`,
+    )
+    outExtensions = outExtension
+  }
+
   envPrefix = toArray(envPrefix)
   if (envPrefix.includes('')) {
     logger.warn(
@@ -326,6 +340,7 @@ export async function resolveUserConfig(
     nameLabel,
     nodeProtocol,
     outDir,
+    outExtensions,
     pkg,
     platform,
     plugins,

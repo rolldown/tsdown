@@ -54,10 +54,11 @@ npx tsdown-migrate packages/foo packages/bar
 
 部分选项已重命名以提高清晰度：
 
-| tsup             | tsdown       | 说明                          |
-| ---------------- | ------------ | ----------------------------- |
-| `cjsInterop`     | `cjsDefault` | CJS 默认导出处理              |
-| `esbuildPlugins` | `plugins`    | 现使用 Rolldown/Unplugin 插件 |
+| tsup             | tsdown          | 说明                          |
+| ---------------- | --------------- | ----------------------------- |
+| `cjsInterop`     | `cjsDefault`    | CJS 默认导出处理              |
+| `esbuildPlugins` | `plugins`       | 现使用 Rolldown/Unplugin 插件 |
+| `outExtension`   | `outExtensions` | 自定义输出扩展名              |
 
 ### 已弃用但兼容的选项
 
@@ -75,6 +76,19 @@ npx tsdown-migrate packages/foo packages/bar
 | `skipNodeModulesBundle`    | `deps: { skipNodeModulesBundle: true }` | 移入 deps 命名空间     |
 
 tsdown 还新增了 `deps.onlyBundle`，用于白名单指定允许打包的依赖。
+
+### 输出文件名差异
+
+对于 IIFE 构建，`tsdown` 会输出类似 `[name].iife.js` 的文件名，而 `tsup` 常见输出是 `[name].global.js`。`outExtensions` 用于自定义输出扩展名或后缀，但不会移除内置的 `.iife` 或 `.umd` 片段。如果需要保留旧的完整文件名模式，请使用 Rolldown 的输出选项：
+
+```ts
+export default {
+  format: 'iife',
+  outputOptions: {
+    entryFileNames: '[name].global.js',
+  },
+}
+```
 
 ### 插件系统
 

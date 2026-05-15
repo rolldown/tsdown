@@ -489,6 +489,11 @@ export interface UserConfig {
   outExtensions?: OutExtensionFactory
 
   /**
+   * @deprecated Use {@linkcode outExtensions} instead.
+   */
+  outExtension?: OutExtensionFactory
+
+  /**
    * If enabled, appends hash to chunk filenames.
    * @default true
    */
@@ -722,6 +727,7 @@ export type ResolvedConfig = Overwrite<
       | 'bundle' // deprecated
       | 'injectStyle' // deprecated, merged to `css`
       | 'removeNodeProtocol' // deprecated
+      | 'outExtension' // deprecated
       | 'external' // deprecated, merged to `deps`
       | 'noExternal' // deprecated, merged to `deps`
       | 'inlineOnly' // deprecated, merged to `deps`

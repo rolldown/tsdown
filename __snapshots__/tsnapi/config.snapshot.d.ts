@@ -43,6 +43,7 @@ export interface UserConfig {
   bundle?: boolean;
   fixedExtension?: boolean;
   outExtensions?: OutExtensionFactory;
+  outExtension?: OutExtensionFactory;
   hash?: boolean;
   cjsDefault?: boolean;
   outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: {

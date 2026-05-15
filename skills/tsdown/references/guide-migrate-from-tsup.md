@@ -42,6 +42,16 @@ npx tsdown-migrate packages/foo packages/bar
 | `dts` | `false` | Auto-enabled if `types`/`typings` in package.json |
 | `target` | Manual | Auto-read from `engines.node` in package.json |
 
+### Option Renames
+
+| tsup | tsdown |
+|------|--------|
+| `outExtension` | `outExtensions` |
+
+### Output Filename Differences
+
+For IIFE builds, `tsdown` emits `[name].iife.js`; `tsup` commonly emitted `[name].global.js`. `outExtensions` customizes extensions or suffixes, but it does not remove `.iife` or `.umd`. Use `outputOptions.entryFileNames: '[name].global.js'` to preserve old IIFE filenames.
+
 ### New Features in tsdown
 
 #### Node Protocol Control

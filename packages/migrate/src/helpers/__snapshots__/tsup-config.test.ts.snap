@@ -141,6 +141,28 @@ exports[`option transformations > entryPoints should transform to entry > code 1
 }"
 `;
 
+exports[`option transformations > outExtension method should transform to outExtensions > code 1`] = `
+"export default {
+  format: 'esm',
+  outExtensions() {
+    return { js: '.mjs' }
+  },
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
+exports[`option transformations > outExtension property should transform to outExtensions > code 1`] = `
+"export default {
+  format: 'esm',
+  outExtensions: () => ({ js: '.mjs' }),
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
 exports[`option transformations > publicDir should transform to copy > code 1`] = `
 "export default {
   copy: 'public',

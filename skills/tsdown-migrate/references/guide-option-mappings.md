@@ -38,6 +38,10 @@ export default defineConfig({
 
 Note: All `unplugin-*/esbuild` imports must change to `unplugin-*/rolldown`.
 
+### outExtension → outExtensions
+
+`outExtension` was renamed to `outExtensions`.
+
 ## Deprecated but Compatible
 
 These options still work in tsdown for backward compatibility but emit deprecation warnings. Migrate them immediately — they will be removed in a future version.

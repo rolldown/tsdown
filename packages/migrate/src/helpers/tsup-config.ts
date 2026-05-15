@@ -30,6 +30,7 @@ const WARNING_MESSAGES: Record<string, string> = {
 const PROPERTY_RENAMES: Record<string, string> = {
   entryPoints: 'entry',
   esbuildPlugins: 'plugins',
+  outExtension: 'outExtensions',
   publicDir: 'copy',
   cjsInterop: 'cjsDefault',
 }
@@ -101,24 +102,34 @@ export function transformTsupConfig(
     edits.push(node.replace(text.replace('/esbuild', '/rolldown')))
   }
 
-  // Helper: Find property identifier (key only) by name using relational rule
-  const findPropertyIdentifier = (propName: string): SgNode | null => {
-    return root.find({
+  // Helper: Find property identifiers (keys only) by name using relational rules
+  const findPropertyIdentifiers = (propName: string): SgNode[] => {
+    return root.findAll({
       rule: {
-        kind: 'property_identifier',
-        regex: `^${propName}$`,
-        inside: {
-          kind: 'pair',
-          field: 'key',
-        },
+        any: [
+          {
+            kind: 'property_identifier',
+            regex: `^${propName}$`,
+            inside: {
+              kind: 'pair',
+              field: 'key',
+            },
+          },
+          {
+            kind: 'property_identifier',
+            regex: `^${propName}$`,
+            inside: {
+              kind: 'method_definition',
+            },
+          },
+        ],
       },
     })
   }
 
   // 3. Rename properties using AST - only replace the key identifier
   for (const [oldName, newName] of Object.entries(PROPERTY_RENAMES)) {
-    const propIdentifier = findPropertyIdentifier(oldName)
-    if (propIdentifier) {
+    for (const propIdentifier of findPropertyIdentifiers(oldName)) {
       edits.push(propIdentifier.replace(newName))
     }
   }
