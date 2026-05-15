@@ -171,6 +171,7 @@ export interface UserConfig {
   bundle?: boolean;
   fixedExtension?: boolean;
   outExtensions?: OutExtensionFactory;
+  outExtension?: OutExtensionFactory;
   hash?: boolean;
   cjsDefault?: boolean;
   outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: {
@@ -222,7 +223,7 @@ export type NoExternalFn = (_: string, _: string | undefined) => boolean | null 
 export type NormalizedFormat = InternalModuleFormat;
 export type OutExtensionFactory = (_: OutExtensionContext) => OutExtensionObject | undefined;
 export type PackageType = "module" | "commonjs" | undefined;
-export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "external" | "noExternal" | "inlineOnly" | "skipNodeModulesBundle" | "logLevel" | "failOnWarn" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
+export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "outExtension" | "external" | "noExternal" | "inlineOnly" | "skipNodeModulesBundle" | "logLevel" | "failOnWarn" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
   entry: Record<string, string>;
   rawEntry?: TsdownInputOption;
   nameLabel: string | undefined;
