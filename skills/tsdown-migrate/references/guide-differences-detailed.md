@@ -64,7 +64,7 @@ These tsup options still work in tsdown but emit deprecation warnings. They will
 
 ### Output Filename Differences
 
-For IIFE builds, `tsdown` emits `[name].iife.js`; `tsup` commonly emitted `[name].global.js`. `outExtensions` customizes extensions or suffixes, but it does not remove `.iife` or `.umd`. Use `outputOptions.entryFileNames` for full filename patterns such as `[name].global.js`.
+For IIFE builds, `tsdown` emits `[name].iife.js`; `tsup` commonly emitted `[name].global.js`. `outExtensions` customizes extensions or suffixes, but it does not remove `.iife` or `.umd`. Use `outputOptions.entryFileNames` for full filename patterns.
 
 ### Not Supported
 

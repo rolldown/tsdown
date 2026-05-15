@@ -150,7 +150,7 @@ export default defineConfig({
 | IIFE | `.iife.js` |
 | UMD | `.umd.js` |
 
-For `tsup`-style IIFE filenames such as `index.global.js`, set `outputOptions.entryFileNames`. `outExtensions` customizes extensions or suffixes but does not remove `.iife` or `.umd`.
+For custom IIFE filenames, set `outputOptions.entryFileNames`. `outExtensions` customizes extensions or suffixes but does not remove `.iife` or `.umd`.
 
 ### Customize Extensions
 

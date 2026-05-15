@@ -313,12 +313,9 @@ export async function resolveUserConfig(
     }
   }
 
-  const configUserConfig = { ...userConfig }
-  delete configUserConfig.outExtension
-
   /// keep-sorted
   const config: Omit<ResolvedConfig, 'format'> = {
-    ...configUserConfig,
+    ...userConfig,
     alias,
     attw,
     cjsDefault,

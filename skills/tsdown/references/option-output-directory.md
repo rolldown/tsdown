@@ -125,7 +125,7 @@ export default defineConfig({
 | `iife` | `.iife.js` | `.iife.js` |
 | `umd` | `.umd.js` | `.umd.js` |
 
-For IIFE/UMD builds, `outExtensions` customizes extensions or suffixes but does not remove the built-in `.iife` or `.umd` segment. Use `outputOptions.entryFileNames` for custom full filename patterns such as `[name].global.js`.
+For IIFE/UMD builds, `outExtensions` customizes extensions or suffixes but does not remove the built-in `.iife` or `.umd` segment. Use `outputOptions.entryFileNames` for custom full filename patterns.
 
 ### ESM with .js Extension
 

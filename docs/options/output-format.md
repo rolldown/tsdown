@@ -33,7 +33,7 @@ tsdown --format iife
 > **CJS is in maintenance-only mode.** Since the ecosystem is transitioning to ESM and Node.js now supports `require(esm)`, `tsdown`'s CJS-specific features (such as [`cjsDefault`](./cjs-default.md)) are kept for compatibility but will not be further enhanced or optimized. New libraries are encouraged to publish ESM-only.
 
 > [!NOTE]
-> IIFE and UMD outputs include the format in their filenames by default, such as `index.iife.js` and `index.umd.js`. If you need a custom full filename pattern, such as the `tsup`-style `index.global.js`, set `outputOptions.entryFileNames`.
+> IIFE and UMD outputs include the format in their filenames by default, such as `index.iife.js` and `index.umd.js`. If you need a custom full filename pattern, set `outputOptions.entryFileNames`.
 
 ## Overriding Configuration by Format
 
