@@ -69,6 +69,7 @@ Replace all identifiers: `tsup` → `tsdown`, `TSUP` → `TSDOWN`.
 |------|--------|-------|
 | `cjsInterop` | `cjsDefault` | CJS default export handling |
 | `esbuildPlugins` | `plugins` | Now uses Rolldown/Unplugin plugins |
+| `outExtension` | `outExtensions` | Custom output extensions |
 
 ### Deprecated but Compatible
 
@@ -86,6 +87,10 @@ These tsup options still work in tsdown for backward compatibility, but emit dep
 | `external: [...]` | `deps: { neverBundle: [...] }` | Moved to deps namespace |
 | `noExternal: [...]` | `deps: { alwaysBundle: [...] }` | Moved to deps namespace |
 | `skipNodeModulesBundle` | `deps: { skipNodeModulesBundle: true }` | Moved to deps namespace |
+
+### Output Filename Differences
+
+For IIFE builds, `tsdown` emits names like `[name].iife.js`, while `tsup` commonly emitted `[name].global.js`. `outExtensions` customizes extensions or suffixes, but it does not remove the built-in `.iife` or `.umd` segment. Use `outputOptions.entryFileNames: '[name].global.js'` to preserve old IIFE filenames.
 
 ### Dependency Namespace Moves
 
@@ -235,7 +240,7 @@ Use this checklist when performing a migration:
 - [ ] Rename tsup.config.* → tsdown.config.*
 - [ ] Update import from 'tsup' to 'tsdown'
 - [ ] Replace tsup/TSUP identifiers with tsdown/TSDOWN
-- [ ] Apply property renames (cjsInterop→cjsDefault, esbuildPlugins→plugins)
+- [ ] Apply property renames (cjsInterop→cjsDefault, esbuildPlugins→plugins, outExtension→outExtensions)
 - [ ] Migrate deprecated options (publicDir→copy, bundle→unbundle, removeNodeProtocol→nodeProtocol, injectStyle→css.inject)
 - [ ] Move external/noExternal/skipNodeModulesBundle into deps namespace
 - [ ] Update unplugin imports from /esbuild to /rolldown

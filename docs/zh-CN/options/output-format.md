@@ -32,6 +32,9 @@ tsdown --format iife
 > [!NOTE]
 > **CJS 处于仅维护模式。** 由于生态系统正在向 ESM 迁移，且 Node.js 已支持 `require(esm)`，`tsdown` 中 CJS 专属的功能（例如 [`cjsDefault`](./cjs-default.md)）仅保留以确保兼容性，不会再进一步增强或优化。建议新库直接发布为 ESM-only。
 
+> [!NOTE]
+> IIFE 和 UMD 输出默认会在文件名中包含格式片段，例如 `index.iife.js` 和 `index.umd.js`。如果需要自定义完整文件名模式，例如 `tsup` 风格的 `index.global.js`，请设置 `outputOptions.entryFileNames`。
+
 ## 按格式覆盖配置
 
 您可以在配置文件中将 `format` 设置为对象，从而为每种输出格式单独覆盖特定配置选项。这允许您为每个格式分别定制如 `target` 等设置。

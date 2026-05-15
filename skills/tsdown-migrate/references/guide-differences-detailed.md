@@ -45,6 +45,7 @@ Comprehensive comparison of tsdown and tsup for understanding migration impact a
 |---------|------|--------|--------|
 | CJS interop | `cjsInterop` | `cjsDefault` | Property rename |
 | Plugins | `esbuildPlugins` | `plugins` | Different plugin format (Rolldown) |
+| Output extensions | `outExtension` | `outExtensions` | Property rename |
 
 ### Deprecated but Compatible
 
@@ -60,6 +61,10 @@ These tsup options still work in tsdown but emit deprecation warnings. They will
 | External deps | `external` | `deps.neverBundle` | Moved to deps namespace |
 | Inline deps | `noExternal` | `deps.alwaysBundle` | Moved to deps namespace |
 | Skip node_modules | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` | Moved to deps namespace |
+
+### Output Filename Differences
+
+For IIFE builds, `tsdown` emits `[name].iife.js`; `tsup` commonly emitted `[name].global.js`. `outExtensions` customizes extensions or suffixes, but it does not remove `.iife` or `.umd`. Use `outputOptions.entryFileNames` for full filename patterns such as `[name].global.js`.
 
 ### Not Supported
 

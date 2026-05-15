@@ -54,10 +54,11 @@ While `tsdown` aims to be highly compatible with `tsup`, there are some differen
 
 Some options have been renamed for clarity:
 
-| tsup             | tsdown       | Notes                              |
-| ---------------- | ------------ | ---------------------------------- |
-| `cjsInterop`     | `cjsDefault` | CJS default export handling        |
-| `esbuildPlugins` | `plugins`    | Now uses Rolldown/Unplugin plugins |
+| tsup             | tsdown          | Notes                              |
+| ---------------- | --------------- | ---------------------------------- |
+| `cjsInterop`     | `cjsDefault`    | CJS default export handling        |
+| `esbuildPlugins` | `plugins`       | Now uses Rolldown/Unplugin plugins |
+| `outExtension`   | `outExtensions` | Custom output extensions           |
 
 ### Deprecated but Compatible Options
 
@@ -75,6 +76,19 @@ The following tsup options still work in tsdown for backward compatibility, but 
 | `skipNodeModulesBundle`    | `deps: { skipNodeModulesBundle: true }` | Moved to deps namespace           |
 
 tsdown also adds `deps.onlyBundle` for whitelisting allowed bundled packages.
+
+### Output Filename Differences
+
+For IIFE builds, `tsdown` emits names like `[name].iife.js`, while `tsup` commonly emitted `[name].global.js`. `outExtensions` customizes output extensions or suffixes, but it does not remove the built-in `.iife` or `.umd` segment. To preserve older full filename patterns, use Rolldown output options:
+
+```ts
+export default {
+  format: 'iife',
+  outputOptions: {
+    entryFileNames: '[name].global.js',
+  },
+}
+```
 
 ### Plugin System
 

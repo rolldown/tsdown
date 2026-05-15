@@ -107,6 +107,34 @@ describe('option transformations', () => {
     expect(code).not.toContain('publicDir')
   })
 
+  test('outExtension property should transform to outExtensions', () => {
+    const input = `
+      export default {
+        format: 'esm',
+        outExtension: () => ({ js: '.mjs' }),
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('outExtensions:')
+    expect(code).toContain("js: '.mjs'")
+    expect(code).not.toContain('outExtension:')
+  })
+
+  test('outExtension method should transform to outExtensions', () => {
+    const input = `
+      export default {
+        format: 'esm',
+        outExtension() {
+          return { js: '.mjs' }
+        },
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('outExtensions()')
+    expect(code).toContain("js: '.mjs'")
+    expect(code).not.toContain('outExtension()')
+  })
+
   test('removeNodeProtocol should transform to nodeProtocol: "strip"', () => {
     const input = `
       export default {
