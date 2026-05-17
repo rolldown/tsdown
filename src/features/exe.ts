@@ -70,7 +70,7 @@ export function validateSea({
   entry,
   logger,
   nameLabel,
-}: Omit<ResolvedConfig, 'format'>): void {
+}: Omit<ResolvedConfig, 'clean' | 'format'>): void {
   if (process.versions.bun || process.versions.deno) {
     throw new Error(
       'The `exe` option is not supported in Bun and Deno environments.',
