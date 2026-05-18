@@ -74,6 +74,10 @@ cli
   .option('--exe', 'Bundle as executable')
   .option('-W, --workspace [dir]', 'Enable workspace mode')
   .option(
+    '--max-parallel <number>',
+    'Maximum number of config builds to run in parallel',
+  )
+  .option(
     '-F, --filter <pattern>',
     'Filter configs (cwd or name), e.g. /pkg-name$/ or pkg-name',
   )

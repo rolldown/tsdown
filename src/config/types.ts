@@ -690,6 +690,19 @@ export interface UserConfig {
    * This allows you to build multiple packages in a monorepo.
    */
   workspace?: Workspace | Arrayable<string> | true
+
+  /**
+   * Limit how many config builds can run at the same time.
+   *
+   * This is especially useful in workspace mode where each package can start
+   * expensive child processes (e.g. `tsgo` via `dts.tsgo: true`). Without a
+   * limit, all configs start building concurrently, which can spawn many
+   * subprocesses and exhaust system resources.
+   *
+   * When set to a positive integer, at most that many builds run in parallel.
+   * When omitted or `undefined`, all builds run concurrently (existing behavior).
+   */
+  maxParallel?: number
 }
 
 export interface InlineConfig extends UserConfig {
@@ -754,6 +767,7 @@ export type ResolvedConfig = Overwrite<
     | 'footer'
     | 'checks'
     | 'css'
+    | 'maxParallel'
   >,
   {
     /**
