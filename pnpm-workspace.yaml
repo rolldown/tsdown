@@ -45,7 +45,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^4.0.2
     '@unocss/eslint-plugin': ^66.6.8
     '@vueuse/core': ^14.3.0
-    oxc-minify: ^0.131.0
+    oxc-minify: ^0.132.0
     typedoc: ^0.28.19
     typedoc-plugin-markdown: ^4.11.0
     typedoc-vitepress-theme: ^1.1.2
