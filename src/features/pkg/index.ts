@@ -112,6 +112,7 @@ export async function bundleDone(
     }
   } catch (error) {
     configs[0].logger.error('Pack failed:', error)
+    debug('Pack failed for %s: %O', pkg.packageJsonPath, error)
   }
 
   ctx.resolve()

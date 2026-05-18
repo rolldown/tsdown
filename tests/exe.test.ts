@@ -19,7 +19,6 @@ describe.runIf(nodeSupportsBuiltinSea)('exe', () => {
         },
         options: {
           entry: ['a.ts', 'b.ts'],
-          // format: 'exe',
           exe: true,
         },
       }),

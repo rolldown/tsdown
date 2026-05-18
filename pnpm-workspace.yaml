@@ -18,10 +18,10 @@ catalogs:
     '@types/node': ^25.8.0
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260515.1
+    '@typescript/native-preview': 7.0.0-dev.20260518.1
     '@vitest/coverage-v8': ^4.1.6
     '@vitest/ui': ^4.1.6
-    baseline-browser-mapping: ^2.10.29
+    baseline-browser-mapping: ^2.10.30
     bumpp: ^11.1.0
     dedent: ^1.7.2
     eslint: ^10.4.0
@@ -33,7 +33,7 @@ catalogs:
     rolldown-plugin-require-cjs: ^0.4.0
     sass: ^1.99.0
     tsnapi: ^0.3.3
-    tsx: ^4.22.0
+    tsx: ^4.22.1
     typescript: ~6.0.3
     unplugin-ast: ^0.17.0
     unplugin-raw: ^0.7.0

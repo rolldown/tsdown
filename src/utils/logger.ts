@@ -99,12 +99,11 @@ export function createLogger(
 
     warnOnce(...msgs: any[]): void {
       const message = format(msgs)
-      if (warnedMessages.has(message)) {
-        return
-      }
-
       if (failOnWarn) {
         return this.error(...msgs)
+      }
+      if (warnedMessages.has(message)) {
+        return
       }
       warnedMessages.add(message)
 
