@@ -4,6 +4,7 @@ packages:
 
 overrides:
   '@docsearch/react': '-'
+  fflate: 0.8.2
   rolldown: catalog:prod
   vite: catalog:docs
 
@@ -21,6 +22,7 @@ catalogs:
     '@typescript/native-preview': 7.0.0-dev.20260518.1
     '@vitest/coverage-v8': ^4.1.6
     '@vitest/ui': ^4.1.6
+    actionspack: ^0.1.2
     baseline-browser-mapping: ^2.10.30
     bumpp: ^11.1.0
     dedent: ^1.7.2

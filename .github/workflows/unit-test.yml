@@ -4,16 +4,35 @@ permissions: {}
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  lint:
+  unit-test-lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup JS
-        uses: sxzz/workflows/setup-js@340b33de8349804cfdae4f42345478516d03a973
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: '1'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+
+      - name: Setup node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: lts/*
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
 
       - name: Type Check
         run: pnpm run typecheck
@@ -21,19 +40,38 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-  test:
+  unit-test-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        node-version: [22, 24, 26]
+        os:
+          - ubuntu-latest
+          - windows-latest
+        node-version:
+          - 22
+          - 24
+          - 26
       fail-fast: false
-
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Setup JS
-        uses: sxzz/workflows/setup-js@340b33de8349804cfdae4f42345478516d03a973
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: '1'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+
+      - name: Setup node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: ${{ matrix.node-version }}
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
 
       - name: Build
         run: pnpm run build

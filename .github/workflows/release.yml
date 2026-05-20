@@ -3,21 +3,35 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - v*
 
 jobs:
-  release:
-    if: github.repository == 'rolldown/tsdown'
+  release-release:
     name: Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
-      - name: Setup JS
-        uses: sxzz/workflows/setup-js@340b33de8349804cfdae4f42345478516d03a973
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          fetch-all: true
+          persist-credentials: false
+          fetch-depth: '0'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+
+      - name: Setup node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: lts/*
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
 
       - name: Generate GitHub Changelog
         run: pnpx changelogithub
@@ -29,4 +43,4 @@ jobs:
         run: pnpm run build
 
       - name: Publish to NPM
-        run: pnpm -r publish --access public --no-git-checks ${{ (contains(github.ref_name, 'alpha') && '--tag alpha') || (contains(github.ref_name, 'beta') && '--tag beta') || (contains(github.ref_name, 'rc') && '--tag rc') || '' }}
+        run: ${{ format('pnpm -r publish --access public --no-git-checks {0}', (contains(github.ref_name, 'alpha') && 'alpha' || contains(github.ref_name, 'beta') && 'beta' || contains(github.ref_name, 'rc') && 'rc' || '') && format('--tag {0}', (contains(github.ref_name, 'alpha') && 'alpha' || contains(github.ref_name, 'beta') && 'beta' || contains(github.ref_name, 'rc') && 'rc' || '')) || '') }}

@@ -1,0 +1,12 @@
+name: autofix.ci
+
+on: [pull_request]
+
+jobs:
+  autofix:
+    if: github.repository == 'rolldown/tsdown'
+    uses: sxzz/workflows/.github/workflows/autofix.yml@main
+    with:
+      command: pnpm run format && pnpm run lint --fix && pnpm build --update-snapshot
+    permissions:
+      contents: read

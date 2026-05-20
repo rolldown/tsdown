@@ -1,0 +1,145 @@
+lockfileVersion: 1
+entries:
+  .github/workflows/src/autofix.yml:
+    output: .github/workflows/autofix.yml
+    dependencies:
+      - package: github:sxzz/workflows/.github/workflows/autofix.yml
+        requested: main
+        foundAt: .github/workflows/src/autofix.yml#jobs.autofix.uses
+  .github/workflows/src/release-commit.yml:
+    output: .github/workflows/release-commit.yml
+    dependencies:
+      - package: github:sxzz/workflows/.github/workflows/release-commit.yml
+        requested: main
+        foundAt: .github/workflows/src/release-commit.yml#jobs.release.uses
+  .github/workflows/src/release.yml:
+    output: .github/workflows/release.yml
+    dependencies:
+      - package: github:sxzz/workflows/.github/workflows/release.yml
+        requested: main
+        foundAt: .github/workflows/src/release.yml#jobs.release.uses
+  .github/workflows/src/unit-test.yml:
+    output: .github/workflows/unit-test.yml
+    dependencies:
+      - package: github:sxzz/workflows/.github/workflows/unit-test.yml
+        requested: main
+        foundAt: .github/workflows/src/unit-test.yml#jobs.unit-test.uses
+packages:
+  github:actions/checkout:
+    source: github
+    owner: actions
+    repo: checkout
+    path: .
+    type: external-action
+    external: true
+    contentDigest: sha256:11b63452f6e43ffb5ab8bfdaaafb8a915b354318e3ad9bce4eb0686b9e380f90
+    dependencies: []
+    requested: de0fac2e4500dabe0009e67214ff5f5447ce83dd
+    resolved: de0fac2e4500dabe0009e67214ff5f5447ce83dd
+  github:actions/setup-node:
+    source: github
+    owner: actions
+    repo: setup-node
+    path: .
+    type: external-action
+    external: true
+    contentDigest: sha256:ad45f1922115116fb4706651d0a9262332bc4e4f11eb2021e09789dd1af18085
+    dependencies: []
+    requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+    resolved: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+  github:autofix-ci/action:
+    source: github
+    owner: autofix-ci
+    repo: action
+    path: .
+    type: external-action
+    external: true
+    contentDigest: sha256:a9ebe499b43c1ca09ec1ffeeb705674235e32ae5d40444f8d136f0a6f2189e8b
+    dependencies: []
+    requested: c5b2d67aa2274e7b5a18224e8171550871fc7e4a
+    resolved: c5b2d67aa2274e7b5a18224e8171550871fc7e4a
+  github:pnpm/action-setup:
+    source: github
+    owner: pnpm
+    repo: action-setup
+    path: .
+    type: external-action
+    external: true
+    contentDigest: sha256:7903b0a83562cd93df4d70181e610d9a4d6aedf76c83197208a6fdc13614d6f1
+    dependencies: []
+    requested: 0e279bb959325dab635dd2c09392533439d90093
+    resolved: 0e279bb959325dab635dd2c09392533439d90093
+  github:sxzz/workflows/.github/workflows/autofix.yml:
+    source: github
+    owner: sxzz
+    repo: workflows
+    path: .github/workflows/autofix.yml
+    type: reusable-workflow
+    contentDigest: sha256:d268cea9299f8e5cc5636a5273533f3538598be68554fa425e1a66798b4df00a
+    dependencies:
+      - package: github:sxzz/workflows/setup-js
+        requested: main
+        foundAt: sxzz/workflows/.github/workflows/autofix.yml#jobs.autofix.steps[0].uses
+      - package: github:autofix-ci/action
+        requested: c5b2d67aa2274e7b5a18224e8171550871fc7e4a
+        foundAt: sxzz/workflows/.github/workflows/autofix.yml#jobs.autofix.steps[2].uses
+    requested: main
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
+  github:sxzz/workflows/.github/workflows/release-commit.yml:
+    source: github
+    owner: sxzz
+    repo: workflows
+    path: .github/workflows/release-commit.yml
+    type: reusable-workflow
+    contentDigest: sha256:06630f463980c0f109857593e1205d302aaca93766e6337790c7f319976b9da5
+    dependencies:
+      - package: github:sxzz/workflows/setup-js
+        requested: main
+        foundAt: sxzz/workflows/.github/workflows/release-commit.yml#jobs.release.steps[0].uses
+    requested: main
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
+  github:sxzz/workflows/.github/workflows/release.yml:
+    source: github
+    owner: sxzz
+    repo: workflows
+    path: .github/workflows/release.yml
+    type: reusable-workflow
+    contentDigest: sha256:716fb2eae20dfe7e87c92eabd1b4be35deeb2f6fca8f999f63412d26904abbf8
+    dependencies:
+      - package: github:sxzz/workflows/setup-js
+        requested: main
+        foundAt: sxzz/workflows/.github/workflows/release.yml#jobs.release.steps[0].uses
+    requested: main
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
+  github:sxzz/workflows/.github/workflows/unit-test.yml:
+    source: github
+    owner: sxzz
+    repo: workflows
+    path: .github/workflows/unit-test.yml
+    type: reusable-workflow
+    contentDigest: sha256:0cff202ed73f1bd09e8e8727ec40aed870f0159d3d9e9e7e910bf89c369c8d3c
+    dependencies:
+      - package: github:sxzz/workflows/setup-js
+        requested: main
+        foundAt: sxzz/workflows/.github/workflows/unit-test.yml#jobs.lint.steps[0].uses
+    requested: main
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e
+  github:sxzz/workflows/setup-js:
+    source: github
+    owner: sxzz
+    repo: workflows
+    path: setup-js
+    type: composite
+    contentDigest: sha256:ee6696753c61e7206ab75bc50a88f8854a2ea5ceb668cbc2d813658bef7aa993
+    dependencies:
+      - package: github:actions/checkout
+        requested: de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        foundAt: sxzz/workflows/setup-js#runs.steps[0].uses
+      - package: github:pnpm/action-setup
+        requested: 0e279bb959325dab635dd2c09392533439d90093
+        foundAt: sxzz/workflows/setup-js#runs.steps[1].uses
+      - package: github:actions/setup-node
+        requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        foundAt: sxzz/workflows/setup-js#runs.steps[2].uses
+    requested: main
+    resolved: 2e7328a5d564218c4c647f48f1db6e7d6b90c76e

@@ -1,16 +1,35 @@
 name: Publish Any Commit
-on: [push, pull_request]
+
+on:
+  - push
+  - pull_request
 
 permissions: {}
 
 jobs:
-  release:
-    if: github.repository == 'rolldown/tsdown'
+  release-release:
     name: Release Commit
     runs-on: ubuntu-latest
     steps:
-      - name: Setup JS
-        uses: sxzz/workflows/setup-js@340b33de8349804cfdae4f42345478516d03a973
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: '1'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+
+      - name: Setup node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: lts/*
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
 
       - name: Build
         run: pnpm run build

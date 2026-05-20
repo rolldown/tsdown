@@ -1,0 +1,14 @@
+name: Publish Any Commit
+on: [push, pull_request]
+
+permissions: {}
+
+jobs:
+  release:
+    if: github.repository == 'rolldown/tsdown'
+    uses: sxzz/workflows/.github/workflows/release-commit.yml@main
+    with:
+      compact: true
+      packages: ". './packages/*'"
+      comment-package-manager: pnpm,npm,yarn
+      comment-with-dev: true

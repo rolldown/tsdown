@@ -1,4 +1,10 @@
 {
   extends: ['github>sxzz/renovate-config'],
   automerge: true,
+  packageRules: [
+    {
+      matchManagers: ['github-actions'],
+      enabled: false,
+    },
+  ],
 }
