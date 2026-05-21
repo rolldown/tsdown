@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { testBuild } from './utils.ts'
 
@@ -73,5 +74,33 @@ describe('unbundle', () => {
     })
 
     expect(outputFiles).toContain('utils/bar.mjs')
+  })
+
+  test('alias resolved in dts with unbundle', async (context) => {
+    const files = {
+      'src/index.ts': `export { getFoo } from './apis/getFoo.ts'`,
+      'src/apis/getFoo.ts': `
+        import type { DefaultHeaders } from '~src/types'
+        export const getFoo = (params: DefaultHeaders) => fetch('/foo')
+      `,
+      'src/types.ts': `export interface DefaultHeaders { authorization: string }`,
+    }
+    const { fileMap } = await testBuild({
+      context,
+      files,
+      options: (cwd) => ({
+        entry: ['src/**/*.ts'],
+        unbundle: true,
+        dts: true,
+        alias: {
+          '~src': path.resolve(cwd, 'src'),
+        },
+      }),
+    })
+
+    const dtsFoo = fileMap['apis/getFoo.d.mts'] ?? fileMap['apis/getFoo.d.ts']
+    expect(dtsFoo).toBeDefined()
+    expect(dtsFoo).not.toContain('~src')
+    expect(dtsFoo).toMatch(/from ['"]\.\.\/types(?:\.m?[jt]s)?['"]/)
   })
 })

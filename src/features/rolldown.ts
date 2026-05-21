@@ -124,6 +124,20 @@ async function resolveInputOptions(
       ...dtsPluginOptions,
     }
 
+    if (alias && Object.keys(alias).length > 0) {
+      const existingPaths = options.compilerOptions?.paths ?? {}
+      const aliasPaths: Record<string, string[]> = {}
+      for (const [key, value] of Object.entries(alias)) {
+        aliasPaths[key] = [value]
+        aliasPaths[`${key}/*`] = [`${value}/*`]
+      }
+      options.compilerOptions = {
+        ...options.compilerOptions,
+        paths: { ...aliasPaths, ...existingPaths },
+        baseUrl: options.compilerOptions?.baseUrl ?? '.',
+      }
+    }
+
     if (format === 'es') {
       plugins.push(dtsPlugin(options))
     } else if (cjsDts) {
