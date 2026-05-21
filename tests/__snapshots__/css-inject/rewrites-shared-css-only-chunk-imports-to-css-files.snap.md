@@ -1,4 +1,4 @@
-## async-a-kpBdb-EG.css
+## async-a-DAFWDwf6.css
 
 ```css
 .a {
@@ -7,11 +7,11 @@
 
 ```
 
-## async-a-kpBdb-EG.mjs
+## async-a-DAFWDwf6.mjs
 
 ```mjs
-import './async-a-kpBdb-EG.css';
-import "./shared-93aDPs4w.css";
+import './async-a-DAFWDwf6.css';
+import "./shared-la_KkjCS.css";
 //#region async-a.ts
 const a = 1;
 //#endregion
@@ -19,10 +19,10 @@ export { a };
 
 ```
 
-## async-b-Dy5iQIkB.mjs
+## async-b-D9ELMaDM.mjs
 
 ```mjs
-import "./shared-93aDPs4w.css";
+import "./shared-la_KkjCS.css";
 //#region async-b.ts
 const b = 2;
 //#endregion
@@ -34,14 +34,14 @@ export { b };
 
 ```mjs
 //#region index.ts
-const loadA = () => import("./async-a-kpBdb-EG.mjs");
-const loadB = () => import("./async-b-Dy5iQIkB.mjs");
+const loadA = () => import("./async-a-DAFWDwf6.mjs");
+const loadB = () => import("./async-b-D9ELMaDM.mjs");
 //#endregion
 export { loadA, loadB };
 
 ```
 
-## shared-93aDPs4w.css
+## shared-la_KkjCS.css
 
 ```css
 .shared {

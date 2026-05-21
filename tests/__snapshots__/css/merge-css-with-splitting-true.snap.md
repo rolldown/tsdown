@@ -1,4 +1,4 @@
-## async-CEAkTWyO.css
+## async-la_KkjCS.css
 
 ```css
 .async {
@@ -7,7 +7,7 @@
 
 ```
 
-## async-CEAkTWyO.mjs
+## async-la_KkjCS.mjs
 
 ```mjs
 export {};
@@ -27,7 +27,7 @@ body {
 
 ```mjs
 //#region index.ts
-const loadAsync = () => import("./async-CEAkTWyO.mjs");
+const loadAsync = () => import("./async-la_KkjCS.mjs");
 //#endregion
 export { loadAsync };
 

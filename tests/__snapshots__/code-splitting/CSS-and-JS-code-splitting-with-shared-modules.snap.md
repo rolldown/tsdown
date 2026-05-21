@@ -1,7 +1,7 @@
 ## a.mjs
 
 ```mjs
-import { t as shared_default } from "./shared-D_781BoD.mjs";
+import { t as shared_default } from "./shared-DXaYTfQF.mjs";
 //#region a.ts
 console.log(shared_default() + 1);
 //#endregion
@@ -12,7 +12,7 @@ export {};
 ## b.mjs
 
 ```mjs
-import { t as shared_default } from "./shared-D_781BoD.mjs";
+import { t as shared_default } from "./shared-DXaYTfQF.mjs";
 //#region b.ts
 console.log(shared_default() + 2);
 //#endregion
@@ -46,7 +46,7 @@ body {
 
 ```
 
-## shared-D_781BoD.mjs
+## shared-DXaYTfQF.mjs
 
 ```mjs
 //#region shared.ts
