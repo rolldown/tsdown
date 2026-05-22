@@ -237,7 +237,6 @@ tsdown --deps.skip-node-modules-bundle
 | `external` | `deps.neverBundle` |
 | `noExternal` | `deps.alwaysBundle` |
 | `inlineOnly` | `deps.onlyBundle` |
-| `deps.onlyAllowBundle` | `deps.onlyBundle` |
 | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
 
 ## Examples by Use Case

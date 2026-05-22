@@ -49,10 +49,6 @@ export interface DepsConfig {
    */
   onlyBundle?: Arrayable<string | RegExp> | false
   /**
-   * @deprecated Use {@linkcode onlyBundle} instead.
-   */
-  onlyAllowBundle?: Arrayable<string | RegExp> | false
-  /**
    * Skip bundling all `node_modules` dependencies.
    *
    * **Note:** This option cannot be used together with {@linkcode alwaysBundle}.
@@ -107,17 +103,6 @@ export function resolveDepsConfig(
     }
     logger?.warn('`noExternal` is deprecated. Use `deps.alwaysBundle` instead.')
     alwaysBundle = config.noExternal
-  }
-  if (config.deps?.onlyAllowBundle != null) {
-    if (onlyBundle != null) {
-      throw new TypeError(
-        '`deps.onlyAllowBundle` is deprecated. Cannot be used with `deps.onlyBundle`.',
-      )
-    }
-    logger?.warn(
-      '`deps.onlyAllowBundle` is deprecated. Use `deps.onlyBundle` instead.',
-    )
-    onlyBundle = config.deps.onlyAllowBundle
   }
   if (config.inlineOnly != null) {
     if (onlyBundle != null) {
