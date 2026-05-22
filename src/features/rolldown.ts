@@ -6,15 +6,18 @@ import { createDebug } from 'obug'
 import {
   VERSION as rolldownVersion,
   type BuildOptions,
+  type ExternalOption,
+  type ExternalOptionFunction,
   type InputOptions,
   type OutputOptions,
   type Plugin,
   type RolldownPluginOption,
 } from 'rolldown'
+import { RE_DTS } from 'rolldown-plugin-dts/internal'
 import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
-import { importWithError, pkgExists } from '../utils/general.ts'
+import { importWithError, pkgExists, toArray } from '../utils/general.ts'
 import { LogLevels } from '../utils/logger.ts'
 import { CjsDtsReexportPlugin } from './cjs.ts'
 import { DepsPlugin } from './deps.ts'
@@ -85,7 +88,7 @@ async function resolveInputOptions(
     checks: { legacyCjs, ...checks } = {},
     cjsDefault,
     cwd,
-    deps: { neverBundle },
+    deps,
     devtools,
     dts,
     entry,
@@ -197,11 +200,30 @@ async function resolveInputOptions(
   }
   const inject = shims && !cjsDts ? getShimsInject(format, platform) : undefined
 
+  const dtsExternal = deps.dts.neverBundle
+    ? functionifyExternal(deps.dts.neverBundle)
+    : undefined
+  let external: ExternalOption | undefined
+  if (deps.neverBundle && dtsExternal) {
+    const jsExternal = functionifyExternal(deps.neverBundle)
+    external = (id, importer, ...args) => {
+      const isDts = importer ? RE_DTS.test(importer) : false
+      return (isDts ? dtsExternal : jsExternal)(id, importer, ...args)
+    }
+  } else if (dtsExternal) {
+    external = (id, importer, ...args) => {
+      const isDts = importer ? RE_DTS.test(importer) : false
+      return isDts ? dtsExternal(id, importer, ...args) : undefined
+    }
+  } else {
+    external = deps.neverBundle
+  }
+
   const inputOptions = await mergeUserOptions(
     {
       input: entry,
       cwd,
-      external: neverBundle,
+      external,
       resolve: {
         alias,
       },
@@ -357,5 +379,17 @@ export function CssGuardPlugin(): Plugin {
         )
       },
     },
+  }
+}
+
+function functionifyExternal(external: ExternalOption): ExternalOptionFunction {
+  if (typeof external === 'function') {
+    return external
+  }
+  external = toArray(external)
+  return (id) => {
+    return external.some((item) =>
+      item instanceof RegExp ? item.test(id) : item === id,
+    )
   }
 }

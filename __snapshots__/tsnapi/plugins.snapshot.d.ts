@@ -5,9 +5,10 @@
 export declare function DepsPlugin({
   pkg,
   deps: {
-    alwaysBundle,
+    alwaysBundle: jsAlwaysBundle,
     onlyBundle,
-    skipNodeModulesBundle
+    skipNodeModulesBundle,
+    dts
   },
   logger,
   nameLabel

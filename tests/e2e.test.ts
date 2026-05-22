@@ -469,6 +469,49 @@ test('external dependency for dts', async (context) => {
   expect(snapshot).contain(`export type * from "unconfig-core"`)
 })
 
+test('deps.dts.neverBundle should not externalize runtime bundle', async (context) => {
+  const { fileMap } = await testBuild({
+    context,
+    files: {
+      'index.ts': `
+        export { value } from 'my-dep'
+        export type { MyType } from 'my-dep'
+      `,
+      'node_modules/my-dep/package.json': JSON.stringify({
+        name: 'my-dep',
+        version: '1.0.0',
+        main: 'index.js',
+        types: 'index.d.ts',
+      }),
+      'node_modules/my-dep/index.js': `
+        export const value = 'bundled-my-dep'
+      `,
+      'node_modules/my-dep/index.d.ts': `
+        export declare const value: string
+        export interface MyType {
+          value: string
+        }
+      `,
+    },
+    options: {
+      dts: true,
+      deps: {
+        dts: {
+          neverBundle: ['my-dep'],
+        },
+      },
+      inputOptions: {
+        experimental: {
+          attachDebugInfo: 'none',
+        },
+      },
+    },
+  })
+
+  expect(fileMap['index.mjs']).toContain('bundled-my-dep')
+  expect(fileMap['index.d.mts']).toContain('from "my-dep"')
+})
+
 test('resolve paths in tsconfig', async (context) => {
   const files = {
     'index.ts': `export * from '@/mod'`,
