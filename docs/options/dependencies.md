@@ -207,7 +207,6 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
 | `external`                   | `deps.neverBundle`       |
 | `noExternal`                 | `deps.alwaysBundle`      |
 | `inlineOnly`                 | `deps.onlyBundle`        |
-| `deps.onlyAllowBundle`       | `deps.onlyBundle`        |
 | `skipNodeModulesBundle`      | `deps.neverBundle: true` |
 | `deps.skipNodeModulesBundle` | `deps.neverBundle: true` |
 

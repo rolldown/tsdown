@@ -29,7 +29,6 @@ export interface DepsConfig {
   alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn;
   onlyBundle?: Arrayable<string | RegExp> | false;
   onlyImport?: Arrayable<string | RegExp>;
-  onlyAllowBundle?: Arrayable<string | RegExp> | false;
   skipNodeModulesBundle?: boolean;
   resolveDepSubpath?: boolean;
   dts?: Pick<DepsConfig, "alwaysBundle" | "neverBundle">;
