@@ -79,10 +79,6 @@ export interface DepsConfig {
    */
   onlyImport?: Arrayable<string | RegExp>
   /**
-   * @deprecated Use {@linkcode onlyBundle} instead.
-   */
-  onlyAllowBundle?: Arrayable<string | RegExp> | false
-  /**
    * Skip bundling all `node_modules` dependencies.
    *
    * **Note:** This option cannot be used together with {@linkcode alwaysBundle}.
@@ -158,17 +154,6 @@ export function resolveDepsConfig(
     }
     logger?.warn('`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.')
     onlyBundle = config.inlineOnly
-  }
-  if (config.deps?.onlyAllowBundle != null) {
-    if (onlyBundle != null) {
-      throw new TypeError(
-        '`deps.onlyAllowBundle` is deprecated. Cannot be used with `deps.onlyBundle`.',
-      )
-    }
-    logger?.warn(
-      '`deps.onlyAllowBundle` is deprecated. Use `deps.onlyBundle` instead.',
-    )
-    onlyBundle = config.deps.onlyAllowBundle
   }
   if (config.skipNodeModulesBundle != null) {
     if (config.deps?.skipNodeModulesBundle != null) {
