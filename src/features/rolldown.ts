@@ -251,7 +251,17 @@ async function resolveInputOptions(
         '.node': 'copy',
         ...loader,
       },
-      logLevel: logger.level === 'error' ? 'silent' : logger.level,
+      // When failOnWarn is enabled, ensure rolldown's log level is at least
+      // 'warn' so its defaultHandler can escalate warnings to build errors.
+      // Otherwise a caller passing logLevel: 'silent' would never fail because
+      // rolldown's defaultHandler becomes a no-op.
+      logLevel: logger.options?.failOnWarn
+        ? logger.level === 'silent' || logger.level === 'error'
+          ? 'warn'
+          : logger.level
+        : logger.level === 'error'
+          ? 'silent'
+          : logger.level,
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled
         if (cjsDefault && log.code === 'MIXED_EXPORT') return
