@@ -436,6 +436,27 @@ async function resolveDepSubpath(id: string, resolved: ResolvedId | null) {
   return result
 }
 
+export function getDevDependencyOnlyName(
+  pkg: PackageJson | undefined,
+  id: string,
+): string | undefined {
+  if (!pkg) return
+  const parsed = parseNodeModulesPath(id)
+  if (!parsed) return
+  const [name] = parsed
+
+  if (!hasDependency(pkg.devDependencies, name)) return
+  if (
+    hasDependency(pkg.dependencies, name) ||
+    hasDependency(pkg.peerDependencies, name) ||
+    hasDependency(pkg.optionalDependencies, name)
+  ) {
+    return
+  }
+
+  return name
+}
+
 /*
  * Production deps should be excluded from the bundle
  */
@@ -445,4 +466,11 @@ function getProductionDeps(pkg: PackageJson): Set<string> {
     ...Object.keys(pkg.peerDependencies || {}),
     ...Object.keys(pkg.optionalDependencies || {}),
   ])
+}
+
+function hasDependency(
+  deps: PackageJson['dependencies'] | undefined,
+  name: string,
+): boolean {
+  return !!deps && Object.hasOwn(deps, name)
 }
