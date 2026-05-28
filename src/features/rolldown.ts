@@ -12,6 +12,7 @@ import {
   type OutputOptions,
   type Plugin,
   type RolldownPluginOption,
+  type TransformOptions,
 } from 'rolldown'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
 import { importGlobPlugin } from 'rolldown/experimental'
@@ -25,7 +26,7 @@ import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
-import { getShimsInject } from './shims.ts'
+import { getShimsInject, shimsDefine, shimsPlugin } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
 import type {
   DtsOptions,
@@ -105,6 +106,7 @@ async function resolveInputOptions(
     target,
     treeshake,
     tsconfig,
+    unbundle,
     unused,
     watch,
   } = config
@@ -189,7 +191,7 @@ async function resolveInputOptions(
     plugins.push(...cssPostPlugins)
   }
 
-  const define = {
+  let define: TransformOptions['define'] = {
     ...config.define,
     ...Object.keys(env).reduce((acc, key) => {
       const value = JSON.stringify(env[key])
@@ -198,7 +200,16 @@ async function resolveInputOptions(
       return acc
     }, Object.create(null)),
   }
-  const inject = shims && !cjsDts ? getShimsInject(format, platform) : undefined
+
+  let inject: TransformOptions['inject']
+  if (shims && !cjsDts) {
+    if (unbundle) {
+      define = { ...define, ...shimsDefine }
+      plugins.push(shimsPlugin)
+    } else {
+      inject = getShimsInject(format, platform)
+    }
+  }
 
   const dtsExternal = deps.dts.neverBundle
     ? functionifyExternal(deps.dts.neverBundle)

@@ -74,4 +74,26 @@ describe('unbundle', () => {
 
     expect(outputFiles).toContain('utils/bar.mjs')
   })
+
+  test('with shims', async (context) => {
+    const files = {
+      'src/mod-a.ts': `export * from './shared.ts'`,
+      'src/mod-b.ts': `export * from './shared.ts'`,
+      'src/shared.ts': `export const chunk = [__dirname, __filename]`,
+    }
+    const { snapshot } = await testBuild({
+      context,
+      files,
+      options: {
+        entry: ['src/mod-a.ts', 'src/mod-b.ts'],
+        shims: true,
+        unbundle: true,
+        minify: true,
+      },
+      prettier: true,
+    })
+
+    expect(snapshot).not.contain('__dirname')
+    expect(snapshot).not.contain('__filename')
+  })
 })
