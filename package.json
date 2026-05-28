@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
   "type": "module",
-  "version": "0.22.0",
+  "version": "0.22.1",
   "packageManager": "pnpm@11.4.0",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
