@@ -13,6 +13,7 @@ jobs:
       publish: true
       build: pnpm run build
       tag: ${{ contains(github.ref_name, 'alpha') && 'alpha' || contains(github.ref_name, 'beta') && 'beta' || contains(github.ref_name, 'rc') && 'rc' || '' }}
+      stage: true
     permissions:
       contents: write
       id-token: write

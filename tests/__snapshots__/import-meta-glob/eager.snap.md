@@ -14,7 +14,7 @@ var __exportAll = (all, no_symbols) => {
 };
 //#endregion
 //#region index.ts
-const modules = /* @__PURE__ */ Object.assign({
+const modules = /* #__PURE__ */ Object.assign({
 	"./modules/a.ts": /* @__PURE__ */ __exportAll({ a: () => 1 }),
 	"./modules/b.ts": /* @__PURE__ */ __exportAll({ b: () => 2 })
 });
