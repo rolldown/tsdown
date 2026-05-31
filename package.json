@@ -2,7 +2,7 @@
   "name": "tsdown",
   "type": "module",
   "version": "0.22.1",
-  "packageManager": "pnpm@11.4.0",
+  "packageManager": "pnpm@11.5.0",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",

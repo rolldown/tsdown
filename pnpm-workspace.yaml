@@ -4,13 +4,12 @@ packages:
 
 overrides:
   '@docsearch/react': '-'
-  fflate: 0.8.2
   rolldown: catalog:prod
   vite: catalog:docs
 
 catalogs:
   create:
-    '@clack/prompts': ^1.4.0
+    '@clack/prompts': ^1.5.0
     giget: ^3.2.0
   dev:
     '@sxzz/eslint-config': ^8.1.0
@@ -26,7 +25,7 @@ catalogs:
     baseline-browser-mapping: ^2.10.32
     bumpp: ^11.1.0
     dedent: ^1.7.2
-    eslint: ^10.4.0
+    eslint: ^10.4.1
     memfs: ^4.57.3
     pkg-types: ^2.3.1
     postcss: ^8.5.15
@@ -57,14 +56,14 @@ catalogs:
     vitepress-plugin-group-icons: ^1.7.5
     vitepress-plugin-llms: ^1.13.1
     vue: ^3.5.35
-    vue-tsc: ^3.3.2
+    vue-tsc: ^3.3.3
   migrate:
     '@antfu/ni': ^30.1.0
     '@ast-grep/napi': ^0.43.0
     consola: ^3.4.2
     diff: ^9.0.0
   peer:
-    '@arethetypeswrong/core': ^0.18.2
+    '@arethetypeswrong/core': ^0.18.3
     '@vitejs/devtools': ^0.3.1
     publint: ^0.3.21
     unplugin-unused: ^0.5.7
@@ -82,9 +81,9 @@ catalogs:
     picomatch: ^4.0.4
     postcss-load-config: ^6.0.1
     rolldown: ^1.0.3
-    rolldown-plugin-dts: ^0.25.1
+    rolldown-plugin-dts: ^0.25.2
     semver: ^7.8.1
-    tinyexec: ^1.2.2
+    tinyexec: ^1.2.3
     tinyglobby: ^0.2.16
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
