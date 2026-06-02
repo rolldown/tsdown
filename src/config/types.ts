@@ -632,8 +632,8 @@ export interface UserConfig {
   /**
    * Generate package exports for `package.json`.
    *
-   * This will set the `main`, `module`, `types`, `exports` fields in `package.json`
-   * to point to the generated files.
+   * This will set the `exports` field in `package.json` to point to the
+   * generated files.
    *
    * @default false
    */
