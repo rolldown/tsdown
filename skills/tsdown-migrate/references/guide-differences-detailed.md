@@ -101,7 +101,7 @@ export default defineConfig({
 
 ```ts
 export default defineConfig({
-  exports: true, // Auto-generate package.json exports field
+  exports: true, // Generate package.json exports field
 })
 ```
 

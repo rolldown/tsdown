@@ -1,6 +1,8 @@
 # 自动生成包导出
 
-`tsdown` 提供了一个实验性功能，可以自动推断并生成 `package.json` 中的 `exports`、`main`、`module` 和 `types` 字段。这有助于确保您的包导出始终与构建输出保持同步且正确。
+`tsdown` 可以自动推断并生成 `package.json` 中的 `exports` 字段。这有助于确保您的包导出始终与构建输出保持同步且正确。
+
+默认不会生成顶层的 `main`、`module` 和 `types` 字段。如果你需要为旧工具生成这些字段，请启用 `exports.legacy`。
 
 ## 启用自动导出
 
@@ -14,10 +16,10 @@ export default defineConfig({
 })
 ```
 
-这将自动分析您的入口文件和输出文件，并相应地更新您的 `package.json`。
+这将自动分析您的入口文件和输出文件，并相应地更新 `package.json` 中的 `exports` 字段。
 
 > [!WARNING]
-> 请在发布包之前仔细检查自动生成的字段，或开启 publint 以进行验证。
+> 请在发布包之前仔细检查自动生成的导出，或开启 publint 以进行验证。
 
 ## 导出所有文件
 
@@ -32,6 +34,18 @@ export default defineConfig({
 ```
 
 这样会将所有相关文件包含在生成的 `exports` 字段中。
+
+## 传统包字段
+
+如果还需要为旧工具生成顶层的 `main`、`module` 和 `types` 字段，请启用 `exports.legacy`：
+
+```ts
+export default defineConfig({
+  exports: {
+    legacy: true,
+  },
+})
+```
 
 ## 开发时源码链接
 

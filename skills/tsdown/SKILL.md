@@ -106,7 +106,7 @@ export default defineConfig({
 |---------|-------|-----------|
 | Shims | `shims: true` - Add ESM/CJS compatibility | [option-shims](references/option-shims.md) |
 | CJS default | `cjsDefault: true` (default) / `false` | [option-cjs-default](references/option-cjs-default.md) |
-| Package exports | `exports: true` - Auto-generate exports field | [option-package-exports](references/option-package-exports.md) |
+| Package exports | `exports: true` - Generate exports field | [option-package-exports](references/option-package-exports.md) |
 | CSS handling | **[experimental]** `css: { ... }` — full pipeline with preprocessors, Lightning CSS, PostCSS, CSS modules, code splitting; requires `@tsdown/css` | [option-css](references/option-css.md) |
 | CSS modules | `css: { modules: { localsConvention: 'camelCase' } }` — scoped class names for `.module.css` files | [option-css](references/option-css.md) |
 | CSS inject | `css: { inject: true }` — preserve CSS imports in JS output | [option-css](references/option-css.md) |

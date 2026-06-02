@@ -295,6 +295,6 @@ See also [CI Environment](../advanced/ci.md).
 
 ## `--exports`
 
-Generate the `exports`, `main`, `module`, and `types` fields in your `package.json`.
+Generate the `exports` field in your `package.json`.
 
 See also [Package Exports](../options/package-exports.md).

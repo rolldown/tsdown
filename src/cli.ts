@@ -77,10 +77,7 @@ cli
     '-F, --filter <pattern>',
     'Filter configs (cwd or name), e.g. /pkg-name$/ or pkg-name',
   )
-  .option(
-    '--exports',
-    'Generate export-related metadata for package.json (experimental)',
-  )
+  .option('--exports', 'Generate package exports for package.json')
   .action(async (input: string[], flags: UserConfig) => {
     globalLogger.level = flags.logLevel || 'info'
     globalLogger.info(

@@ -60,6 +60,11 @@ export interface DepsConfig {
    * @default false
    */
   skipNodeModulesBundle?: boolean
+
+  /**
+   * Override dependency bundling options for declaration file generation.
+   */
+  dts?: Pick<DepsConfig, 'alwaysBundle' | 'neverBundle'>
 }
 
 export interface ResolvedDepsConfig {
@@ -67,6 +72,11 @@ export interface ResolvedDepsConfig {
   alwaysBundle?: NoExternalFn
   onlyBundle?: Array<string | RegExp> | false
   skipNodeModulesBundle: boolean
+
+  /**
+   * Override dependency bundling options for declaration file generation.
+   */
+  dts: Pick<ResolvedDepsConfig, 'alwaysBundle' | 'neverBundle'>
 }
 
 export function resolveDepsConfig(
@@ -130,38 +140,51 @@ export function resolveDepsConfig(
     skipNodeModulesBundle = config.skipNodeModulesBundle
   }
 
-  if (typeof neverBundle === 'string') {
-    neverBundle = resolveRegex(neverBundle)
-  }
-  if (typeof alwaysBundle === 'string') {
-    alwaysBundle = resolveRegex(alwaysBundle)
-  }
-
-  if (alwaysBundle != null && typeof alwaysBundle !== 'function') {
-    const alwaysBundlePatterns = toArray(alwaysBundle)
-    alwaysBundle = (id) => matchPattern(id, alwaysBundlePatterns)
-  }
   if (skipNodeModulesBundle && alwaysBundle != null) {
     throw new TypeError(
       '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
     )
   }
+
   if (onlyBundle != null && onlyBundle !== false) {
     onlyBundle = toArray(onlyBundle)
   }
 
   return {
-    neverBundle,
-    alwaysBundle,
+    ...normalizeDepsOptions(alwaysBundle, neverBundle),
     onlyBundle,
     skipNodeModulesBundle,
+    dts: normalizeDepsOptions(
+      config.deps?.dts?.alwaysBundle,
+      config.deps?.dts?.neverBundle,
+    ),
+  }
+}
+
+function normalizeDepsOptions(
+  alwaysBundle?: DepsConfig['alwaysBundle'],
+  neverBundle?: DepsConfig['neverBundle'],
+): Pick<ResolvedDepsConfig, 'alwaysBundle' | 'neverBundle' | 'onlyBundle'> {
+  if (alwaysBundle != null && typeof alwaysBundle !== 'function') {
+    const alwaysBundlePatterns = toArray(alwaysBundle)
+    alwaysBundle = (id) => matchPattern(id, alwaysBundlePatterns)
+  }
+
+  return {
+    alwaysBundle,
+    neverBundle: resolveRegex(neverBundle),
   }
 }
 
 export function DepsPlugin(
   {
     pkg,
-    deps: { alwaysBundle, onlyBundle, skipNodeModulesBundle },
+    deps: {
+      alwaysBundle: jsAlwaysBundle,
+      onlyBundle,
+      skipNodeModulesBundle,
+      dts,
+    },
     logger,
     nameLabel,
   }: ResolvedConfig,
@@ -302,6 +325,8 @@ export function DepsPlugin(
   ): Promise<boolean | [true, string] | 'absolute' | 'no-external'> {
     if (id === shimFile) return false
 
+    const isDts = importer ? RE_DTS.test(importer) : false
+    const alwaysBundle = (isDts && dts?.alwaysBundle) || jsAlwaysBundle
     if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }

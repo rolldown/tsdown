@@ -1,9 +1,83 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
+  DepsPlugin,
   getTypesPackageName,
   parseNodeModulesPath,
   parsePackageSpecifier,
+  resolveDepsConfig,
 } from './deps.ts'
+
+describe('resolveDepsConfig', () => {
+  it('resolves declaration-only dependency options separately', () => {
+    const resolved = resolveDepsConfig({
+      deps: {
+        alwaysBundle: ['runtime-inline'],
+        neverBundle: 'runtime-external',
+        dts: {
+          alwaysBundle: ['types-inline', /^scoped-types-/],
+          neverBundle: '/^types-external$/',
+        },
+      },
+    })
+
+    expect(resolved.alwaysBundle?.('runtime-inline', undefined)).toBe(true)
+    expect(resolved.alwaysBundle?.('types-inline', undefined)).toBe(false)
+    expect(resolved.neverBundle).toBe('runtime-external')
+
+    expect(resolved.dts.alwaysBundle?.('types-inline', undefined)).toBe(true)
+    expect(resolved.dts.alwaysBundle?.('scoped-types-pkg', undefined)).toBe(
+      true,
+    )
+    expect(resolved.dts.alwaysBundle?.('runtime-inline', undefined)).toBe(false)
+    expect(resolved.dts.neverBundle).toBeInstanceOf(RegExp)
+    expect((resolved.dts.neverBundle as RegExp).test('types-external')).toBe(
+      true,
+    )
+  })
+})
+
+describe('DepsPlugin', () => {
+  it('uses dts alwaysBundle only for declaration importers', async () => {
+    const plugin = DepsPlugin(
+      {
+        pkg: {
+          dependencies: {
+            'types-inline': '^1.0.0',
+          },
+        },
+        deps: resolveDepsConfig({
+          deps: {
+            dts: {
+              alwaysBundle: ['types-inline'],
+            },
+          },
+        }),
+      } as any,
+      { inlinedDeps: new Map() } as any,
+    )
+    const handler = (plugin.resolveId as any).handler
+    const resolve = vi.fn((id: string) =>
+      Promise.resolve({
+        id: `/project/node_modules/${id}/index.d.ts`,
+      }),
+    )
+
+    await expect(
+      handler.call({ resolve }, 'types-inline', '/project/src/index.d.ts', {}),
+    ).resolves.toEqual({
+      id: '/project/node_modules/types-inline/index.d.ts',
+      moduleSideEffects: undefined,
+    })
+
+    await expect(
+      handler.call({ resolve }, 'types-inline', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: 'types-inline',
+      external: true,
+      moduleSideEffects: undefined,
+    })
+  })
+})
 
 describe('parsePackageSpecifier', () => {
   it('parses a simple package name', () => {

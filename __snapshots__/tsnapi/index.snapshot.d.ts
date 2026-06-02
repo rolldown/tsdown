@@ -30,6 +30,7 @@ export interface DepsConfig {
   onlyBundle?: Arrayable<string | RegExp> | false;
   onlyAllowBundle?: Arrayable<string | RegExp> | false;
   skipNodeModulesBundle?: boolean;
+  dts?: Pick<DepsConfig, "alwaysBundle" | "neverBundle">;
 }
 export interface DevtoolsOptions extends NonNullable<InputOptions["devtools"]> {
   ui?: boolean | Partial<StartOptions>;
@@ -98,6 +99,7 @@ export interface ResolvedDepsConfig {
   alwaysBundle?: NoExternalFn;
   onlyBundle?: Array<string | RegExp> | false;
   skipNodeModulesBundle: boolean;
+  dts: Pick<ResolvedDepsConfig, "alwaysBundle" | "neverBundle">;
 }
 export interface RolldownContext {
   buildOptions: BuildOptions;

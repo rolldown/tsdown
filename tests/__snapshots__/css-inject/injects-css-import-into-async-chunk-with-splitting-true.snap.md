@@ -1,4 +1,4 @@
-## async-CEAkTWyO.css
+## async-la_KkjCS.css
 
 ```css
 .async {
@@ -7,10 +7,10 @@
 
 ```
 
-## async-CEAkTWyO.mjs
+## async-la_KkjCS.mjs
 
 ```mjs
-import './async-CEAkTWyO.css';
+import './async-la_KkjCS.css';
 export {};
 
 ```
@@ -20,7 +20,7 @@ export {};
 ```mjs
 //#region index.ts
 const main = 1;
-import("./async-CEAkTWyO.mjs");
+import("./async-la_KkjCS.mjs");
 //#endregion
 export { main };
 

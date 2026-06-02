@@ -295,6 +295,6 @@ tsdown --copy public
 
 ## `--exports`
 
-自动生成 `package.json` 中的 `exports`、`main`、`module` 和 `types` 字段。
+自动生成 `package.json` 中的 `exports` 字段。
 
 另请参阅 [包导出](../options/package-exports.md)。

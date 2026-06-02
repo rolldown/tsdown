@@ -3,6 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { expectFilesSnapshot } from '@sxzz/test-utils'
+import { format } from 'prettier'
 import { glob } from 'tinyglobby'
 import { mergeUserOptions } from '../src/config/options.ts'
 import { build } from '../src/index.ts'
@@ -110,6 +111,7 @@ export interface TestBuildOptions {
   expectPattern?: string
 
   snapshot?: boolean
+  prettier?: boolean
 }
 
 export async function testBuild({
@@ -122,6 +124,7 @@ export async function testBuild({
   expectPattern,
   beforeBuild,
   snapshot: shouldSnapshot = true,
+  prettier,
 }: TestBuildOptions): Promise<{
   testName: string
   testDir: string
@@ -173,6 +176,25 @@ export async function testBuild({
         userOptions?.inputOptions,
         args,
       )
+
+      if (prettier) {
+        options.plugins = [
+          options.plugins,
+          {
+            name: 'test:prettier',
+            async generateBundle(_, bundle) {
+              for (const chunk of Object.values(bundle)) {
+                if (chunk.type !== 'chunk') continue
+                chunk.code = await format(chunk.code, {
+                  filepath: chunk.fileName,
+                  singleQuote: true,
+                })
+              }
+            },
+          },
+        ]
+      }
+
       return options
     },
   }
