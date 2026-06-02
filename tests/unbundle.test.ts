@@ -103,7 +103,7 @@ describe('unbundle', () => {
     expect(dtsFoo).not.toContain('~src')
     expect(dtsFoo).toMatch(/from ['"]\.\.\/types(?:\.m?[jt]s)?['"]/)
   })
-  
+
   test('with shims', async (context) => {
     const files = {
       'src/mod-a.ts': `export * from './shared.ts'`,
