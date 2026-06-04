@@ -146,7 +146,6 @@
     "unconfig-core": "catalog:prod"
   },
   "inlinedDependencies": {
-    "is-in-ci": "2.0.0",
     "package-manager-detector": "1.6.0",
     "pkg-types": "2.3.1"
   },
@@ -171,7 +170,6 @@
     "bumpp": "catalog:dev",
     "dedent": "catalog:dev",
     "eslint": "catalog:dev",
-    "is-in-ci": "catalog:prod",
     "memfs": "catalog:dev",
     "package-manager-detector": "catalog:prod",
     "pkg-types": "catalog:dev",

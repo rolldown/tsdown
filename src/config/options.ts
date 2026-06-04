@@ -3,7 +3,6 @@ import path from 'node:path'
 import process from 'node:process'
 import { blue } from 'ansis'
 import { createDefu } from 'defu'
-import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { readTsconfig } from 'rolldown-plugin-dts/internal'
 import { resolveClean } from '../features/clean.ts'
@@ -14,6 +13,7 @@ import { hasExportsTypes } from '../features/pkg/exports.ts'
 import { flattenPlugins } from '../features/plugin.ts'
 import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
+import { isInCI } from '../utils/ci.ts'
 import {
   pkgExists,
   resolveComma,
@@ -461,8 +461,8 @@ export function resolveFeatureOption<T>(
 }
 
 function resolveCIOption(value: boolean | CIOption): boolean {
-  if (value === 'ci-only') return isInCi ? true : false
-  if (value === 'local-only') return isInCi ? false : true
+  if (value === 'ci-only') return isInCI()
+  if (value === 'local-only') return !isInCI()
   return value
 }
 

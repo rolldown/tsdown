@@ -4,7 +4,7 @@ tsdown automatically detects CI environments and allows you to enable or disable
 
 ## CI Detection
 
-tsdown uses the [`is-in-ci`](https://www.npmjs.com/package/is-in-ci) package to detect CI environments. This covers all major CI providers including GitHub Actions, GitLab CI, Jenkins, CircleCI, Travis CI, and more.
+tsdown detects CI from the `CI` environment variable. CI mode is enabled when `process.env.CI` is set to a value other than `0` or `false` (case-insensitive).
 
 ## CI-Aware Options
 

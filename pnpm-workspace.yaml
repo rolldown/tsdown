@@ -74,7 +74,6 @@ catalogs:
     empathic: ^2.0.1
     hookable: ^6.1.1
     import-without-cache: ^0.4.0
-    is-in-ci: ^2.0.0
     lightningcss: ^1.32.0
     obug: ^2.1.1
     package-manager-detector: ^1.6.0

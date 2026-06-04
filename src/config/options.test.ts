@@ -1,5 +1,5 @@
-import isInCi from 'is-in-ci'
-import { describe, expect, test } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
+import { isInCI } from '../utils/ci.ts'
 import {
   resolveFeatureOption as _resolveFeatureOption,
   mergeConfig,
@@ -11,18 +11,54 @@ interface DefaultOption {
 }
 const resolveFeatureOption = _resolveFeatureOption<DefaultOption>
 
+afterEach(() => {
+  vi.unstubAllEnvs()
+})
+
+describe('isInCI', () => {
+  test('detects CI from process.env.CI', () => {
+    vi.stubEnv('CI', undefined)
+    expect(isInCI()).toBe(false)
+
+    vi.stubEnv('CI', '')
+    expect(isInCI()).toBe(true)
+
+    vi.stubEnv('CI', '0')
+    expect(isInCI()).toBe(false)
+
+    vi.stubEnv('CI', 'false')
+    expect(isInCI()).toBe(false)
+
+    vi.stubEnv('CI', 'FALSE')
+    expect(isInCI()).toBe(false)
+
+    vi.stubEnv('CI', '1')
+    expect(isInCI()).toBe(true)
+
+    vi.stubEnv('CI', 'true')
+    expect(isInCI()).toBe(true)
+  })
+})
+
 describe('resolveFeatureOption', () => {
   test('literal boolean', () => {
     expect(resolveFeatureOption(true, defaultOption)).toBe(defaultOption)
     expect(resolveFeatureOption(false, defaultOption)).toBe(false)
   })
 
-  test('literal CI', () => {
-    expect(resolveFeatureOption('ci-only', defaultOption)).toBe(
-      isInCi ? defaultOption : false,
-    )
+  test('literal CI in CI', () => {
+    vi.stubEnv('CI', 'true')
+
+    expect(resolveFeatureOption('ci-only', defaultOption)).toBe(defaultOption)
+    expect(resolveFeatureOption('local-only', defaultOption)).toBe(false)
+  })
+
+  test('literal CI locally', () => {
+    vi.stubEnv('CI', undefined)
+
+    expect(resolveFeatureOption('ci-only', defaultOption)).toBe(false)
     expect(resolveFeatureOption('local-only', defaultOption)).toBe(
-      isInCi ? false : defaultOption,
+      defaultOption,
     )
   })
 
@@ -43,18 +79,16 @@ describe('resolveFeatureOption', () => {
   })
 
   test('object with CI enabled', () => {
+    vi.stubEnv('CI', 'true')
+
     {
       const value = { enabled: 'ci-only' as const, a: 42 }
-      expect(resolveFeatureOption(value, defaultOption)).toBe(
-        isInCi ? value : false,
-      )
+      expect(resolveFeatureOption(value, defaultOption)).toBe(value)
     }
 
     {
       const value = { enabled: 'local-only' as const, a: 42 }
-      expect(resolveFeatureOption(value, defaultOption)).toBe(
-        isInCi ? false : value,
-      )
+      expect(resolveFeatureOption(value, defaultOption)).toBe(false)
     }
   })
 })

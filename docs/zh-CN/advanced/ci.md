@@ -4,7 +4,7 @@ tsdown 能够自动检测 CI 环境，并允许你根据构建是在本地还是
 
 ## CI 检测
 
-tsdown 使用 [`is-in-ci`](https://www.npmjs.com/package/is-in-ci) 包来检测 CI 环境，支持所有主流 CI 服务商，包括 GitHub Actions、GitLab CI、Jenkins、CircleCI、Travis CI 等。
+tsdown 通过 `CI` 环境变量检测 CI 环境。当 `process.env.CI` 被设置，且其值不是 `0` 或 `false`（不区分大小写）时，将启用 CI 模式。
 
 ## CI 感知选项
 

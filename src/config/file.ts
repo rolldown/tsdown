@@ -4,9 +4,9 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { underline } from 'ansis'
 import { depsStore, init, isSupported } from 'import-without-cache'
-import isInCi from 'is-in-ci'
 import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
+import { isInCI } from '../utils/ci.ts'
 import { fsStat } from '../utils/fs.ts'
 import { importWithError, toArray } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
@@ -136,7 +136,7 @@ export async function loadConfigFile(
 
     exported = await exported
     if (typeof exported === 'function') {
-      exported = await exported(inlineConfig, { ci: isInCi, rootConfig })
+      exported = await exported(inlineConfig, { ci: isInCI(), rootConfig })
     }
   }
 

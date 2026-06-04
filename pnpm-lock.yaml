@@ -188,9 +188,6 @@ catalogs:
     import-without-cache:
       specifier: ^0.4.0
       version: 0.4.0
-    is-in-ci:
-      specifier: ^2.0.0
-      version: 2.0.0
     lightningcss:
       specifier: ^1.32.0
       version: 1.32.0
@@ -340,9 +337,6 @@ importers:
       eslint:
         specifier: catalog:dev
         version: 10.4.1(jiti@2.7.0)
-      is-in-ci:
-        specifier: catalog:prod
-        version: 2.0.0
       memfs:
         specifier: catalog:dev
         version: 4.57.6(tslib@2.8.1)
@@ -3368,11 +3362,6 @@ packages:
   is-glob@4.0.3:
     resolution: {integrity: sha512-xelSayHH36ZgE7ZWhli7pW34hNbNl8Ojv5KVmkJD4hBdD3th8Tfk9vYasLM+mXWOZhFkgZfxhLSnrwRr4elSSg==}
     engines: {node: '>=0.10.0'}
-
-  is-in-ci@2.0.0:
-    resolution: {integrity: sha512-cFeerHriAnhrQSbpAxL37W1wcJKUUX07HyLWZCW1URJT/ra3GyUTzBgUnh24TMVfNTV2Hij2HLxkPHFZfOZy5w==}
-    engines: {node: '>=20'}
-    hasBin: true
 
   is-plain-obj@4.1.0:
     resolution: {integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==}
@@ -7520,8 +7509,6 @@ snapshots:
   is-glob@4.0.3:
     dependencies:
       is-extglob: 2.1.1
-
-  is-in-ci@2.0.0: {}
 
   is-plain-obj@4.1.0: {}
 
