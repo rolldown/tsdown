@@ -33,6 +33,7 @@ export function CssPostPlugin(
     name: 'tsdown:css-post',
 
     renderChunk(_code, chunk) {
+      if (styles.size === 0) return
       if (config.splitting) return
 
       let chunkCSS = ''
