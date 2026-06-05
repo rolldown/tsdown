@@ -10,9 +10,11 @@ on:
       - main
     paths:
       - docs/**
+      - src/**
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - tsconfig.json
       - .github/workflows/src/deploy.yml
       - .github/workflows/deploy.yml
 
@@ -43,6 +45,8 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: pnpm install
+
+      - run: pnpm run docs:generate
 
       - run: pnpm -C docs run void deploy
         env:
