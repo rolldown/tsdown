@@ -8,6 +8,12 @@ entries:
       - package: github:sxzz/workflows/.github/workflows/autofix.yml
         requested: main
         foundAt: .github/workflows/src/autofix.yml#jobs.autofix.uses
+  .github/workflows/src/deploy.yml:
+    output: .github/workflows/deploy.yml
+    dependencies:
+      - package: github:sxzz/workflows/setup-js
+        requested: main
+        foundAt: .github/workflows/src/deploy.yml#jobs.deploy-void.steps[0].uses
   .github/workflows/src/release-commit.yml:
     output: .github/workflows/release-commit.yml
     dependencies:
@@ -26,9 +32,6 @@ entries:
       - package: github:sxzz/workflows/.github/workflows/unit-test.yml
         requested: main
         foundAt: .github/workflows/src/unit-test.yml#jobs.unit-test.uses
-      - package: github:sxzz/workflows/setup-js
-        requested: main
-        foundAt: .github/workflows/src/unit-test.yml#jobs.deploy-void.steps[0].uses
 packages:
   github:actions/checkout:
     source: github
