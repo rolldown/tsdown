@@ -11,3 +11,16 @@ on:
 jobs:
   unit-test:
     uses: sxzz/workflows/.github/workflows/unit-test.yml@main
+
+  deploy-void:
+    name: Deploy to Void
+    needs: unit-test
+    if: github.repository == 'rolldown/tsdown' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: void
+    steps:
+      - uses: sxzz/workflows/setup-js@main
+      - run: pnpm -C docs run void deploy
+        env:
+          VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
+          VOID_PROJECT: tsdown

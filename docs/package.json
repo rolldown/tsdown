@@ -7,7 +7,8 @@
     "build": "vitepress build",
     "preview": "vitepress preview",
     "generate": "node .vitepress/scripts/generate-reference.ts",
-    "typecheck": "vue-tsc"
+    "typecheck": "vue-tsc",
+    "void": "void"
   },
   "dependencies": {
     "@vueuse/core": "catalog:docs",
@@ -24,6 +25,7 @@
     "vitepress": "catalog:docs",
     "vitepress-plugin-group-icons": "catalog:docs",
     "vitepress-plugin-llms": "catalog:docs",
+    "void": "catalog:docs",
     "vue-tsc": "catalog:docs"
   }
 }

@@ -26,6 +26,9 @@ entries:
       - package: github:sxzz/workflows/.github/workflows/unit-test.yml
         requested: main
         foundAt: .github/workflows/src/unit-test.yml#jobs.unit-test.uses
+      - package: github:sxzz/workflows/setup-js
+        requested: main
+        foundAt: .github/workflows/src/unit-test.yml#jobs.deploy-void.steps[0].uses
 packages:
   github:actions/checkout:
     source: github

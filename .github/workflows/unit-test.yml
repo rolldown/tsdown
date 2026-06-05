@@ -82,3 +82,38 @@ jobs:
 
       - name: Unit Test
         run: pnpm run test
+
+  deploy-void:
+    name: Deploy to Void
+    needs:
+      - unit-test-lint
+      - unit-test-test
+    if: github.repository == 'rolldown/tsdown' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: void
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: '1'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+
+      - name: Setup node
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: lts/*
+          cache: pnpm
+          package-manager-cache: true
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        shell: bash
+        run: pnpm install
+
+      - run: pnpm -C docs run void deploy
+        env:
+          VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
+          VOID_PROJECT: tsdown
