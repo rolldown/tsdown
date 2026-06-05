@@ -7,9 +7,11 @@ on:
     branches: [main]
     paths:
       - docs/**
+      - src/**
       - package.json
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
+      - tsconfig.json
       - .github/workflows/src/deploy.yml
       - .github/workflows/deploy.yml
 
@@ -21,6 +23,7 @@ jobs:
     environment: void
     steps:
       - uses: sxzz/workflows/setup-js@main
+      - run: pnpm run docs:generate
       - run: pnpm -C docs run void deploy
         env:
           VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
