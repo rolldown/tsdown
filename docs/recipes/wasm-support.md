@@ -138,7 +138,6 @@ The plugin accepts an options object:
 wasm({
   maxFileSize: 14 * 1024, // Max file size for inline (default: 14KB)
   fileName: '[hash][extname]', // Output file name pattern
-  publicPath: '', // Prefix for non-inlined file paths
   targetEnv: 'auto', // 'auto' | 'auto-inline' | 'browser' | 'node'
 })
 ```
@@ -147,5 +146,4 @@ wasm({
 | ------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `maxFileSize` | `14 * 1024`         | Maximum file size for inlining. Files exceeding this limit are copied to the output directory and loaded at runtime. Set to `0` to always copy.                                                                                                  |
 | `fileName`    | `'[hash][extname]'` | Pattern for renaming emitted WASM files.                                                                                                                                                                                                         |
-| `publicPath`  | —                   | Prefix added to file paths for non-inlined WASM files.                                                                                                                                                                                           |
 | `targetEnv`   | `'auto'`            | Controls the generated instantiation code. `'auto'` detects the environment at runtime; `'auto-inline'` always inlines and decodes based on environment; `'browser'` omits Node.js builtins; `'node'` omits `fetch` (requires Node.js 20.16.0+). |
