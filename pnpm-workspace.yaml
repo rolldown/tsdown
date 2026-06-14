@@ -19,7 +19,7 @@ catalogs:
     '@types/node': ^25.9.1
     '@types/picomatch': ^4.0.3
     '@types/semver': ^7.7.1
-    '@typescript/native-preview': 7.0.0-dev.20260604.1
+    '@typescript/native-preview': 7.0.0-dev.20260614.1
     '@vitest/coverage-v8': ^4.1.8
     '@vitest/ui': ^4.1.8
     actionspack: ^0.1.5
@@ -47,7 +47,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^4.2.0
     '@unocss/eslint-plugin': ^66.7.0
     '@vueuse/core': ^14.3.0
-    oxc-minify: ^0.134.0
+    oxc-minify: ^0.135.0
     typedoc: ^0.28.19
     typedoc-plugin-markdown: ^4.12.0
     typedoc-vitepress-theme: ^1.1.3
