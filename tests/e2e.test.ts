@@ -3,6 +3,8 @@ import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { describe, expect, test, vi } from 'vitest'
 import { resolveConfig, type UserConfig } from '../src/config/index.ts'
+import { formatDevDependencyDeclarationHint } from '../src/features/declaration-diagnostics.ts'
+import { build } from '../src/index.ts'
 import { slash } from '../src/utils/general.ts'
 import { chdir, testBuild, writeFixtures } from './utils.ts'
 import type { Plugin } from 'rolldown'
@@ -1066,6 +1068,44 @@ test('failOnWarn', async (context) => {
       },
     }),
   ).rejects.toThrow('Module not found')
+})
+
+test('dts missing export hints when dependency is dev-only', async (context) => {
+  const { testDir } = await writeFixtures(context, {
+    'index.ts': `
+      import type { Missing } from 'dev-only'
+      export interface Box {
+        value: Missing
+      }
+    `,
+    'node_modules/dev-only/index.d.ts': `
+      export interface Present {
+        value: string
+      }
+    `,
+    'node_modules/dev-only/package.json': JSON.stringify({
+      name: 'dev-only',
+      version: '1.0.0',
+      types: 'index.d.ts',
+    }),
+    'package.json': JSON.stringify({
+      name: 'test-pkg',
+      version: '1.0.0',
+      devDependencies: {
+        'dev-only': '^1.0.0',
+      },
+    }),
+  })
+
+  await expect(
+    build({
+      cwd: testDir,
+      config: false,
+      entry: 'index.ts',
+      dts: true,
+      logLevel: 'silent',
+    }),
+  ).rejects.toThrow(formatDevDependencyDeclarationHint('dev-only'))
 })
 
 describe('resolve dep subpath without exports field', () => {
