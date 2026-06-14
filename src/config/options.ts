@@ -150,7 +150,6 @@ export async function resolveUserConfig(
     (removeNodeProtocol ? 'strip' : false)
 
   outDir = path.resolve(cwd, outDir)
-  clean = resolveClean(clean, outDir, cwd)
 
   const rawEntry = entry
   const [resolvedEntry, resolvedRoot] = await resolveEntry(
@@ -314,12 +313,11 @@ export async function resolveUserConfig(
   }
 
   /// keep-sorted
-  const config: Omit<ResolvedConfig, 'format'> = {
+  const config: Omit<ResolvedConfig, 'clean' | 'format'> = {
     ...userConfig,
     alias,
     attw,
     cjsDefault,
-    clean,
     configDeps,
     copy: publicDir || copy,
     css,
@@ -371,6 +369,9 @@ export async function resolveUserConfig(
   const resolvedConfigs = formats.map((fmt, idx): ResolvedConfig => {
     const once = idx === 0
     const overrides = objectFormat ? format[fmt] : undefined
+    const formatOutDir = overrides?.outDir
+      ? path.resolve(cwd, overrides.outDir)
+      : outDir
     return {
       ...config,
       // only copy once
@@ -379,6 +380,8 @@ export async function resolveUserConfig(
       onSuccess: once ? config.onSuccess : undefined,
       format: normalizeFormat(fmt),
       ...overrides,
+      outDir: formatOutDir,
+      clean: resolveClean(overrides?.clean ?? clean, formatOutDir, cwd),
     }
   })
 
