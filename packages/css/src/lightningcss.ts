@@ -149,7 +149,7 @@ const ESBUILD_LIGHTNINGCSS_MAPPING: Record<string, keyof Targets> = {
 
 function parseVersion(version: string): number | null {
   const [major, minor = 0, patch = 0] = version
-    .split('-')[0]
+    .split('-', 1)[0]
     .split('.')
     .map((v) => Number.parseInt(v, 10))
 

@@ -16,7 +16,7 @@ export function warnLegacyCJS(config: ResolvedConfig): void {
   }
 
   const supportRequireESM = config.target.some((t) => {
-    const version = coerce(t.split('node')[1])
+    const version = coerce(t.split('node', 2)[1])
     return version && satisfies(version, '^20.19.0 || >=22.12.0')
   })
 

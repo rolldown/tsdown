@@ -14,8 +14,8 @@ catalogs:
       version: 3.3.0
   dev:
     '@sxzz/eslint-config':
-      specifier: ^8.2.0
-      version: 8.2.0
+      specifier: ^8.2.1
+      version: 8.2.1
     '@sxzz/prettier-config':
       specifier: ^2.3.1
       version: 2.3.1
@@ -286,7 +286,7 @@ importers:
         version: 0.18.3
       '@sxzz/eslint-config':
         specifier: catalog:dev
-        version: 8.2.0(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/rule-tester@8.60.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.61.1(typescript@6.0.3))(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@unocss/eslint-plugin@66.7.2(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(prettier@3.8.4)(typescript@6.0.3)
+        version: 8.2.1(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/rule-tester@8.60.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.61.1(typescript@6.0.3))(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@unocss/eslint-plugin@66.7.2(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(prettier@3.8.4)(typescript@6.0.3)
       '@sxzz/prettier-config':
         specifier: catalog:dev
         version: 2.3.1
@@ -2518,9 +2518,9 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@sxzz/eslint-config@8.2.0':
-    resolution: {integrity: sha512-HESP3/THWw16E68sKvUUsnMRkokbN7yFUIcyFGPdO/bfnPoaWq0XJCqhs6rFN4Qba+lTVjsq1T9S1oGvIz542w==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+  '@sxzz/eslint-config@8.2.1':
+    resolution: {integrity: sha512-03o0xAAC+KKIu8FoDv/f3LFS4DTOWqGFnsrWQEuATLCYVDAT9GIqy+HtCXaO5Ho2ICvVqocIPuHwsL51F0/SGg==}
+    engines: {node: ^22.18.0 || >=24.0.0}
     peerDependencies:
       '@unocss/eslint-plugin': '>=65.0.0'
       eslint: ^9.5.0 || ^10.0.0
@@ -3555,7 +3555,7 @@ packages:
 
   dts-resolver@3.0.0:
     resolution: {integrity: sha512-1T1f+z+4tl9XD+m+0HBgWoL/nm0bOIffyWaUuUSBlFg/86IWvfx+wjNaO/ybU0AJzG9/Mi5hBUgGV6zCmWEN7Q==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+    engines: {node: ^22.18.0 || >=24.0.0}
     peerDependencies:
       oxc-resolver: '>=11.0.0'
     peerDependenciesMeta:
@@ -3749,7 +3749,7 @@ packages:
 
   eslint-plugin-sxzz@0.5.0:
     resolution: {integrity: sha512-RU31t0+dkBYWzlZIuYurLXvt8dIx62EpMADGiaa//aX9XtVgyYSV81boDRRK6lrNa0I0ZotTsqUm8DC6T71z+g==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+    engines: {node: ^22.18.0 || >=24.0.0}
     peerDependencies:
       eslint: ^9.15.0 || ^10.0.0
 
@@ -4087,7 +4087,7 @@ packages:
 
   import-without-cache@0.4.0:
     resolution: {integrity: sha512-NkJQA7oZ4YHQhd2+H3BoRFKF3d/XNsiKpHZCQEMH9pDX27hQQLsTyOocyRgaIVtf8gHX3Nt3LPkR4e5EdtPAGQ==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+    engines: {node: ^22.18.0 || >=24.0.0}
 
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
@@ -4333,7 +4333,7 @@ packages:
 
   magic-string-ast@2.0.0:
     resolution: {integrity: sha512-h16Fs25GTaVkwRMbP2Nhb3cFyOy3Fq9x7fp3DVybuiJQ6pePRmcqK+phvXkDUVUlikTI8qS96l0EWF5zl0NyUw==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+    engines: {node: ^22.18.0 || >=24.0.0}
 
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
@@ -4968,7 +4968,7 @@ packages:
 
   rolldown-plugin-require-cjs@0.4.1:
     resolution: {integrity: sha512-RVOfeIzIjN/HnMtUeH1gohlKhkP9XYPh8GlPr6wi5KWuiABsAL5he8aXuXFD6QG5/J5/vjkYqqr34ZC/pCZ/ig==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+    engines: {node: ^22.18.0 || >=24.0.0}
     peerDependencies:
       rolldown: ~1.1.1
 
@@ -5477,7 +5477,7 @@ packages:
 
   unplugin-ast@0.17.0:
     resolution: {integrity: sha512-MlXd4ZiA6oOkJe/vDyGvr1ocNOhGvFfP/qKUq6BN6nYT6WsnND0KW3qjNY96KpVr9+1ts+9LtxrAxeE0Cp0DwA==}
-    engines: {node: ^22.18.0 || >=24.11.0}
+    engines: {node: ^22.18.0 || >=24.0.0}
 
   unplugin-raw@0.7.0:
     resolution: {integrity: sha512-YUhRODjYefyC57RjjWTME2G7cAOHEFRM2gncw0yoKYhMIW4EXbo3TmLCMgHONxDAl6SEC6O4EIPlEOt6XrEZiw==}
@@ -7356,7 +7356,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@sxzz/eslint-config@8.2.0(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/rule-tester@8.60.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.61.1(typescript@6.0.3))(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@unocss/eslint-plugin@66.7.2(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(prettier@3.8.4)(typescript@6.0.3)':
+  '@sxzz/eslint-config@8.2.1(@typescript-eslint/eslint-plugin@8.61.1(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/parser@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/rule-tester@8.60.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/typescript-estree@8.61.1(typescript@6.0.3))(@typescript-eslint/utils@8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@unocss/eslint-plugin@66.7.2(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.5.0(jiti@2.7.0))(prettier@3.8.4)(typescript@6.0.3)':
     dependencies:
       '@eslint-community/eslint-plugin-eslint-comments': 4.7.2(eslint@10.5.0(jiti@2.7.0))
       '@eslint/js': 10.0.1(eslint@10.5.0(jiti@2.7.0))

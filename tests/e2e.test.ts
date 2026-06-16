@@ -12,7 +12,7 @@ const pluginMockDepCode: Plugin = {
   load: {
     filter: { id: RE_NODE_MODULES },
     handler(id) {
-      const name = slash(id).split('/node_modules/').at(-1)!.split('/')[0]
+      const name = slash(id).split('/node_modules/').at(-1)!.split('/', 1)[0]
       return `export const ${name} = 42`
     },
   },
