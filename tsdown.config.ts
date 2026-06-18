@@ -3,7 +3,6 @@ import ApiSnapshot from 'tsnapi/rolldown'
 import { isCallOf } from 'unplugin-ast/ast-kit'
 import AST from 'unplugin-ast/rolldown'
 import { RemoveNode } from 'unplugin-ast/transformers'
-import pkg from './package.json' with { type: 'json' }
 import { defineConfig } from './src/config.ts'
 
 export default defineConfig([
@@ -20,7 +19,6 @@ export default defineConfig([
     failOnWarn: 'ci-only',
     define: {
       'import.meta.TSDOWN_PRODUCTION': 'true',
-      'import.meta.TSDOWN_VERSION': JSON.stringify(pkg.version),
     },
     dts: true,
     unused: {
