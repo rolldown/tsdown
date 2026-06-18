@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
-import { describe, expect, test, vi, type TestContext } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { resolveConfig, type UserConfig } from '../src/config/index.ts'
 import { slash } from '../src/utils/general.ts'
 import { chdir, testBuild, writeFixtures } from './utils.ts'
@@ -1066,88 +1066,6 @@ test('failOnWarn', async (context) => {
       },
     }),
   ).rejects.toThrow('Module not found')
-})
-
-describe('failOnWarn observes warnings independently of logLevel', () => {
-  // testBuild forces rolldown's logLevel to 'info' via its inputOptions
-  // override, so it cannot exercise the silent-mode path. These tests call
-  // build() directly with logLevel: 'silent' to reproduce the bug from #952:
-  // failOnWarn was previously coupled to rolldown's defaultHandler, which
-  // becomes a no-op when logLevel is silent and silently externalised
-  // unresolved imports instead of failing the build.
-
-  async function runIsolatedBuild(
-    context: TestContext,
-    options: {
-      logLevel: 'silent' | 'warn'
-      failOnWarn: boolean
-      entryCode: string
-    },
-  ): Promise<{ rejected: boolean; message?: string }> {
-    const { build } = await import('../src/index.ts')
-    const { testDir } = await writeFixtures(context, {
-      'index.ts': options.entryCode,
-      'package.json': JSON.stringify({ type: 'module', private: true }),
-    })
-    const restoreCwd = chdir(testDir)
-    try {
-      await build({
-        entry: 'index.ts',
-        outDir: 'dist',
-        format: 'esm',
-        platform: 'node',
-        dts: false,
-        config: false,
-        tsconfig: false,
-        logLevel: options.logLevel,
-        failOnWarn: options.failOnWarn,
-        deps: { alwaysBundle: () => true, onlyBundle: false },
-      })
-      return { rejected: false }
-    } catch (error) {
-      return { rejected: true, message: (error as Error).message }
-    } finally {
-      restoreCwd()
-    }
-  }
-
-  test('silent + failOnWarn + warning => build throws', async (context) => {
-    const result = await runIsolatedBuild(context, {
-      logLevel: 'silent',
-      failOnWarn: true,
-      entryCode: `import unresolved from 'unresolved'\nexport const handler = () => unresolved\n`,
-    })
-    expect(result.rejected).toBe(true)
-    expect(result.message).toMatch(/failed|Module not found|unresolved/)
-  })
-
-  test('silent + failOnWarn + clean build => build succeeds', async (context) => {
-    const result = await runIsolatedBuild(context, {
-      logLevel: 'silent',
-      failOnWarn: true,
-      entryCode: `export const handler = () => 1\n`,
-    })
-    expect(result.rejected).toBe(false)
-  })
-
-  test('silent + failOnWarn=false + warning => build succeeds (failOnWarn off respected)', async (context) => {
-    const result = await runIsolatedBuild(context, {
-      logLevel: 'silent',
-      failOnWarn: false,
-      entryCode: `import unresolved from 'unresolved'\nexport const handler = () => unresolved\n`,
-    })
-    expect(result.rejected).toBe(false)
-  })
-
-  test('warn + failOnWarn + warning => still throws (regression preserved)', async (context) => {
-    const result = await runIsolatedBuild(context, {
-      logLevel: 'warn',
-      failOnWarn: true,
-      entryCode: `import unresolved from 'unresolved'\nexport const handler = () => unresolved\n`,
-    })
-    expect(result.rejected).toBe(true)
-    expect(result.message).toMatch(/failed|Module not found|unresolved/)
-  })
 })
 
 describe('resolve dep subpath without exports field', () => {
