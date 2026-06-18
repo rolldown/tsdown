@@ -9,6 +9,7 @@ import {
   type ExternalOption,
   type ExternalOptionFunction,
   type InputOptions,
+  type LogLevelOption,
   type OutputOptions,
   type Plugin,
   type RolldownPluginOption,
@@ -110,6 +111,7 @@ async function resolveInputOptions(
     unused,
     watch,
   } = config
+  const loggerLevelIndex = LogLevels[logger.level]
 
   const plugins: RolldownPluginOption = []
 
@@ -173,7 +175,7 @@ async function resolveInputOptions(
     }
   }
 
-  if (report && LogLevels[logger.level] >= 3 /* info */) {
+  if (report && loggerLevelIndex >= 3 /* info */) {
     plugins.push(ReportPlugin(config, cjsDts, isDualFormat))
   }
 
@@ -230,6 +232,15 @@ async function resolveInputOptions(
     external = deps.neverBundle
   }
 
+  const logLevel: LogLevelOption =
+    // When failOnWarn is enabled, ensure rolldown's log level is at least
+    // 'warn' so its defaultHandler can escalate warnings to build errors.
+    logger.options?.failOnWarn && loggerLevelIndex < 2 /* warn */
+      ? 'warn'
+      : logger.level === 'error'
+        ? 'silent'
+        : logger.level
+
   const inputOptions = await mergeUserOptions(
     {
       input: entry,
@@ -251,17 +262,7 @@ async function resolveInputOptions(
         '.node': 'copy',
         ...loader,
       },
-      // When failOnWarn is enabled, ensure rolldown's log level is at least
-      // 'warn' so its defaultHandler can escalate warnings to build errors.
-      // Otherwise a caller passing logLevel: 'silent' would never fail because
-      // rolldown's defaultHandler becomes a no-op.
-      logLevel: logger.options?.failOnWarn
-        ? logger.level === 'silent' || logger.level === 'error'
-          ? 'warn'
-          : logger.level
-        : logger.level === 'error'
-          ? 'silent'
-          : logger.level,
+      logLevel,
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled
         if (cjsDefault && log.code === 'MIXED_EXPORT') return
