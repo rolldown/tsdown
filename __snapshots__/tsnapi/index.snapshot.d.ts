@@ -282,6 +282,7 @@ export declare function resolveUserConfig(_: UserConfig, _: InlineConfig, _: Set
 
 // #region Variables
 export declare const globalLogger: Logger;
+export declare const version: string;
 // #endregion
 
 // #region Other

@@ -4,6 +4,7 @@ export { resolveUserConfig } from './config/options.ts'
 export * from './config/types.ts'
 export { enableDebug } from './features/debug.ts'
 export { globalLogger, type Logger } from './utils/logger.ts'
+export const version: string = import.meta.TSDOWN_VERSION ?? '0.0.0'
 /**
  * @ignore
  */
