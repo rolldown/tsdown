@@ -11,6 +11,7 @@ export async function resolveUserConfig(_, _, _) {}
 
 // #region Variables
 export var globalLogger /* const */
+export var version /* const */
 // #endregion
 
 // #region Other
