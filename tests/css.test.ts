@@ -1689,4 +1689,41 @@ describe('css', () => {
       expect(css).toContain('.design-system-default')
     })
   })
+
+  test('external dependency CSS is bundled via JS import', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import 'my-lib/styles/main.css';\nexport const foo = 'bar';`,
+        'node_modules/my-lib/styles/main.css': `.lib-component { color: green }`,
+        'node_modules/my-lib/package.json': JSON.stringify({
+          name: 'my-lib',
+          version: '1.0.0',
+        }),
+        'package.json': JSON.stringify({
+          dependencies: { 'my-lib': '^1.0.0' },
+        }),
+      },
+    })
+    expect(outputFiles).toContain('style.css')
+    expect(fileMap['style.css']).toContain('.lib-component')
+  })
+
+  test('external dependency CSS is bundled via JS inline import', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import style from 'my-lib/styles/main.css?inline';\nexport { style };`,
+        'node_modules/my-lib/styles/main.css': `.lib-inline { color: blue }`,
+        'node_modules/my-lib/package.json': JSON.stringify({
+          name: 'my-lib',
+          version: '1.0.0',
+        }),
+        'package.json': JSON.stringify({
+          dependencies: { 'my-lib': '^1.0.0' },
+        }),
+      },
+    })
+    expect(fileMap['index.mjs']).toContain('.lib-inline')
+  })
 })
