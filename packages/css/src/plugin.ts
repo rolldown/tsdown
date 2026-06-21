@@ -34,6 +34,7 @@ interface CssPluginConfig {
   css: ResolvedCssOptions
   cwd: string
   target?: string[]
+  sourceMap: boolean
 }
 
 interface CssPluginResult {
@@ -59,6 +60,7 @@ export function CssPlugin(
     css: resolveCssOptions(config.css, config.target, config.unbundle),
     cwd: config.cwd,
     target: config.target,
+    sourceMap: Boolean(config.sourcemap),
   }
   const styles: CssStyles = new Map()
   const modulesMap = new Map<string, Record<string, string>>()
@@ -119,6 +121,7 @@ export function CssPlugin(
 
         const deps: string[] = []
         let modules: Record<string, string> | undefined
+        let map: string | undefined
 
         if (cssConfig.css.transformer === 'lightningcss') {
           const result = await processWithLightningCSS(
@@ -132,6 +135,7 @@ export function CssPlugin(
           )
           code = result.code
           modules = result.modules
+          map = result.map
         } else {
           const result = await processWithPostCSS(
             code,
@@ -143,6 +147,7 @@ export function CssPlugin(
           )
           code = result.code
           modules = result.modules
+          map = result.map
         }
 
         for (const dep of deps) {
@@ -170,7 +175,9 @@ export function CssPlugin(
 
         // Return compiled CSS without converting to JS.
         // User plugins can still transform this CSS (e.g. Vue scoped styles).
-        return { code }
+        // `map` is `null` when no real map is available (e.g. no transform ran),
+        // which tells Rolldown the transform has no sourcemap instead of warning.
+        return { code, map: map ?? null }
       },
     },
   }
@@ -189,9 +196,13 @@ export function CssPlugin(
         const isInline = RE_INLINE.test(id)
         const modules = modulesMap.get(id)
 
+        // CSS is rewritten into a JS module here; there is no meaningful
+        // CSS-to-JS sourcemap, so return `map: null` to silence Rolldown's
+        // SOURCEMAP_BROKEN warning without claiming an incorrect map.
         if (isInline) {
           return {
             code: `export default ${JSON.stringify(code)};`,
+            map: null,
             moduleSideEffects: false,
             moduleType: 'js',
           }
@@ -204,6 +215,7 @@ export function CssPlugin(
         if (modules) {
           return {
             code: modulesToEsm(modules),
+            map: null,
             moduleSideEffects: false,
             moduleType: 'js',
           }
@@ -211,6 +223,7 @@ export function CssPlugin(
 
         return {
           code: '',
+          map: null,
           moduleSideEffects: 'no-treeshake',
           moduleType: 'js',
         }
@@ -322,6 +335,7 @@ export function CssPlugin(
 
 interface ProcessResult {
   code: string
+  map?: string
   modules?: Record<string, string>
 }
 
@@ -380,6 +394,7 @@ async function processWithLightningCSS(
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
       cssModules,
+      sourceMap: config.sourceMap,
     })
   }
 
@@ -391,6 +406,7 @@ async function processWithLightningCSS(
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
       cssModules,
+      sourceMap: config.sourceMap,
     })
   }
 
@@ -403,12 +419,17 @@ async function processWithLightningCSS(
         minify: config.css.minify,
         cssModules,
         preprocessorOptions: config.css.preprocessorOptions,
+        sourceMap: config.sourceMap,
         logger,
       },
       code,
     )
     deps.push(...bundleResult.deps)
-    return { code: bundleResult.code, modules: bundleResult.modules }
+    return {
+      code: bundleResult.code,
+      map: bundleResult.map,
+      modules: bundleResult.modules,
+    }
   }
 
   return { code: '' }
@@ -446,6 +467,7 @@ async function processWithPostCSS(
     config.cwd,
     needInlineImport,
     isModule ? { isModule: true, config: modulesConfig } : undefined,
+    config.sourceMap,
   )
   code = postcssResult.code
   deps.push(...postcssResult.deps)
@@ -454,9 +476,17 @@ async function processWithPostCSS(
     target: config.css.target,
     lightningcss: config.css.lightningcss,
     minify: config.css.minify,
+    sourceMap: config.sourceMap,
+    inputSourceMap: postcssResult.map,
   })
 
-  return { code: transformResult.code, modules: postcssResult.modules }
+  // When LightningCSS skips its transform (no targets/minify), it returns no
+  // map; fall back to the PostCSS map so the chain still has one.
+  return {
+    code: transformResult.code,
+    map: transformResult.map ?? postcssResult.map,
+    modules: postcssResult.modules,
+  }
 }
 
 function isEmptyChunkCode(code: string): boolean {

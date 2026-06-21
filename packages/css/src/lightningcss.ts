@@ -16,6 +16,7 @@ export interface TransformCssOptions {
   minify?: boolean
   cssModules?: boolean | CSSModulesConfig
   sourceMap?: boolean
+  inputSourceMap?: string
 }
 
 export interface TransformCssResult {
@@ -30,12 +31,14 @@ export interface BundleCssOptions {
   minify?: boolean
   cssModules?: boolean | CSSModulesConfig
   preprocessorOptions?: PreprocessorOptions
+  sourceMap?: boolean
   logger: Logger
 }
 
 export interface BundleCssResult {
   code: string
   deps: string[]
+  map?: string
   modules?: Record<string, string>
 }
 
@@ -64,10 +67,13 @@ export async function transformWithLightningCSS(
     targets,
     minify: options.minify,
     cssModules: options.cssModules,
+    sourceMap: options.sourceMap,
+    inputSourceMap: options.inputSourceMap,
   })
 
   return {
     code: decoder.decode(result.code),
+    map: result.map ? decoder.decode(result.map) : undefined,
     modules: result.exports
       ? extractLightningCssModuleExports(result.exports)
       : undefined,
@@ -92,6 +98,7 @@ export async function bundleWithLightningCSS(
     targets,
     minify: options.minify,
     cssModules: options.cssModules,
+    sourceMap: options.sourceMap,
     resolver: {
       async read(filePath: string) {
         let fileCode: string
@@ -129,8 +136,9 @@ export async function bundleWithLightningCSS(
   })
 
   return {
-    code: new TextDecoder().decode(result.code),
+    code: decoder.decode(result.code),
     deps,
+    map: result.map ? decoder.decode(result.map) : undefined,
     modules: result.exports
       ? extractLightningCssModuleExports(result.exports)
       : undefined,
