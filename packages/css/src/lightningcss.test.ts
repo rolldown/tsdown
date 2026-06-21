@@ -1,6 +1,9 @@
 import { browserslistToTargets } from 'lightningcss'
 import { expect, test } from 'vitest'
-import { esbuildTargetToLightningCSS } from './lightningcss.ts'
+import {
+  esbuildTargetToLightningCSS,
+  transformWithLightningCSS,
+} from './lightningcss.ts'
 
 test('esbuildTargetToLightningCSS', () => {
   const expected = browserslistToTargets([
@@ -27,4 +30,30 @@ test('esbuildTargetToLightningCSS', () => {
     }
   `)
   expect(actual).toEqual(expected)
+})
+
+test('transformWithLightningCSS returns a source map when requested', async () => {
+  const result = await transformWithLightningCSS(
+    'body { color: red }',
+    'x.css',
+    {
+      minify: true,
+      sourceMap: true,
+    },
+  )
+  expect(result.map).toBeTypeOf('string')
+  const map = JSON.parse(result.map!)
+  expect(map.version).toBe(3)
+  expect(map.mappings).toBeTruthy()
+})
+
+test('transformWithLightningCSS omits the map by default', async () => {
+  const result = await transformWithLightningCSS(
+    'body { color: red }',
+    'x.css',
+    {
+      minify: true,
+    },
+  )
+  expect(result.map).toBeUndefined()
 })
