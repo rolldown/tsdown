@@ -15,10 +15,12 @@ export interface TransformCssOptions {
   lightningcss?: LightningCSSOptions
   minify?: boolean
   cssModules?: boolean | CSSModulesConfig
+  sourceMap?: boolean
 }
 
 export interface TransformCssResult {
   code: string
+  map?: string
   modules?: Record<string, string>
 }
 
