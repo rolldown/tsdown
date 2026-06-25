@@ -148,4 +148,3 @@ export default defineConfig({
 ```
 
 With `config: false`, sub-package `tsdown.config.*` files and the `package.json#tsdown` field are ignored. The root config applies as-is to every sub-package.
-
