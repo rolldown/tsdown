@@ -3,7 +3,7 @@ import { isBuiltin } from 'node:module'
 import path from 'node:path'
 import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
-import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
+import { RE_CSS, RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { and, id, importerId, include } from 'rolldown/filter'
 import {
   matchPattern,
@@ -328,6 +328,12 @@ export function DepsPlugin(
     const isDts = importer ? RE_DTS.test(importer) : false
     const alwaysBundle = (isDts && dts?.alwaysBundle) || jsAlwaysBundle
     if (alwaysBundle?.(id, importer)) {
+      return 'no-external'
+    }
+
+    // CSS files must always be bundled so the CSS plugin can process them
+    const cssCheckId = resolved?.id || id
+    if (RE_CSS.test(cssCheckId.split('?', 1)[0])) {
       return 'no-external'
     }
 
