@@ -206,8 +206,12 @@ async function resolveInputOptions(
   let inject: TransformOptions['inject']
   if (shims && !cjsDts) {
     if (unbundle) {
-      define = { ...define, ...shimsDefine }
-      plugins.push(shimsPlugin)
+      // shimsPlugin's banner is ESM syntax so gate it like
+      // getShimsInject or it ends up in in cjs output
+      if (format === 'es' && platform === 'node') {
+        define = { ...define, ...shimsDefine }
+        plugins.push(shimsPlugin)
+      }
     } else {
       inject = getShimsInject(format, platform)
     }
