@@ -9,6 +9,7 @@ interface PostCSSConfigResult {
 interface PostCSSProcessResult {
   code: string
   deps: string[]
+  map?: string
   modules?: Record<string, string>
 }
 
@@ -70,6 +71,7 @@ export async function processWithPostCSS(
   cwd: string,
   injectImport?: boolean,
   modulesOptions?: PostCSSModulesOptions,
+  sourceMap?: boolean,
 ): Promise<PostCSSProcessResult> {
   const config = await resolvePostCSSConfig(postcssOption, cwd)
 
@@ -117,6 +119,9 @@ export async function processWithPostCSS(
     ...config?.options,
     from: filename,
     to: filename,
+    map: sourceMap
+      ? { inline: false, annotation: false, prev: false }
+      : undefined,
   })
 
   const deps: string[] = []
@@ -131,5 +136,5 @@ export async function processWithPostCSS(
     }
   }
 
-  return { code: result.css, deps, modules }
+  return { code: result.css, deps, map: result.map?.toString(), modules }
 }

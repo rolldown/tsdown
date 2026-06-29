@@ -1689,4 +1689,73 @@ describe('css', () => {
       expect(css).toContain('.design-system-default')
     })
   })
+
+  describe('sourcemap', () => {
+    function sourcemapWarnings(warnings: { code?: string }[]) {
+      return warnings.filter((warning) => warning.code === 'SOURCEMAP_BROKEN')
+    }
+
+    test('lightningcss does not warn SOURCEMAP_BROKEN', async (context) => {
+      const { outputFiles, warnings } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './foo.css'\nexport const value = 42`,
+          'foo.css': `body { color: red }`,
+        },
+        options: { sourcemap: true },
+      })
+      expect(sourcemapWarnings(warnings)).toEqual([])
+      expect(outputFiles).toContain('index.mjs.map')
+    })
+
+    test('postcss does not warn SOURCEMAP_BROKEN', async (context) => {
+      const { outputFiles, warnings } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './style.css'\nexport const value = 42`,
+          'style.css': `.foo { color: red }`,
+        },
+        options: {
+          sourcemap: true,
+          css: {
+            transformer: 'postcss',
+            postcss: {
+              plugins: [{ postcssPlugin: 'noop', Once() {} }],
+            },
+          },
+        },
+      })
+      expect(sourcemapWarnings(warnings)).toEqual([])
+      expect(outputFiles).toContain('index.mjs.map')
+    })
+
+    test('css modules do not warn SOURCEMAP_BROKEN', async (context) => {
+      const { outputFiles, warnings } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as styles } from './app.module.css'`,
+          'app.module.css': `.title { color: red }`,
+        },
+        options: {
+          sourcemap: true,
+          css: { modules: { generateScopedName: 'mod_[local]' } },
+        },
+      })
+      expect(sourcemapWarnings(warnings)).toEqual([])
+      expect(outputFiles).toContain('index.mjs.map')
+    })
+
+    test('inline css does not warn SOURCEMAP_BROKEN', async (context) => {
+      const { outputFiles, warnings } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import css from './foo.css?inline'\nconsole.log(css)`,
+          'foo.css': `.foo { color: red }`,
+        },
+        options: { sourcemap: true },
+      })
+      expect(sourcemapWarnings(warnings)).toEqual([])
+      expect(outputFiles).toContain('index.mjs.map')
+    })
+  })
 })
