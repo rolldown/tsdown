@@ -14,6 +14,7 @@ import {
 import { warnLegacyCJS } from './features/cjs.ts'
 import { cleanChunks, cleanOutDir } from './features/clean.ts'
 import { copy } from './features/copy.ts'
+import { addDeclarationDiagnosticHints } from './features/declaration-diagnostics.ts'
 import { startDevtoolsUI } from './features/devtools.ts'
 import { isGlobEntry, toObjectEntry } from './features/entry.ts'
 import { buildExe } from './features/exe.ts'
@@ -169,7 +170,10 @@ async function buildSingle(
     watcher = rolldownWatch(configs)
     handleWatcher(watcher)
   } else {
-    const outputs = await rolldownBuild(configs)
+    const outputs = await rolldownBuild(configs).catch((error: unknown) => {
+      addDeclarationDiagnosticHints(error, config)
+      throw error
+    })
     for (const { output } of outputs) {
       chunks.push(...addOutDirToChunks(output, outDir))
     }
@@ -258,6 +262,7 @@ async function buildSingle(
 
         case 'ERROR': {
           await event.result.close()
+          addDeclarationDiagnosticHints(event.error, config)
           logger.error(event.error)
           hasError = true
           break
