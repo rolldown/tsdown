@@ -34,7 +34,7 @@ catalogs:
     prettier: ^3.8.4
     rolldown-plugin-require-cjs: ^0.4.1
     sass: ^1.101.0
-    tsnapi: ^0.3.3
+    tsnapi: ^1.0.0
     tsx: ^4.22.4
     typescript: ~6.0.3
     unplugin-ast: ^0.17.0
