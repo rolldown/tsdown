@@ -134,7 +134,7 @@ async function packTarball(
     const tarballPath = await pack(pkgDir, detected, destination, true)
     debug('Packed tarball at %s', tarballPath)
 
-    return readFile(tarballPath)
+    return await readFile(tarballPath)
   } finally {
     if (debug.enabled) {
       debug('Preserving pack directory for debugging: %s', destination)
