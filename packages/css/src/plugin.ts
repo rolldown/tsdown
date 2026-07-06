@@ -14,6 +14,7 @@ import { CssPostPlugin, type CssStyles } from './post.ts'
 import { processWithPostCSS as runPostCSS } from './postcss.ts'
 import {
   compilePreprocessor,
+  disposeSassCompiler,
   getPreprocessorLangFromId,
 } from './preprocessors.ts'
 import {
@@ -74,6 +75,16 @@ export function CssPlugin(
     buildStart() {
       styles.clear()
       modulesMap.clear()
+    },
+
+    closeBundle() {
+      if (!this.meta.watchMode) {
+        return disposeSassCompiler()
+      }
+    },
+
+    closeWatcher() {
+      return disposeSassCompiler()
     },
 
     resolveId: {

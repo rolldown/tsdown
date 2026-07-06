@@ -20,6 +20,21 @@ export interface PreprocessResult {
   deps: string[]
 }
 
+export interface SassStringCompiler {
+  compileStringAsync: (
+    source: string,
+    options: Record<string, any>,
+  ) => Promise<{ css: string; loadedUrls: URL[] }>
+}
+
+export interface SassCompiler extends SassStringCompiler {
+  dispose?: () => void | Promise<void>
+}
+
+export interface SassModule extends SassStringCompiler {
+  initAsyncCompiler?: () => Promise<SassCompiler>
+}
+
 export function getPreprocessorLang(
   filename: string,
 ): PreprocessorLang | undefined {
@@ -297,7 +312,8 @@ async function compileSass(
     },
   }
 
-  const result = await sass.compileStringAsync(data, {
+  const compiler = await loadSassCompiler(sass)
+  const result = await compiler.compileStringAsync(data, {
     url: pathToFileURL(filename),
     sourceMap: false,
     syntax: lang === 'sass' ? 'indented' : 'scss',
@@ -355,8 +371,29 @@ async function tryResolveScss(
   return resolveWithResolver(getSassResolver(), url, importer)
 }
 
-let _sass: any
-async function loadSass() {
+let _sass: SassModule | undefined
+let _sassCompiler: Promise<SassCompiler> | undefined
+
+export function loadSassCompiler(
+  sass: SassModule,
+): Promise<SassStringCompiler> {
+  if (!sass.initAsyncCompiler) return Promise.resolve(sass)
+
+  _sassCompiler ??= sass.initAsyncCompiler().catch((error: unknown) => {
+    _sassCompiler = undefined
+    throw error
+  })
+  return _sassCompiler
+}
+
+export async function disposeSassCompiler(): Promise<void> {
+  const compilerPromise = _sassCompiler
+  _sassCompiler = undefined
+  const compiler = await compilerPromise?.catch(() => undefined)
+  await compiler?.dispose?.()
+}
+
+async function loadSass(): Promise<SassModule> {
   if (_sass) return _sass
   try {
     // @ts-ignore -- optional peer dependency
