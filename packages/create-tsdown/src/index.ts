@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import process from 'node:process'
 import { styleText } from 'node:util'
 import {
@@ -53,9 +54,12 @@ export async function create(
   s.stop('Template cloned')
 
   const pm = getUserAgent() || 'npm'
+  const cdCommand =
+    resolve(resolved.path) === process.cwd()
+      ? ''
+      : `  ${styleText('green', `cd ${resolved.path}`)}\n`
   outro(
-    `Done! Now run:\n` +
-      `  ${styleText('green', `cd ${resolved.path}`)}\n` +
+    `Done! Now run:\n${cdCommand}` +
       `  ${styleText('green', `${pm} install`)}\n` +
       `  ${styleText('green', `${pm} run build`)}\n\n` +
       `For more information, visit: ${styleText('underline', `https://tsdown.dev/`)}`,
