@@ -805,6 +805,26 @@ test('banner and footer option', async (context) => {
   expect(fileMap['index.d.mts']).toContain('// dts footer')
 })
 
+test('banner and footer function run per chunk', async (context) => {
+  const { fileMap } = await testBuild({
+    context,
+    files: {
+      'a.ts': `export const a = 1`,
+      'b.ts': `export const b = 2`,
+    },
+    options: {
+      entry: ['a.ts', 'b.ts'],
+      banner: ({ fileName }) => `// banner:${fileName}`,
+      footer: ({ fileName }) => `// footer:${fileName}`,
+    },
+  })
+
+  expect(fileMap['a.mjs']).toContain('// banner:a.mjs')
+  expect(fileMap['a.mjs']).toContain('// footer:a.mjs')
+  expect(fileMap['b.mjs']).toContain('// banner:b.mjs')
+  expect(fileMap['b.mjs']).toContain('// footer:b.mjs')
+})
+
 test('dts enabled when exports.types exists', async (context) => {
   const files = {
     'index.ts': `export const hello = "world"`,
