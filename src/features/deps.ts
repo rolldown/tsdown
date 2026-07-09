@@ -331,13 +331,16 @@ export function DepsPlugin(
       return 'no-external'
     }
 
-    if (
-      skipNodeModulesBundle &&
-      resolved &&
-      (resolved.external || RE_NODE_MODULES.test(resolved.id))
-    ) {
-      const resolvedDep = await resolveDepSubpath(id, resolved)
-      return resolvedDep ? [true, resolvedDep] : true
+    if (skipNodeModulesBundle) {
+      if (resolved) {
+        if (resolved.external || RE_NODE_MODULES.test(resolved.id)) {
+          const resolvedDep = await resolveDepSubpath(id, resolved)
+          return resolvedDep ? [true, resolvedDep] : true
+        }
+      } else if (!path.isAbsolute(id) && !id.startsWith('#')) {
+        // externalize even when unresolvable (e.g. no `exports` field on a non-`node` platform)
+        return true
+      }
     }
 
     if (deps) {

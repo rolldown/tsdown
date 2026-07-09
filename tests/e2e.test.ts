@@ -1180,6 +1180,38 @@ describe('resolve dep subpath without exports field', () => {
 
     expect(fileMap['index.mjs']).toContain('my-dep/folder/index.js')
   })
+
+  test('skipNodeModulesBundle externalizes an unresolvable dep on a non-node platform', async (context) => {
+    const node_modules = {
+      // A types-only dependency (no `main`/`exports`, no JS entry).
+      'node_modules/my-dep/package.json': JSON.stringify({
+        name: 'my-dep',
+        version: '1.0.0',
+        types: 'index.d.ts',
+      }),
+      'node_modules/my-dep/index.d.ts': `export interface Foo { a: number }`,
+    }
+
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export type { Foo } from 'my-dep'`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+        }),
+      },
+      options: {
+        platform: 'neutral',
+        dts: true,
+        deps: { skipNodeModulesBundle: true },
+      },
+    })
+
+    expect(fileMap['index.d.mts']).toContain('from "my-dep"')
+    expect(fileMap['index.d.mts']).not.toContain('interface Foo')
+  })
 })
 
 test('.node file bundle', async (context) => {
