@@ -56,7 +56,7 @@ const users = computed(() => {
     },
     {
       name: 'Tencent',
-      logo: `${jsdelivrBase}/lobehub/lobe-icons/packages/static-png/dark/tencent-brand-color.png`,
+      logo: `${jsdelivrBase}lobehub/lobe-icons@5/packages/static-png/dark/tencent-brand-color.png`,
       url: 'https://www.tencent.com',
       class: 'h8',
     },
@@ -78,13 +78,13 @@ const users = computed(() => {
     },
     {
       name: 'Baidu',
-      logo: `${jsdelivrBase}/lobehub/lobe-icons/packages/static-png/dark/baidu-brand-color.png`,
+      logo: `${jsdelivrBase}lobehub/lobe-icons@5/packages/static-png/dark/baidu-brand-color.png`,
       url: 'https://www.baidu.com',
       class: 'h8 scale-120',
     },
     {
       name: 'LobeHub',
-      logo: `${jsdelivrBase}/lobehub/lobe-icons/packages/static-svg/icons/lobehub-color.svg`,
+      logo: `${jsdelivrBase}lobehub/lobe-icons@5/packages/static-svg/icons/lobehub-color.svg`,
       url: 'https://lobehub.com',
       class: 'h12',
     },
