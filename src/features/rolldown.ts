@@ -27,7 +27,7 @@ import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
-import { getShimsInject, shimsDefine, shimsPlugin } from './shims.ts'
+import { getShims } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
 import type {
   DtsOptions,
@@ -107,7 +107,6 @@ async function resolveInputOptions(
     target,
     treeshake,
     tsconfig,
-    unbundle,
     unused,
     watch,
   } = config
@@ -205,11 +204,11 @@ async function resolveInputOptions(
 
   let inject: TransformOptions['inject']
   if (shims && !cjsDts) {
-    if (unbundle) {
-      define = { ...define, ...shimsDefine }
-      plugins.push(shimsPlugin)
-    } else {
-      inject = getShimsInject(format, platform)
+    const shims = getShims(config)
+    inject = shims.inject
+    define = { ...define, ...shims.define }
+    if (shims.plugin) {
+      plugins.push(shims.plugin)
     }
   }
 

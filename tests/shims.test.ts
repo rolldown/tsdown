@@ -39,6 +39,36 @@ describe('shims', () => {
     ])
   })
 
+  test('esm on node with unbundle', async (context) => {
+    const { snapshot } = await testBuild({
+      context,
+      files: { 'index.ts': code },
+      options: {
+        platform: 'node',
+        shims: true,
+        unbundle: true,
+      },
+    })
+    expect(snapshot).not.contain('__dirname')
+    expect(snapshot).not.contain('__filename')
+    expect(snapshot).contain('fileURLToPath')
+  })
+
+  test('cjs on node with unbundle', async (context) => {
+    const { snapshot } = await testBuild({
+      context,
+      files: { 'index.ts': code },
+      options: {
+        format: 'cjs',
+        platform: 'node',
+        shims: true,
+        unbundle: true,
+      },
+    })
+    expect(snapshot).not.contain('import.meta')
+    expect(snapshot).contain('require("url").pathToFileURL(__filename).href')
+  })
+
   test('cjs on neutral w/o shims', async (context) => {
     const { snapshot } = await testBuild({
       context,
