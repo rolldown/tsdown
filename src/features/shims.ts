@@ -1,5 +1,5 @@
 import path from 'node:path'
-import type { NormalizedFormat, ResolvedConfig } from '../config/index.ts'
+import type { ResolvedConfig } from '../config/index.ts'
 import type { Plugin } from 'rolldown'
 
 export const shimFile: string = path.resolve(
@@ -8,7 +8,12 @@ export const shimFile: string = path.resolve(
   'esm-shims.js',
 )
 
-export const shimsDefine = {
+const shimsInject: Record<string, [string, string]> = {
+  __dirname: [shimFile, '__dirname'],
+  __filename: [shimFile, '__filename'],
+}
+
+const shimsDefine: Record<string, string> = {
   __dirname: '__TSDOWN_SHIM_DIRNAME__',
   __filename: '__TSDOWN_SHIM_FILENAME__',
 }
@@ -26,14 +31,19 @@ export const shimsPlugin: Plugin = {
   banner: shimsInjectCode,
 }
 
-export function getShimsInject(
-  format: NormalizedFormat,
-  platform: ResolvedConfig['platform'],
-): Record<string, [string, string]> | undefined {
-  if (format === 'es' && platform === 'node') {
+export function getShims(config: ResolvedConfig): {
+  define?: Record<string, string>
+  inject?: Record<string, [string, string]>
+  plugin?: Plugin
+} {
+  if (config.format !== 'es' || config.platform !== 'node') return {}
+
+  if (config.unbundle) {
     return {
-      __dirname: [shimFile, '__dirname'],
-      __filename: [shimFile, '__filename'],
+      define: shimsDefine,
+      plugin: shimsPlugin,
     }
   }
+
+  return { inject: shimsInject }
 }
