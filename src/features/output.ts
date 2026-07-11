@@ -107,24 +107,25 @@ export function resolveChunkAddon(
   if (!chunkAddon) return
 
   return (chunk: RenderedChunk) => {
-    if (typeof chunkAddon === 'function') {
-      chunkAddon = chunkAddon({
-        format,
-        fileName: chunk.fileName,
-      })
-    }
+    const resolved =
+      typeof chunkAddon === 'function'
+        ? chunkAddon({
+            format,
+            fileName: chunk.fileName,
+          })
+        : chunkAddon
 
-    if (typeof chunkAddon === 'string') {
-      return chunkAddon
+    if (typeof resolved === 'string') {
+      return resolved
     }
 
     switch (true) {
       case RE_JS.test(chunk.fileName):
-        return chunkAddon?.js || ''
+        return resolved?.js || ''
       case RE_CSS.test(chunk.fileName):
-        return chunkAddon?.css || ''
+        return resolved?.css || ''
       case RE_DTS.test(chunk.fileName):
-        return chunkAddon?.dts || ''
+        return resolved?.dts || ''
       default:
         return ''
     }
