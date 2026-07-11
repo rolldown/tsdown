@@ -27,11 +27,11 @@ catalogs:
     bumpp: ^11.1.0
     dedent: ^1.7.2
     eslint: ^10.6.0
-    memfs: ^4.63.0
+    memfs: ^4.64.0
     pkg-types: ^2.3.1
     postcss: ^8.5.16
     postcss-import: ^16.1.1
-    prettier: ^3.9.4
+    prettier: ^3.9.5
     rolldown-plugin-require-cjs: ^0.4.1
     sass: ^1.101.0
     tsnapi: ^1.0.0
@@ -52,11 +52,11 @@ catalogs:
     typedoc-plugin-markdown: ^4.12.0
     typedoc-vitepress-theme: ^1.1.3
     unocss: ^66.7.5
-    vite: ^8.1.3
+    vite: ^8.1.4
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.5
     vitepress-plugin-llms: ^1.13.2
-    void: ^0.10.8
+    void: ^0.10.10
     vue: ^3.5.39
     vue-tsc: ^3.3.7
   migrate:
@@ -65,7 +65,7 @@ catalogs:
     consola: ^3.4.2
     diff: ^9.0.0
   peer:
-    '@arethetypeswrong/core': ^0.18.4
+    '@arethetypeswrong/core': ^0.18.5
     '@vitejs/devtools': ^0.3.4
     publint: ^0.3.21
     unplugin-unused: ^0.5.7
@@ -81,7 +81,7 @@ catalogs:
     package-manager-detector: ^1.7.0
     picomatch: ^4.0.5
     postcss-load-config: ^6.0.1
-    rolldown: ~1.1.4
+    rolldown: ~1.1.5
     rolldown-plugin-dts: ^0.27.4
     semver: ^7.8.5
     tinyexec: ^1.2.4
