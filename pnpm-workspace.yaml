@@ -36,7 +36,7 @@ catalogs:
     sass: ^1.101.0
     tsnapi: ^1.0.0
     tsx: ^4.23.0
-    typescript: 'npm:@typescript/typescript6@^6.0.2'
+    typescript: ~6.0.3
     unplugin-ast: ^0.17.2
     unplugin-raw: ^0.7.0
     unplugin-vue: ^7.2.0
