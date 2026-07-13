@@ -127,6 +127,7 @@ async function resolveInputOptions(
     const { cjsReexport: _, ...dtsPluginOptions } = dts
     const options: DtsOptions = {
       tsconfig,
+      logger,
       ...dtsPluginOptions,
     }
 
