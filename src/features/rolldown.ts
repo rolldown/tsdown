@@ -20,7 +20,7 @@ import { importGlobPlugin } from 'rolldown/experimental'
 import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
 import { importWithError, pkgExists, toArray } from '../utils/general.ts'
-import { LogLevels } from '../utils/logger.ts'
+import { createSuppressWarnings, LogLevels } from '../utils/logger.ts'
 import { CjsDtsReexportPlugin } from './cjs.ts'
 import { DepsPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
@@ -111,6 +111,7 @@ async function resolveInputOptions(
     watch,
   } = config
   const loggerLevelIndex = LogLevels[logger.level]
+  const isSuppressed = createSuppressWarnings(logger.options?.suppressWarnings)
 
   const plugins: RolldownPluginOption = []
 
@@ -266,6 +267,9 @@ async function resolveInputOptions(
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled
         if (cjsDefault && log.code === 'MIXED_EXPORT') return
+        // suppress warnings matching the user's `suppressWarnings` patterns,
+        // before `failOnWarn` can escalate them to build errors
+        if (level === 'warn' && isSuppressed(log.message)) return
         if (
           logger.options?.failOnWarn &&
           level === 'warn' &&

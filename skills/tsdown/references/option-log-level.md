@@ -84,6 +84,40 @@ export default defineConfig({
 
 See [CI Environment](advanced-ci.md) for more about CI-aware options.
 
+## Suppressing Warnings
+
+The `suppressWarnings` option silences warnings whose message matches a given pattern. This is useful for opting out of non-actionable notices (such as the TypeScript 7.0 experimental API warning) while keeping other warnings visible.
+
+### Type
+
+```ts
+suppressWarnings?:
+  | string
+  | RegExp
+  | Array<string | RegExp>
+  | ((msg: string) => boolean)
+```
+
+- **string** – substring match
+- **RegExp** – regular expression match
+- **array** – matches if any entry matches
+- **function** – custom predicate
+
+### Usage
+
+```ts
+export default defineConfig({
+  suppressWarnings: [
+    'is experimental',        // substring match
+    /Circular dependency/,    // regexp match
+  ],
+  // Or a predicate function:
+  // suppressWarnings: (msg) => msg.includes('is experimental'),
+})
+```
+
+Matched warnings are dropped **before** `failOnWarn` is applied, so a suppressed warning will not fail the build even when `failOnWarn: true`.
+
 ## Related Options
 
 - [CI Environment](advanced-ci.md) - CI-aware option details

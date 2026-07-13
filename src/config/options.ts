@@ -67,6 +67,7 @@ export async function resolveUserConfig(
     clean = true,
     logLevel = 'info',
     failOnWarn = false,
+    suppressWarnings,
     customLogger,
     treeshake = true,
     platform = 'node',
@@ -126,6 +127,7 @@ export async function resolveUserConfig(
   const logger = createLogger(logLevel, {
     customLogger,
     failOnWarn: resolveFeatureOption(failOnWarn, true),
+    suppressWarnings,
   })
 
   if (typeof bundle === 'boolean') {

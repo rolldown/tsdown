@@ -43,3 +43,26 @@ export default defineConfig({
 ```
 
 详见 [CI 环境](/zh-CN/advanced/ci) 了解更多 CI 感知选项。
+
+## 屏蔽警告
+
+有些警告仅为提示信息，在你的项目中无需处理。`suppressWarnings` 选项可以屏蔽消息匹配指定模式的警告。
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  suppressWarnings: [
+    // 子串匹配
+    'is experimental',
+    // 正则匹配
+    /Circular dependency/,
+  ],
+  // 或使用断言函数
+  // suppressWarnings: (msg) => msg.includes('is experimental'),
+})
+```
+
+`suppressWarnings` 接受字符串（子串匹配）、`RegExp`、二者的数组，或 `(msg: string) => boolean` 断言函数。
+
+被匹配的警告会在应用 [`failOnWarn`](#警告时失败) **之前**被丢弃，因此即使启用了 `failOnWarn`，被屏蔽的警告也不会导致构建失败。这非常适合在保持 `failOnWarn: true` 的同时，忽略无需处理的提示（例如 TypeScript 7.0 实验性 API 警告）。

@@ -1,7 +1,9 @@
 import process from 'node:process'
 import readline from 'node:readline'
 import { bgRed, bgYellow, blue, green, rgb, yellow, type Ansis } from 'ansis'
+import { toArray } from '../utils/general.ts'
 import { noop } from './general.ts'
+import type { Arrayable } from '../utils/types.ts'
 import type { InternalModuleFormat } from 'rolldown'
 
 export type LogType = 'error' | 'warn' | 'info'
@@ -12,6 +14,7 @@ export interface LoggerOptions {
   customLogger?: Logger
   console?: Console
   failOnWarn?: boolean
+  suppressWarnings?: Arrayable<RegExp | string> | ((msg: string) => boolean)
 }
 
 export const LogLevels: Record<LogLevel, number> = {
@@ -45,6 +48,24 @@ function clearScreen() {
 }
 
 const warnedMessages = new Set<string>()
+
+export function createSuppressWarnings(
+  suppressWarnings: LoggerOptions['suppressWarnings'],
+): (msg: string) => boolean {
+  if (typeof suppressWarnings === 'function') return suppressWarnings
+
+  const patterns = toArray(suppressWarnings)
+  if (!patterns.length) return () => false
+
+  return (msg: string) =>
+    patterns.some((pattern) => {
+      if (pattern instanceof RegExp) {
+        pattern.lastIndex = 0
+        return pattern.test(msg)
+      }
+      return msg.includes(pattern)
+    })
+}
 
 export function createLogger(
   level: LogLevel = 'info',
@@ -80,6 +101,8 @@ export function createLogger(
   const isWindowsTerminal = !!process.env.WT_SESSION
   const emojiDivier = ' '.repeat(isWindowsTerminal ? 2 : 1)
 
+  const isSuppressed = createSuppressWarnings(resolvedOptions.suppressWarnings)
+
   const logger: Logger = {
     level,
     options: resolvedOptions,
@@ -89,16 +112,20 @@ export function createLogger(
     },
 
     warn(...msgs: any[]): void {
+      const message = format(msgs)
+      if (isSuppressed(message)) return
+
       if (failOnWarn) {
         return this.error(...msgs)
       }
-      const message = format(msgs)
       warnedMessages.add(message)
       output('warn', `\n${bgYellow` WARN `} ${message}\n`)
     },
 
     warnOnce(...msgs: any[]): void {
       const message = format(msgs)
+      if (isSuppressed(message)) return
+
       if (failOnWarn) {
         return this.error(...msgs)
       }

@@ -145,6 +145,121 @@ describe('createLogger', () => {
   })
 })
 
+describe('suppressWarnings', () => {
+  test('suppresses warning matching a string (substring match)', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: 'deprecated',
+    })
+
+    logger.warn('this feature is deprecated now')
+
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+  })
+
+  test('does not suppress a non-matching warning', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: 'deprecated',
+    })
+
+    logger.warn('something else happened')
+
+    expect(mockConsole.warn).toHaveBeenCalledOnce()
+  })
+
+  test('suppresses warning matching a RegExp', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: /circular\s+dependency/i,
+    })
+
+    logger.warn('Detected Circular Dependency in module')
+
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+  })
+
+  test('suppresses when any pattern in the array matches', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: ['foo', /bar/],
+    })
+
+    logger.warn('message about bar')
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+
+    logger.warn('unrelated message')
+    expect(mockConsole.warn).toHaveBeenCalledOnce()
+  })
+
+  test('suppresses via a predicate function', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: (msg) => msg.startsWith('IGNORE:'),
+    })
+
+    logger.warn('IGNORE: this one')
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+
+    logger.warn('keep this one')
+    expect(mockConsole.warn).toHaveBeenCalledOnce()
+  })
+
+  test('applies to warnOnce', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: 'suppressed once',
+    })
+
+    logger.warnOnce('a suppressed once message')
+
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+  })
+
+  test('takes precedence over failOnWarn (not routed to error)', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      failOnWarn: true,
+      suppressWarnings: 'silence me',
+    })
+
+    logger.warn('please silence me')
+
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+    expect(mockConsole.error).not.toHaveBeenCalled()
+  })
+
+  test('does not suppress errors', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+      suppressWarnings: 'boom',
+    })
+
+    logger.error('boom happened')
+
+    expect(mockConsole.error).toHaveBeenCalledOnce()
+  })
+
+  test('warns normally when suppressWarnings is not set', () => {
+    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
+    const logger = createLogger('info', {
+      console: mockConsole as unknown as Console,
+    })
+
+    logger.warn('a normal warning')
+
+    expect(mockConsole.warn).toHaveBeenCalledOnce()
+  })
+})
+
 describe('getNameLabel', () => {
   test('returns undefined for empty name', () => {
     const ansis = (s: string) => s

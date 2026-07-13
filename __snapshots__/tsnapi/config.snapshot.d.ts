@@ -53,6 +53,7 @@ export interface UserConfig {
   name?: string;
   logLevel?: LogLevel;
   failOnWarn?: boolean | CIOption;
+  suppressWarnings?: Arrayable<RegExp | string> | ((_: string) => boolean);
   customLogger?: Logger;
   fromVite?: boolean | "vitest";
   watch?: boolean | Arrayable<string>;

@@ -43,3 +43,26 @@ export default defineConfig({
 ```
 
 See [CI Environment](/advanced/ci) for more about CI-aware options.
+
+## Suppressing Warnings
+
+Some warnings are purely informational and not actionable in your project. The `suppressWarnings` option lets you silence warnings whose message matches a given pattern.
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  suppressWarnings: [
+    // Substring match
+    'is experimental',
+    // RegExp match
+    /Circular dependency/,
+  ],
+  // Or a predicate function
+  // suppressWarnings: (msg) => msg.includes('is experimental'),
+})
+```
+
+`suppressWarnings` accepts a string (substring match), a `RegExp`, an array of either, or a `(msg: string) => boolean` predicate.
+
+Matched warnings are dropped **before** [`failOnWarn`](#fail-on-warnings) is applied, so a suppressed warning will not fail the build even when `failOnWarn` is enabled. This is useful for opting out of non-actionable notices (such as the TypeScript 7.0 experimental API warning) while keeping `failOnWarn: true` for everything else.

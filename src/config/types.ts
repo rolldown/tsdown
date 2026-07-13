@@ -544,6 +544,14 @@ export interface UserConfig {
    */
   failOnWarn?: boolean | CIOption
   /**
+   * Suppress warnings whose message matches the given pattern(s).
+   *
+   * Accepts a string (substring match), a `RegExp`, an array of either, or a
+   * predicate function. Matched warnings are dropped before `failOnWarn` is
+   * applied, so they won't fail the build.
+   */
+  suppressWarnings?: Arrayable<RegExp | string> | ((msg: string) => boolean)
+  /**
    * Custom logger.
    */
   customLogger?: Logger
@@ -734,6 +742,7 @@ export type ResolvedConfig = Overwrite<
       | 'skipNodeModulesBundle' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
+      | 'suppressWarnings' // merge to `logger`
       | 'customLogger' // merge to `logger`
       | 'envFile' // merged to `env`
       | 'envPrefix' // merged to `env`

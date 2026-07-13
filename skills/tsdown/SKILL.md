@@ -88,7 +88,7 @@ export default defineConfig({
 | Source maps | `sourcemap: true`, `'inline'`, `'hidden'` | [option-sourcemap](references/option-sourcemap.md) |
 | Watch mode | `watch: true`, watch options | [option-watch-mode](references/option-watch-mode.md) |
 | Cleaning | `clean: true`, clean patterns | [option-cleaning](references/option-cleaning.md) |
-| Log level | `logLevel: 'silent'`, `failOnWarn: false` | [option-log-level](references/option-log-level.md) |
+| Log level | `logLevel: 'silent'`, `failOnWarn: false`, `suppressWarnings: [...]` | [option-log-level](references/option-log-level.md) |
 
 ## Dependency Handling
 
