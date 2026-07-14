@@ -293,7 +293,7 @@ export interface UserConfig {
 
   /**
    * Configure tree shaking options.
-   * @see {@link https://rolldown.rs/options/treeshake} for more details.
+   * @see {@link https://rolldown.rs/reference/InputOptions.treeshake} for more details.
    * @default true
    */
   treeshake?: boolean | TreeshakingOptions

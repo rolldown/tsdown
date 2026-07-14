@@ -6,7 +6,7 @@ Pass options directly to the underlying Rolldown bundler.
 
 tsdown uses [Rolldown](https://rolldown.rs) as its core bundling engine. You can override Rolldown's input and output options directly for fine-grained control.
 
-**Warning:** You should be familiar with Rolldown's behavior before overriding options. Refer to the [Rolldown Config Options](https://rolldown.rs/options/input) documentation.
+**Warning:** You should be familiar with Rolldown's behavior before overriding options. Refer to the [Rolldown Config Options](https://rolldown.rs/reference/InputOptions.input) documentation.
 
 ## Input Options
 

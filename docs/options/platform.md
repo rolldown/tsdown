@@ -62,4 +62,4 @@ export default defineConfig({
 })
 ```
 
-See the [Rolldown resolve options documentation](https://rolldown.rs/options/resolve#mainfields) for more details.
+See the [Rolldown resolve options documentation](https://rolldown.rs/reference/InputOptions.resolve#mainfields) for more details.
