@@ -121,4 +121,36 @@ test('mergeConfig', () => {
       },
     }
   `)
+  expect(
+    mergeConfig(
+      {
+        a: 1,
+        plugins: ['a'],
+        inputOptions: {
+          plugins: 'b',
+        },
+      } as any,
+      {
+        a: 2,
+        plugins: ['c'],
+        inputOptions: {
+          plugins: 'd',
+        },
+      } as any,
+    ),
+  ).toMatchInlineSnapshot(`
+    {
+      "a": 2,
+      "inputOptions": {
+        "plugins": [
+          "b",
+          "d",
+        ],
+      },
+      "plugins": [
+        "a",
+        "c",
+      ],
+    }
+  `)
 })

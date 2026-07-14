@@ -411,7 +411,17 @@ function filterEnv(
   return env
 }
 
-const defu = createDefu((obj, key, value) => {
+const defu = createDefu((obj, key, value, namespace) => {
+  if (
+    key === 'plugins' &&
+    (namespace === '' ||
+      namespace === 'inputOptions' ||
+      namespace === 'outputOptions')
+  ) {
+    obj[key] = [].concat(obj[key], value) as any
+    return true
+  }
+
   if (Array.isArray(obj[key]) && Array.isArray(value)) {
     obj[key] = value
     return true
@@ -446,10 +456,11 @@ export async function mergeUserOptions<T extends object, A extends unknown[]>(
     | ((options: T, ...args: A) => Awaitable<T | void | null>),
   args: A,
 ): Promise<T> {
-  const userOutputOptions =
-    typeof user === 'function' ? await user(defaults, ...args) : user
-  if (!userOutputOptions) return defaults
-  return defu(userOutputOptions, defaults)
+  if (!user) return defaults
+  if (typeof user === 'function') {
+    return (await user(defaults, ...args)) ?? defaults
+  }
+  return defu(user, defaults)
 }
 
 export function resolveFeatureOption<T>(
