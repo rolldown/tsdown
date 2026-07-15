@@ -5,7 +5,7 @@ import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { and, id, importerId, include } from 'rolldown/filter'
-import { parse } from 'rolldown/utils'
+import { parse, Visitor, type ESTree } from 'rolldown/utils'
 import {
   matchPattern,
   resolveRegex,
@@ -56,7 +56,8 @@ export interface DepsConfig {
    * Node built-in modules are always allowed to be imported
    * when `platform` is `node`.
    *
-   * Note: Only ESM output is checked. CJS output (`require` calls) is not detected.
+   * Note: ES imports and dynamic import expressions are checked. CJS
+   * `require` calls are not detected.
    */
   onlyImport?: Arrayable<string | RegExp>
   /**
@@ -273,18 +274,9 @@ export function DepsPlugin(
             moduleIds.some((id) => chunk.code.includes(id))
           ) {
             const { program } = await parse(chunk.fileName, chunk.code)
-            for (const stmt of program.body) {
-              if (
-                stmt.type !== 'ImportDeclaration' &&
-                stmt.type !== 'ExportAllDeclaration' &&
-                stmt.type !== 'ExportNamedDeclaration'
-              ) {
-                continue
-              }
-              const source = stmt.source?.value
-
+            for (const source of collectImportSources(program)) {
               // relative imports of sibling chunks emitted by code splitting
-              if (!source || source[0] === '.') continue
+              if (source[0] === '.') continue
               if (platform === 'node' && isBuiltin(source)) continue
               if (matchPattern(parsePackageSpecifier(source)[0], onlyImport)) {
                 continue
@@ -419,6 +411,40 @@ export function DepsPlugin(
 
     return false
   }
+}
+
+function collectImportSources(program: ESTree.Program): string[] {
+  const sources: string[] = []
+
+  new Visitor({
+    ImportDeclaration(node) {
+      sources.push(node.source.value)
+    },
+    ExportAllDeclaration(node) {
+      sources.push(node.source.value)
+    },
+    ExportNamedDeclaration(node) {
+      if (node.source) sources.push(node.source.value)
+    },
+    ImportExpression(node) {
+      const source = getStaticString(node.source)
+      if (source) sources.push(source)
+    },
+  }).visit(program)
+
+  return sources
+}
+
+function getStaticString(value: ESTree.Expression): string | undefined {
+  if (value.type === 'Literal' && typeof value.value === 'string') {
+    return value.value
+  }
+
+  if (value.type !== 'TemplateLiteral') return
+  if (value.expressions.length || value.quasis.length !== 1) return
+
+  const { cooked, raw } = value.quasis[0].value
+  return cooked ?? raw
 }
 
 export function parsePackageSpecifier(

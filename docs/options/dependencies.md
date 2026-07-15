@@ -107,7 +107,7 @@ In this example, the output is only allowed to import `cac`. If any chunk import
 - Type declaration output (`.d.ts`) is checked as well.
 
 ::: warning
-Only ESM output is checked. CJS output (`require` calls) is not detected.
+ES imports and dynamic `import()` expressions are checked. CJS `require()` calls are not detected.
 :::
 
 ### `deps.neverBundle`
