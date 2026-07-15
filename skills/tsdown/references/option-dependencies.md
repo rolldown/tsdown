@@ -119,7 +119,7 @@ export default defineConfig({
 - Relative imports between code-split chunks are always allowed.
 - Declaration output (`.d.ts`) is checked too.
 
-**Limitation:** Only ESM output is checked. CJS output (`require` calls) is not detected.
+**Limitation:** ES imports and dynamic `import()` expressions are checked. CJS `require()` calls are not detected.
 
 ### `deps.skipNodeModulesBundle`
 

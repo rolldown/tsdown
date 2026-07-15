@@ -357,6 +357,22 @@ describe('deps', () => {
       ).rejects.toThrow('but is not included in')
     })
 
+    test('should throw error for unlisted dynamic imports', async (context) => {
+      const files = {
+        'index.ts': `export const load = (): Promise<unknown> => import('cac')`,
+      }
+      await expect(() =>
+        testBuild({
+          context,
+          files,
+          options: {
+            deps: { onlyImport: [] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).rejects.toThrow('but is not included in')
+    })
+
     test('should always allow node builtin modules when platform is node', async (context) => {
       const files = {
         'index.ts': `import path from 'node:path'

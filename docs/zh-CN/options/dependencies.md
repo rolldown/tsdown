@@ -107,7 +107,7 @@ export default defineConfig({
 - 类型声明产物（`.d.ts`）同样会被检查。
 
 ::: warning
-仅检查 ESM 产物。CJS 产物（`require` 调用）不会被检测。
+会检查 ES 导入和动态 `import()` 表达式。CJS `require()` 调用不会被检测。
 :::
 
 ### `deps.neverBundle`
