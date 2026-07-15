@@ -29,13 +29,13 @@ catalogs:
     eslint: ^10.7.0
     memfs: ^4.64.0
     pkg-types: ^2.3.1
-    postcss: ^8.5.17
+    postcss: ^8.5.19
     postcss-import: ^16.1.1
     prettier: ^3.9.5
     rolldown-plugin-require-cjs: ^0.4.1
     sass: ^1.101.0
     tsnapi: ^1.0.0
-    tsx: ^4.23.0
+    tsx: ^4.23.1
     typescript: ~6.0.3
     unplugin-ast: ^0.17.2
     unplugin-raw: ^0.7.0
@@ -55,7 +55,7 @@ catalogs:
     vite: ^8.1.4
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.5
-    vitepress-plugin-llms: ^1.13.2
+    vitepress-plugin-llms: ^1.13.3
     void: ^0.10.10
     vue: ^3.5.39
     vue-tsc: ^3.3.7
@@ -66,7 +66,7 @@ catalogs:
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.5
-    '@vitejs/devtools': ^0.4.0
+    '@vitejs/devtools': ^0.4.1
     publint: ^0.3.21
     unplugin-unused: ^0.5.7
   prod:
@@ -82,7 +82,7 @@ catalogs:
     picomatch: ^4.0.5
     postcss-load-config: ^6.0.1
     rolldown: ~1.1.5
-    rolldown-plugin-dts: ^0.27.8
+    rolldown-plugin-dts: ^0.27.9
     semver: ^7.8.5
     tinyexec: ^1.2.4
     tinyglobby: ^0.2.17
