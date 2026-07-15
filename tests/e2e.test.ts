@@ -324,6 +324,183 @@ describe('deps', () => {
     })
   })
 
+  describe('onlyImport', () => {
+    test('should allow whitelisted dependencies to be imported', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'`,
+      }
+      await expect(
+        testBuild({
+          context,
+          files,
+          options: {
+            deps: { onlyImport: ['cac'] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).resolves.not.toThrow()
+    })
+
+    test('should throw error for unlisted dependencies', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'`,
+      }
+      await expect(() =>
+        testBuild({
+          context,
+          files,
+          options: {
+            deps: { onlyImport: [] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).rejects.toThrow('but is not included in')
+    })
+
+    test('should always allow node builtin modules when platform is node', async (context) => {
+      const files = {
+        'index.ts': `import path from 'node:path'
+          export const sep: string = path.sep
+          export * from 'cac'`,
+      }
+      await expect(
+        testBuild({
+          context,
+          files,
+          options: {
+            platform: 'node',
+            deps: { onlyImport: ['cac'] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).resolves.not.toThrow()
+    })
+
+    test('should check node builtin modules when platform is not node', async (context) => {
+      const files = {
+        'index.ts': `import path from 'node:path'
+          export const sep: string = path.sep`,
+      }
+      await expect(() =>
+        testBuild({
+          context,
+          files,
+          options: {
+            platform: 'neutral',
+            deps: { onlyImport: [] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).rejects.toThrow('but is not included in')
+    })
+
+    test('should allow relative imports between chunks emitted by code splitting', async (context) => {
+      const files = {
+        'a.ts': `export * from 'cac'
+          export { shared } from './shared.ts'`,
+        'b.ts': `export { shared } from './shared.ts'`,
+        'shared.ts': `export const shared = 1`,
+      }
+      await expect(
+        testBuild({
+          context,
+          files,
+          options: {
+            entry: ['a.ts', 'b.ts'],
+            hash: false,
+            deps: { onlyImport: ['cac'] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).resolves.not.toThrow()
+    })
+
+    test('should allow subpath imports of whitelisted dependencies', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac/deno'`,
+      }
+      await expect(
+        testBuild({
+          context,
+          files,
+          options: {
+            deps: { onlyImport: ['cac'] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).resolves.not.toThrow()
+    })
+
+    test('should report all unlisted dependencies at once', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'
+          export * from 'ansis'`,
+      }
+      const promise = testBuild({
+        context,
+        files,
+        options: {
+          deps: { onlyImport: [] },
+          plugins: [pluginMockDepCode],
+        },
+      })
+      await expect(promise).rejects.toThrow('cac')
+      await expect(promise).rejects.toThrow('ansis')
+    })
+
+    test('should check type-only imports in dts output', async (context) => {
+      const files = {
+        'index.ts': `export type { CAC } from 'cac'
+          export const foo: number = 1`,
+      }
+      await expect(() =>
+        testBuild({
+          context,
+          files,
+          options: {
+            dts: true,
+            deps: { onlyImport: [] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).rejects.toThrow('but is not included in')
+    })
+
+    test('should not check CJS output', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'`,
+      }
+      await expect(
+        testBuild({
+          context,
+          files,
+          options: {
+            format: 'cjs',
+            deps: { onlyImport: [] },
+            plugins: [pluginMockDepCode],
+          },
+        }),
+      ).resolves.not.toThrow()
+    })
+
+    test('should report onlyImport and onlyBundle violations together', async (context) => {
+      const files = {
+        'index.ts': `export * from 'cac'
+          export * from 'bumpp'`,
+      }
+      const promise = testBuild({
+        context,
+        files,
+        options: {
+          deps: { onlyImport: [], onlyBundle: [] },
+          plugins: [pluginMockDepCode],
+        },
+      })
+      await expect(promise).rejects.toThrow('deps.onlyImport')
+      await expect(promise).rejects.toThrow('deps.onlyBundle')
+    })
+  })
+
   describe('inlinedDependencies', () => {
     const node_modules = {
       'node_modules/my-lib/index.js': `export const lib = "my-lib"`,

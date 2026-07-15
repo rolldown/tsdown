@@ -31,6 +31,7 @@ export default defineConfig({
     neverBundle: ['lodash', /^@my-scope\//],
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
+    onlyImport: ['cac'],
     skipNodeModulesBundle: true,
   },
 })
@@ -80,6 +81,33 @@ In this example, only `cac` and `bumpp` are allowed to be bundled. If any other 
 
 ::: tip
 Make sure to include all required sub-dependencies in the `onlyBundle` list as well, not just the top-level packages you directly import.
+:::
+
+### `deps.onlyImport`
+
+While `onlyBundle` controls which dependencies are allowed to be **bundled**, the `onlyImport` option acts as a whitelist for dependencies that are allowed to be **imported** by your output at runtime. After each build, tsdown scans the emitted chunks and throws an error if any of them imports a package that is not in the list. This ensures your published code never depends on packages you haven't explicitly approved.
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    onlyImport: ['cac'],
+  },
+})
+```
+
+In this example, the output is only allowed to import `cac`. If any chunk imports another package, tsdown will throw an error listing all offending imports, suggesting you either add them to `onlyImport` or bundle them via `alwaysBundle`.
+
+#### Behavior
+
+- Matching is based on the **package name**, so subpath imports like `cac/deno` are covered by listing `cac`.
+- Node.js built-in modules are always allowed when `platform` is `node`.
+- Imports between chunks emitted by code splitting are always allowed.
+- Type declaration output (`.d.ts`) is checked as well.
+
+::: warning
+Only ESM output is checked. CJS output (`require` calls) is not detected.
 :::
 
 ### `deps.neverBundle`
@@ -153,6 +181,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
   - `devDependencies` and phantom dependencies are only bundled if they are actually used in your code.
 - **Customization**:
   - Use `deps.onlyBundle` to whitelist dependencies allowed to be bundled, and throw an error for any others.
+  - Use `deps.onlyImport` to whitelist packages the output is allowed to import at runtime.
   - Use `deps.neverBundle` to mark specific dependencies as external.
   - Use `deps.alwaysBundle` to force specific dependencies to be bundled.
   - Use `deps.skipNodeModulesBundle` to skip bundling all dependencies from `node_modules`.

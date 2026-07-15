@@ -31,6 +31,7 @@ export default defineConfig({
     neverBundle: ['lodash', /^@my-scope\//],
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
+    onlyImport: ['cac'],
     skipNodeModulesBundle: true,
   },
 })
@@ -80,6 +81,33 @@ export default defineConfig({
 
 ::: tip
 请确保在 `onlyBundle` 中包含所有子依赖，不仅是直接导入的顶层包。
+:::
+
+### `deps.onlyImport`
+
+`onlyBundle` 控制哪些依赖允许被**打包**，而 `onlyImport` 选项则作为产物在运行时允许**导入**的依赖白名单。每次构建后，tsdown 会扫描生成的 chunk，如果其中导入了不在列表中的包，将抛出错误。这可以确保您发布的代码不会依赖任何未经明确批准的包。
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    onlyImport: ['cac'],
+  },
+})
+```
+
+在此示例中，产物只允许导入 `cac`。如果任何 chunk 导入了其他包，tsdown 将抛出错误并一次性列出所有违规导入，并建议您将它们添加到 `onlyImport`，或通过 `alwaysBundle` 将其打包。
+
+#### 行为
+
+- 匹配基于**包名**，因此列出 `cac` 即可覆盖 `cac/deno` 这类子路径导入。
+- 当 `platform` 为 `node` 时，Node.js 内置模块始终允许被导入。
+- 代码分割产生的 chunk 之间的相互导入始终允许。
+- 类型声明产物（`.d.ts`）同样会被检查。
+
+::: warning
+仅检查 ESM 产物。CJS 产物（`require` 调用）不会被检测。
 :::
 
 ### `deps.neverBundle`
@@ -153,6 +181,7 @@ export default defineConfig({
   - `devDependencies` 和幻影依赖只有在代码中实际使用时才会被打包。
 - **自定义**：
   - 使用 `deps.onlyBundle` 设置允许被打包的依赖白名单，不在列表中的依赖会触发错误。
+  - 使用 `deps.onlyImport` 设置产物在运行时允许导入的包白名单。
   - 使用 `deps.neverBundle` 将特定依赖标记为外部依赖。
   - 使用 `deps.alwaysBundle` 强制将特定依赖打包。
   - 使用 `deps.skipNodeModulesBundle` 跳过打包所有来自 `node_modules` 的依赖。

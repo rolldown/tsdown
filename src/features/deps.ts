@@ -5,6 +5,7 @@ import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { and, id, importerId, include } from 'rolldown/filter'
+import { parse } from 'rolldown/utils'
 import {
   matchPattern,
   resolveRegex,
@@ -49,6 +50,16 @@ export interface DepsConfig {
    */
   onlyBundle?: Arrayable<string | RegExp> | false
   /**
+   * Whitelist of packages that the emitted output is allowed to import.
+   * Matched against the package name, so subpath imports (e.g. `cac/deno`)
+   * are covered by listing the package (e.g. `cac`).
+   * Node built-in modules are always allowed to be imported
+   * when `platform` is `node`.
+   *
+   * Note: Only ESM output is checked. CJS output (`require` calls) is not detected.
+   */
+  onlyImport?: Arrayable<string | RegExp>
+  /**
    * @deprecated Use {@linkcode onlyBundle} instead.
    */
   onlyAllowBundle?: Arrayable<string | RegExp> | false
@@ -71,6 +82,7 @@ export interface ResolvedDepsConfig {
   neverBundle?: ExternalOption
   alwaysBundle?: NoExternalFn
   onlyBundle?: Array<string | RegExp> | false
+  onlyImport?: Array<string | RegExp>
   skipNodeModulesBundle: boolean
 
   /**
@@ -87,6 +99,7 @@ export function resolveDepsConfig(
     neverBundle,
     alwaysBundle,
     onlyBundle,
+    onlyImport,
     skipNodeModulesBundle = false,
   } = config.deps || {}
 
@@ -150,9 +163,14 @@ export function resolveDepsConfig(
     onlyBundle = toArray(onlyBundle)
   }
 
+  if (onlyImport != null) {
+    onlyImport = toArray(onlyImport)
+  }
+
   return {
     ...normalizeDepsOptions(alwaysBundle, neverBundle),
     onlyBundle,
+    onlyImport,
     skipNodeModulesBundle,
     dts: normalizeDepsOptions(
       config.deps?.dts?.alwaysBundle,
@@ -164,7 +182,7 @@ export function resolveDepsConfig(
 function normalizeDepsOptions(
   alwaysBundle?: DepsConfig['alwaysBundle'],
   neverBundle?: DepsConfig['neverBundle'],
-): Pick<ResolvedDepsConfig, 'alwaysBundle' | 'neverBundle' | 'onlyBundle'> {
+): Pick<ResolvedDepsConfig, 'alwaysBundle' | 'neverBundle'> {
   if (alwaysBundle != null && typeof alwaysBundle !== 'function') {
     const alwaysBundlePatterns = toArray(alwaysBundle)
     alwaysBundle = (id) => matchPattern(id, alwaysBundlePatterns)
@@ -182,11 +200,13 @@ export function DepsPlugin(
     deps: {
       alwaysBundle: jsAlwaysBundle,
       onlyBundle,
+      onlyImport,
       skipNodeModulesBundle,
       dts,
     },
     logger,
     nameLabel,
+    platform,
   }: ResolvedConfig,
   tsdownBundle: TsdownBundle,
 ): Plugin {
@@ -237,10 +257,48 @@ export function DepsPlugin(
       async handler(options, bundle) {
         const deps = new Set<string>()
         const importers = new Map<string, Set<string>>()
+        const errors: string[] = []
+        const moduleIds = [...this.getModuleIds()].filter(
+          (id) => platform !== 'node' || !isBuiltin(id),
+        )
 
         for (const chunk of Object.values(bundle)) {
           if (chunk.type === 'asset') continue
 
+          // externalized deps
+          if (
+            onlyImport &&
+            chunk.code &&
+            // fast check to avoid parsing all chunks
+            moduleIds.some((id) => chunk.code.includes(id))
+          ) {
+            const { program } = await parse(chunk.fileName, chunk.code)
+            for (const stmt of program.body) {
+              if (
+                stmt.type !== 'ImportDeclaration' &&
+                stmt.type !== 'ExportAllDeclaration' &&
+                stmt.type !== 'ExportNamedDeclaration'
+              ) {
+                continue
+              }
+              const source = stmt.source?.value
+
+              // relative imports of sibling chunks emitted by code splitting
+              if (!source || source[0] === '.') continue
+              if (platform === 'node' && isBuiltin(source)) continue
+              if (matchPattern(parsePackageSpecifier(source)[0], onlyImport)) {
+                continue
+              }
+
+              errors.push(
+                `${yellow(source)} is imported in ${blue(
+                  chunk.fileName,
+                )} but is not included in ${blue`deps.onlyImport`} option.\n` +
+                  `To fix this, either add it to ${blue`deps.onlyImport`} or bundle it manually by adding it to ${blue`deps.alwaysBundle`} option.`,
+              )
+            }
+          }
+          // inlined deps
           for (const id of chunk.moduleIds) {
             if (id === shimFile) continue
             const parsed = await readBundledDepInfo(id)
@@ -269,20 +327,25 @@ export function DepsPlugin(
         debug('found deps in bundle: %o', deps)
 
         if (onlyBundle) {
-          const errors = Array.from(deps)
-            .filter((dep) => !matchPattern(dep, onlyBundle))
-            .map(
-              (dep) =>
-                `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyBundle`} option.\n` +
-                `To fix this, either add it to ${blue`deps.onlyBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
-                `Imported by\n${[...(importers.get(dep) || [])]
-                  .map((s) => `- ${underline(s)}`)
-                  .join('\n')}`,
-            )
-          if (errors.length) {
-            this.error(errors.join('\n\n'))
-          }
+          errors.push(
+            ...Array.from(deps)
+              .filter((dep) => !matchPattern(dep, onlyBundle))
+              .map(
+                (dep) =>
+                  `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyBundle`} option.\n` +
+                  `To fix this, either add it to ${blue`deps.onlyBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
+                  `Imported by\n${[...(importers.get(dep) || [])]
+                    .map((s) => `- ${underline(s)}`)
+                    .join('\n')}`,
+              ),
+          )
+        }
 
+        if (errors.length) {
+          this.error(errors.join('\n\n'))
+        }
+
+        if (onlyBundle) {
           const unusedPatterns = onlyBundle.filter(
             (pattern) =>
               !Array.from(deps).some((dep) => matchPattern(dep, [pattern])),

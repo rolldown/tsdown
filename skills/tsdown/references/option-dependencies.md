@@ -33,6 +33,7 @@ export default defineConfig({
     neverBundle: ['react', /^@myorg\//],
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
+    onlyImport: ['cac'],
     skipNodeModulesBundle: true,
   },
 })
@@ -95,6 +96,30 @@ export default defineConfig({
 - **Not set** (default): Warns if any node_modules dependencies are bundled.
 
 **Note:** Include all sub-dependencies in the list, not just top-level imports.
+
+### `deps.onlyImport`
+
+Whitelist of packages the emitted output is allowed to import at runtime. Throws an error (listing all violations) if any chunk imports an unlisted package:
+
+```ts
+export default defineConfig({
+  entry: ['src/index.ts'],
+  deps: {
+    onlyImport: [
+      'cac',               // Also covers subpath imports like cac/deno
+      /^my-utils/,         // Regex patterns match the package name
+    ],
+  },
+})
+```
+
+**Behavior:**
+- Matching is based on the package name; subpath imports (`cac/deno`) match `cac`.
+- Node.js built-in modules are always allowed when `platform` is `node`.
+- Relative imports between code-split chunks are always allowed.
+- Declaration output (`.d.ts`) is checked too.
+
+**Limitation:** Only ESM output is checked. CJS output (`require` calls) is not detected.
 
 ### `deps.skipNodeModulesBundle`
 
@@ -362,6 +387,7 @@ export default defineConfig({
 - `neverBundle` → Force external
 - `alwaysBundle` → Force bundled
 - `onlyBundle` → Whitelist bundled deps
+- `onlyImport` → Whitelist runtime imports in output
 - `skipNodeModulesBundle` → Skip all node_modules
 
 **Declaration files:**

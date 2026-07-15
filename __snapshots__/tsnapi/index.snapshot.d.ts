@@ -28,6 +28,7 @@ export interface DepsConfig {
   neverBundle?: ExternalOption;
   alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn;
   onlyBundle?: Arrayable<string | RegExp> | false;
+  onlyImport?: Arrayable<string | RegExp>;
   onlyAllowBundle?: Arrayable<string | RegExp> | false;
   skipNodeModulesBundle?: boolean;
   dts?: Pick<DepsConfig, "alwaysBundle" | "neverBundle">;
@@ -98,6 +99,7 @@ export interface ResolvedDepsConfig {
   neverBundle?: ExternalOption;
   alwaysBundle?: NoExternalFn;
   onlyBundle?: Array<string | RegExp> | false;
+  onlyImport?: Array<string | RegExp>;
   skipNodeModulesBundle: boolean;
   dts: Pick<ResolvedDepsConfig, "alwaysBundle" | "neverBundle">;
 }
