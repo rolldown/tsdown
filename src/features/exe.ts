@@ -137,7 +137,11 @@ export async function buildExe(
       await importWithError<typeof import('@tsdown/exe')>('@tsdown/exe')
 
     for (const target of targets) {
-      const nodeBinaryPath = await resolveNodeBinary(target, config.logger)
+      const nodeBinaryPath = await resolveNodeBinary(
+        target,
+        config.exe,
+        config.logger,
+      )
       const suffix = getTargetSuffix(target)
       const outputFile = resolveOutputFileName(
         config.exe,
