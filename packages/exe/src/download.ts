@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 import { chmod, mkdir, rename, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import process from 'node:process'
 import { createDebug } from 'obug'
 import { x } from 'tinyexec'
 import { fsExists, fsRemove, type Logger } from 'tsdown/internal'
@@ -14,6 +15,13 @@ import {
 } from './platform.ts'
 
 const debug = createDebug('tsdown:exe:download')
+
+interface ExtractCommand {
+  command: string
+  args: string[]
+  extractedName: string
+  requiredTool: string
+}
 
 export async function resolveNodeBinary(
   target: ExeTarget,
@@ -81,42 +89,106 @@ async function extractBinary(
   const outDir = path.dirname(targetBinaryPath)
   debug('Extracting %s from archive to %s', binaryInArchive, outDir)
 
-  if (target.platform === 'win') {
-    // Modern Windows has bsdtar that supports .zip
-    await x(
-      'tar',
-      [
-        '-xf',
-        archivePath,
-        '-C',
-        outDir,
-        '--strip-components=1',
-        binaryInArchive,
-      ],
-      { nodeOptions: { stdio: 'inherit' }, throwOnError: true },
-    )
-  } else {
-    // .tar.gz (darwin) or .tar.xz (linux)
-    const decompressFlag = archivePath.endsWith('.tar.xz') ? 'J' : 'z'
-    await x(
-      'tar',
-      [
-        `-x${decompressFlag}f`,
-        archivePath,
-        '-C',
-        outDir,
-        '--strip-components=2',
-        binaryInArchive,
-      ],
-      { nodeOptions: { stdio: 'inherit' }, throwOnError: true },
-    )
+  const command = getExtractCommand(archivePath, binaryInArchive, outDir)
+  try {
+    await x(command.command, command.args, {
+      nodeOptions: { stdio: 'inherit' },
+      throwOnError: true,
+    })
+  } catch (error) {
+    throw formatExtractToolError(error, command.requiredTool, archivePath)
   }
 
   // tar --strip-components extracts to outDir/node[.exe]
   // Rename if the final filename doesn't match
-  const extractedName = target.platform === 'win' ? 'node.exe' : 'node'
-  const extractedPath = path.join(outDir, extractedName)
+  const extractedPath = path.join(outDir, command.extractedName)
   if (extractedPath !== targetBinaryPath) {
     await rename(extractedPath, targetBinaryPath)
   }
+}
+
+export function getExtractCommand(
+  archivePath: string,
+  binaryInArchive: string,
+  outDir: string,
+  hostPlatform = process.platform,
+): ExtractCommand {
+  if (archivePath.endsWith('.zip')) {
+    if (hostPlatform === 'win32') {
+      return {
+        command: 'tar',
+        args: [
+          '-xf',
+          archivePath,
+          '-C',
+          outDir,
+          '--strip-components=1',
+          binaryInArchive,
+        ],
+        extractedName: 'node.exe',
+        requiredTool: 'tar',
+      }
+    }
+
+    return {
+      command: 'unzip',
+      args: ['-o', '-j', archivePath, binaryInArchive, '-d', outDir],
+      extractedName: 'node.exe',
+      requiredTool: 'unzip',
+    }
+  }
+
+  const decompressFlag = archivePath.endsWith('.tar.xz') ? 'J' : 'z'
+  return {
+    command: 'tar',
+    args: [
+      `-x${decompressFlag}f`,
+      archivePath,
+      '-C',
+      outDir,
+      '--strip-components=2',
+      binaryInArchive,
+    ],
+    extractedName: 'node',
+    requiredTool: 'tar',
+  }
+}
+
+function formatExtractToolError(
+  error: unknown,
+  tool: string,
+  archivePath: string,
+): unknown {
+  if (isCommandNotFoundError(error)) {
+    return new Error(
+      `Failed to extract Node.js archive ${archivePath}: required tool "${tool}" was not found. ` +
+        `Install "${tool}" and retry.`,
+      { cause: error },
+    )
+  }
+  return error
+}
+
+function isCommandNotFoundError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false
+  }
+
+  if ('code' in error && error.code === 'ENOENT') {
+    return true
+  }
+
+  if ('cause' in error) {
+    const { cause } = error as { cause?: unknown }
+    if (
+      cause &&
+      typeof cause === 'object' &&
+      'code' in cause &&
+      cause.code === 'ENOENT'
+    ) {
+      return true
+    }
+  }
+
+  return false
 }

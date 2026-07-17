@@ -10,6 +10,7 @@ tsdown can bundle your TypeScript/JavaScript code into a standalone executable u
 
 - Node.js >= 25.7.0
 - Not supported in Bun or Deno
+- For cross-building Windows targets on non-Windows hosts, `unzip` must be available in `PATH`
 
 ## Basic Usage
 

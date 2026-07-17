@@ -10,6 +10,7 @@ tsdown 可以使用 [Node.js 单可执行应用](https://nodejs.org/api/single-e
 
 - Node.js >= 25.7.0
 - 不支持 Bun 和 Deno
+- 在非 Windows 主机上交叉构建 Windows 目标时，需要在 `PATH` 中提供 `unzip`
 
 ## 基本用法
 
