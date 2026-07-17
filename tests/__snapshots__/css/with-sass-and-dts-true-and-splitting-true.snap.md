@@ -10,7 +10,7 @@ body {
 ## index.d.mts
 
 ```mts
-export { };
+export {}
 ```
 
 ## index.mjs
