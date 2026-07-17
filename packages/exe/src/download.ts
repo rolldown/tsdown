@@ -10,6 +10,7 @@ import {
   getBinaryPathInArchive,
   getDownloadUrl,
   resolveNodeVersion,
+  type ExeExtensionOptions,
   type ExeTarget,
 } from './platform.ts'
 
@@ -17,10 +18,14 @@ const debug = createDebug('tsdown:exe:download')
 
 export async function resolveNodeBinary(
   target: ExeTarget,
+  options: ExeExtensionOptions,
   logger?: Logger,
 ): Promise<string> {
   debug('Resolving Node.js binary for target: %O', target)
-  target.nodeVersion = await resolveNodeVersion(target.nodeVersion)
+  target.nodeVersion = await resolveNodeVersion(
+    target.nodeVersion,
+    options.nodeDistIndexUrl,
+  )
 
   const cachedPath = getCachedBinaryPath(target)
   debug('Cache path: %s', cachedPath)
@@ -33,7 +38,7 @@ export async function resolveNodeBinary(
     return cachedPath
   }
 
-  const url = getDownloadUrl(target)
+  const url = await (options.getDownloadUrl ?? getDownloadUrl)(target)
   debug('Cache miss, downloading from: %s', url)
   logger?.info(
     `Downloading Node.js ${target.nodeVersion} for ${target.platform}-${target.arch}...`,

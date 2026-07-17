@@ -39,6 +39,13 @@ export interface ExeExtensionOptions {
    * ```
    */
   targets?: ExeTarget[]
+
+  getDownloadUrl?: (target: ExeTarget) => string | Promise<string>
+
+  /**
+   * @default 'https://nodejs.org/dist/index.json'
+   */
+  nodeDistIndexUrl?: string
 }
 
 export function getArchiveExtension(platform: ExePlatform): string {
@@ -67,14 +74,15 @@ interface NodeRelease {
   lts: string | false
 }
 
-const NODE_DIST_INDEX_URL = 'https://nodejs.org/dist/index.json'
-
-export async function resolveNodeVersion(nodeVersion: string): Promise<string> {
+export async function resolveNodeVersion(
+  nodeVersion: string,
+  nodeDistIndexUrl = 'https://nodejs.org/dist/index.json',
+): Promise<string> {
   if (nodeVersion === 'latest' || nodeVersion === 'latest-lts') {
-    const response = await fetch(NODE_DIST_INDEX_URL)
+    const response = await fetch(nodeDistIndexUrl)
     if (!response.ok) {
       throw new Error(
-        `Failed to fetch Node.js releases: HTTP ${response.status} from ${NODE_DIST_INDEX_URL}`,
+        `Failed to fetch Node.js releases: HTTP ${response.status} from ${nodeDistIndexUrl}`,
       )
     }
 
