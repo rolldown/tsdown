@@ -32,7 +32,7 @@ export default defineConfig({
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
-    resolveDepSubpath: false,
+    resolveDepSubpath: true,
   },
 })
 ```
@@ -45,21 +45,21 @@ export default defineConfig({
 
 ### `deps.resolveDepSubpath`
 
-When an external dependency has no `exports` field, tsdown resolves subpath imports to their actual package-relative paths by default. For example, `my-dep/functions/lt` may become `my-dep/functions/lt.js`, and `my-dep/folder` may become `my-dep/folder/index.js`.
+By default, tsdown preserves external dependency subpath imports as written. Enable `resolveDepSubpath` to resolve subpath imports to their actual package-relative paths when a package has no `exports` field. For example, `my-dep/functions/lt` may become `my-dep/functions/lt.js`, and `my-dep/folder` may become `my-dep/folder/index.js`.
 
-Set `resolveDepSubpath` to `false` to preserve the original import specifier:
+Set `resolveDepSubpath` to `true` to enable this behavior:
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   deps: {
-    resolveDepSubpath: false,
+    resolveDepSubpath: true,
   },
 })
 ```
 
-The default value is `true`.
+The default value is `false`.
 
 ### `deps.onlyBundle`
 
@@ -220,7 +220,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
   - Use `deps.onlyImport` to whitelist packages the output is allowed to import at runtime.
   - Use `deps.neverBundle` to mark specific dependencies as external, or set it to `true` to externalize all dependencies.
   - Use `deps.alwaysBundle` to force specific dependencies to be bundled.
-  - Set `deps.resolveDepSubpath` to `false` to preserve external dependency subpath imports as written.
+  - Enable `deps.resolveDepSubpath` to resolve external dependency subpath imports to their package-relative paths.
 - **Declaration Files**:
   - The bundling logic for declaration files is now the same as for JavaScript.
   - Use `resolver: 'tsc'` for better compatibility with complex third-party types.

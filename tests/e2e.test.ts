@@ -1417,6 +1417,9 @@ describe('resolve dep subpath without exports field', () => {
           dependencies: { 'my-dep': '^1.0.0' },
         }),
       },
+      options: {
+        deps: { resolveDepSubpath: true },
+      },
     })
 
     expect(fileMap['index.mjs']).toContain('my-dep/functions/lt.js')
@@ -1475,6 +1478,9 @@ describe('resolve dep subpath without exports field', () => {
           dependencies: { 'my-dep': '^1.0.0' },
         }),
       },
+      options: {
+        deps: { resolveDepSubpath: true },
+      },
     })
 
     expect(fileMap['index.mjs']).toContain('my-dep/folder/index.js')
@@ -1502,7 +1508,10 @@ describe('resolve dep subpath without exports field', () => {
         }),
       },
       options: {
-        deps: { skipNodeModulesBundle: true },
+        deps: {
+          resolveDepSubpath: true,
+          skipNodeModulesBundle: true,
+        },
       },
     })
 
@@ -1564,7 +1573,10 @@ describe('resolve dep subpath without exports field', () => {
         }),
       },
       options: {
-        deps: { skipNodeModulesBundle: true },
+        deps: {
+          resolveDepSubpath: true,
+          skipNodeModulesBundle: true,
+        },
       },
     })
 

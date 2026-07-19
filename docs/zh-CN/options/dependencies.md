@@ -32,7 +32,7 @@ export default defineConfig({
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
-    resolveDepSubpath: false,
+    resolveDepSubpath: true,
   },
 })
 ```
@@ -45,21 +45,21 @@ export default defineConfig({
 
 ### `deps.resolveDepSubpath`
 
-当外部依赖没有 `exports` 字段时，tsdown 默认会将子路径导入解析为包内的实际相对路径。例如，`my-dep/functions/lt` 可能会变为 `my-dep/functions/lt.js`，而 `my-dep/folder` 可能会变为 `my-dep/folder/index.js`。
+默认情况下，tsdown 会保留外部依赖原有的子路径导入。当依赖没有 `exports` 字段时，可以启用 `resolveDepSubpath`，将子路径导入解析为包内的实际相对路径。例如，`my-dep/functions/lt` 可能会变为 `my-dep/functions/lt.js`，而 `my-dep/folder` 可能会变为 `my-dep/folder/index.js`。
 
-将 `resolveDepSubpath` 设置为 `false` 可保留原始导入说明符：
+将 `resolveDepSubpath` 设置为 `true` 可启用此行为：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   deps: {
-    resolveDepSubpath: false,
+    resolveDepSubpath: true,
   },
 })
 ```
 
-默认值为 `true`。
+默认值为 `false`。
 
 ### `deps.onlyBundle`
 
@@ -220,7 +220,7 @@ export default defineConfig({
   - 使用 `deps.onlyImport` 设置产物在运行时允许导入的包白名单。
   - 使用 `deps.neverBundle` 将特定依赖标记为外部依赖，或将其设置为 `true` 外部化所有依赖。
   - 使用 `deps.alwaysBundle` 强制将特定依赖打包。
-  - 将 `deps.resolveDepSubpath` 设置为 `false` 可保留外部依赖原有的子路径导入。
+  - 启用 `deps.resolveDepSubpath` 可将外部依赖的子路径导入解析为包内的相对路径。
 - **声明文件**：
   - 声明文件的打包逻辑与 JavaScript 保持一致。
   - 使用 `resolver: 'tsc'` 可提升复杂第三方类型的兼容性。

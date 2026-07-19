@@ -9,13 +9,13 @@ import {
 import type { UserConfig } from '../config/types.ts'
 
 describe('resolveDepsConfig', () => {
-  it('enables dependency subpath resolution by default', () => {
-    expect(resolveDepsConfig({}).resolveDepSubpath).toBe(true)
+  it('disables dependency subpath resolution by default', () => {
+    expect(!!resolveDepsConfig({}).resolveDepSubpath).toBe(false)
     expect(
       resolveDepsConfig({
-        deps: { resolveDepSubpath: false },
+        deps: { resolveDepSubpath: true },
       }).resolveDepSubpath,
-    ).toBe(false)
+    ).toBe(true)
   })
 
   it('rejects skipNodeModulesBundle together with neverBundle: true', () => {
@@ -122,11 +122,31 @@ describe('DepsPlugin', () => {
       external: true,
       moduleSideEffects: undefined,
     })
-    expect(resolve).not.toHaveBeenCalled()
-
-    // subpath imports require resolution for `resolveDepSubpath`
     await expect(
       handler.call({ resolve }, 'some-dep/utils', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: 'some-dep/utils',
+      external: true,
+      moduleSideEffects: undefined,
+    })
+    expect(resolve).not.toHaveBeenCalled()
+
+    // subpath imports require resolution when `resolveDepSubpath` is enabled
+    const subpathPlugin = DepsPlugin(
+      {
+        pkg: { dependencies: { 'some-dep': '^1.0.0' } },
+        deps: resolveDepsConfig({ deps: { resolveDepSubpath: true } }),
+      } as any,
+      { inlinedDeps: new Map() } as any,
+    )
+    const subpathHandler = (subpathPlugin.resolveId as any).handler
+    await expect(
+      subpathHandler.call(
+        { resolve },
+        'some-dep/utils',
+        '/project/src/index.ts',
+        {},
+      ),
     ).resolves.toEqual({
       id: 'some-dep/utils',
       external: true,
