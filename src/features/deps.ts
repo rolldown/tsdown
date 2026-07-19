@@ -91,7 +91,7 @@ export interface DepsConfig {
    * Resolve dependency subpath imports to their actual package-relative paths
    * when externalizing packages without an `exports` field.
    *
-   * @default true
+   * @default false
    */
   resolveDepSubpath?: boolean
 
@@ -125,7 +125,7 @@ export function resolveDepsConfig(
     onlyBundle,
     onlyImport,
     skipNodeModulesBundle,
-    resolveDepSubpath = true,
+    resolveDepSubpath,
   } = config.deps || {}
 
   if (config.external != null) {
