@@ -170,7 +170,7 @@ export type WithEnabled<T> =
  * Options for tsdown.
  */
 export interface UserConfig {
-  // #region Input Options
+  //#region Input Options
   /**
    * Defaults to `'src/index.ts'` if it exists.
    *
@@ -190,24 +190,6 @@ export interface UserConfig {
    * Dependency handling options.
    */
   deps?: DepsConfig
-
-  /**
-   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle} instead.
-   */
-  external?: ExternalOption
-  /**
-   * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
-   */
-  noExternal?: Arrayable<string | RegExp> | NoExternalFn
-  /**
-   * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
-   */
-  inlineOnly?: Arrayable<string | RegExp> | false
-  /**
-   * @deprecated Use {@linkcode DepsConfig.skipNodeModulesBundle | deps.skipNodeModulesBundle} instead.
-   * @default false
-   */
-  skipNodeModulesBundle?: boolean
 
   alias?: Record<string, string>
 
@@ -310,26 +292,6 @@ export interface UserConfig {
   loader?: ModuleTypes
 
   /**
-   * Remove the `node:` prefix from built-in Node.js module imports.
-   * When enabled, rewrites import sources like `node:fs` to `fs`.
-   *
-   * @default false
-   * @deprecated Use {@linkcode nodeProtocol | nodeProtocol: 'strip'} instead.
-   *
-   * @example
-   * <caption>`removeNodeProtocol: true` — remove the `node:` prefix</caption>
-   *
-   * ```ts
-   * // Input
-   * import 'node:fs'
-   *
-   * // Output
-   * import 'fs'
-   * ```
-   */
-  removeNodeProtocol?: boolean
-
-  /**
    * Control whether built-in Node.js module imports use the `node:` protocol.
    *
    * - `true`: Add the `node:` prefix to built-in module imports.
@@ -400,6 +362,7 @@ export interface UserConfig {
         context: { cjsDts: boolean },
       ) => Awaitable<InputOptions | void | null>)
 
+  //#endregion
   //#region Output Options
 
   /**
@@ -465,12 +428,6 @@ export interface UserConfig {
   root?: string
 
   /**
-   * @deprecated Use {@linkcode unbundle} instead.
-   * @default true
-   */
-  bundle?: boolean
-
-  /**
    * Use a fixed extension for output files.
    * The extension will always be `.cjs` or `.mjs`.
    * Otherwise, it will depend on the package type.
@@ -487,11 +444,6 @@ export interface UserConfig {
    * {@linkcode fixedExtension} will be overridden by this option.
    */
   outExtensions?: OutExtensionFactory
-
-  /**
-   * @deprecated Use {@linkcode outExtensions} instead.
-   */
-  outExtension?: OutExtensionFactory
 
   /**
    * If enabled, appends hash to chunk filenames.
@@ -515,6 +467,7 @@ export interface UserConfig {
         context: { cjsDts: boolean },
       ) => Awaitable<OutputOptions | void | null>)
 
+  //#endregion
   //#region CLI Options
 
   /**
@@ -556,6 +509,9 @@ export interface UserConfig {
    */
   customLogger?: Logger
 
+  //#endregion
+  //#region Addons
+
   /**
    * Reuse config from Vite or Vitest (experimental)
    * @default false
@@ -581,8 +537,6 @@ export interface UserConfig {
    * @default false
    */
   devtools?: WithEnabled<DevtoolsOptions>
-
-  //#region Addons
 
   /**
    * You can specify command to be executed after a successful build, specially useful for Watch mode
@@ -654,17 +608,6 @@ export interface UserConfig {
   css?: CssOptions
 
   /**
-   * @deprecated Use {@linkcode CssOptions.inject | css.inject} instead.
-   */
-  injectStyle?: boolean
-
-  /**
-   * @alias copy
-   * @deprecated Alias for {@linkcode copy}, will be removed in the future.
-   */
-  publicDir?: CopyOptions | CopyOptionsFn
-
-  /**
    * Copy files to another directory.
    * @example
    * ```ts
@@ -698,6 +641,72 @@ export interface UserConfig {
    * This allows you to build multiple packages in a monorepo.
    */
   workspace?: Workspace | Arrayable<string> | true
+
+  //#endregion
+  //#region Deprecated Options
+  // tsup compatibility
+
+  /**
+   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle} instead.
+   */
+  external?: ExternalOption
+  /**
+   * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
+   */
+  noExternal?: Arrayable<string | RegExp> | NoExternalFn
+  /**
+   * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
+   */
+  inlineOnly?: Arrayable<string | RegExp> | false
+  /**
+   * @deprecated Use {@linkcode DepsConfig.skipNodeModulesBundle | deps.skipNodeModulesBundle} instead.
+   * @default false
+   */
+  skipNodeModulesBundle?: boolean
+
+  /**
+   * Remove the `node:` prefix from built-in Node.js module imports.
+   * When enabled, rewrites import sources like `node:fs` to `fs`.
+   *
+   * @default false
+   * @deprecated Use {@linkcode nodeProtocol | nodeProtocol: 'strip'} instead.
+   *
+   * @example
+   * <caption>`removeNodeProtocol: true` — remove the `node:` prefix</caption>
+   *
+   * ```ts
+   * // Input
+   * import 'node:fs'
+   *
+   * // Output
+   * import 'fs'
+   * ```
+   */
+  removeNodeProtocol?: boolean
+
+  /**
+   * @deprecated Use {@linkcode unbundle} instead.
+   * @default true
+   */
+  bundle?: boolean
+
+  /**
+   * @deprecated Use {@linkcode outExtensions} instead.
+   */
+  outExtension?: OutExtensionFactory
+
+  /**
+   * @deprecated Use {@linkcode CssOptions.inject | css.inject} instead.
+   */
+  injectStyle?: boolean
+
+  /**
+   * @alias copy
+   * @deprecated Alias for {@linkcode copy}, will be removed in the future.
+   */
+  publicDir?: CopyOptions | CopyOptionsFn
+
+  //#endregion
 }
 
 export interface InlineConfig extends UserConfig {

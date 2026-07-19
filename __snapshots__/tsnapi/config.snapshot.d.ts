@@ -5,10 +5,6 @@
 export interface UserConfig {
   entry?: TsdownInputOption;
   deps?: DepsConfig;
-  external?: ExternalOption;
-  noExternal?: Arrayable<string | RegExp> | NoExternalFn;
-  inlineOnly?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
   alias?: Record<string, string>;
   tsconfig?: string | boolean;
   platform?: "node" | "neutral" | "browser";
@@ -20,7 +16,6 @@ export interface UserConfig {
   shims?: boolean;
   treeshake?: boolean | TreeshakingOptions;
   loader?: ModuleTypes;
-  removeNodeProtocol?: boolean;
   nodeProtocol?: "strip" | boolean;
   checks?: ChecksOptions & {
     legacyCjs?: boolean;
@@ -40,10 +35,8 @@ export interface UserConfig {
   banner?: ChunkAddon;
   unbundle?: boolean;
   root?: string;
-  bundle?: boolean;
   fixedExtension?: boolean;
   outExtensions?: OutExtensionFactory;
-  outExtension?: OutExtensionFactory;
   hash?: boolean;
   cjsDefault?: boolean;
   outputOptions?: OutputOptions | ((_: OutputOptions, _: NormalizedFormat, _: {
@@ -68,12 +61,19 @@ export interface UserConfig {
   globImport?: boolean;
   exports?: WithEnabled<ExportsOptions>;
   css?: CssOptions;
-  injectStyle?: boolean;
-  publicDir?: CopyOptions | CopyOptionsFn;
   copy?: CopyOptions | CopyOptionsFn;
   hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>);
   exe?: WithEnabled<ExeOptions>;
   workspace?: Workspace | Arrayable<string> | true;
+  external?: ExternalOption;
+  noExternal?: Arrayable<string | RegExp> | NoExternalFn;
+  inlineOnly?: Arrayable<string | RegExp> | false;
+  skipNodeModulesBundle?: boolean;
+  removeNodeProtocol?: boolean;
+  bundle?: boolean;
+  outExtension?: OutExtensionFactory;
+  injectStyle?: boolean;
+  publicDir?: CopyOptions | CopyOptionsFn;
 }
 // #endregion
 
