@@ -72,6 +72,13 @@ export interface DepsConfig {
    * @default false
    */
   skipNodeModulesBundle?: boolean
+  /**
+   * Resolve dependency subpath imports to their actual package-relative paths
+   * when externalizing packages without an `exports` field.
+   *
+   * @default true
+   */
+  resolveDepSubpath?: boolean
 
   /**
    * Override dependency bundling options for declaration file generation.
@@ -85,6 +92,7 @@ export interface ResolvedDepsConfig {
   onlyBundle?: Array<string | RegExp> | false
   onlyImport?: Array<string | RegExp>
   skipNodeModulesBundle: boolean
+  resolveDepSubpath: boolean
 
   /**
    * Override dependency bundling options for declaration file generation.
@@ -102,6 +110,7 @@ export function resolveDepsConfig(
     onlyBundle,
     onlyImport,
     skipNodeModulesBundle = false,
+    resolveDepSubpath = true,
   } = config.deps || {}
 
   if (config.external != null) {
@@ -173,6 +182,7 @@ export function resolveDepsConfig(
     onlyBundle,
     onlyImport,
     skipNodeModulesBundle,
+    resolveDepSubpath,
     dts: normalizeDepsOptions(
       config.deps?.dts?.alwaysBundle,
       config.deps?.dts?.neverBundle,
@@ -203,6 +213,7 @@ export function DepsPlugin(
       onlyBundle,
       onlyImport,
       skipNodeModulesBundle,
+      resolveDepSubpath: shouldResolveDepSubpath,
       dts,
     },
     logger,
@@ -391,13 +402,15 @@ export function DepsPlugin(
       resolved &&
       (resolved.external || RE_NODE_MODULES.test(resolved.id))
     ) {
-      const resolvedDep = await resolveDepSubpath(id, resolved)
+      const resolvedDep =
+        shouldResolveDepSubpath && (await resolveDepSubpath(id, resolved))
       return resolvedDep ? [true, resolvedDep] : true
     }
 
     if (deps) {
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
-        const resolvedDep = await resolveDepSubpath(id, resolved)
+        const resolvedDep =
+          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolved))
         return resolvedDep ? [true, resolvedDep] : true
       }
 

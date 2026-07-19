@@ -31,6 +31,7 @@ export interface DepsConfig {
   onlyImport?: Arrayable<string | RegExp>;
   onlyAllowBundle?: Arrayable<string | RegExp> | false;
   skipNodeModulesBundle?: boolean;
+  resolveDepSubpath?: boolean;
   dts?: Pick<DepsConfig, "alwaysBundle" | "neverBundle">;
 }
 export interface DevtoolsOptions extends NonNullable<InputOptions["devtools"]> {
@@ -101,6 +102,7 @@ export interface ResolvedDepsConfig {
   onlyBundle?: Array<string | RegExp> | false;
   onlyImport?: Array<string | RegExp>;
   skipNodeModulesBundle: boolean;
+  resolveDepSubpath: boolean;
   dts: Pick<ResolvedDepsConfig, "alwaysBundle" | "neverBundle">;
 }
 export interface RolldownContext {

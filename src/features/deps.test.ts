@@ -8,6 +8,15 @@ import {
 } from './deps.ts'
 
 describe('resolveDepsConfig', () => {
+  it('enables dependency subpath resolution by default', () => {
+    expect(resolveDepsConfig({}).resolveDepSubpath).toBe(true)
+    expect(
+      resolveDepsConfig({
+        deps: { resolveDepSubpath: false },
+      }).resolveDepSubpath,
+    ).toBe(false)
+  })
+
   it('resolves declaration-only dependency options separately', () => {
     const resolved = resolveDepsConfig({
       deps: {

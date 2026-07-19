@@ -33,6 +33,7 @@ export default defineConfig({
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
     skipNodeModulesBundle: true,
+    resolveDepSubpath: false,
   },
 })
 ```
@@ -56,6 +57,24 @@ This will prevent `tsdown` from bundling any dependencies from `node_modules`, r
 ::: warning
 `skipNodeModulesBundle` cannot be used together with `alwaysBundle`. These options are mutually exclusive.
 :::
+
+### `deps.resolveDepSubpath`
+
+When an external dependency has no `exports` field, tsdown resolves subpath imports to their actual package-relative paths by default. For example, `my-dep/functions/lt` may become `my-dep/functions/lt.js`, and `my-dep/folder` may become `my-dep/folder/index.js`.
+
+Set `resolveDepSubpath` to `false` to preserve the original import specifier:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    resolveDepSubpath: false,
+  },
+})
+```
+
+The default value is `true`.
 
 ### `deps.onlyBundle`
 
@@ -185,6 +204,7 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
   - Use `deps.neverBundle` to mark specific dependencies as external.
   - Use `deps.alwaysBundle` to force specific dependencies to be bundled.
   - Use `deps.skipNodeModulesBundle` to skip bundling all dependencies from `node_modules`.
+  - Set `deps.resolveDepSubpath` to `false` to preserve external dependency subpath imports as written.
 - **Declaration Files**:
   - The bundling logic for declaration files is now the same as for JavaScript.
   - Use `resolver: 'tsc'` for better compatibility with complex third-party types.

@@ -33,6 +33,7 @@ export default defineConfig({
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
     skipNodeModulesBundle: true,
+    resolveDepSubpath: false,
   },
 })
 ```
@@ -56,6 +57,24 @@ export default defineConfig({
 ::: warning
 `skipNodeModulesBundle` 不能与 `alwaysBundle` 一起使用，这两个选项互斥。
 :::
+
+### `deps.resolveDepSubpath`
+
+当外部依赖没有 `exports` 字段时，tsdown 默认会将子路径导入解析为包内的实际相对路径。例如，`my-dep/functions/lt` 可能会变为 `my-dep/functions/lt.js`，而 `my-dep/folder` 可能会变为 `my-dep/folder/index.js`。
+
+将 `resolveDepSubpath` 设置为 `false` 可保留原始导入说明符：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    resolveDepSubpath: false,
+  },
+})
+```
+
+默认值为 `true`。
 
 ### `deps.onlyBundle`
 
@@ -185,6 +204,7 @@ export default defineConfig({
   - 使用 `deps.neverBundle` 将特定依赖标记为外部依赖。
   - 使用 `deps.alwaysBundle` 强制将特定依赖打包。
   - 使用 `deps.skipNodeModulesBundle` 跳过打包所有来自 `node_modules` 的依赖。
+  - 将 `deps.resolveDepSubpath` 设置为 `false` 可保留外部依赖原有的子路径导入。
 - **声明文件**：
   - 声明文件的打包逻辑与 JavaScript 保持一致。
   - 使用 `resolver: 'tsc'` 可提升复杂第三方类型的兼容性。
