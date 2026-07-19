@@ -1309,6 +1309,37 @@ describe('resolve dep subpath without exports field', () => {
     expect(fileMap['index.mjs']).toContain('my-dep/functions/lt.js')
   })
 
+  test('resolveDepSubpath: false should preserve dep/file', async (context) => {
+    const node_modules = {
+      'node_modules/my-dep/package.json': JSON.stringify({
+        name: 'my-dep',
+        version: '1.0.0',
+        main: 'index.js',
+      }),
+      'node_modules/my-dep/index.js': `export const main = 1`,
+      'node_modules/my-dep/functions/lt.js': `export const lt = () => {}`,
+    }
+
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { lt } from 'my-dep/functions/lt'`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          dependencies: { 'my-dep': '^1.0.0' },
+        }),
+      },
+      options: {
+        deps: { resolveDepSubpath: false },
+      },
+    })
+
+    expect(fileMap['index.mjs']).toMatch(/from ["']my-dep\/functions\/lt["']/)
+    expect(fileMap['index.mjs']).not.toContain('my-dep/functions/lt.js')
+  })
+
   test('dep/folder should resolve to dep/folder/index.js', async (context) => {
     const node_modules = {
       'node_modules/my-dep/package.json': JSON.stringify({
@@ -1363,6 +1394,39 @@ describe('resolve dep subpath without exports field', () => {
     })
 
     expect(fileMap['index.mjs']).toContain('my-dep/functions/lt.js')
+  })
+
+  test('skipNodeModulesBundle should preserve dep/file when resolveDepSubpath is false', async (context) => {
+    const node_modules = {
+      'node_modules/my-dep/package.json': JSON.stringify({
+        name: 'my-dep',
+        version: '1.0.0',
+        main: 'index.js',
+      }),
+      'node_modules/my-dep/index.js': `export const main = 1`,
+      'node_modules/my-dep/functions/lt.js': `export const lt = () => {}`,
+    }
+
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { lt } from 'my-dep/functions/lt'`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+        }),
+      },
+      options: {
+        deps: {
+          resolveDepSubpath: false,
+          skipNodeModulesBundle: true,
+        },
+      },
+    })
+
+    expect(fileMap['index.mjs']).toMatch(/from ["']my-dep\/functions\/lt["']/)
+    expect(fileMap['index.mjs']).not.toContain('my-dep/functions/lt.js')
   })
 
   test('skipNodeModulesBundle dep/folder should resolve to dep/folder/index.js', async (context) => {

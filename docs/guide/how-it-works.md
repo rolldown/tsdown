@@ -39,6 +39,7 @@ When you publish a library, your consumers install its `dependencies`, `peerDepe
 | [`deps.neverBundle`](../options/dependencies.md#deps-neverbundle)                     | Explicitly mark additional packages as external (never bundled).                                                                                                                |
 | [`deps.alwaysBundle`](../options/dependencies.md#deps-alwaysbundle)                   | Force specific packages to be bundled, even if they're in `dependencies`.                                                                                                       |
 | [`deps.skipNodeModulesBundle`](../options/dependencies.md#deps-skipnodemodulesbundle) | Skip bundling everything from `node_modules`.                                                                                                                                   |
+| [`deps.resolveDepSubpath`](../options/dependencies.md#deps-resolvedepsubpath)         | Resolve external dependency subpath imports to their actual package-relative paths.                                                                                             |
 
 See [Dependencies](../options/dependencies.md) for details.
 
