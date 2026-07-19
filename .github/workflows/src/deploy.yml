@@ -21,10 +21,11 @@ jobs:
     if: github.repository == 'rolldown/tsdown'
     runs-on: ubuntu-latest
     environment: void
+    permissions:
+      id-token: write
     steps:
       - uses: sxzz/workflows/setup-js@main
       - run: pnpm run docs:generate
       - run: pnpm -C docs run void deploy
         env:
-          VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
           VOID_PROJECT: tsdown

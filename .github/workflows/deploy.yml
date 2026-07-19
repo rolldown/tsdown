@@ -24,6 +24,8 @@ jobs:
     if: github.repository == 'rolldown/tsdown'
     runs-on: ubuntu-latest
     environment: void
+    permissions:
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
@@ -50,5 +52,4 @@ jobs:
 
       - run: pnpm -C docs run void deploy
         env:
-          VOID_TOKEN: ${{ secrets.VOID_TOKEN }}
           VOID_PROJECT: tsdown
