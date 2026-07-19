@@ -139,11 +139,11 @@
     "picomatch": "catalog:prod",
     "rolldown": "catalog:prod",
     "rolldown-plugin-dts": "catalog:prod",
-    "semver": "catalog:prod",
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
     "tree-kill": "catalog:prod",
-    "unconfig-core": "catalog:prod"
+    "unconfig-core": "catalog:prod",
+    "verkit": "catalog:prod"
   },
   "inlinedDependencies": {
     "package-manager-detector": "1.7.0",
@@ -158,7 +158,6 @@
     "@tsdown/exe": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/picomatch": "catalog:dev",
-    "@types/semver": "catalog:dev",
     "@typescript/native-preview": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
     "@vitejs/devtools": "catalog:peer",

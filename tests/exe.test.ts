@@ -1,11 +1,15 @@
 import path from 'node:path'
 import process from 'node:process'
-import satisfies from 'semver/functions/satisfies.js'
 import { x } from 'tinyexec'
+import { isGreaterOrEqual } from 'verkit'
 import { describe, expect, test } from 'vitest'
+import { NODE_SEA_MIN_VERSION_PARSED } from '../src/features/exe.ts'
 import { testBuild } from './utils.ts'
 
-const nodeSupportsBuiltinSea = satisfies(process.version, '>=25.5.0')
+const nodeSupportsBuiltinSea = isGreaterOrEqual(
+  process.version,
+  NODE_SEA_MIN_VERSION_PARSED,
+)
 const suffix = process.platform === 'win32' ? '.exe' : ''
 
 describe.runIf(nodeSupportsBuiltinSea)('exe', () => {

@@ -9,3 +9,8 @@ export async function importWithError(_) {}
 export function resolveComma(_) {}
 export function toArray(_, _) {}
 // #endregion
+
+// #region Variables
+export var NODE_SEA_MIN_VERSION /* const */
+export var NODE_SEA_MIN_VERSION_PARSED /* const */
+// #endregion

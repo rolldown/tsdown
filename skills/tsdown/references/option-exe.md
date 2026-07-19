@@ -4,7 +4,7 @@
 
 ## Requirements
 
-- Node.js >= 25.5.0 (ESM support requires >= 25.7.0)
+- Node.js >= 25.7.0
 - Not supported in Bun or Deno
 
 ## Basic Usage
@@ -18,7 +18,6 @@ export default defineConfig({
 
 ## Behavior When Enabled
 
-- Default output format changes from `esm` to `cjs` (unless Node.js >= 25.7.0)
 - Declaration file generation (`dts`) is disabled by default
 - Code splitting is disabled
 - Only single entry points are supported

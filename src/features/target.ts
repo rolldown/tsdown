@@ -1,4 +1,4 @@
-import minVersion from 'semver/ranges/min-version.js'
+import { findMinimumForRange } from 'verkit'
 import { resolveComma, toArray } from '../utils/general.ts'
 import type { Logger } from '../utils/logger.ts'
 import type { Ansis } from 'ansis'
@@ -52,8 +52,8 @@ export function resolveTarget(
 export function resolvePackageTarget(pkg?: PackageJson): string | undefined {
   const nodeVersion = pkg?.engines?.node
   if (!nodeVersion) return
-  const nodeMinVersion = minVersion(nodeVersion)
+  const nodeMinVersion = findMinimumForRange(nodeVersion)
   if (!nodeMinVersion) return
-  if (nodeMinVersion.version === '0.0.0') return
-  return `node${nodeMinVersion.version}`
+  if (nodeMinVersion === '0.0.0') return
+  return `node${nodeMinVersion}`
 }

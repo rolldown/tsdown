@@ -5,13 +5,16 @@ import process from 'node:process'
 import { bold, dim, red } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
-import satisfies from 'semver/functions/satisfies.js'
 import { x } from 'tinyexec'
+import { isGreaterOrEqual, parse, type SemVer } from 'verkit'
 import { formatBytes } from '../utils/format.ts'
 import { fsRemove, fsStat } from '../utils/fs.ts'
 import { importWithError, typeAssert } from '../utils/general.ts'
 import type { ResolvedConfig, RolldownChunk } from '../config/types.ts'
 import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
+
+export const NODE_SEA_MIN_VERSION: string = '25.7.0'
+export const NODE_SEA_MIN_VERSION_PARSED: SemVer = parse(NODE_SEA_MIN_VERSION)
 
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>
@@ -77,9 +80,9 @@ export function validateSea({
     )
   }
 
-  if (!satisfies(process.version, '>=25.7.0')) {
+  if (!isGreaterOrEqual(process.version, NODE_SEA_MIN_VERSION_PARSED)) {
     throw new Error(
-      `Node.js version ${process.version} does not support \`exe\` option. Please upgrade to Node.js 25.7.0 or later.`,
+      `Node.js version ${process.version} does not support \`exe\` option. Please upgrade to Node.js ${NODE_SEA_MIN_VERSION} or later.`,
     )
   }
 

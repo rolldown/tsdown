@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "obug": "catalog:prod",
-    "semver": "catalog:prod",
-    "tinyexec": "catalog:prod"
+    "tinyexec": "catalog:prod",
+    "verkit": "catalog:prod"
   }
 }

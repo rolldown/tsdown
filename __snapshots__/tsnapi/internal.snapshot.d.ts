@@ -27,3 +27,8 @@ export declare function importWithError<T>(_: string): Promise<T>;
 export declare function resolveComma<T extends string>(_: T[]): T[];
 export declare function toArray<T>(_: T | T[] | null | undefined, _?: T): T[];
 // #endregion
+
+// #region Variables
+export declare const NODE_SEA_MIN_VERSION: string;
+export declare const NODE_SEA_MIN_VERSION_PARSED: SemVer;
+// #endregion

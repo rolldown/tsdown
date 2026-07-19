@@ -28,9 +28,6 @@ catalogs:
     '@types/picomatch':
       specifier: ^4.0.3
       version: 4.0.3
-    '@types/semver':
-      specifier: ^7.7.1
-      version: 7.7.1
     '@typescript/native-preview':
       specifier: npm:typescript@7.0.2
       version: 7.0.2
@@ -209,9 +206,6 @@ catalogs:
     rolldown-plugin-dts:
       specifier: ^0.27.9
       version: 0.27.11
-    semver:
-      specifier: ^7.8.5
-      version: 7.8.5
     tinyexec:
       specifier: ^1.2.4
       version: 1.2.4
@@ -224,6 +218,9 @@ catalogs:
     unconfig-core:
       specifier: ^7.5.0
       version: 7.5.0
+    verkit:
+      specifier: ^0.1.0
+      version: 0.1.0
 
 overrides:
   '@docsearch/react': '-'
@@ -265,9 +262,6 @@ importers:
       rolldown-plugin-dts:
         specifier: catalog:prod
         version: 0.27.11(@volar/typescript@2.4.28)(rolldown@1.2.0)(typescript@6.0.3)(typescript@7.0.2)(vue-tsc@3.3.7(typescript@6.0.3))
-      semver:
-        specifier: catalog:prod
-        version: 7.8.5
       tinyexec:
         specifier: catalog:prod
         version: 1.2.4
@@ -280,6 +274,9 @@ importers:
       unconfig-core:
         specifier: catalog:prod
         version: 7.5.0
+      verkit:
+        specifier: catalog:prod
+        version: 0.1.0
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -305,9 +302,6 @@ importers:
       '@types/picomatch':
         specifier: catalog:dev
         version: 4.0.3
-      '@types/semver':
-        specifier: catalog:dev
-        version: 7.7.1
       '@typescript/native-preview':
         specifier: catalog:dev
         version: typescript@7.0.2
@@ -501,15 +495,15 @@ importers:
       obug:
         specifier: catalog:prod
         version: 2.1.4
-      semver:
-        specifier: catalog:prod
-        version: 7.8.5
       tinyexec:
         specifier: catalog:prod
         version: 1.2.4
       tsdown:
         specifier: workspace:*
         version: link:../..
+      verkit:
+        specifier: catalog:prod
+        version: 0.1.0
 
   packages/migrate:
     dependencies:
@@ -2509,9 +2503,6 @@ packages:
 
   '@types/picomatch@4.0.3':
     resolution: {integrity: sha512-iG0T6+nYJ9FAPmx9SsUlnwcq1ZVRuCXcVEvWnntoPlrOpwtSTKNDC9uVAxTsC3PUvJ+99n4RpAcNgBbHX3JSnQ==}
-
-  '@types/semver@7.7.1':
-    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
@@ -5569,6 +5560,10 @@ packages:
   varint@6.0.0:
     resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
 
+  verkit@0.1.0:
+    resolution: {integrity: sha512-hot+EjuRuW/QsivBRTVKlL5FUVPIGpnjJv0fzuyYyD9Bqaj3Kx2KoSw1WVIoCTOhFkmNJZ0fhl66JdsXjWXztw==}
+    engines: {node: ^22.18.0 || ^24.11.0 || >=26.0.0}
+
   vfile-message@4.0.3:
     resolution: {integrity: sha512-QTHzsGd1EhbZs4AsQ20JX1rC3cOlt/IWJruk893DfLRr57lcnOeMaWG4K0JrRta4mIJZKth2Au3mM3u03/JWKw==}
 
@@ -7372,8 +7367,6 @@ snapshots:
       undici-types: 8.3.0
 
   '@types/picomatch@4.0.3': {}
-
-  '@types/semver@7.7.1': {}
 
   '@types/unist@3.0.3': {}
 
@@ -10658,6 +10651,8 @@ snapshots:
   validate-npm-package-name@5.0.1: {}
 
   varint@6.0.0: {}
+
+  verkit@0.1.0: {}
 
   vfile-message@4.0.3:
     dependencies:

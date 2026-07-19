@@ -1,9 +1,10 @@
 import path from 'node:path'
 import { filename_js_to_dts, RE_JS } from 'rolldown-plugin-dts/internal'
-import coerce from 'semver/functions/coerce.js'
-import satisfies from 'semver/functions/satisfies.js'
+import { coerce, parseRange, satisfies } from 'verkit'
 import type { ResolvedConfig } from '../config/index.ts'
 import type { Plugin } from 'rolldown'
+
+const RANGE_REQUIRING_ESM = parseRange('^20.19.0 || >=22.12.0')
 
 export function warnLegacyCJS(config: ResolvedConfig): void {
   if (
@@ -17,7 +18,7 @@ export function warnLegacyCJS(config: ResolvedConfig): void {
 
   const supportRequireESM = config.target.some((t) => {
     const version = coerce(t.split('node', 2)[1])
-    return version && satisfies(version, '^20.19.0 || >=22.12.0')
+    return version && satisfies(version, RANGE_REQUIRING_ESM)
   })
 
   if (supportRequireESM) {

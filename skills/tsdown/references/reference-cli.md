@@ -258,14 +258,13 @@ tsdown --copy assets --copy static
 
 ### `--exe`
 
-**[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html). Requires Node.js >= 25.5.0, not supported in Bun or Deno. Cross-platform builds supported via `@tsdown/exe`.
+**[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html). Requires Node.js >= 25.7.0, not supported in Bun or Deno. Cross-platform builds supported via `@tsdown/exe`.
 
 ```bash
 tsdown --exe
 ```
 
 When enabled:
-- Default format changes to `cjs` (unless Node.js >= 25.7.0)
 - Declaration file generation (`dts`) is disabled by default
 - Code splitting is disabled
 - Only single entry points are supported
