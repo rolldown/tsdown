@@ -86,7 +86,7 @@ catalogs:
     tinyglobby: ^0.2.17
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
-    verkit: ^0.1.2
+    verkit: ^0.2.0
 
 allowBuilds:
   '@parcel/watcher': false

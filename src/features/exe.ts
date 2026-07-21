@@ -6,7 +6,7 @@ import { bold, dim, red } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
 import { x } from 'tinyexec'
-import { isGreaterOrEqual, parse, type SemVer } from 'verkit'
+import { isGreaterOrEqual, type SemVer } from 'verkit'
 import { formatBytes } from '../utils/format.ts'
 import { fsRemove, fsStat } from '../utils/fs.ts'
 import { importWithError, typeAssert } from '../utils/general.ts'
@@ -14,7 +14,11 @@ import type { ResolvedConfig, RolldownChunk } from '../config/types.ts'
 import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
 
 export const NODE_SEA_MIN_VERSION: string = '25.7.0'
-export const NODE_SEA_MIN_VERSION_PARSED: SemVer = parse(NODE_SEA_MIN_VERSION)
+export const NODE_SEA_MIN_VERSION_PARSED: SemVer = {
+  major: 25,
+  minor: 7,
+  patch: 0,
+}
 
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>

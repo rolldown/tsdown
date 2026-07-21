@@ -219,8 +219,8 @@ catalogs:
       specifier: ^7.5.0
       version: 7.5.0
     verkit:
-      specifier: ^0.1.2
-      version: 0.1.2
+      specifier: ^0.2.0
+      version: 0.2.0
 
 overrides:
   '@docsearch/react': '-'
@@ -276,7 +276,7 @@ importers:
         version: 7.5.0
       verkit:
         specifier: catalog:prod
-        version: 0.1.2
+        version: 0.2.0
     devDependencies:
       '@arethetypeswrong/core':
         specifier: catalog:peer
@@ -503,7 +503,7 @@ importers:
         version: link:../..
       verkit:
         specifier: catalog:prod
-        version: 0.1.2
+        version: 0.2.0
 
   packages/migrate:
     dependencies:
@@ -5563,8 +5563,8 @@ packages:
   varint@6.0.0:
     resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
 
-  verkit@0.1.2:
-    resolution: {integrity: sha512-WqkT8n3hqizuCu71W3bUzf5fjBmkbXcudsehe/NbxA8PgqoKnSOY5K0Ba2ckg1qaRaSpSz7as/n9K1R9JXjQKg==}
+  verkit@0.2.0:
+    resolution: {integrity: sha512-6M8R2xSKplkQ+0mAm07IMh548GLLPUnRQZJCCe/W4rfk/SXW2bs8ZJSWa5kjdIdsx3hLG5oLWROJ4+N5hpX08g==}
     engines: {node: '>=18.12.0'}
 
   vfile-message@4.0.3:
@@ -10624,7 +10624,7 @@ snapshots:
 
   varint@6.0.0: {}
 
-  verkit@0.1.2: {}
+  verkit@0.2.0: {}
 
   vfile-message@4.0.3:
     dependencies:
