@@ -1,9 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/antfu-collective/taze/refs/heads/main/schema.json",
+  "exclude": ["typescript"],
   "mode": "latest",
   "write": true,
   "install": true,
-  "update": true,
   "recursive": true,
   "includeLocked": true,
   "ignorePaths": ["tests/temp"]
