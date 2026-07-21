@@ -235,6 +235,7 @@ async function buildSingleExe(
     await x(process.execPath, ['--build-sea', seaConfigPath], {
       nodeOptions: { stdio: ['ignore', 'ignore', 'inherit'] },
       throwOnError: true,
+      nodePath: false,
     })
   } finally {
     if (debug.enabled) {
@@ -250,6 +251,7 @@ async function buildSingleExe(
       await x('codesign', ['--sign', '-', outputPath], {
         nodeOptions: { stdio: 'inherit' },
         throwOnError: true,
+        nodePath: false,
       })
     } catch {
       config.logger.warn(

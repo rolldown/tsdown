@@ -217,6 +217,7 @@ async function extractBinary(
     await x(command, args, {
       nodeOptions: { stdio: 'inherit' },
       throwOnError: true,
+      nodePath: false,
     })
   } catch (error) {
     throw new Error(

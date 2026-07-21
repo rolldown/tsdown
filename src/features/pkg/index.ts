@@ -253,6 +253,7 @@ async function pack(
   }
 
   const output = await x(command, args, {
+    nodePath: false,
     nodeOptions: { cwd: dir },
   })
 
