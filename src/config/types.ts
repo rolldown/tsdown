@@ -638,11 +638,6 @@ export interface UserConfig {
    * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
    */
   inlineOnly?: Arrayable<string | RegExp> | false
-  /**
-   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle: true} instead.
-   * @default false
-   */
-  skipNodeModulesBundle?: boolean
 
   /**
    * Remove the `node:` prefix from built-in Node.js module imports.
@@ -733,7 +728,6 @@ export type ResolvedConfig = Overwrite<
       | 'external' // deprecated, merged to `deps`
       | 'noExternal' // deprecated, merged to `deps`
       | 'inlineOnly' // deprecated, merged to `deps`
-      | 'skipNodeModulesBundle' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'suppressWarnings' // merge to `logger`

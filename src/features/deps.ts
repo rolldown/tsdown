@@ -79,15 +79,6 @@ export interface DepsConfig {
    */
   onlyImport?: Arrayable<string | RegExp>
   /**
-   * Skip bundling all `node_modules` dependencies.
-   *
-   * **Note:** This option cannot be used together with {@linkcode alwaysBundle}.
-   *
-   * @default false
-   * @deprecated Use {@linkcode neverBundle | neverBundle: true} instead.
-   */
-  skipNodeModulesBundle?: boolean
-  /**
    * Resolve dependency subpath imports to their actual package-relative paths
    * when externalizing packages without an `exports` field.
    *
@@ -103,7 +94,7 @@ export interface DepsConfig {
 
 export interface ResolvedDepsConfig extends Pick<
   DepsConfig,
-  'neverBundle' | 'skipNodeModulesBundle' | 'resolveDepSubpath'
+  'neverBundle' | 'resolveDepSubpath'
 > {
   alwaysBundle?: NoExternalFn
   onlyBundle?: Array<string | RegExp> | false
@@ -119,14 +110,8 @@ export function resolveDepsConfig(
   config: UserConfig,
   logger?: Logger,
 ): ResolvedDepsConfig {
-  let {
-    neverBundle,
-    alwaysBundle,
-    onlyBundle,
-    onlyImport,
-    skipNodeModulesBundle,
-    resolveDepSubpath,
-  } = config.deps || {}
+  let { neverBundle, alwaysBundle, onlyBundle, onlyImport, resolveDepSubpath } =
+    config.deps || {}
 
   if (config.external != null) {
     if (neverBundle != null) {
@@ -155,35 +140,6 @@ export function resolveDepsConfig(
     logger?.warn('`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.')
     onlyBundle = config.inlineOnly
   }
-  if (config.skipNodeModulesBundle != null) {
-    if (config.deps?.skipNodeModulesBundle != null) {
-      throw new TypeError(
-        '`skipNodeModulesBundle` is deprecated. Cannot be used with `deps.skipNodeModulesBundle`.',
-      )
-    }
-    logger?.warn(
-      '`skipNodeModulesBundle` is deprecated. Use `deps.neverBundle: true` instead.',
-    )
-    skipNodeModulesBundle = config.skipNodeModulesBundle
-  } else if (skipNodeModulesBundle != null) {
-    logger?.warn(
-      '`deps.skipNodeModulesBundle` is deprecated. Use `deps.neverBundle: true` instead.',
-    )
-  }
-
-  if (skipNodeModulesBundle) {
-    if (neverBundle === true) {
-      throw new TypeError(
-        '`deps.skipNodeModulesBundle` is deprecated. Cannot be used with `deps.neverBundle: true`.',
-      )
-    }
-    if (alwaysBundle != null) {
-      throw new TypeError(
-        '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
-      )
-    }
-  }
-
   if (onlyBundle != null && onlyBundle !== false) {
     onlyBundle = toArray(onlyBundle)
   }
@@ -196,7 +152,6 @@ export function resolveDepsConfig(
     ...normalizeDepsOptions(alwaysBundle, neverBundle),
     onlyBundle,
     onlyImport,
-    skipNodeModulesBundle,
     resolveDepSubpath,
     dts: normalizeDepsOptions(
       config.deps?.dts?.alwaysBundle,
@@ -228,7 +183,6 @@ export function DepsPlugin(
       alwaysBundle: jsAlwaysBundle,
       onlyBundle,
       onlyImport,
-      skipNodeModulesBundle,
       resolveDepSubpath: shouldResolveDepSubpath,
       dts,
     },
@@ -437,18 +391,6 @@ export function DepsPlugin(
       return (
         !!resolved && (!!resolved.external || RE_NODE_MODULES.test(resolved.id))
       )
-    }
-
-    if (skipNodeModulesBundle) {
-      const resolved = await resolve()
-      if (
-        resolved &&
-        (resolved.external || RE_NODE_MODULES.test(resolved.id))
-      ) {
-        const resolvedDep =
-          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
-        return resolvedDep ? [true, resolvedDep] : true
-      }
     }
 
     if (deps) {

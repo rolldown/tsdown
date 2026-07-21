@@ -74,12 +74,6 @@ Mark a module as external. This prevents the specified module from being include
 
 See also [Dependencies](../options/dependencies.md).
 
-## `--deps.skip-node-modules-bundle`
-
-Skip resolving and bundling all dependencies from `node_modules`.
-
-See also [Dependencies](../options/dependencies.md).
-
 ## `--external <module>` {#external}
 
 ::: warning Deprecated

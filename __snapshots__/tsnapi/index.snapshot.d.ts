@@ -29,7 +29,6 @@ export interface DepsConfig {
   alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn;
   onlyBundle?: Arrayable<string | RegExp> | false;
   onlyImport?: Arrayable<string | RegExp>;
-  skipNodeModulesBundle?: boolean;
   resolveDepSubpath?: boolean;
   dts?: Pick<DepsConfig, "alwaysBundle" | "neverBundle">;
 }
@@ -93,7 +92,7 @@ export interface ReportOptions {
   brotli?: boolean;
   maxCompressSize?: number;
 }
-export interface ResolvedDepsConfig extends Pick<DepsConfig, "neverBundle" | "skipNodeModulesBundle" | "resolveDepSubpath"> {
+export interface ResolvedDepsConfig extends Pick<DepsConfig, "neverBundle" | "resolveDepSubpath"> {
   alwaysBundle?: NoExternalFn;
   onlyBundle?: Array<string | RegExp> | false;
   onlyImport?: Array<string | RegExp>;
@@ -196,7 +195,6 @@ export interface UserConfig {
   external?: ExternalOption;
   noExternal?: Arrayable<string | RegExp> | NoExternalFn;
   inlineOnly?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
   removeNodeProtocol?: boolean;
   bundle?: boolean;
   outExtension?: OutExtensionFactory;
@@ -224,7 +222,7 @@ export type NoExternalFn = (_: string, _: string | undefined) => boolean | null 
 export type NormalizedFormat = InternalModuleFormat;
 export type OutExtensionFactory = (_: OutExtensionContext) => OutExtensionObject | undefined;
 export type PackageType = "module" | "commonjs" | undefined;
-export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "outExtension" | "external" | "noExternal" | "inlineOnly" | "skipNodeModulesBundle" | "logLevel" | "failOnWarn" | "suppressWarnings" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
+export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "outExtension" | "external" | "noExternal" | "inlineOnly" | "logLevel" | "failOnWarn" | "suppressWarnings" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
   entry: Record<string, string>;
   rawEntry?: TsdownInputOption;
   nameLabel: string | undefined;

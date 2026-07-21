@@ -86,7 +86,7 @@ These tsup options still work in tsdown for backward compatibility, but emit dep
 | `injectStyle: false` | _(remove)_ | Default behavior |
 | `external: [...]` | `deps: { neverBundle: [...] }` | Moved to deps namespace |
 | `noExternal: [...]` | `deps: { alwaysBundle: [...] }` | Moved to deps namespace |
-| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Externalize all dependencies |
+| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Removed; externalize all dependencies |
 
 ### Output Filename Differences
 

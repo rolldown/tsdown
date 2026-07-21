@@ -37,12 +37,6 @@ export default defineConfig({
 })
 ```
 
-### `deps.skipNodeModulesBundle`
-
-::: warning 已废弃
-`skipNodeModulesBundle` 已废弃，请使用 [`deps.neverBundle: true`](#外部化所有依赖) 代替。
-:::
-
 ### `deps.resolveDepSubpath`
 
 默认情况下，tsdown 会保留外部依赖原有的子路径导入。当依赖没有 `exports` 字段时，可以启用 `resolveDepSubpath`，将子路径导入解析为包内的实际相对路径。例如，`my-dep/functions/lt` 可能会变为 `my-dep/functions/lt.js`，而 `my-dep/folder` 可能会变为 `my-dep/folder/index.js`。
@@ -144,12 +138,12 @@ export default defineConfig({
 })
 ```
 
-启用后，所有符合 npm 包名规范的导入（例如 `lodash`、`@scope/pkg/utils`）都会**按原样标记为外部依赖，不会进行解析**。这比已废弃的 `skipNodeModulesBundle` 选项更快，即使依赖没有安装也能正常工作。请注意以下行为：
+启用后，所有符合 npm 包名规范的导入（例如 `lodash`、`@scope/pkg/utils`）都会**按原样标记为外部依赖，不会进行解析**。这一过程非常快速，即使依赖没有安装也能正常工作。请注意以下行为：
 
 - 包说明符会按原样保留；`my-dep/utils` 这类子路径不会被改写，`resolveDepSubpath` 选项不生效。
 - 其他非相对导入——以 `#` 开头的[子路径导入](https://nodejs.org/api/packages.html#subpath-imports)和 `~/utils` 这类路径别名——仍会被解析：如果解析结果位于 `node_modules` 中，则保留原始说明符并外部化；否则打包解析到的本地文件。
 
-与已废弃的 `skipNodeModulesBundle` 选项不同，`neverBundle: true` 可以与 `alwaysBundle` 组合使用，在外部化其他所有依赖的同时打包少数指定依赖：
+`neverBundle: true` 可以与 `alwaysBundle` 组合使用，在外部化其他所有依赖的同时打包少数指定依赖：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -202,13 +196,11 @@ export default defineConfig({
 
 以下顶层选项已被废弃，请迁移到 `deps` 命名空间：
 
-| 废弃选项                     | 新选项                   |
-| ---------------------------- | ------------------------ |
-| `external`                   | `deps.neverBundle`       |
-| `noExternal`                 | `deps.alwaysBundle`      |
-| `inlineOnly`                 | `deps.onlyBundle`        |
-| `skipNodeModulesBundle`      | `deps.neverBundle: true` |
-| `deps.skipNodeModulesBundle` | `deps.neverBundle: true` |
+| 废弃选项     | 新选项              |
+| ------------ | ------------------- |
+| `external`   | `deps.neverBundle`  |
+| `noExternal` | `deps.alwaysBundle` |
+| `inlineOnly` | `deps.onlyBundle`   |
 
 ## 总结
 

@@ -37,12 +37,6 @@ export default defineConfig({
 })
 ```
 
-### `deps.skipNodeModulesBundle`
-
-::: warning Deprecated
-`skipNodeModulesBundle` is deprecated. Use [`deps.neverBundle: true`](#externalizing-all-dependencies) instead.
-:::
-
 ### `deps.resolveDepSubpath`
 
 By default, tsdown preserves external dependency subpath imports as written. Enable `resolveDepSubpath` to resolve subpath imports to their actual package-relative paths when a package has no `exports` field. For example, `my-dep/functions/lt` may become `my-dep/functions/lt.js`, and `my-dep/folder` may become `my-dep/folder/index.js`.
@@ -144,12 +138,12 @@ export default defineConfig({
 })
 ```
 
-When enabled, every import that follows npm package naming conventions (e.g. `lodash`, `@scope/pkg/utils`) is marked as external **as written, without being resolved**. This is faster than the deprecated `skipNodeModulesBundle` option and even works when dependencies are not installed. Note the following behaviors:
+When enabled, every import that follows npm package naming conventions (e.g. `lodash`, `@scope/pkg/utils`) is marked as external **as written, without being resolved**. This is fast and even works when dependencies are not installed. Note the following behaviors:
 
 - Package specifiers are preserved exactly as written; subpaths like `my-dep/utils` are not rewritten, and `resolveDepSubpath` has no effect.
 - Other non-relative imports — [subpath imports](https://nodejs.org/api/packages.html#subpath-imports) starting with `#` and path aliases like `~/utils` — are still resolved: if they resolve into `node_modules`, they are kept external with the original specifier; otherwise the resolved local file is bundled.
 
-Unlike the deprecated `skipNodeModulesBundle` option, `neverBundle: true` can be combined with `alwaysBundle` to bundle a few selected dependencies while externalizing everything else:
+`neverBundle: true` can be combined with `alwaysBundle` to bundle a few selected dependencies while externalizing everything else:
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -202,13 +196,11 @@ export default defineConfig({
 
 The following top-level options are deprecated. Please migrate to the `deps` namespace:
 
-| Deprecated Option            | New Option               |
-| ---------------------------- | ------------------------ |
-| `external`                   | `deps.neverBundle`       |
-| `noExternal`                 | `deps.alwaysBundle`      |
-| `inlineOnly`                 | `deps.onlyBundle`        |
-| `skipNodeModulesBundle`      | `deps.neverBundle: true` |
-| `deps.skipNodeModulesBundle` | `deps.neverBundle: true` |
+| Deprecated Option | New Option          |
+| ----------------- | ------------------- |
+| `external`        | `deps.neverBundle`  |
+| `noExternal`      | `deps.alwaysBundle` |
+| `inlineOnly`      | `deps.onlyBundle`   |
 
 ## Summary
 
