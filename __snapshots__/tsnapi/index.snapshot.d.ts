@@ -25,7 +25,7 @@ export interface CopyEntry {
   rename?: string | ((_: string, _: string, _: string) => string);
 }
 export interface DepsConfig {
-  neverBundle?: ExternalOption;
+  neverBundle?: true | ExternalOption;
   alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn;
   onlyBundle?: Arrayable<string | RegExp> | false;
   onlyImport?: Arrayable<string | RegExp>;
@@ -96,13 +96,10 @@ export interface ReportOptions {
   brotli?: boolean;
   maxCompressSize?: number;
 }
-export interface ResolvedDepsConfig {
-  neverBundle?: ExternalOption;
+export interface ResolvedDepsConfig extends Pick<DepsConfig, "neverBundle" | "skipNodeModulesBundle" | "resolveDepSubpath"> {
   alwaysBundle?: NoExternalFn;
   onlyBundle?: Array<string | RegExp> | false;
   onlyImport?: Array<string | RegExp>;
-  skipNodeModulesBundle: boolean;
-  resolveDepSubpath: boolean;
   dts: Pick<ResolvedDepsConfig, "alwaysBundle" | "neverBundle">;
 }
 export interface RolldownContext {

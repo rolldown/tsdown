@@ -111,6 +111,39 @@ exports[`deps namespace migrations > noExternal should move to deps.alwaysBundle
 }"
 `;
 
+exports[`deps namespace migrations > skipNodeModulesBundle should move to deps.neverBundle: true > code 1`] = `
+"export default {
+  deps: {
+    neverBundle: true,
+  },
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
+exports[`deps namespace migrations > skipNodeModulesBundle should subsume external patterns > code 1`] = `
+"export default {
+  deps: {
+    neverBundle: true,
+  },
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
+exports[`deps namespace migrations > skipNodeModulesBundle: false should be removed > code 1`] = `
+"export default {
+  format: 'cjs',
+  clean: false,
+  dts: false,
+  target: false,
+}"
+`;
+
 exports[`option transformations > bundle: false should transform to unbundle: true > code 1`] = `
 "export default {
   unbundle: true,

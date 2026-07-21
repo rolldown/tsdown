@@ -186,7 +186,7 @@ Some tsup features are not yet available. Check [GitHub issues](https://github.c
 tsdown should be faster than tsup. If not:
 1. Enable `isolatedDeclarations` for faster DTS generation
 2. Check for large dependencies being bundled
-3. Use `skipNodeModulesBundle` if needed
+3. Use `deps.neverBundle: true` if needed
 
 ## Getting Help
 

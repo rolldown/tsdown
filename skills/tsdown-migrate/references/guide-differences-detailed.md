@@ -60,7 +60,7 @@ These tsup options still work in tsdown but emit deprecation warnings. They will
 | CSS inject | `injectStyle` | `css: { inject: true }` | Moved to css namespace |
 | External deps | `external` | `deps.neverBundle` | Moved to deps namespace |
 | Inline deps | `noExternal` | `deps.alwaysBundle` | Moved to deps namespace |
-| Skip node_modules | `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` | Moved to deps namespace |
+| Skip node_modules | `skipNodeModulesBundle` | `deps.neverBundle: true` | Externalize all dependencies |
 
 ### Output Filename Differences
 

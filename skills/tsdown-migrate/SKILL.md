@@ -86,7 +86,7 @@ These tsup options still work in tsdown for backward compatibility, but emit dep
 | `injectStyle: false` | _(remove)_ | Default behavior |
 | `external: [...]` | `deps: { neverBundle: [...] }` | Moved to deps namespace |
 | `noExternal: [...]` | `deps: { alwaysBundle: [...] }` | Moved to deps namespace |
-| `skipNodeModulesBundle` | `deps: { skipNodeModulesBundle: true }` | Moved to deps namespace |
+| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Externalize all dependencies |
 
 ### Output Filename Differences
 
@@ -242,7 +242,7 @@ Use this checklist when performing a migration:
 - [ ] Replace tsup/TSUP identifiers with tsdown/TSDOWN
 - [ ] Apply property renames (cjsInterop→cjsDefault, esbuildPlugins→plugins, outExtension→outExtensions)
 - [ ] Migrate deprecated options (publicDir→copy, bundle→unbundle, removeNodeProtocol→nodeProtocol, injectStyle→css.inject)
-- [ ] Move external/noExternal/skipNodeModulesBundle into deps namespace
+- [ ] Move external/noExternal into deps namespace, replace skipNodeModulesBundle with `deps.neverBundle: true`
 - [ ] Update unplugin imports from /esbuild to /rolldown
 - [ ] Set explicit defaults to preserve tsup behavior (format, clean, dts, target)
 - [ ] Remove unsupported options (splitting, metafile, swc, etc.)

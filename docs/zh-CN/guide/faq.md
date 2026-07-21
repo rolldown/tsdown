@@ -54,7 +54,7 @@ tsdown -W -F my-package
 ```ts
 export default defineConfig({
   deps: {
-    skipNodeModulesBundle: true,
+    neverBundle: true,
   },
 })
 ```

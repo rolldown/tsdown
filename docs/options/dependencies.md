@@ -32,7 +32,6 @@ export default defineConfig({
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
-    skipNodeModulesBundle: true,
     resolveDepSubpath: false,
   },
 })
@@ -40,22 +39,8 @@ export default defineConfig({
 
 ### `deps.skipNodeModulesBundle`
 
-If you want to **skip bundling all dependencies from `node_modules`**, you can enable `skipNodeModulesBundle`:
-
-```ts [tsdown.config.ts]
-import { defineConfig } from 'tsdown'
-
-export default defineConfig({
-  deps: {
-    skipNodeModulesBundle: true,
-  },
-})
-```
-
-This will prevent `tsdown` from bundling any dependencies from `node_modules`, regardless of how they are referenced in your code.
-
-::: warning
-`skipNodeModulesBundle` cannot be used together with `alwaysBundle`. These options are mutually exclusive.
+::: warning Deprecated
+`skipNodeModulesBundle` is deprecated. Use [`deps.neverBundle: true`](#externalizing-all-dependencies) instead.
 :::
 
 ### `deps.resolveDepSubpath`
@@ -145,6 +130,38 @@ export default defineConfig({
 
 In this example, `lodash` and all packages under the `@my-scope` namespace will be treated as external.
 
+#### Externalizing All Dependencies
+
+Set `neverBundle` to `true` to externalize **all** dependencies:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    neverBundle: true,
+  },
+})
+```
+
+When enabled, every import that follows npm package naming conventions (e.g. `lodash`, `@scope/pkg/utils`) is marked as external **as written, without being resolved**. This is faster than the deprecated `skipNodeModulesBundle` option and even works when dependencies are not installed. Note the following behaviors:
+
+- Package specifiers are preserved exactly as written; subpaths like `my-dep/utils` are not rewritten, and `resolveDepSubpath` has no effect.
+- Other non-relative imports — [subpath imports](https://nodejs.org/api/packages.html#subpath-imports) starting with `#` and path aliases like `~/utils` — are still resolved: if they resolve into `node_modules`, they are kept external with the original specifier; otherwise the resolved local file is bundled.
+
+Unlike the deprecated `skipNodeModulesBundle` option, `neverBundle: true` can be combined with `alwaysBundle` to bundle a few selected dependencies while externalizing everything else:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  deps: {
+    neverBundle: true,
+    alwaysBundle: ['some-package'],
+  },
+})
+```
+
 ### `deps.alwaysBundle`
 
 The `alwaysBundle` option allows you to force certain dependencies to be bundled, even if they are listed in `dependencies`, `peerDependencies`, or `optionalDependencies`. For example:
@@ -185,13 +202,14 @@ export default defineConfig({
 
 The following top-level options are deprecated. Please migrate to the `deps` namespace:
 
-| Deprecated Option       | New Option                   |
-| ----------------------- | ---------------------------- |
-| `external`              | `deps.neverBundle`           |
-| `noExternal`            | `deps.alwaysBundle`          |
-| `inlineOnly`            | `deps.onlyBundle`            |
-| `deps.onlyAllowBundle`  | `deps.onlyBundle`            |
-| `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
+| Deprecated Option            | New Option               |
+| ---------------------------- | ------------------------ |
+| `external`                   | `deps.neverBundle`       |
+| `noExternal`                 | `deps.alwaysBundle`      |
+| `inlineOnly`                 | `deps.onlyBundle`        |
+| `deps.onlyAllowBundle`       | `deps.onlyBundle`        |
+| `skipNodeModulesBundle`      | `deps.neverBundle: true` |
+| `deps.skipNodeModulesBundle` | `deps.neverBundle: true` |
 
 ## Summary
 
@@ -201,9 +219,8 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
 - **Customization**:
   - Use `deps.onlyBundle` to whitelist dependencies allowed to be bundled, and throw an error for any others.
   - Use `deps.onlyImport` to whitelist packages the output is allowed to import at runtime.
-  - Use `deps.neverBundle` to mark specific dependencies as external.
+  - Use `deps.neverBundle` to mark specific dependencies as external, or set it to `true` to externalize all dependencies.
   - Use `deps.alwaysBundle` to force specific dependencies to be bundled.
-  - Use `deps.skipNodeModulesBundle` to skip bundling all dependencies from `node_modules`.
   - Set `deps.resolveDepSubpath` to `false` to preserve external dependency subpath imports as written.
 - **Declaration Files**:
   - The bundling logic for declaration files is now the same as for JavaScript.
