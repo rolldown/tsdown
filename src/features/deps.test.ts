@@ -6,6 +6,7 @@ import {
   parsePackageSpecifier,
   resolveDepsConfig,
 } from './deps.ts'
+import type { UserConfig } from '../config/types.ts'
 
 describe('resolveDepsConfig', () => {
   it('enables dependency subpath resolution by default', () => {
@@ -15,6 +16,22 @@ describe('resolveDepsConfig', () => {
         deps: { resolveDepSubpath: false },
       }).resolveDepSubpath,
     ).toBe(false)
+  })
+
+  it('rejects skipNodeModulesBundle together with neverBundle: true', () => {
+    expect(() =>
+      resolveDepsConfig({
+        deps: { neverBundle: true, skipNodeModulesBundle: true },
+      }),
+    ).toThrow('Cannot be used with `deps.neverBundle: true`')
+  })
+
+  it('allows neverBundle: true together with alwaysBundle', () => {
+    const resolved = resolveDepsConfig({
+      deps: { neverBundle: true, alwaysBundle: ['keep'] },
+    })
+    expect(resolved.neverBundle).toBe(true)
+    expect(resolved.alwaysBundle?.('keep', undefined)).toBe(true)
   })
 
   it('resolves declaration-only dependency options separately', () => {
@@ -85,6 +102,143 @@ describe('DepsPlugin', () => {
       external: true,
       moduleSideEffects: undefined,
     })
+  })
+
+  it('externalizes production dependencies without resolving', async () => {
+    const plugin = DepsPlugin(
+      {
+        pkg: { dependencies: { 'some-dep': '^1.0.0' } },
+        deps: resolveDepsConfig({}),
+      } as any,
+      { inlinedDeps: new Map() } as any,
+    )
+    const handler = (plugin.resolveId as any).handler
+    const resolve = vi.fn(() => Promise.resolve(null))
+
+    await expect(
+      handler.call({ resolve }, 'some-dep', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: 'some-dep',
+      external: true,
+      moduleSideEffects: undefined,
+    })
+    expect(resolve).not.toHaveBeenCalled()
+
+    // subpath imports require resolution for `resolveDepSubpath`
+    await expect(
+      handler.call({ resolve }, 'some-dep/utils', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: 'some-dep/utils',
+      external: true,
+      moduleSideEffects: undefined,
+    })
+    expect(resolve).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('DepsPlugin with neverBundle: true', () => {
+  function getHandler(deps: UserConfig['deps']) {
+    const plugin = DepsPlugin(
+      { deps: resolveDepsConfig({ deps }) } as any,
+      { inlinedDeps: new Map() } as any,
+    )
+    return (plugin.resolveId as any).handler
+  }
+
+  it('externalizes non-relative imports without resolving', async () => {
+    const handler = getHandler({ neverBundle: true })
+    const resolve = vi.fn()
+
+    await expect(
+      handler.call({ resolve }, 'some-dep', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: 'some-dep',
+      external: true,
+      moduleSideEffects: undefined,
+    })
+    await expect(
+      handler.call({ resolve }, 'node:fs', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: 'node:fs',
+      external: true,
+      moduleSideEffects: false,
+    })
+    expect(resolve).not.toHaveBeenCalled()
+  })
+
+  it('does not externalize absolute paths and virtual modules', async () => {
+    const handler = getHandler({ neverBundle: true })
+    const resolve = vi.fn(() => Promise.resolve(null))
+
+    await expect(
+      handler.call(
+        { resolve },
+        '/project/file.ts',
+        '/project/src/index.ts',
+        {},
+      ),
+    ).resolves.toBeUndefined()
+    await expect(
+      handler.call({ resolve }, '\0virtual', '/project/src/index.ts', {}),
+    ).resolves.toBeUndefined()
+  })
+
+  it('resolves # subpath imports', async () => {
+    const handler = getHandler({ neverBundle: true })
+    const resolve = vi.fn((id: string) =>
+      Promise.resolve(
+        id === '#dep'
+          ? { id: '/project/node_modules/my-dep/index.js' }
+          : { id: '/project/src/local.ts' },
+      ),
+    )
+
+    // resolves into node_modules → external with the original specifier
+    await expect(
+      handler.call({ resolve }, '#dep', '/project/src/index.ts', {}),
+    ).resolves.toEqual({
+      id: '#dep',
+      external: true,
+      moduleSideEffects: undefined,
+    })
+    // resolves to a local file → bundled
+    await expect(
+      handler.call({ resolve }, '#local', '/project/src/index.ts', {}),
+    ).resolves.toEqual({ id: '/project/src/local.ts' })
+  })
+
+  it('lets alwaysBundle opt imports back into the bundle', async () => {
+    const handler = getHandler({ neverBundle: true, alwaysBundle: ['keep'] })
+    const resolve = vi.fn()
+
+    await expect(
+      handler.call({ resolve }, 'keep', '/project/src/index.ts', {}),
+    ).resolves.toBeUndefined()
+    await expect(
+      handler.call({ resolve }, 'other', '/project/src/index.ts', {}),
+    ).resolves.toMatchObject({ id: 'other', external: true })
+  })
+
+  it('uses dts.neverBundle override for declaration importers', async () => {
+    const handler = getHandler({
+      neverBundle: true,
+      dts: { neverBundle: ['keep-external'] },
+    })
+    const resolve = vi.fn(() =>
+      Promise.resolve({ id: '/project/node_modules/pkg/index.d.ts' }),
+    )
+
+    // declaration importers fall back to the resolve-based strategy
+    await expect(
+      handler.call({ resolve }, 'pkg', '/project/src/index.d.ts', {}),
+    ).resolves.toEqual({
+      id: '/project/node_modules/pkg/index.d.ts',
+      moduleSideEffects: undefined,
+    })
+    // other importers are still externalized without resolving
+    await expect(
+      handler.call({ resolve }, 'pkg', '/project/src/index.ts', {}),
+    ).resolves.toMatchObject({ id: 'pkg', external: true })
   })
 })
 

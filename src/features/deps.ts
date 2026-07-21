@@ -23,6 +23,8 @@ import type { ExternalOption, Plugin, ResolvedId } from 'rolldown'
 
 const debug = createDebug('tsdown:deps')
 
+type ResolveFn = () => Promise<ResolvedId | null>
+
 export type NoExternalFn = (
   id: string,
   importer: string | undefined,
@@ -33,8 +35,17 @@ export interface DepsConfig {
    * Mark dependencies as external (not bundled).
    * Accepts strings, regular expressions, or Rolldown's
    * {@linkcode ExternalOption}.
+   *
+   * Set to `true` to externalize **all** dependencies: every non-relative
+   * import is marked as external as written, without resolving it.
+   * Subpath imports (starting with `#`) are still resolved: if they resolve
+   * into `node_modules` they are kept external with the original specifier,
+   * otherwise the resolved local file is bundled.
+   *
+   * Use {@linkcode alwaysBundle} to opt specific imports back into the bundle
+   * (e.g. path aliases, which cannot be detected without resolving).
    */
-  neverBundle?: ExternalOption
+  neverBundle?: true | ExternalOption
   /**
    * Force dependencies to be bundled, even if they are in `dependencies`, `peerDependencies`, or `optionalDependencies`.
    */
@@ -70,6 +81,7 @@ export interface DepsConfig {
    * **Note:** This option cannot be used together with {@linkcode alwaysBundle}.
    *
    * @default false
+   * @deprecated Use {@linkcode neverBundle | neverBundle: true} instead.
    */
   skipNodeModulesBundle?: boolean
   /**
@@ -86,13 +98,13 @@ export interface DepsConfig {
   dts?: Pick<DepsConfig, 'alwaysBundle' | 'neverBundle'>
 }
 
-export interface ResolvedDepsConfig {
-  neverBundle?: ExternalOption
+export interface ResolvedDepsConfig extends Pick<
+  DepsConfig,
+  'neverBundle' | 'skipNodeModulesBundle' | 'resolveDepSubpath'
+> {
   alwaysBundle?: NoExternalFn
   onlyBundle?: Array<string | RegExp> | false
   onlyImport?: Array<string | RegExp>
-  skipNodeModulesBundle: boolean
-  resolveDepSubpath: boolean
 
   /**
    * Override dependency bundling options for declaration file generation.
@@ -109,7 +121,7 @@ export function resolveDepsConfig(
     alwaysBundle,
     onlyBundle,
     onlyImport,
-    skipNodeModulesBundle = false,
+    skipNodeModulesBundle,
     resolveDepSubpath = true,
   } = config.deps || {}
 
@@ -131,6 +143,15 @@ export function resolveDepsConfig(
     logger?.warn('`noExternal` is deprecated. Use `deps.alwaysBundle` instead.')
     alwaysBundle = config.noExternal
   }
+  if (config.inlineOnly != null) {
+    if (onlyBundle != null) {
+      throw new TypeError(
+        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyBundle`.',
+      )
+    }
+    logger?.warn('`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.')
+    onlyBundle = config.inlineOnly
+  }
   if (config.deps?.onlyAllowBundle != null) {
     if (onlyBundle != null) {
       throw new TypeError(
@@ -142,15 +163,6 @@ export function resolveDepsConfig(
     )
     onlyBundle = config.deps.onlyAllowBundle
   }
-  if (config.inlineOnly != null) {
-    if (onlyBundle != null) {
-      throw new TypeError(
-        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyBundle`.',
-      )
-    }
-    logger?.warn('`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.')
-    onlyBundle = config.inlineOnly
-  }
   if (config.skipNodeModulesBundle != null) {
     if (config.deps?.skipNodeModulesBundle != null) {
       throw new TypeError(
@@ -158,15 +170,26 @@ export function resolveDepsConfig(
       )
     }
     logger?.warn(
-      '`skipNodeModulesBundle` is deprecated. Use `deps.skipNodeModulesBundle` instead.',
+      '`skipNodeModulesBundle` is deprecated. Use `deps.neverBundle: true` instead.',
     )
     skipNodeModulesBundle = config.skipNodeModulesBundle
+  } else if (skipNodeModulesBundle != null) {
+    logger?.warn(
+      '`deps.skipNodeModulesBundle` is deprecated. Use `deps.neverBundle: true` instead.',
+    )
   }
 
-  if (skipNodeModulesBundle && alwaysBundle != null) {
-    throw new TypeError(
-      '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
-    )
+  if (skipNodeModulesBundle) {
+    if (neverBundle === true) {
+      throw new TypeError(
+        '`deps.skipNodeModulesBundle` is deprecated. Cannot be used with `deps.neverBundle: true`.',
+      )
+    }
+    if (alwaysBundle != null) {
+      throw new TypeError(
+        '`deps.skipNodeModulesBundle` and `deps.alwaysBundle` are mutually exclusive options and cannot be used together.',
+      )
+    }
   }
 
   if (onlyBundle != null && onlyBundle !== false) {
@@ -209,6 +232,7 @@ export function DepsPlugin(
   {
     pkg,
     deps: {
+      neverBundle,
       alwaysBundle: jsAlwaysBundle,
       onlyBundle,
       onlyImport,
@@ -232,11 +256,14 @@ export function DepsPlugin(
         if (extraOptions.isEntry) return
         typeAssert(importer)
 
-        const resolved = await this.resolve(id, importer, {
-          ...extraOptions,
-          skipSelf: true,
-        })
-        let shouldExternal = await externalStrategy(id, importer, resolved)
+        let resolveResult: Promise<ResolvedId | null> | undefined
+        const resolve: ResolveFn = () =>
+          (resolveResult ??= this.resolve(id, importer, {
+            ...extraOptions,
+            skipSelf: true,
+          }))
+
+        let shouldExternal = await externalStrategy(id, importer, resolve)
         if (Array.isArray(shouldExternal)) {
           debug('custom resolved id for %o -> %o', id, shouldExternal[1])
           id = shouldExternal[1]
@@ -255,6 +282,7 @@ export function DepsPlugin(
           }
         }
 
+        const resolved = await resolve()
         if (resolved) {
           return {
             ...resolved,
@@ -386,35 +414,60 @@ export function DepsPlugin(
    */
   async function externalStrategy(
     id: string,
-    importer: string | undefined,
-    resolved: ResolvedId | null,
+    importer: string,
+    resolve: ResolveFn,
   ): Promise<boolean | [true, string] | 'absolute' | 'no-external'> {
     if (id === shimFile) return false
 
-    const isDts = importer ? RE_DTS.test(importer) : false
+    const isDts = RE_DTS.test(importer)
     const alwaysBundle = (isDts && dts?.alwaysBundle) || jsAlwaysBundle
     if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }
 
-    if (
-      skipNodeModulesBundle &&
-      resolved &&
-      (resolved.external || RE_NODE_MODULES.test(resolved.id))
-    ) {
-      const resolvedDep =
-        shouldResolveDepSubpath && (await resolveDepSubpath(id, resolved))
-      return resolvedDep ? [true, resolvedDep] : true
+    // `neverBundle: true`: externalize all non-relative imports as written,
+    // without resolving them. Subpath imports (`#`) are the only exception,
+    // as they may map to local files that must be bundled.
+    const neverBundleAll =
+      (isDts && dts?.neverBundle != null ? dts.neverBundle : neverBundle) ===
+      true
+    if (neverBundleAll) {
+      // absolute paths and virtual modules are not dependencies
+      if (id[0] === '\0' || id.startsWith('data:') || path.isAbsolute(id)) {
+        return false
+      }
+      if (id[0] === '#') {
+        const resolved = await resolve()
+        if (
+          !resolved ||
+          (!resolved.external && !RE_NODE_MODULES.test(resolved.id))
+        ) {
+          return false
+        }
+      }
+      return true
+    }
+
+    if (skipNodeModulesBundle) {
+      const resolved = await resolve()
+      if (
+        resolved &&
+        (resolved.external || RE_NODE_MODULES.test(resolved.id))
+      ) {
+        const resolvedDep =
+          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        return resolvedDep ? [true, resolvedDep] : true
+      }
     }
 
     if (deps) {
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
         const resolvedDep =
-          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolved))
+          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
         return resolvedDep ? [true, resolvedDep] : true
       }
 
-      if (importer && RE_DTS.test(importer) && !id.startsWith('@types/')) {
+      if (isDts && !id.startsWith('@types/')) {
         const typesName = getTypesPackageName(id)
         if (typesName && deps.includes(typesName)) {
           return true
@@ -510,14 +563,15 @@ export function getTypesPackageName(id: string): string | undefined {
   return `@types/${name.replace(/^@/, '').replace('/', '__')}`
 }
 
-async function resolveDepSubpath(id: string, resolved: ResolvedId | null) {
-  if (!resolved?.packageJsonPath) return
-
+async function resolveDepSubpath(id: string, resolve: ResolveFn) {
   const parts = id.split('/')
   // ignore scope
   if (parts[0][0] === '@') parts.shift()
   // ignore no subpath or file imports
   if (parts.length === 1 || parts.at(-1)!.includes('.')) return
+
+  const resolved = await resolve()
+  if (!resolved?.packageJsonPath) return
 
   let pkgJson: Record<string, any>
   try {

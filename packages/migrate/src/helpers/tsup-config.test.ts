@@ -186,6 +186,42 @@ describe('deps namespace migrations', () => {
     expect(code).not.toContain('external:')
     expect(code).not.toContain('noExternal:')
   })
+
+  test('skipNodeModulesBundle should move to deps.neverBundle: true', () => {
+    const input = `
+      export default {
+        skipNodeModulesBundle: true,
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('deps:')
+    expect(code).toContain('neverBundle: true')
+    expect(code).not.toContain('skipNodeModulesBundle')
+  })
+
+  test('skipNodeModulesBundle should subsume external patterns', () => {
+    const input = `
+      export default {
+        external: ['foo'],
+        skipNodeModulesBundle: true,
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).toContain('neverBundle: true')
+    expect(code).not.toContain("neverBundle: ['foo']")
+    expect(code).not.toContain('skipNodeModulesBundle')
+  })
+
+  test('skipNodeModulesBundle: false should be removed', () => {
+    const input = `
+      export default {
+        skipNodeModulesBundle: false,
+      }
+    `
+    const { code } = transform(input, 'tsup.config.ts')
+    expect(code).not.toContain('skipNodeModulesBundle')
+    expect(code).not.toContain('neverBundle')
+  })
 })
 
 describe('warning options', () => {

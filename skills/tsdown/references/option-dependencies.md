@@ -34,7 +34,6 @@ export default defineConfig({
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
-    skipNodeModulesBundle: true,
   },
 })
 ```
@@ -56,6 +55,19 @@ export default defineConfig({
   },
 })
 ```
+
+Set to `true` to externalize ALL dependencies:
+
+```ts
+export default defineConfig({
+  entry: ['src/index.ts'],
+  deps: {
+    neverBundle: true,
+  },
+})
+```
+
+**Result:** Every non-relative import is externalized as written, without being resolved. Subpath imports (`#...`) are still resolved: they stay external if they resolve into node_modules, and are bundled if they map to local files. Combine with `alwaysBundle` to bundle selected dependencies (or non-relative path aliases, which cannot be detected without resolving).
 
 ### `deps.alwaysBundle`
 
@@ -123,18 +135,7 @@ export default defineConfig({
 
 ### `deps.skipNodeModulesBundle`
 
-Skip bundling ALL node_modules:
-
-```ts
-export default defineConfig({
-  entry: ['src/index.ts'],
-  deps: {
-    skipNodeModulesBundle: true,
-  },
-})
-```
-
-**Result:** No dependencies from node_modules are bundled.
+**Deprecated.** Use `deps.neverBundle: true` instead.
 
 **Note:** Cannot be used together with `alwaysBundle`.
 
@@ -263,7 +264,8 @@ tsdown --deps.skip-node-modules-bundle
 | `noExternal` | `deps.alwaysBundle` |
 | `inlineOnly` | `deps.onlyBundle` |
 | `deps.onlyAllowBundle` | `deps.onlyBundle` |
-| `skipNodeModulesBundle` | `deps.skipNodeModulesBundle` |
+| `skipNodeModulesBundle` | `deps.neverBundle: true` |
+| `deps.skipNodeModulesBundle` | `deps.neverBundle: true` |
 
 ## Examples by Use Case
 
@@ -388,7 +390,7 @@ export default defineConfig({
 - `alwaysBundle` → Force bundled
 - `onlyBundle` → Whitelist bundled deps
 - `onlyImport` → Whitelist runtime imports in output
-- `skipNodeModulesBundle` → Skip all node_modules
+- `neverBundle: true` → Externalize all dependencies
 
 **Declaration files:**
 - Same bundling logic as JavaScript

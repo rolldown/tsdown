@@ -1459,6 +1459,84 @@ describe('resolve dep subpath without exports field', () => {
   })
 })
 
+describe('neverBundle: true', () => {
+  const node_modules = {
+    'node_modules/my-dep/package.json': JSON.stringify({
+      name: 'my-dep',
+      version: '1.0.0',
+      main: 'index.js',
+    }),
+    'node_modules/my-dep/index.js': `export const main = 1`,
+    'node_modules/my-dep/functions/lt.js': `export const lt = () => {}`,
+  }
+
+  test('externalizes all non-relative imports as written', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { main } from 'my-dep'
+export { lt } from 'my-dep/functions/lt'
+export { local } from './local'`,
+        'local.ts': `export const local = 1`,
+      },
+      options: {
+        deps: { neverBundle: true },
+      },
+    })
+
+    expect(fileMap['index.mjs']).toMatch(/from ["']my-dep["']/)
+    // subpaths are not resolved, so they are preserved as written
+    expect(fileMap['index.mjs']).toMatch(/from ["']my-dep\/functions\/lt["']/)
+    expect(fileMap['index.mjs']).toContain('local = 1')
+  })
+
+  test('# subpath imports are resolved', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { local } from '#local'
+export { main } from '#dep'`,
+        'local.ts': `export const local = 1`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          version: '1.0.0',
+          imports: {
+            '#local': './local.ts',
+            '#dep': 'my-dep',
+          },
+        }),
+      },
+      options: {
+        deps: { neverBundle: true },
+      },
+    })
+
+    // maps to a local file → bundled
+    expect(fileMap['index.mjs']).toContain('local = 1')
+    // maps into node_modules → externalized with the original specifier
+    expect(fileMap['index.mjs']).toMatch(/from ["']#dep["']/)
+  })
+
+  test('alwaysBundle opts dependencies back into the bundle', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { main } from 'my-dep'
+export { lt } from 'my-dep/functions/lt'`,
+      },
+      options: {
+        deps: { neverBundle: true, alwaysBundle: ['my-dep'] },
+      },
+    })
+
+    expect(fileMap['index.mjs']).toContain('main = 1')
+    expect(fileMap['index.mjs']).toMatch(/from ["']my-dep\/functions\/lt["']/)
+  })
+})
+
 test('.node file bundle', async (context) => {
   const files = {
     'index.ts': `

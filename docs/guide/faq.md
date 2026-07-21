@@ -54,7 +54,7 @@ By default, tsdown bundles all imported modules. To exclude dependencies (e.g., 
 ```ts
 export default defineConfig({
   deps: {
-    skipNodeModulesBundle: true,
+    neverBundle: true,
   },
 })
 ```

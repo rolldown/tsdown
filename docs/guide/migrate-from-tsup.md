@@ -64,16 +64,16 @@ Some options have been renamed for clarity:
 
 The following tsup options still work in tsdown for backward compatibility, but they emit deprecation warnings and **will be removed in a future version**. Migrate them to the preferred alternatives immediately.
 
-| tsup (deprecated)          | tsdown (preferred)                      | Notes                             |
-| -------------------------- | --------------------------------------- | --------------------------------- |
-| `entryPoints`              | `entry`                                 | Also deprecated in tsup itself    |
-| `publicDir`                | `copy`                                  | Copy static files to output       |
-| `bundle: false`            | `unbundle: true`                        | Inverted to positive form         |
-| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`                 | More flexible with multiple modes |
-| `injectStyle: true`        | `css: { inject: true }`                 | Moved into CSS namespace          |
-| `external: [...]`          | `deps: { neverBundle: [...] }`          | Moved to deps namespace           |
-| `noExternal: [...]`        | `deps: { alwaysBundle: [...] }`         | Moved to deps namespace           |
-| `skipNodeModulesBundle`    | `deps: { skipNodeModulesBundle: true }` | Moved to deps namespace           |
+| tsup (deprecated)          | tsdown (preferred)              | Notes                             |
+| -------------------------- | ------------------------------- | --------------------------------- |
+| `entryPoints`              | `entry`                         | Also deprecated in tsup itself    |
+| `publicDir`                | `copy`                          | Copy static files to output       |
+| `bundle: false`            | `unbundle: true`                | Inverted to positive form         |
+| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`         | More flexible with multiple modes |
+| `injectStyle: true`        | `css: { inject: true }`         | Moved into CSS namespace          |
+| `external: [...]`          | `deps: { neverBundle: [...] }`  | Moved to deps namespace           |
+| `noExternal: [...]`        | `deps: { alwaysBundle: [...] }` | Moved to deps namespace           |
+| `skipNodeModulesBundle`    | `deps: { neverBundle: true }`   | Externalize all dependencies      |
 
 tsdown also adds `deps.onlyBundle` for whitelisting allowed bundled packages.
 

@@ -659,7 +659,7 @@ export interface UserConfig {
    */
   inlineOnly?: Arrayable<string | RegExp> | false
   /**
-   * @deprecated Use {@linkcode DepsConfig.skipNodeModulesBundle | deps.skipNodeModulesBundle} instead.
+   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle: true} instead.
    * @default false
    */
   skipNodeModulesBundle?: boolean

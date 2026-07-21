@@ -119,7 +119,12 @@ async function resolveInputOptions(
     plugins.push(NodeProtocolPlugin(nodeProtocol))
   }
 
-  if (config.pkg || config.deps.skipNodeModulesBundle) {
+  if (
+    config.pkg ||
+    config.deps.skipNodeModulesBundle ||
+    config.deps.neverBundle === true ||
+    config.deps.dts.neverBundle === true
+  ) {
     plugins.push(DepsPlugin(config, bundle))
   }
 
@@ -214,12 +219,17 @@ async function resolveInputOptions(
     }
   }
 
-  const dtsExternal = deps.dts.neverBundle
-    ? functionifyExternal(deps.dts.neverBundle)
+  // `neverBundle: true` is handled by DepsPlugin instead of rolldown's
+  // `external` option, as it requires resolving `#` subpath imports.
+  const jsNeverBundle = deps.neverBundle === true ? undefined : deps.neverBundle
+  const dtsNeverBundle =
+    deps.dts.neverBundle === true ? undefined : deps.dts.neverBundle
+  const dtsExternal = dtsNeverBundle
+    ? functionifyExternal(dtsNeverBundle)
     : undefined
   let external: ExternalOption | undefined
-  if (deps.neverBundle && dtsExternal) {
-    const jsExternal = functionifyExternal(deps.neverBundle)
+  if (jsNeverBundle && dtsExternal) {
+    const jsExternal = functionifyExternal(jsNeverBundle)
     external = (id, importer, ...args) => {
       const isDts = importer ? RE_DTS.test(importer) : false
       return (isDts ? dtsExternal : jsExternal)(id, importer, ...args)
@@ -230,7 +240,7 @@ async function resolveInputOptions(
       return isDts ? dtsExternal(id, importer, ...args) : undefined
     }
   } else {
-    external = deps.neverBundle
+    external = jsNeverBundle
   }
 
   const logLevel: LogLevelOption =

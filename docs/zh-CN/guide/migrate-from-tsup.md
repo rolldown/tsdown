@@ -64,16 +64,16 @@ npx tsdown-migrate packages/foo packages/bar
 
 以下 tsup 选项在 tsdown 中仍然可用（向后兼容），但会发出弃用警告，**未来版本将会移除**。请立即迁移到推荐的替代方案。
 
-| tsup（已弃用）             | tsdown（推荐）                          | 说明                   |
-| -------------------------- | --------------------------------------- | ---------------------- |
-| `entryPoints`              | `entry`                                 | 在 tsup 中也已弃用     |
-| `publicDir`                | `copy`                                  | 复制静态文件到输出目录 |
-| `bundle: false`            | `unbundle: true`                        | 转换为正向表达         |
-| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`                 | 更灵活，支持多种模式   |
-| `injectStyle: true`        | `css: { inject: true }`                 | 移入 CSS 命名空间      |
-| `external: [...]`          | `deps: { neverBundle: [...] }`          | 移入 deps 命名空间     |
-| `noExternal: [...]`        | `deps: { alwaysBundle: [...] }`         | 移入 deps 命名空间     |
-| `skipNodeModulesBundle`    | `deps: { skipNodeModulesBundle: true }` | 移入 deps 命名空间     |
+| tsup（已弃用）             | tsdown（推荐）                  | 说明                   |
+| -------------------------- | ------------------------------- | ---------------------- |
+| `entryPoints`              | `entry`                         | 在 tsup 中也已弃用     |
+| `publicDir`                | `copy`                          | 复制静态文件到输出目录 |
+| `bundle: false`            | `unbundle: true`                | 转换为正向表达         |
+| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`         | 更灵活，支持多种模式   |
+| `injectStyle: true`        | `css: { inject: true }`         | 移入 CSS 命名空间      |
+| `external: [...]`          | `deps: { neverBundle: [...] }`  | 移入 deps 命名空间     |
+| `noExternal: [...]`        | `deps: { alwaysBundle: [...] }` | 移入 deps 命名空间     |
+| `skipNodeModulesBundle`    | `deps: { neverBundle: true }`   | 外部化所有依赖         |
 
 tsdown 还新增了 `deps.onlyBundle`，用于白名单指定允许打包的依赖。
 

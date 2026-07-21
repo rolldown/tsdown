@@ -272,6 +272,25 @@ export function transformTsupConfig(
     }
   }
 
+  // 8.1. Transform skipNodeModulesBundle -> deps.neverBundle: true
+  const skipNodeModulesBundlePair = findPropertyPair('skipNodeModulesBundle')
+  if (skipNodeModulesBundlePair) {
+    const value = skipNodeModulesBundlePair.field('value')?.kind()
+    if (value === 'true' || value === 'false') {
+      if (value === 'true') {
+        // `neverBundle: true` externalizes everything, so it subsumes any
+        // patterns collected from `external`
+        const neverBundle = depsProperties.find((p) => p.name === 'neverBundle')
+        if (neverBundle) {
+          neverBundle.value = 'true'
+        } else {
+          depsProperties.push({ name: 'neverBundle', value: 'true' })
+        }
+      }
+      edits.push(skipNodeModulesBundlePair.replace(''))
+    }
+  }
+
   // 8. Transform tsup/TSUP identifiers
   const tsupIdentifiers = root.findAll({
     rule: {
