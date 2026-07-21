@@ -634,52 +634,6 @@ export interface UserConfig {
    * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
    */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
-  /**
-   * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
-   */
-  inlineOnly?: Arrayable<string | RegExp> | false
-
-  /**
-   * Remove the `node:` prefix from built-in Node.js module imports.
-   * When enabled, rewrites import sources like `node:fs` to `fs`.
-   *
-   * @default false
-   * @deprecated Use {@linkcode nodeProtocol | nodeProtocol: 'strip'} instead.
-   *
-   * @example
-   * <caption>`removeNodeProtocol: true` — remove the `node:` prefix</caption>
-   *
-   * ```ts
-   * // Input
-   * import 'node:fs'
-   *
-   * // Output
-   * import 'fs'
-   * ```
-   */
-  removeNodeProtocol?: boolean
-
-  /**
-   * @deprecated Use {@linkcode unbundle} instead.
-   * @default true
-   */
-  bundle?: boolean
-
-  /**
-   * @deprecated Use {@linkcode outExtensions} instead.
-   */
-  outExtension?: OutExtensionFactory
-
-  /**
-   * @deprecated Use {@linkcode CssOptions.inject | css.inject} instead.
-   */
-  injectStyle?: boolean
-
-  /**
-   * @alias copy
-   * @deprecated Alias for {@linkcode copy}, will be removed in the future.
-   */
-  publicDir?: CopyOptions | CopyOptionsFn
 
   //#endregion
 }
@@ -720,14 +674,8 @@ export type ResolvedConfig = Overwrite<
       UserConfig,
       | 'workspace' // merged
       | 'fromVite' // merged
-      | 'publicDir' // deprecated
-      | 'bundle' // deprecated
-      | 'injectStyle' // deprecated, merged to `css`
-      | 'removeNodeProtocol' // deprecated
-      | 'outExtension' // deprecated
       | 'external' // deprecated, merged to `deps`
       | 'noExternal' // deprecated, merged to `deps`
-      | 'inlineOnly' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'suppressWarnings' // merge to `logger`

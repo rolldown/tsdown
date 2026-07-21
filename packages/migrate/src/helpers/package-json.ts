@@ -3,13 +3,17 @@ import { readFile, writeFile } from 'node:fs/promises'
 import consola from 'consola'
 import { createPatch } from 'diff'
 import { detectIndentation } from '../../../../src/utils/json.ts'
-import pkg from '../../package.json' with { type: 'json' }
 import { outputDiff, renameKey } from '../utils.ts'
 
+// Migrated projects are pinned to the last v0.22.x release, which still
+// accepts deprecated tsup-compatible options (with warnings). Users should
+// resolve all deprecation warnings on this version before upgrading tsdown.
+const TSDOWN_VERSION = '^0.22.13'
+
 const DEP_FIELDS = {
-  dependencies: `^${pkg.version}`,
-  devDependencies: `^${pkg.version}`,
-  optionalDependencies: `^${pkg.version}`,
+  dependencies: TSDOWN_VERSION,
+  devDependencies: TSDOWN_VERSION,
+  optionalDependencies: TSDOWN_VERSION,
   peerDependencies: '*',
   peerDependenciesMeta: null,
 } as const

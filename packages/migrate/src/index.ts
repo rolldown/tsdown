@@ -85,4 +85,9 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
     await run(parseNi, [], { cwd: baseCwd })
     consola.success('Dependencies installed.')
   }
+
+  consola.box(
+    `Your project now uses tsdown v0.22, the last version that accepts deprecated tsup-compatible options.\n` +
+      `Run your build, resolve all deprecation warnings, then upgrade tsdown to the latest version.`,
+  )
 }

@@ -131,15 +131,6 @@ export function resolveDepsConfig(
     logger?.warn('`noExternal` is deprecated. Use `deps.alwaysBundle` instead.')
     alwaysBundle = config.noExternal
   }
-  if (config.inlineOnly != null) {
-    if (onlyBundle != null) {
-      throw new TypeError(
-        '`inlineOnly` is deprecated. Cannot be used with `deps.onlyBundle`.',
-      )
-    }
-    logger?.warn('`inlineOnly` is deprecated. Use `deps.onlyBundle` instead.')
-    onlyBundle = config.inlineOnly
-  }
   if (onlyBundle != null && onlyBundle !== false) {
     onlyBundle = toArray(onlyBundle)
   }
@@ -356,7 +347,7 @@ export function DepsPlugin(
    * - `[true, resolvedId]`: external with custom resolved ID
    * - `false`: skip, let other plugins handle it
    * - `'absolute'`: external as absolute path
-   * - `'no-external'`: skip, but mark as non-external for inlineOnly check
+   * - `'no-external'`: skip, but mark as non-external for onlyBundle check
    */
   async function externalStrategy(
     id: string,

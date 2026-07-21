@@ -1,9 +1,8 @@
 import { describe, expect, test } from 'vitest'
-import { resolveConfig } from '../src/config/index.ts'
 import { testBuild } from './utils.ts'
 
 describe('node protocol', () => {
-  test('nodeProtocol: strip (same as removeNodeProtocol: true)', async (context) => {
+  test('nodeProtocol: strip (remove node: prefix)', async (context) => {
     const files = {
       'index.ts': `
     import fs from 'node:fs'
@@ -85,34 +84,6 @@ describe('node protocol', () => {
     })
     expect(snapshot).toMatch(/from ['"]node:fs['"]/)
     expect(snapshot).toMatch(/from ['"]path['"]/)
-  })
-
-  test('removeNodeProtocol takes precedence when nodeProtocol is not set', async (context) => {
-    const files = {
-      'index.ts': `
-    import fs from 'node:fs'
-    export { fs }
-    `,
-    }
-    const { snapshot } = await testBuild({
-      context,
-      files,
-      options: {
-        removeNodeProtocol: true,
-      },
-    })
-    expect(snapshot).not.contains('node:')
-  })
-
-  test('nodeProtocol option takes precedence over removeNodeProtocol', async () => {
-    await expect(() =>
-      resolveConfig({
-        nodeProtocol: true,
-        removeNodeProtocol: true,
-      }),
-    ).rejects.toThrowError(
-      `\`removeNodeProtocol\` is deprecated. Please only use \`nodeProtocol\` instead.`,
-    )
   })
 
   test('mixed imports with nodeProtocol: true', async (context) => {

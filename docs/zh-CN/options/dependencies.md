@@ -200,7 +200,6 @@ export default defineConfig({
 | ------------ | ------------------- |
 | `external`   | `deps.neverBundle`  |
 | `noExternal` | `deps.alwaysBundle` |
-| `inlineOnly` | `deps.onlyBundle`   |
 
 ## 总结
 
