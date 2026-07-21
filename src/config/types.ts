@@ -623,8 +623,7 @@ export interface UserConfig {
   copy?: CopyOptions | CopyOptionsFn
 
   hooks?:
-    | Partial<TsdownHooks>
-    | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
+    Partial<TsdownHooks> | ((hooks: Hookable<TsdownHooks>) => Awaitable<void>)
 
   /**
    * **[experimental]** Bundle as executable using Node.js SEA (Single Executable Applications).

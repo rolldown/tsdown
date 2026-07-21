@@ -30,8 +30,7 @@ export interface CopyEntry {
    * Change destination file or folder name.
    */
   rename?:
-    | string
-    | ((name: string, extension: string, fullPath: string) => string)
+    string | ((name: string, extension: string, fullPath: string) => string)
 }
 export type CopyOptions = Arrayable<string | CopyEntry>
 export type CopyOptionsFn = (options: ResolvedConfig) => Awaitable<CopyOptions>

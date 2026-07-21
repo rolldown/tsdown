@@ -29,8 +29,7 @@ export interface CSSModulesOptions {
    * When using `transformer: 'lightningcss'`, only string patterns are supported.
    */
   generateScopedName?:
-    | string
-    | ((name: string, filename: string, css: string) => string)
+    string | ((name: string, filename: string, css: string) => string)
 
   /**
    * Prefix added to hashes when generating scoped names.
@@ -155,8 +154,7 @@ export interface CssOptions {
 }
 
 export type PostCSSOptions =
-  | string
-  | (Record<string, any> & { plugins?: any[] })
+  string | (Record<string, any> & { plugins?: any[] })
 
 export interface PreprocessorOptions {
   scss?: SassPreprocessorOptions
@@ -167,8 +165,7 @@ export interface PreprocessorOptions {
 }
 
 export type PreprocessorAdditionalDataResult =
-  | string
-  | { content: string; map?: any }
+  string | { content: string; map?: any }
 
 export type PreprocessorAdditionalData =
   | string

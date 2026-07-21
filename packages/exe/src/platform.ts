@@ -21,10 +21,7 @@ export interface ExeTarget {
    * support was added to Node.js SEA.
    */
   nodeVersion:
-    | (string & {})
-    | 'latest'
-    | 'latest-lts'
-    | `${string}.${string}.${string}`
+    (string & {}) | 'latest' | 'latest-lts' | `${string}.${string}.${string}`
 }
 
 export interface ExeExtensionOptions {
