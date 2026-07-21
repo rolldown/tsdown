@@ -54,11 +54,12 @@ npx tsdown-migrate packages/foo packages/bar
 
 部分选项已重命名以提高清晰度：
 
-| tsup             | tsdown          | 说明                          |
-| ---------------- | --------------- | ----------------------------- |
-| `cjsInterop`     | `cjsDefault`    | CJS 默认导出处理              |
-| `esbuildPlugins` | `plugins`       | 现使用 Rolldown/Unplugin 插件 |
-| `outExtension`   | `outExtensions` | 自定义输出扩展名              |
+| tsup                    | tsdown                        | 说明                          |
+| ----------------------- | ----------------------------- | ----------------------------- |
+| `cjsInterop`            | `cjsDefault`                  | CJS 默认导出处理              |
+| `esbuildPlugins`        | `plugins`                     | 现使用 Rolldown/Unplugin 插件 |
+| `outExtension`          | `outExtensions`               | 自定义输出扩展名              |
+| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | 外部化所有依赖                |
 
 ### 已弃用但兼容的选项
 
@@ -73,7 +74,6 @@ npx tsdown-migrate packages/foo packages/bar
 | `injectStyle: true`        | `css: { inject: true }`         | 移入 CSS 命名空间      |
 | `external: [...]`          | `deps: { neverBundle: [...] }`  | 移入 deps 命名空间     |
 | `noExternal: [...]`        | `deps: { alwaysBundle: [...] }` | 移入 deps 命名空间     |
-| `skipNodeModulesBundle`    | `deps: { neverBundle: true }`   | 外部化所有依赖         |
 
 tsdown 还新增了 `deps.onlyBundle`，用于白名单指定允许打包的依赖。
 

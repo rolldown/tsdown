@@ -22,10 +22,7 @@ describe('issues', () => {
         }),
       },
       options: {
-        deps: {
-          neverBundle: ['hono/compress', 'hono', 'hono/pretty-json'],
-          skipNodeModulesBundle: true,
-        },
+        deps: { neverBundle: true },
         target: 'es2022',
         platform: 'node',
         tsconfig: 'tsconfig.json',
@@ -62,7 +59,7 @@ describe('issues', () => {
       },
       options: {
         removeNodeProtocol: true,
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
   })
@@ -189,7 +186,7 @@ describe('issues', () => {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
     expect(outputFiles).toContain('index.mjs')
@@ -218,7 +215,7 @@ button {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
     expect(outputFiles).toContain('style.css')
@@ -242,7 +239,7 @@ button {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
     expect(outputFiles).toContain('index.mjs')
@@ -265,7 +262,7 @@ button {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
         css: { modules: { generateScopedName: 'mod_[local]' } },
       },
     })

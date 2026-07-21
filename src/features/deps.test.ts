@@ -18,14 +18,6 @@ describe('resolveDepsConfig', () => {
     ).toBe(true)
   })
 
-  it('rejects skipNodeModulesBundle together with neverBundle: true', () => {
-    expect(() =>
-      resolveDepsConfig({
-        deps: { neverBundle: true, skipNodeModulesBundle: true },
-      }),
-    ).toThrow('Cannot be used with `deps.neverBundle: true`')
-  })
-
   it('allows neverBundle: true together with alwaysBundle', () => {
     const resolved = resolveDepsConfig({
       deps: { neverBundle: true, alwaysBundle: ['keep'] },

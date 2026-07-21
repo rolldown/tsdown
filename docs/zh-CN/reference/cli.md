@@ -74,12 +74,6 @@ tsdown --tsconfig tsconfig.build.json
 
 另请参阅 [依赖处理](../options/dependencies.md)。
 
-## `--deps.skip-node-modules-bundle`
-
-跳过解析和打包所有来自 `node_modules` 的依赖。
-
-另请参阅 [依赖处理](../options/dependencies.md)。
-
 ## `--external <module>` {#external}
 
 ::: warning 已废弃

@@ -54,11 +54,12 @@ While `tsdown` aims to be highly compatible with `tsup`, there are some differen
 
 Some options have been renamed for clarity:
 
-| tsup             | tsdown          | Notes                              |
-| ---------------- | --------------- | ---------------------------------- |
-| `cjsInterop`     | `cjsDefault`    | CJS default export handling        |
-| `esbuildPlugins` | `plugins`       | Now uses Rolldown/Unplugin plugins |
-| `outExtension`   | `outExtensions` | Custom output extensions           |
+| tsup                    | tsdown                        | Notes                              |
+| ----------------------- | ----------------------------- | ---------------------------------- |
+| `cjsInterop`            | `cjsDefault`                  | CJS default export handling        |
+| `esbuildPlugins`        | `plugins`                     | Now uses Rolldown/Unplugin plugins |
+| `outExtension`          | `outExtensions`               | Custom output extensions           |
+| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Externalize all dependencies       |
 
 ### Deprecated but Compatible Options
 
@@ -73,7 +74,6 @@ The following tsup options still work in tsdown for backward compatibility, but 
 | `injectStyle: true`        | `css: { inject: true }`         | Moved into CSS namespace          |
 | `external: [...]`          | `deps: { neverBundle: [...] }`  | Moved to deps namespace           |
 | `noExternal: [...]`        | `deps: { alwaysBundle: [...] }` | Moved to deps namespace           |
-| `skipNodeModulesBundle`    | `deps: { neverBundle: true }`   | Externalize all dependencies      |
 
 tsdown also adds `deps.onlyBundle` for whitelisting allowed bundled packages.
 

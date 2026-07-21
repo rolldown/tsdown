@@ -68,7 +68,6 @@ export interface UserConfig {
   external?: ExternalOption;
   noExternal?: Arrayable<string | RegExp> | NoExternalFn;
   inlineOnly?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
   removeNodeProtocol?: boolean;
   bundle?: boolean;
   outExtension?: OutExtensionFactory;

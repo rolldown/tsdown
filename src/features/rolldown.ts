@@ -120,7 +120,6 @@ async function resolveInputOptions(
 
   if (
     config.pkg ||
-    config.deps.skipNodeModulesBundle ||
     config.deps.neverBundle === true ||
     config.deps.dts.neverBundle === true
   ) {

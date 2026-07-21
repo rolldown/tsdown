@@ -171,14 +171,6 @@ Mark module as external (not bundled):
 tsdown --deps.never-bundle react --deps.never-bundle react-dom
 ```
 
-### `--deps.skip-node-modules-bundle`
-
-Skip resolving and bundling all node_modules:
-
-```bash
-tsdown --deps.skip-node-modules-bundle
-```
-
 ### `--shims`
 
 Add ESM/CJS compatibility shims:
