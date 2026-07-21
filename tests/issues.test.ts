@@ -58,7 +58,7 @@ describe('issues', () => {
         'index.ts': `export { versions } from 'node:process';`,
       },
       options: {
-        removeNodeProtocol: true,
+        nodeProtocol: 'strip',
         deps: { neverBundle: true },
       },
     })

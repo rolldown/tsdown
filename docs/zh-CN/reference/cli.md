@@ -245,14 +245,6 @@ tsdown --copy public
 
 `public` 目录中的所有内容将被复制到您的输出目录（如 `dist`）。
 
-## `--public-dir <dir>`
-
-::: warning 已废弃
-请使用 `--copy` 代替。
-:::
-
-`--copy` 的别名。
-
 ## `--exe`
 
 **[实验性]** 使用 [Node.js 单个可执行程序](https://nodejs.org/api/single-executable-applications.html)将输出打包为独立可执行文件。

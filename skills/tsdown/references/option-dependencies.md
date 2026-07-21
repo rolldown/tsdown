@@ -250,7 +250,6 @@ tsdown --deps.never-bundle '/^@myorg\/.*/'
 |---|---|
 | `external` | `deps.neverBundle` |
 | `noExternal` | `deps.alwaysBundle` |
-| `inlineOnly` | `deps.onlyBundle` |
 
 ## Examples by Use Case
 

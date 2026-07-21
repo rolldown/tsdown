@@ -245,14 +245,6 @@ tsdown --copy public
 
 All contents of the `public` directory will be copied to your output directory (e.g., `dist`).
 
-## `--public-dir <dir>`
-
-::: warning Deprecated
-Please use `--copy` instead.
-:::
-
-An alias for `--copy`.
-
 ## `--exe`
 
 **[experimental]** Bundle as a standalone executable using [Node.js Single Executable Applications](https://nodejs.org/api/single-executable-applications.html).

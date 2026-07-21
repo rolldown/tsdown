@@ -138,53 +138,6 @@ test('custom extension', async (context) => {
   `)
 })
 
-test('deprecated custom extension', async (context) => {
-  const files = {
-    'index.ts': `export default 10`,
-  }
-  const warn = vi.fn()
-  const { outputFiles } = await testBuild({
-    context,
-    files,
-    options: {
-      customLogger: {
-        level: 'info',
-        info: vi.fn(),
-        warn,
-        warnOnce: vi.fn(),
-        error: vi.fn(),
-        success: vi.fn(),
-        clearScreen: vi.fn(),
-      },
-      outExtension: () => ({ js: '.some.mjs' }),
-    },
-  })
-  expect(warn).toHaveBeenCalledWith(expect.stringContaining('outExtension'))
-  expect(outputFiles).toMatchInlineSnapshot(`
-    [
-      "index.some.mjs",
-    ]
-  `)
-})
-
-test('deprecated custom extension conflict', async (context) => {
-  const files = {
-    'index.ts': `export default 10`,
-  }
-  await expect(
-    testBuild({
-      context,
-      files,
-      options: {
-        outExtension: () => ({ js: '.old.mjs' }),
-        outExtensions: () => ({ js: '.new.mjs' }),
-      },
-    }),
-  ).rejects.toThrow(
-    '`outExtension` is deprecated. Cannot be used with `outExtensions`',
-  )
-})
-
 test('custom extension with empty string', async (context) => {
   const files = {
     'index.ts': `export default 10`,
