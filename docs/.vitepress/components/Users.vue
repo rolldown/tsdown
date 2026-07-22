@@ -183,6 +183,13 @@ const users = computed(() => {
         </div>
       </Marquee>
     </ClientOnly>
+
+    <img
+      src="https://raw.githubusercontent.com/sxzz/tsdown-stars/main/circles.svg"
+      alt="Users of tsdown"
+      mt-0="!"
+      w-200
+    />
   </div>
 </template>
 
