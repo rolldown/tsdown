@@ -452,6 +452,10 @@ export interface UserConfig {
   hash?: boolean
 
   /**
+   * Converts a single default export from an explicit CJS entry module to
+   * `module.exports`. It does not apply to non-entry chunks emitted in
+   * unbundle mode.
+   *
    * @default true
    */
   cjsDefault?: boolean
