@@ -3,7 +3,7 @@
  */
 // #region Functions
 export async function build(_) {}
-export async function buildWithConfigs(_, _, _) {}
+export async function buildWithConfigs(_, _, _, _) {}
 export function enableDebug(_) {}
 export function mergeConfig(_, ..._) {}
 export async function resolveUserConfig(_, _, _) {}

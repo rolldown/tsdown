@@ -65,6 +65,7 @@ export interface InlineConfig extends UserConfig {
   config?: boolean | string;
   configLoader?: "auto" | "native" | "tsx" | "unrun";
   filter?: RegExp | Arrayable<string>;
+  concurrency?: number;
 }
 export interface Logger {
   level: LogLevel;
@@ -210,6 +211,7 @@ export interface Workspace {
   include?: "auto" | (string & {}) | string[];
   exclude?: Arrayable<string>;
   config?: boolean | string;
+  concurrency?: number;
 }
 // #endregion
 
@@ -271,7 +273,7 @@ export type WithEnabled<T> = boolean | undefined | CIOption | (T & {
 
 // #region Functions
 export declare function build(_?: InlineConfig): Promise<TsdownBundle[]>;
-export declare function buildWithConfigs(_: ResolvedConfig[], _: Set<string>, _: () => void): Promise<TsdownBundle[]>;
+export declare function buildWithConfigs(_: ResolvedConfig[], _: Set<string>, _: () => void, _?: number): Promise<TsdownBundle[]>;
 export declare function defineConfig(_: UserConfig): UserConfig;
 export declare function defineConfig(_: UserConfig[]): UserConfig[];
 export declare function defineConfig(_: UserConfigFn): UserConfigFn;
