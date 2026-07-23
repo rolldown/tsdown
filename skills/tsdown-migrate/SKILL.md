@@ -7,6 +7,10 @@ description: Migrate TypeScript library projects from tsup to tsdown. Provides c
 
 Knowledge base for AI agents to migrate tsup projects to tsdown — the Rolldown-powered library bundler.
 
+## Target Version
+
+Migrate to **tsdown v0.22.13** (`tsdown@^0.22.13`), the last version that still accepts deprecated tsup-compatible options (with warnings). Newer versions of tsdown have removed these options entirely. After migrating, run the build, resolve **all** deprecation warnings, and only then upgrade `tsdown` to the latest version.
+
 ## Runtime Requirement
 
 `tsdown` requires **Node.js 22.18.0 or higher to run** (build-time only). The bundled output can still target lower Node.js versions via the [`target`](../tsdown/references/option-target.md) option, so a library that previously supported Node.js 18 / 20 with tsup can continue to do so after migrating.
@@ -67,9 +71,19 @@ Replace all identifiers: `tsup` → `tsdown`, `TSUP` → `TSDOWN`.
 
 | tsup | tsdown | Notes |
 |------|--------|-------|
+| `entryPoints` | `entry` | Also deprecated in tsup itself |
 | `cjsInterop` | `cjsDefault` | CJS default export handling |
 | `esbuildPlugins` | `plugins` | Now uses Rolldown/Unplugin plugins |
 | `outExtension` | `outExtensions` | Custom output extensions |
+| `publicDir` | `copy` | Copy static files to output |
+| `bundle: true` | _(remove)_ | Bundle is default behavior |
+| `bundle: false` | `unbundle: true` | Preserve file structure |
+| `removeNodeProtocol: true` | `nodeProtocol: 'strip'` | Strip `node:` prefix |
+| `injectStyle: true` | `css: { inject: true }` | CSS injection |
+| `injectStyle: false` | _(remove)_ | Default behavior |
+| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Externalize all dependencies |
+
+None of the old names work in the latest tsdown — always emit the new names. Those that previously emitted deprecation warnings (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted up to tsdown v0.22.13.
 
 ### Deprecated but Compatible
 
@@ -77,16 +91,8 @@ These tsup options still work in tsdown for backward compatibility, but emit dep
 
 | tsup (deprecated) | tsdown (preferred) | Notes |
 |--------------------|--------------------|-------|
-| `entryPoints` | `entry` | Also deprecated in tsup itself |
-| `publicDir` | `copy` | Copy static files to output |
-| `bundle: true` | _(remove)_ | Bundle is default behavior |
-| `bundle: false` | `unbundle: true` | Preserve file structure |
-| `removeNodeProtocol: true` | `nodeProtocol: 'strip'` | Strip `node:` prefix |
-| `injectStyle: true` | `css: { inject: true }` | CSS injection |
-| `injectStyle: false` | _(remove)_ | Default behavior |
 | `external: [...]` | `deps: { neverBundle: [...] }` | Moved to deps namespace |
 | `noExternal: [...]` | `deps: { alwaysBundle: [...] }` | Moved to deps namespace |
-| `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Externalize all dependencies |
 
 ### Output Filename Differences
 
@@ -240,14 +246,13 @@ Use this checklist when performing a migration:
 - [ ] Rename tsup.config.* → tsdown.config.*
 - [ ] Update import from 'tsup' to 'tsdown'
 - [ ] Replace tsup/TSUP identifiers with tsdown/TSDOWN
-- [ ] Apply property renames (cjsInterop→cjsDefault, esbuildPlugins→plugins, outExtension→outExtensions)
-- [ ] Migrate deprecated options (publicDir→copy, bundle→unbundle, removeNodeProtocol→nodeProtocol, injectStyle→css.inject)
+- [ ] Apply property renames (cjsInterop→cjsDefault, esbuildPlugins→plugins, outExtension→outExtensions, publicDir→copy, bundle→unbundle, removeNodeProtocol→nodeProtocol, injectStyle→css.inject)
 - [ ] Move external/noExternal into deps namespace, replace skipNodeModulesBundle with `deps.neverBundle: true`
 - [ ] Update unplugin imports from /esbuild to /rolldown
 - [ ] Set explicit defaults to preserve tsup behavior (format, clean, dts, target)
 - [ ] Remove unsupported options (splitting, metafile, swc, etc.)
 - [ ] Update package.json scripts (tsup→tsdown)
-- [ ] Update package.json dependencies
+- [ ] Update package.json dependencies (tsdown@^0.22.13)
 - [ ] Rename root-level tsup config field if present
 - [ ] Run tsdown and verify build output
 - [ ] Suggest new tsdown features to the user

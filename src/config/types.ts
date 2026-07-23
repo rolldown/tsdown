@@ -47,33 +47,8 @@ import type {
   OutputOptions,
   TreeshakingOptions,
 } from 'rolldown'
-import type { Options as RolldownPluginDtsOptions } from 'rolldown-plugin-dts'
+import type { Options as DtsOptions } from 'rolldown-plugin-dts'
 import type { Options as UnusedOptions } from 'unplugin-unused'
-
-export interface DtsOptions extends RolldownPluginDtsOptions {
-  /**
-   * When building dual ESM+CJS formats, generate a `.d.cts` re-export stub
-   * instead of running a full second TypeScript compilation pass.
-   *
-   * The stub re-exports everything from the corresponding `.d.mts` file,
-   * ensuring CJS and ESM consumers share the same type declarations. This
-   * eliminates the TypeScript "dual module hazard" where separate `.d.cts`
-   * and `.d.mts` declarations cause `TS2352` ("neither type sufficiently
-   * overlaps") errors when casting between types derived from the same class.
-   *
-   * Only applies when building both `esm` and `cjs` formats simultaneously.
-   *
-   * @remarks
-   * The generated `.d.cts` stub uses a relative path to re-export from the
-   * corresponding `.d.mts` file, so both formats must be emitted to the
-   * **same** `outDir`. Splitting CJS and ESM outputs into separate
-   * format-specific directories (e.g. `dist/cjs` and `dist/esm`) is not
-   * supported with this option, because the re-export path would be invalid.
-   *
-   * @default false
-   */
-  cjsReexport?: boolean
-}
 
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
@@ -111,6 +86,7 @@ export type {
   CopyOptionsFn,
   DepsConfig,
   DevtoolsOptions,
+  DtsOptions,
   ExeOptions,
   ExportsOptions,
   NoExternalFn,
@@ -658,57 +634,6 @@ export interface UserConfig {
    * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
    */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn
-  /**
-   * @deprecated Use {@linkcode DepsConfig.onlyBundle | deps.onlyBundle} instead.
-   */
-  inlineOnly?: Arrayable<string | RegExp> | false
-  /**
-   * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle: true} instead.
-   * @default false
-   */
-  skipNodeModulesBundle?: boolean
-
-  /**
-   * Remove the `node:` prefix from built-in Node.js module imports.
-   * When enabled, rewrites import sources like `node:fs` to `fs`.
-   *
-   * @default false
-   * @deprecated Use {@linkcode nodeProtocol | nodeProtocol: 'strip'} instead.
-   *
-   * @example
-   * <caption>`removeNodeProtocol: true` — remove the `node:` prefix</caption>
-   *
-   * ```ts
-   * // Input
-   * import 'node:fs'
-   *
-   * // Output
-   * import 'fs'
-   * ```
-   */
-  removeNodeProtocol?: boolean
-
-  /**
-   * @deprecated Use {@linkcode unbundle} instead.
-   * @default true
-   */
-  bundle?: boolean
-
-  /**
-   * @deprecated Use {@linkcode outExtensions} instead.
-   */
-  outExtension?: OutExtensionFactory
-
-  /**
-   * @deprecated Use {@linkcode CssOptions.inject | css.inject} instead.
-   */
-  injectStyle?: boolean
-
-  /**
-   * @alias copy
-   * @deprecated Alias for {@linkcode copy}, will be removed in the future.
-   */
-  publicDir?: CopyOptions | CopyOptionsFn
 
   //#endregion
 }
@@ -749,15 +674,8 @@ export type ResolvedConfig = Overwrite<
       UserConfig,
       | 'workspace' // merged
       | 'fromVite' // merged
-      | 'publicDir' // deprecated
-      | 'bundle' // deprecated
-      | 'injectStyle' // deprecated, merged to `css`
-      | 'removeNodeProtocol' // deprecated
-      | 'outExtension' // deprecated
       | 'external' // deprecated, merged to `deps`
       | 'noExternal' // deprecated, merged to `deps`
-      | 'inlineOnly' // deprecated, merged to `deps`
-      | 'skipNodeModulesBundle' // deprecated, merged to `deps`
       | 'logLevel' // merge to `logger`
       | 'failOnWarn' // merge to `logger`
       | 'suppressWarnings' // merge to `logger`

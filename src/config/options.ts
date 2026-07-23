@@ -2,7 +2,6 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { parseEnv } from 'node:util'
-import { blue } from 'ansis'
 import { createDefu } from 'defu'
 import { createDebug } from 'obug'
 import { readTsconfig } from 'rolldown-plugin-dts/internal'
@@ -92,22 +91,17 @@ export async function resolveUserConfig(
     envFile,
     envPrefix = 'TSDOWN_',
     copy,
-    publicDir,
     hash = true,
     cwd = process.cwd(),
     name,
     workspace,
     exports = false,
-    bundle,
-    unbundle = typeof bundle === 'boolean' ? !bundle : false,
+    unbundle = false,
     root,
-    removeNodeProtocol,
-    nodeProtocol,
+    nodeProtocol = false,
     cjsDefault = true,
     globImport = true,
     css,
-    injectStyle,
-    outExtension,
     outExtensions,
     fixedExtension = platform === 'node',
     devtools = false,
@@ -132,27 +126,6 @@ export async function resolveUserConfig(
     failOnWarn: resolveFeatureOption(failOnWarn, true),
     suppressWarnings,
   })
-
-  if (typeof bundle === 'boolean') {
-    logger.warn('`bundle` option is deprecated. Use `unbundle` instead.')
-  }
-
-  if (removeNodeProtocol) {
-    if (nodeProtocol)
-      throw new TypeError(
-        '`removeNodeProtocol` is deprecated. Please only use `nodeProtocol` instead.',
-      )
-    logger.warn(
-      '`removeNodeProtocol` is deprecated. Use `nodeProtocol: "strip"` instead.',
-    )
-  }
-
-  // Resolve nodeProtocol option with backward compatibility for removeNodeProtocol
-  nodeProtocol =
-    nodeProtocol ??
-    // `removeNodeProtocol: true` means stripping the `node:` protocol which equals to `nodeProtocol: 'strip'`
-    // `removeNodeProtocol: false` means keeping the `node:` protocol which equals to `nodeProtocol: false` (ignore it)
-    (removeNodeProtocol ? 'strip' : false)
 
   outDir = path.resolve(cwd, outDir)
   clean = resolveClean(clean, outDir, cwd)
@@ -202,43 +175,6 @@ export async function resolveUserConfig(
     if (attw) {
       logger.warn(nameLabel, 'attw is enabled but package.json is not found')
     }
-  }
-
-  if (injectStyle != null) {
-    if (css?.inject == null) {
-      logger.warn(
-        `${blue`injectStyle`} is deprecated. Use ${blue`css.inject`} instead.`,
-      )
-      css = { ...css, inject: injectStyle }
-    } else {
-      throw new TypeError(
-        '`injectStyle` is deprecated. Cannot be used with `css.inject`',
-      )
-    }
-  }
-
-  if (publicDir) {
-    if (copy) {
-      throw new TypeError(
-        '`publicDir` is deprecated. Cannot be used with `copy`',
-      )
-    } else {
-      logger.warn(
-        `${blue`publicDir`} is deprecated. Use ${blue`copy`} instead.`,
-      )
-    }
-  }
-
-  if (outExtension) {
-    if (outExtensions) {
-      throw new TypeError(
-        '`outExtension` is deprecated. Cannot be used with `outExtensions`',
-      )
-    }
-    logger.warn(
-      `${blue`outExtension`} is deprecated. Use ${blue`outExtensions`} instead.`,
-    )
-    outExtensions = outExtension
   }
 
   envPrefix = toArray(envPrefix)
@@ -321,7 +257,7 @@ export async function resolveUserConfig(
     cjsDefault,
     clean,
     configDeps,
-    copy: publicDir || copy,
+    copy,
     css,
     cwd,
     deps: depsConfig,

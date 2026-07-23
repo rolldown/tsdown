@@ -67,13 +67,6 @@ export interface UserConfig {
   workspace?: Workspace | Arrayable<string> | true;
   external?: ExternalOption;
   noExternal?: Arrayable<string | RegExp> | NoExternalFn;
-  inlineOnly?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
-  removeNodeProtocol?: boolean;
-  bundle?: boolean;
-  outExtension?: OutExtensionFactory;
-  injectStyle?: boolean;
-  publicDir?: CopyOptions | CopyOptionsFn;
 }
 // #endregion
 

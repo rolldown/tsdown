@@ -29,17 +29,12 @@ export interface DepsConfig {
   alwaysBundle?: Arrayable<string | RegExp> | NoExternalFn;
   onlyBundle?: Arrayable<string | RegExp> | false;
   onlyImport?: Arrayable<string | RegExp>;
-  onlyAllowBundle?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
   resolveDepSubpath?: boolean;
   dts?: Pick<DepsConfig, "alwaysBundle" | "neverBundle">;
 }
 export interface DevtoolsOptions extends NonNullable<InputOptions["devtools"]> {
   ui?: boolean | Partial<StartOptions>;
   clean?: boolean;
-}
-export interface DtsOptions extends Options$1 {
-  cjsReexport?: boolean;
 }
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, "main" | "output" | "mainFormat">;
@@ -97,7 +92,7 @@ export interface ReportOptions {
   brotli?: boolean;
   maxCompressSize?: number;
 }
-export interface ResolvedDepsConfig extends Pick<DepsConfig, "neverBundle" | "skipNodeModulesBundle" | "resolveDepSubpath"> {
+export interface ResolvedDepsConfig extends Pick<DepsConfig, "neverBundle" | "resolveDepSubpath"> {
   alwaysBundle?: NoExternalFn;
   onlyBundle?: Array<string | RegExp> | false;
   onlyImport?: Array<string | RegExp>;
@@ -199,13 +194,6 @@ export interface UserConfig {
   workspace?: Workspace | Arrayable<string> | true;
   external?: ExternalOption;
   noExternal?: Arrayable<string | RegExp> | NoExternalFn;
-  inlineOnly?: Arrayable<string | RegExp> | false;
-  skipNodeModulesBundle?: boolean;
-  removeNodeProtocol?: boolean;
-  bundle?: boolean;
-  outExtension?: OutExtensionFactory;
-  injectStyle?: boolean;
-  publicDir?: CopyOptions | CopyOptionsFn;
 }
 export interface Workspace {
   include?: "auto" | (string & {}) | string[];
@@ -228,7 +216,7 @@ export type NoExternalFn = (_: string, _: string | undefined) => boolean | null 
 export type NormalizedFormat = InternalModuleFormat;
 export type OutExtensionFactory = (_: OutExtensionContext) => OutExtensionObject | undefined;
 export type PackageType = "module" | "commonjs" | undefined;
-export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "publicDir" | "bundle" | "injectStyle" | "removeNodeProtocol" | "outExtension" | "external" | "noExternal" | "inlineOnly" | "skipNodeModulesBundle" | "logLevel" | "failOnWarn" | "suppressWarnings" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
+export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" | "fromVite" | "external" | "noExternal" | "logLevel" | "failOnWarn" | "suppressWarnings" | "customLogger" | "envFile" | "envPrefix">, "globalName" | "inputOptions" | "outputOptions" | "minify" | "define" | "alias" | "onSuccess" | "outExtensions" | "hooks" | "copy" | "loader" | "name" | "banner" | "footer" | "checks" | "css">, {
   entry: Record<string, string>;
   rawEntry?: TsdownInputOption;
   nameLabel: string | undefined;
@@ -290,6 +278,7 @@ export declare const version: string;
 // #endregion
 
 // #region Other
+export { DtsOptions }
 export { Rolldown }
 export { TreeshakingOptions }
 export { UnusedOptions }

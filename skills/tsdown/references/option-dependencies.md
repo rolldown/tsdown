@@ -133,12 +133,6 @@ export default defineConfig({
 
 **Limitation:** ES imports and dynamic `import()` expressions are checked. CJS `require()` calls are not detected.
 
-### `deps.skipNodeModulesBundle`
-
-**Deprecated.** Use `deps.neverBundle: true` instead.
-
-**Note:** Cannot be used together with `alwaysBundle`.
-
 ## Common Patterns
 
 ### React Component Library
@@ -250,22 +244,12 @@ tsdown --deps.never-bundle react --deps.never-bundle react-dom
 tsdown --deps.never-bundle '/^@myorg\/.*/'
 ```
 
-### Skip Node Modules
-
-```bash
-tsdown --deps.skip-node-modules-bundle
-```
-
 ## Migration from Deprecated Options
 
 | Deprecated Option | New Option |
 |---|---|
 | `external` | `deps.neverBundle` |
 | `noExternal` | `deps.alwaysBundle` |
-| `inlineOnly` | `deps.onlyBundle` |
-| `deps.onlyAllowBundle` | `deps.onlyBundle` |
-| `skipNodeModulesBundle` | `deps.neverBundle: true` |
-| `deps.skipNodeModulesBundle` | `deps.neverBundle: true` |
 
 ## Examples by Use Case
 

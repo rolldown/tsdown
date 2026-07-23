@@ -74,12 +74,6 @@ Mark a module as external. This prevents the specified module from being include
 
 See also [Dependencies](../options/dependencies.md).
 
-## `--deps.skip-node-modules-bundle`
-
-Skip resolving and bundling all dependencies from `node_modules`.
-
-See also [Dependencies](../options/dependencies.md).
-
 ## `--external <module>` {#external}
 
 ::: warning Deprecated
@@ -250,14 +244,6 @@ tsdown --copy public
 ```
 
 All contents of the `public` directory will be copied to your output directory (e.g., `dist`).
-
-## `--public-dir <dir>`
-
-::: warning Deprecated
-Please use `--copy` instead.
-:::
-
-An alias for `--copy`.
 
 ## `--exe`
 

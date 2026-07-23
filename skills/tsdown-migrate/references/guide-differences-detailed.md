@@ -43,9 +43,17 @@ Comprehensive comparison of tsdown and tsup for understanding migration impact a
 
 | Feature | tsup | tsdown | Change |
 |---------|------|--------|--------|
+| Entry points | `entryPoints` | `entry` | Also deprecated in tsup itself |
 | CJS interop | `cjsInterop` | `cjsDefault` | Property rename |
 | Plugins | `esbuildPlugins` | `plugins` | Different plugin format (Rolldown) |
 | Output extensions | `outExtension` | `outExtensions` | Property rename |
+| Copy files | `publicDir` | `copy` | Property rename |
+| Bundleless | `bundle: false` | `unbundle: true` | Inverted logic |
+| Strip node: | `removeNodeProtocol` | `nodeProtocol: 'strip'` | New option with more modes |
+| CSS inject | `injectStyle` | `css: { inject: true }` | Moved to css namespace |
+| Skip node_modules | `skipNodeModulesBundle` | `deps.neverBundle: true` | Externalize all dependencies |
+
+None of the old names work in the latest tsdown. Those that previously emitted deprecation warnings (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted up to tsdown v0.22.13.
 
 ### Deprecated but Compatible
 
@@ -53,14 +61,8 @@ These tsup options still work in tsdown but emit deprecation warnings. They will
 
 | Feature | tsup (deprecated) | tsdown (preferred) | Change |
 |---------|-------------------|--------------------|--------|
-| Entry points | `entryPoints` | `entry` | Also deprecated in tsup itself |
-| Copy files | `publicDir` | `copy` | Property rename |
-| Bundleless | `bundle: false` | `unbundle: true` | Inverted logic |
-| Strip node: | `removeNodeProtocol` | `nodeProtocol: 'strip'` | New option with more modes |
-| CSS inject | `injectStyle` | `css: { inject: true }` | Moved to css namespace |
 | External deps | `external` | `deps.neverBundle` | Moved to deps namespace |
 | Inline deps | `noExternal` | `deps.alwaysBundle` | Moved to deps namespace |
-| Skip node_modules | `skipNodeModulesBundle` | `deps.neverBundle: true` | Externalize all dependencies |
 
 ### Output Filename Differences
 

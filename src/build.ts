@@ -289,7 +289,7 @@ async function buildSingle(
     }
 
     const configs: BuildOptions[] = [buildOptions]
-    if (format === 'cjs' && dts && (!isDualFormat || !dts.cjsReexport)) {
+    if (format === 'cjs' && dts) {
       configs.push(
         await getBuildOptions(
           config,

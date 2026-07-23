@@ -22,10 +22,7 @@ describe('issues', () => {
         }),
       },
       options: {
-        deps: {
-          neverBundle: ['hono/compress', 'hono', 'hono/pretty-json'],
-          skipNodeModulesBundle: true,
-        },
+        deps: { neverBundle: true },
         target: 'es2022',
         platform: 'node',
         tsconfig: 'tsconfig.json',
@@ -61,8 +58,8 @@ describe('issues', () => {
         'index.ts': `export { versions } from 'node:process';`,
       },
       options: {
-        removeNodeProtocol: true,
-        deps: { skipNodeModulesBundle: true },
+        nodeProtocol: 'strip',
+        deps: { neverBundle: true },
       },
     })
   })
@@ -189,7 +186,7 @@ describe('issues', () => {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
     expect(outputFiles).toContain('index.mjs')
@@ -218,7 +215,7 @@ button {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
     expect(outputFiles).toContain('style.css')
@@ -242,7 +239,7 @@ button {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
       },
     })
     expect(outputFiles).toContain('index.mjs')
@@ -265,7 +262,7 @@ button {
       },
       options: {
         plugins: [Vue({ isProduction: true })],
-        deps: { skipNodeModulesBundle: true },
+        deps: { neverBundle: true },
         css: { modules: { generateScopedName: 'mod_[local]' } },
       },
     })
@@ -273,28 +270,6 @@ button {
     expect(outputFiles).toContain('style.css')
     expect(fileMap['style.css']).toContain('.mod_btn')
     expect(fileMap['index.mjs']).toContain('mod_btn')
-  })
-
-  test('#903', async (context) => {
-    const { outputFiles } = await testBuild({
-      context,
-      files: {
-        'a.ts': `export { shared } from './shared'
-export const loadDynamic = () => import('./dynamic')`,
-        'b.ts': `export { shared } from './shared'`,
-        'shared.ts': `export const shared = 1`,
-        'dynamic.ts': `export const dynamic = 2`,
-      },
-      options: {
-        entry: ['a.ts', 'b.ts'],
-        format: ['cjs', 'esm'],
-        dts: { cjsReexport: true },
-        platform: 'node',
-      },
-    })
-    expect(outputFiles.some((f) => /^chunk-.*\.d\.cts$/.test(f))).toBe(false)
-    expect(outputFiles).toContain('a.d.cts')
-    expect(outputFiles).toContain('b.d.cts')
   })
 
   test('#772', async (context) => {

@@ -42,19 +42,21 @@ Rename `tsup` to `tsdown` in whichever dependency field it appears:
 // After
 {
   "devDependencies": {
-    "tsdown": "^0.21.3",
+    "tsdown": "^0.22.13",
     "typescript": "^5.0.0"
   }
 }
 ```
 
+Use `^0.22.13` — the last tsdown version that still accepts deprecated tsup-compatible options (with warnings). Resolve all deprecation warnings before upgrading tsdown to the latest version.
+
 ### All Dependency Fields
 
 | Field | tsup version | tsdown version |
 |-------|-------------|----------------|
-| `dependencies` | any | latest tsdown |
-| `devDependencies` | any | latest tsdown |
-| `optionalDependencies` | any | latest tsdown |
+| `dependencies` | any | `^0.22.13` |
+| `devDependencies` | any | `^0.22.13` |
+| `optionalDependencies` | any | `^0.22.13` |
 | `peerDependencies` | any | `*` |
 | `peerDependenciesMeta` | rename key only | rename key only |
 

@@ -74,12 +74,6 @@ tsdown --tsconfig tsconfig.build.json
 
 另请参阅 [依赖处理](../options/dependencies.md)。
 
-## `--deps.skip-node-modules-bundle`
-
-跳过解析和打包所有来自 `node_modules` 的依赖。
-
-另请参阅 [依赖处理](../options/dependencies.md)。
-
 ## `--external <module>` {#external}
 
 ::: warning 已废弃
@@ -250,14 +244,6 @@ tsdown --copy public
 ```
 
 `public` 目录中的所有内容将被复制到您的输出目录（如 `dist`）。
-
-## `--public-dir <dir>`
-
-::: warning 已废弃
-请使用 `--copy` 代替。
-:::
-
-`--copy` 的别名。
 
 ## `--exe`
 

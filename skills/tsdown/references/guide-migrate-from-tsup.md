@@ -46,7 +46,16 @@ npx tsdown-migrate packages/foo packages/bar
 
 | tsup | tsdown |
 |------|--------|
+| `cjsInterop` | `cjsDefault` |
+| `esbuildPlugins` | `plugins` |
 | `outExtension` | `outExtensions` |
+| `skipNodeModulesBundle` | `deps: { neverBundle: true }` |
+| `publicDir` | `copy` |
+| `bundle: false` | `unbundle: true` |
+| `removeNodeProtocol: true` | `nodeProtocol: 'strip'` |
+| `injectStyle: true` | `css: { inject: true }` |
+
+The old names were accepted (with deprecation warnings) up to tsdown v0.22.13 and have been removed since. When migrating from tsup, install `tsdown@^0.22.13` first, resolve all deprecation warnings, then upgrade to the latest version.
 
 ### Output Filename Differences
 

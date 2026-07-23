@@ -28,6 +28,9 @@ npx tsdown-migrate packages/foo packages/bar
 > [!TIP]
 > 迁移工具会在迁移后自动安装依赖。请确保在项目目录下运行该命令。
 
+> [!IMPORTANT]
+> 迁移工具会安装 **tsdown v0.22.13**——这是最后一个仍接受已弃用的 tsup 兼容选项（并发出警告）的版本。更新的 tsdown 版本已完全移除这些选项。请先在 v0.22.13 上运行构建，解决**所有**弃用警告，然后再将 `tsdown` 升级到最新版本。
+
 ### 迁移选项
 
 `migrate` 命令支持以下选项，用于自定义迁移过程：
@@ -54,26 +57,28 @@ npx tsdown-migrate packages/foo packages/bar
 
 部分选项已重命名以提高清晰度：
 
-| tsup             | tsdown          | 说明                          |
-| ---------------- | --------------- | ----------------------------- |
-| `cjsInterop`     | `cjsDefault`    | CJS 默认导出处理              |
-| `esbuildPlugins` | `plugins`       | 现使用 Rolldown/Unplugin 插件 |
-| `outExtension`   | `outExtensions` | 自定义输出扩展名              |
+| tsup                       | tsdown                        | 说明                          |
+| -------------------------- | ----------------------------- | ----------------------------- |
+| `entryPoints`              | `entry`                       | 在 tsup 中也已弃用            |
+| `cjsInterop`               | `cjsDefault`                  | CJS 默认导出处理              |
+| `esbuildPlugins`           | `plugins`                     | 现使用 Rolldown/Unplugin 插件 |
+| `outExtension`             | `outExtensions`               | 自定义输出扩展名              |
+| `skipNodeModulesBundle`    | `deps: { neverBundle: true }` | 外部化所有依赖                |
+| `publicDir`                | `copy`                        | 复制静态文件到输出目录        |
+| `bundle: false`            | `unbundle: true`              | 转换为正向表达                |
+| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`       | 更灵活，支持多种模式          |
+| `injectStyle: true`        | `css: { inject: true }`       | 移入 CSS 命名空间             |
+
+以上旧名称在最新版 tsdown 中均不可用。其中曾发出弃用警告的选项（`outExtension`、`skipNodeModulesBundle`、`publicDir`、`bundle`、`removeNodeProtocol`、`injectStyle`）在 tsdown v0.22.13 及之前的版本中仍可使用——如果您的配置仍在使用它们，请先在 v0.22.13 上完成迁移。
 
 ### 已弃用但兼容的选项
 
 以下 tsup 选项在 tsdown 中仍然可用（向后兼容），但会发出弃用警告，**未来版本将会移除**。请立即迁移到推荐的替代方案。
 
-| tsup（已弃用）             | tsdown（推荐）                  | 说明                   |
-| -------------------------- | ------------------------------- | ---------------------- |
-| `entryPoints`              | `entry`                         | 在 tsup 中也已弃用     |
-| `publicDir`                | `copy`                          | 复制静态文件到输出目录 |
-| `bundle: false`            | `unbundle: true`                | 转换为正向表达         |
-| `removeNodeProtocol: true` | `nodeProtocol: 'strip'`         | 更灵活，支持多种模式   |
-| `injectStyle: true`        | `css: { inject: true }`         | 移入 CSS 命名空间      |
-| `external: [...]`          | `deps: { neverBundle: [...] }`  | 移入 deps 命名空间     |
-| `noExternal: [...]`        | `deps: { alwaysBundle: [...] }` | 移入 deps 命名空间     |
-| `skipNodeModulesBundle`    | `deps: { neverBundle: true }`   | 外部化所有依赖         |
+| tsup（已弃用）      | tsdown（推荐）                  | 说明               |
+| ------------------- | ------------------------------- | ------------------ |
+| `external: [...]`   | `deps: { neverBundle: [...] }`  | 移入 deps 命名空间 |
+| `noExternal: [...]` | `deps: { alwaysBundle: [...] }` | 移入 deps 命名空间 |
 
 tsdown 还新增了 `deps.onlyBundle`，用于白名单指定允许打包的依赖。
 
