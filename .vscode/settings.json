@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "js/ts.experimental.useTsgo": false,
   "cSpell.words": ["rolldown", "tsdown"],
   "files.readonlyInclude": {
     "docs/**/reference/api/**": true
