@@ -14,8 +14,8 @@ catalogs:
       version: 3.3.0
   dev:
     '@sxzz/eslint-config':
-      specifier: ^8.3.0
-      version: 8.3.0
+      specifier: ^8.3.1
+      version: 8.3.1
     '@sxzz/prettier-config':
       specifier: ^2.3.2
       version: 2.3.2
@@ -280,7 +280,7 @@ importers:
         version: 0.18.5
       '@sxzz/eslint-config':
         specifier: catalog:dev
-        version: 8.3.0(8ececcc0ce40479fa75e9a5cf691752c)
+        version: 8.3.1(8ececcc0ce40479fa75e9a5cf691752c)
       '@sxzz/prettier-config':
         specifier: catalog:dev
         version: 2.3.2(prettier@3.9.6)
@@ -2398,8 +2398,8 @@ packages:
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
-  '@sxzz/eslint-config@8.3.0':
-    resolution: {integrity: sha512-lkQNPfTzAyZqWGd+WUxB4jkeNuyjsVWfslFBcDbjag3JWi9d7jvAZUDb1p6GqOhiTzW3AhGjUN5lq9/34ImLUA==}
+  '@sxzz/eslint-config@8.3.1':
+    resolution: {integrity: sha512-U/41yJGK2+tOwbkHBzbDv3CBBD+rQzc95CZFndY6aN+LB/L1hZ0zU9M/fJVlIWo4TEbApgNlFZiJzaAMvwaygA==}
     engines: {node: ^22.19.0 || ^24.11.0 || >=26.0.0}
     peerDependencies:
       '@unocss/eslint-plugin': '>=65.0.0'
@@ -7222,7 +7222,7 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
-  '@sxzz/eslint-config@8.3.0(8ececcc0ce40479fa75e9a5cf691752c)':
+  '@sxzz/eslint-config@8.3.1(8ececcc0ce40479fa75e9a5cf691752c)':
     dependencies:
       '@eslint-community/eslint-plugin-eslint-comments': 4.7.2(eslint@10.7.0(jiti@2.7.0)(supports-color@10.2.2))
       '@eslint/js': 10.0.1(eslint@10.7.0(jiti@2.7.0)(supports-color@10.2.2))

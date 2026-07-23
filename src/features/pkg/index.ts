@@ -184,9 +184,7 @@ function mergeInlinedDeps(
   }
   if (!merged.size) return
 
-  const sorted = [...merged.entries()].toSorted(([a], [b]) =>
-    a.localeCompare(b),
-  )
+  const sorted = [...merged].toSorted(([a], [b]) => a.localeCompare(b))
 
   const result: Record<string, string | string[]> = {}
   for (const [pkgName, versions] of sorted) {

@@ -384,9 +384,8 @@ export function DepsPlugin(
         }
 
         if (onlyBundle) {
-          const unusedPatterns = onlyBundle.filter(
-            (pattern) =>
-              !Array.from(deps).some((dep) => matchPattern(dep, [pattern])),
+          const unusedPatterns = onlyBundle.filter((pattern) =>
+            Array.from(deps).every((dep) => !matchPattern(dep, [pattern])),
           )
           if (unusedPatterns.length) {
             logger.info(
@@ -403,9 +402,10 @@ export function DepsPlugin(
             nameLabel,
             `Hint: consider adding ${blue`deps.onlyBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyBundle: false`} to disable this hint.\n` +
               `See more at ${underline`https://tsdown.dev/options/dependencies#deps-onlybundle`}\n` +
-              `Detected dependencies in bundle:\n${Array.from(deps)
-                .map((dep) => `- ${blue(dep)}`)
-                .join('\n')}`,
+              `Detected dependencies in bundle:\n${Array.from(
+                deps,
+                (dep) => `- ${blue(dep)}`,
+              ).join('\n')}`,
           )
         }
       },

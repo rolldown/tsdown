@@ -366,12 +366,10 @@ export async function generateExports(
     }
   }
 
-  const sortedExportsMap = Array.from(exportsMap.entries()).toSorted(
-    ([a], [b]) => {
-      if (a === 'index') return -1
-      return a.localeCompare(b)
-    },
-  )
+  const sortedExportsMap = [...exportsMap].toSorted(([a], [b]) => {
+    if (a === 'index') return -1
+    return a.localeCompare(b)
+  })
 
   let exports: Record<string, any> = Object.fromEntries(
     sortedExportsMap.map(([name, subExport]) => [

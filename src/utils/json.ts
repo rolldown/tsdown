@@ -3,7 +3,7 @@ import { isDeepStrictEqual } from 'node:util'
 
 export function writeJsonFile(filePath: string, content: unknown): void {
   let originalText: string | undefined
-  let originalJson: unknown = undefined
+  let originalJson: unknown
   let originalIndent: string | number = 2
   let originalEOL: string = '\n'
   let originalHasTrailingNewline: boolean = false

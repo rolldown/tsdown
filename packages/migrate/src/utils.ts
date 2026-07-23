@@ -8,11 +8,11 @@ export function renameKey(
   newValue?: any,
 ): Record<string, any> {
   const newObj: Record<string, any> = {}
-  for (const key of Object.keys(obj)) {
+  for (const [key, value] of Object.entries(obj)) {
     if (key === oldKey) {
-      newObj[newKey] = newValue || obj[oldKey]
+      newObj[newKey] = newValue || value
     } else {
-      newObj[key] = obj[key]
+      newObj[key] = value
     }
   }
   return newObj
