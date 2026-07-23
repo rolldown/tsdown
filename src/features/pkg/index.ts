@@ -5,7 +5,6 @@ import { formatWithOptions } from 'node:util'
 import { createDebug } from 'obug'
 import { x } from 'tinyexec'
 import { fsRemove } from '../../utils/fs.ts'
-import { promiseWithResolvers } from '../../utils/general.ts'
 import { attw } from './attw.ts'
 import { writeExports } from './exports.ts'
 import { publint } from './publint.ts'
@@ -34,7 +33,7 @@ export function initBundleByPkg(configs: ResolvedConfig[]): BundleByPkg {
     if (!pkgJson) continue
 
     if (!map[pkgJson]) {
-      const { promise, resolve } = promiseWithResolvers<void>()
+      const { promise, resolve } = Promise.withResolvers<void>()
       map[pkgJson] = {
         promise,
         resolve,

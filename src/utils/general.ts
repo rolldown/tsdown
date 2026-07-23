@@ -69,19 +69,6 @@ export async function importWithError<T>(moduleName: string): Promise<T> {
   }
 }
 
-// TODO Promise.withResolvers
-export function promiseWithResolvers<T>(): {
-  promise: Promise<T>
-  resolve: (value: T) => void
-} {
-  let resolve: (value: T) => void
-  const promise = new Promise<T>((res) => {
-    resolve = res
-  })
-  typeAssert(resolve!)
-  return { promise, resolve }
-}
-
 export function typeAssert<T>(
   // eslint-disable-next-line unused-imports/no-unused-vars
   value: T,
