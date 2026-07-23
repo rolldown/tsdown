@@ -277,6 +277,10 @@ See also [Executable](../options/exe.md).
 
 Enable workspace mode for building multiple packages in a monorepo. Optionally specify the workspace root directory.
 
+## `--concurrency <count>`
+
+Maximum number of Rolldown builds to run in parallel. Defaults to unlimited.
+
 ## `-F, --filter <pattern>`
 
 Filter configs by working directory or name. Supports string matching and regex patterns (e.g., `/pkg-name$/` or `pkg-name`).

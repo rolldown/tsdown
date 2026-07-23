@@ -277,6 +277,10 @@ tsdown --copy public
 
 启用工作区模式，用于在 monorepo 中构建多个包。可选指定工作区根目录。
 
+## `--concurrency <count>`
+
+同时运行的 Rolldown 构建任务数量上限。默认不限制并发数。
+
 ## `-F, --filter <pattern>`
 
 按工作目录或名称过滤配置。支持字符串匹配和正则表达式（如 `/pkg-name$/` 或 `pkg-name`）。

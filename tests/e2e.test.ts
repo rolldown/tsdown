@@ -2,8 +2,13 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { describe, expect, test, vi } from 'vitest'
-import { resolveConfig, type UserConfig } from '../src/config/index.ts'
+import {
+  resolveConfig,
+  type InlineConfig,
+  type UserConfig,
+} from '../src/config/index.ts'
 import { slash } from '../src/utils/general.ts'
+import { globalLogger } from '../src/utils/logger.ts'
 import { chdir, testBuild, writeFixtures } from './utils.ts'
 import type { Plugin } from 'rolldown'
 
@@ -969,6 +974,133 @@ test('workspace option', async (context) => {
     expectDir: '..',
     expectPattern: '**/dist',
   })
+})
+
+test('inline concurrency limits Rolldown builds', async (context) => {
+  const files = {
+    'package.json': JSON.stringify({ name: 'workspace-concurrency' }),
+    'packages/foo/src/index.ts': `export default 10`,
+    'packages/foo/package.json': JSON.stringify({ name: 'foo' }),
+    'packages/bar/src/index.ts': `export default 12`,
+    'packages/bar/package.json': JSON.stringify({ name: 'bar' }),
+  }
+  let preparing = 0
+  let maxPreparing = 0
+  let building = 0
+  let maxBuilding = 0
+
+  await testBuild({
+    context,
+    files,
+    options: {
+      workspace: true,
+      concurrency: 1,
+      entry: ['src/index.ts'],
+      format: ['esm', 'cjs'],
+      hooks: {
+        'build:prepare': async () => {
+          preparing++
+          maxPreparing = Math.max(maxPreparing, preparing)
+          await new Promise((resolve) => setTimeout(resolve, 10))
+          preparing--
+        },
+      },
+      plugins: [
+        {
+          name: 'test-inline-concurrency-limit',
+          async buildStart() {
+            building++
+            maxBuilding = Math.max(maxBuilding, building)
+            await new Promise((resolve) => setTimeout(resolve, 10))
+            building--
+          },
+        },
+      ],
+    },
+    snapshot: false,
+  })
+
+  expect(maxPreparing).toBeGreaterThan(1)
+  expect(maxBuilding).toBe(1)
+})
+
+test('inline concurrency supports parallel Rolldown builds', async (context) => {
+  const files = {
+    'package.json': JSON.stringify({ name: 'inline-concurrency' }),
+    'packages/foo/src/index.ts': `export default 10`,
+    'packages/foo/package.json': JSON.stringify({ name: 'foo' }),
+    'packages/bar/src/index.ts': `export default 12`,
+    'packages/bar/package.json': JSON.stringify({ name: 'bar' }),
+    'packages/baz/src/index.ts': `export default 14`,
+    'packages/baz/package.json': JSON.stringify({ name: 'baz' }),
+  }
+  let building = 0
+  let maxBuilding = 0
+
+  await testBuild({
+    context,
+    files,
+    options: {
+      workspace: true,
+      concurrency: 2,
+      entry: ['src/index.ts'],
+      plugins: [
+        {
+          name: 'test-inline-concurrency',
+          async buildStart() {
+            building++
+            maxBuilding = Math.max(maxBuilding, building)
+            await new Promise((resolve) => setTimeout(resolve, 10))
+            building--
+          },
+        },
+      ],
+    },
+    snapshot: false,
+  })
+
+  expect(maxBuilding).toBe(2)
+})
+
+test('concurrency must be a positive integer', async (context) => {
+  const { testDir } = await writeFixtures(context, {
+    'package.json': JSON.stringify({ name: 'invalid-concurrency' }),
+    'packages/foo/src/index.ts': `export default 10`,
+    'packages/foo/package.json': JSON.stringify({ name: 'foo' }),
+  })
+  const options: InlineConfig = {
+    cwd: testDir,
+    config: false,
+    entry: ['src/index.ts'],
+  }
+
+  await expect(resolveConfig({ ...options, concurrency: 0 })).rejects.toThrow(
+    '`--concurrency` must be a positive integer',
+  )
+})
+
+test('concurrency warns in watch mode', async (context) => {
+  const { testDir } = await writeFixtures(context, {
+    'index.ts': `export default 10`,
+  })
+  const warn = vi.spyOn(globalLogger, 'warn').mockImplementation(() => {})
+
+  try {
+    await resolveConfig({
+      cwd: testDir,
+      config: false,
+      concurrency: 1,
+      entry: ['index.ts'],
+      watch: true,
+    })
+
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn).toHaveBeenCalledWith(
+      '`--concurrency` is not supported in watch mode and will be ignored.',
+    )
+  } finally {
+    warn.mockRestore()
+  }
 })
 
 test('banner and footer option', async (context) => {

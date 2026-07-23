@@ -69,6 +69,41 @@ export async function importWithError<T>(moduleName: string): Promise<T> {
   }
 }
 
+export type ConcurrencyExecutor = <T>(task: () => Promise<T>) => Promise<T>
+
+export function createConcurrencyExecutor(
+  concurrency?: number,
+): ConcurrencyExecutor {
+  if (concurrency == null) {
+    return (task) => task()
+  }
+  if (!Number.isInteger(concurrency) || concurrency < 1) {
+    throw new TypeError('`--concurrency` must be a positive integer')
+  }
+
+  const queue: Array<() => void> = []
+  let active = 0
+
+  return async <T>(task: () => Promise<T>): Promise<T> => {
+    if (active >= concurrency) {
+      await new Promise<void>((resolve) => queue.push(resolve))
+    } else {
+      active++
+    }
+
+    try {
+      return await task()
+    } finally {
+      const next = queue.shift()
+      if (next) {
+        next()
+      } else {
+        active--
+      }
+    }
+  }
+}
+
 export function typeAssert<T>(
   // eslint-disable-next-line unused-imports/no-unused-vars
   value: T,

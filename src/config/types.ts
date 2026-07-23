@@ -25,6 +25,7 @@ import type { PublintOptions } from '../features/pkg/publint.ts'
 import type { TsdownPlugin, TsdownPluginOption } from '../features/plugin.ts'
 import type { ReportOptions } from '../features/report.ts'
 import type { RolldownChunk, TsdownBundle } from '../utils/chunks.ts'
+import type { ConcurrencyExecutor } from '../utils/general.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
 import type { PackageJsonWithPath, PackageType } from '../utils/package.ts'
 import type {
@@ -728,6 +729,11 @@ export interface InlineConfig extends UserConfig {
    * Filter configs by cwd or name.
    */
   filter?: RegExp | Arrayable<string>
+
+  /**
+   * Maximum number of Rolldown builds to run in parallel.
+   */
+  concurrency?: number
 }
 
 export type UserConfigFn = (
@@ -799,6 +805,7 @@ export type ResolvedConfig = Overwrite<
      */
     root: string
     configDeps: Set<string>
+    runBuild: ConcurrencyExecutor
 
     dts: false | DtsOptions
     report: false | ReportOptions

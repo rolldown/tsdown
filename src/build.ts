@@ -169,7 +169,7 @@ async function buildSingle(
     watcher = rolldownWatch(configs)
     handleWatcher(watcher)
   } else {
-    const outputs = await rolldownBuild(configs)
+    const outputs = await config.runBuild(() => rolldownBuild(configs))
     for (const { output } of outputs) {
       chunks.push(...addOutDirToChunks(output, outDir))
     }

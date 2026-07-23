@@ -65,6 +65,7 @@ export interface InlineConfig extends UserConfig {
   config?: boolean | string;
   configLoader?: "auto" | "native" | "tsx" | "unrun";
   filter?: RegExp | Arrayable<string>;
+  concurrency?: number;
 }
 export interface Logger {
   level: LogLevel;
@@ -241,6 +242,7 @@ export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" 
   deps: ResolvedDepsConfig;
   root: string;
   configDeps: Set<string>;
+  runBuild: ConcurrencyExecutor;
   dts: false | DtsOptions;
   report: false | ReportOptions;
   tsconfig: false | string;
@@ -279,7 +281,7 @@ export declare function defineConfig(_: UserConfigExport): UserConfigExport;
 export declare function enableDebug(_?: boolean | Arrayable<string>): void;
 export declare function mergeConfig(_: UserConfig, ..._: UserConfig[]): UserConfig;
 export declare function mergeConfig(_: InlineConfig, ..._: InlineConfig[]): InlineConfig;
-export declare function resolveUserConfig(_: UserConfig, _: InlineConfig, _: Set<string>): Promise<ResolvedConfig[]>;
+export declare function resolveUserConfig(_: UserConfig, _: InlineConfig, _: Set<string>, _?: ConcurrencyExecutor): Promise<ResolvedConfig[]>;
 // #endregion
 
 // #region Variables

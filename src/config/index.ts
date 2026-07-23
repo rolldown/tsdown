@@ -1,5 +1,7 @@
 import path from 'node:path'
 import { createDebug } from 'obug'
+import { createConcurrencyExecutor } from '../utils/general.ts'
+import { globalLogger } from '../utils/logger.ts'
 import { loadConfigFile } from './file.ts'
 import { resolveUserConfig } from './options.ts'
 import { resolveWorkspace } from './workspace.ts'
@@ -30,6 +32,7 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
   const { configs: rootConfigs, deps: rootDeps } =
     await loadConfigFile(inlineConfig)
   const globalDeps = new Set<string>(rootDeps)
+  const runBuild = createConcurrencyExecutor(inlineConfig.concurrency)
 
   const configs: ResolvedConfig[] = (
     await Promise.all(
@@ -43,7 +46,12 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
             workspaceConfigs
               .filter((config) => !config.workspace || config.entry)
               .map((config) =>
-                resolveUserConfig(config, inlineConfig, workspaceDeps),
+                resolveUserConfig(
+                  config,
+                  inlineConfig,
+                  workspaceDeps,
+                  runBuild,
+                ),
               ),
           )
         )
@@ -59,6 +67,14 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
 
   if (configs.length === 0) {
     throw new Error('No valid configuration found.')
+  }
+  if (
+    inlineConfig.concurrency != null &&
+    configs.some((config) => config.watch)
+  ) {
+    globalLogger.warn(
+      '`--concurrency` is not supported in watch mode and will be ignored.',
+    )
   }
 
   return { configs, deps: globalDeps }

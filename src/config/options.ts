@@ -16,10 +16,12 @@ import { resolveTarget } from '../features/target.ts'
 import { resolveTsconfig } from '../features/tsconfig.ts'
 import { isInCI } from '../utils/ci.ts'
 import {
+  createConcurrencyExecutor,
   pkgExists,
   resolveComma,
   resolveRegex,
   toArray,
+  type ConcurrencyExecutor,
 } from '../utils/general.ts'
 import { createLogger, generateColor, getNameLabel } from '../utils/logger.ts'
 import { normalizeFormat, readPackageJson } from '../utils/package.ts'
@@ -46,6 +48,7 @@ export async function resolveUserConfig(
   userConfig: UserConfig,
   inlineConfig: InlineConfig,
   configDeps: Set<string>,
+  runBuild: ConcurrencyExecutor = createConcurrencyExecutor(),
 ): Promise<ResolvedConfig[]> {
   // Dispatch `tsdownConfig` hook on user plugins before any resolution work.
   // Plugins are snapshotted: new plugins added by a hook don't re-dispatch,
@@ -345,6 +348,7 @@ export async function resolveUserConfig(
     rawEntry,
     report,
     root: resolvedRoot,
+    runBuild,
     shims,
     sourcemap,
     target,
@@ -376,6 +380,7 @@ export async function resolveUserConfig(
       onSuccess: once ? config.onSuccess : undefined,
       format: normalizeFormat(fmt),
       ...overrides,
+      runBuild,
     }
   })
 

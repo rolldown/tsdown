@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  createConcurrencyExecutor,
   matchPattern,
   noop,
   resolveComma,
@@ -148,6 +149,70 @@ describe('matchPattern', () => {
     const regex = /foo/g
     regex.lastIndex = 5
     expect(matchPattern('foo', [regex])).toBe(true)
+  })
+})
+
+describe('createConcurrencyExecutor', () => {
+  test('requires a positive integer', () => {
+    expect(() => createConcurrencyExecutor(0)).toThrow(
+      '`--concurrency` must be a positive integer',
+    )
+    expect(() => createConcurrencyExecutor(1.5)).toThrow(
+      '`--concurrency` must be a positive integer',
+    )
+  })
+
+  test('limits concurrent tasks', async () => {
+    const execute = createConcurrencyExecutor(2)
+    let active = 0
+    let maxActive = 0
+
+    await Promise.all(
+      Array.from({ length: 5 }, () =>
+        execute(async () => {
+          active++
+          maxActive = Math.max(maxActive, active)
+          await new Promise((resolve) => setTimeout(resolve, 10))
+          active--
+        }),
+      ),
+    )
+
+    expect(maxActive).toBe(2)
+  })
+
+  test('preserves queue order', async () => {
+    const execute = createConcurrencyExecutor(1)
+    const order: number[] = []
+
+    await Promise.all(
+      [1, 2, 3].map((value) =>
+        execute(() => {
+          order.push(value)
+          return Promise.resolve()
+        }),
+      ),
+    )
+
+    expect(order).toEqual([1, 2, 3])
+  })
+
+  test('releases a slot when a task rejects', async () => {
+    const execute = createConcurrencyExecutor(1)
+    const order: number[] = []
+
+    const first = execute(() => {
+      order.push(1)
+      return Promise.reject(new Error('boom'))
+    })
+    const second = execute(() => {
+      order.push(2)
+      return Promise.resolve()
+    })
+
+    await expect(first).rejects.toThrow('boom')
+    await second
+    expect(order).toEqual([1, 2])
   })
 })
 
