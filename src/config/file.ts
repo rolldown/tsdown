@@ -72,11 +72,11 @@ export async function loadConfigFile(
   deps?: Set<string>
 }> {
   let cwd = inlineConfig.cwd || process.cwd()
-  let overrideConfig = false
 
   let { config: filePath } = inlineConfig
   if (filePath === false) return { configs: [{}] }
 
+  let overrideConfig = false
   if (typeof filePath === 'string') {
     const stats = await fsStat(filePath)
     if (stats) {

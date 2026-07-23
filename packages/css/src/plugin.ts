@@ -205,7 +205,6 @@ export function CssPlugin(
         if (shouldSkipTransform(id, cleanId)) return
 
         const isInline = RE_INLINE.test(id)
-        const modules = modulesMap.get(id)
 
         // CSS is rewritten into a JS module here; there is no meaningful
         // CSS-to-JS sourcemap, so return `map: null` to silence Rolldown's
@@ -223,6 +222,7 @@ export function CssPlugin(
           styles.set(id, code)
         }
 
+        const modules = modulesMap.get(id)
         if (modules) {
           return {
             code: modulesToEsm(modules),

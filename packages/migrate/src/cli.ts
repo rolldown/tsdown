@@ -6,6 +6,7 @@ import { migrate, type MigrateOptions } from './index.ts'
 
 const cli = cac(pkg.name).version(pkg.version).help()
 
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 cli
   .command('[...dirs]', 'Migrate a project to tsdown')
   .option('-d, --dry-run', 'Perform a dry run without making changes')

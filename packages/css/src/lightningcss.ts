@@ -161,7 +161,7 @@ function parseVersion(version: string): number | null {
   const [major, minor = 0, patch = 0] = version
     .split('-', 1)[0]
     .split('.')
-    .map((v) => Number.parseInt(v, 10))
+    .map((v) => +v)
 
   if (Number.isNaN(major) || Number.isNaN(minor) || Number.isNaN(patch)) {
     return null

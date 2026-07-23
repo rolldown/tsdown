@@ -25,12 +25,12 @@ export async function readPackageJson(
 
 export type PackageType = 'module' | 'commonjs' | undefined
 export function getPackageType(pkg: PackageJson | undefined): PackageType {
-  if (pkg?.type) {
-    if (!['module', 'commonjs'].includes(pkg.type)) {
-      throw new Error(`Invalid package.json type: ${pkg.type}`)
-    }
-    return pkg.type
+  if (!pkg?.type) return
+
+  if (!['module', 'commonjs'].includes(pkg.type)) {
+    throw new Error(`Invalid package.json type: ${pkg.type}`)
   }
+  return pkg.type
 }
 
 export function normalizeFormat(format: Format): NormalizedFormat {

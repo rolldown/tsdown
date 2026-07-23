@@ -72,9 +72,9 @@ export function compilePreprocessor(
 
 // Regexes adapted from Vite
 const cssUrlRE: RegExp =
-  /(?<!@import\s+)(?<=^|[^\w\-\u0080-\uFFFF])url\((\s*('[^']+'|"[^"]+")\s*|(?:\\.|[^'")\\])+)\)/
+  /(?<!@import\s+)(?<=^|[^\w\-\u{80}-\u{10FFFF}])url\((\s*('[^']+'|"[^"]+")\s*|(?:\\.|[^'")\\])+)\)/u
 const cssDataUriRE: RegExp =
-  /(?<=^|[^\w\-\u0080-\uFFFF])data-uri\((\s*('[^']+'|"[^"]+")\s*|[^'")]+)\)/
+  /(?<=^|[^\w\-\u{80}-\u{10FFFF}])data-uri\((\s*('[^']+'|"[^"]+")\s*|[^'")]+)\)/u
 const importCssRE: RegExp =
   /@import\s+(?:url\()?('[^']+\.css'|"[^"]+\.css"|[^'"\s)]+\.css)/
 
@@ -483,8 +483,8 @@ async function compileStylus(
   })
 
   if (define) {
-    for (const key of Object.keys(define)) {
-      ref.define(key, define[key])
+    for (const [key, value] of Object.entries(define)) {
+      ref.define(key, value)
     }
   }
 

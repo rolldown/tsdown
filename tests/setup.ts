@@ -19,8 +19,8 @@ afterEach(() => {
   const nonAssertedWarnings = warn.mock.calls
     .map((args) => args[0])
     .filter((received) => {
-      return !assertedArray.some((assertedMsg) => {
-        return received.includes(assertedMsg)
+      return assertedArray.every((assertedMsg) => {
+        return !received.includes(assertedMsg)
       })
     })
   warn.mockRestore()

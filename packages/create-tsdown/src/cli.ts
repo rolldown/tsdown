@@ -6,6 +6,7 @@ import { create, templateOptions, type Options } from './index.ts'
 
 const cli = cac(pkg.name).version(pkg.version).help()
 
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 cli
   .command('[path]', 'Create a tsdown project')
   .option(

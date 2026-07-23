@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-top-level-side-effects */
 import process from 'node:process'
 import { blue, hex } from 'ansis'
 import { cac } from 'cac'
