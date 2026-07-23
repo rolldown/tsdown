@@ -159,7 +159,7 @@ export interface Workspace {
    * excessive number of subprocesses (e.g. TypeScript declaration workers)
    * in large workspaces.
    *
-   * @default Infinity
+   * When unset, all packages are built in parallel.
    */
   concurrency?: number
 }

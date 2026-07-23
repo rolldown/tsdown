@@ -44,7 +44,9 @@ export async function resolveWorkspace(
     concurrency != null &&
     (!Number.isInteger(concurrency) || concurrency < 1)
   )
-    throw new Error('`workspace.concurrency` must be a positive integer')
+    throw new Error(
+      '`workspace.concurrency` (`--concurrency`) must be a positive integer',
+    )
 
   let {
     include: packages = 'auto',

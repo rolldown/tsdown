@@ -984,9 +984,23 @@ test('workspace concurrency option', async (context) => {
       }
     `,
   }
+  // Track distinct packages building at once; formats of the same package
+  // intentionally share a concurrency slot.
+  const activePkgs = new Set<string>()
+  let maxActivePkgs = 0
   const options: UserConfig = {
     workspace: { concurrency: 1 },
     entry: ['src/index.ts'],
+    hooks: {
+      'build:prepare': async (ctx) => {
+        activePkgs.add(ctx.options.cwd)
+        maxActivePkgs = Math.max(maxActivePkgs, activePkgs.size)
+        await new Promise((resolve) => setTimeout(resolve, 10))
+      },
+      'build:done': (ctx) => {
+        activePkgs.delete(ctx.options.cwd)
+      },
+    },
   }
   await testBuild({
     context,
@@ -995,6 +1009,7 @@ test('workspace concurrency option', async (context) => {
     expectDir: '..',
     expectPattern: '**/dist',
   })
+  expect(maxActivePkgs).toBe(1)
 })
 
 test('banner and footer option', async (context) => {
