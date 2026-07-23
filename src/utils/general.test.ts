@@ -2,7 +2,6 @@ import { describe, expect, test } from 'vitest'
 import {
   matchPattern,
   noop,
-  promiseWithResolvers,
   resolveComma,
   resolveRegex,
   slash,
@@ -154,13 +153,13 @@ describe('matchPattern', () => {
 
 describe('promiseWithResolvers', () => {
   test('returns a promise that resolves', async () => {
-    const { promise, resolve } = promiseWithResolvers<string>()
+    const { promise, resolve } = Promise.withResolvers<string>()
     resolve('hello')
     expect(await promise).toBe('hello')
   })
 
   test('resolve is callable before awaiting', async () => {
-    const { promise, resolve } = promiseWithResolvers<number>()
+    const { promise, resolve } = Promise.withResolvers<number>()
     resolve(42)
     await expect(promise).resolves.toBe(42)
   })
