@@ -31,7 +31,7 @@ import {
   type RolldownChunk,
   type TsdownBundle,
 } from './utils/chunks.ts'
-import { debounce, typeAssert } from './utils/general.ts'
+import { debounce, mapConcurrent, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
 
 const asyncDispose: typeof Symbol.asyncDispose =
@@ -44,9 +44,18 @@ export async function build(
   inlineConfig: InlineConfig = {},
 ): Promise<TsdownBundle[]> {
   globalLogger.level = inlineConfig.logLevel || 'info'
-  const { configs, deps: configDeps } = await resolveConfig(inlineConfig)
+  const {
+    configs,
+    deps: configDeps,
+    concurrency,
+  } = await resolveConfig(inlineConfig)
 
-  return buildWithConfigs(configs, configDeps, () => build(inlineConfig))
+  return buildWithConfigs(
+    configs,
+    configDeps,
+    () => build(inlineConfig),
+    concurrency,
+  )
 }
 
 /**
@@ -59,6 +68,7 @@ export async function buildWithConfigs(
   configs: ResolvedConfig[],
   configDeps: Set<string>,
   _restart: () => void,
+  concurrency?: number,
 ): Promise<TsdownBundle[]> {
   let cleanPromise: Promise<void> | undefined
   const clean = () => {
@@ -84,21 +94,35 @@ export async function buildWithConfigs(
   }
 
   globalLogger.info('Build start')
-  const bundles = await Promise.all(
-    configs.map((options) => {
-      const isDualFormat = options.pkg
-        ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
-        : true
-      return buildSingle(
-        options,
-        configDeps,
-        isDualFormat,
-        clean,
-        restart,
-        done,
-      )
-    }),
-  )
+  // All configs of a package must share one concurrency slot: `done` resolves
+  // only after every format of the package has been built, so splitting a
+  // package across slots could deadlock.
+  const configsByPkg = new Map<unknown, ResolvedConfig[]>()
+  for (const options of configs) {
+    const key = options.pkg?.packageJsonPath ?? options
+    if (!configsByPkg.has(key)) configsByPkg.set(key, [])
+    configsByPkg.get(key)!.push(options)
+  }
+
+  const bundles = (
+    await mapConcurrent([...configsByPkg.values()], concurrency, (pkgConfigs) =>
+      Promise.all(
+        pkgConfigs.map((options) => {
+          const isDualFormat = options.pkg
+            ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
+            : true
+          return buildSingle(
+            options,
+            configDeps,
+            isDualFormat,
+            clean,
+            restart,
+            done,
+          )
+        }),
+      ),
+    )
+  ).flat()
 
   const firstDevtoolsConfig = configs.find(
     (config) => config.devtools && config.devtools.ui,

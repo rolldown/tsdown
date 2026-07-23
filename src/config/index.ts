@@ -20,6 +20,7 @@ const debug = createDebug('tsdown:config')
 export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
   configs: ResolvedConfig[]
   deps: Set<string>
+  concurrency?: number
 }> {
   debug('inline config %O', inlineConfig)
 
@@ -31,11 +32,18 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
     await loadConfigFile(inlineConfig)
   const globalDeps = new Set<string>(rootDeps)
 
+  let concurrency: number | undefined
   const configs: ResolvedConfig[] = (
     await Promise.all(
       rootConfigs.map(async (rootConfig): Promise<ResolvedConfig[]> => {
-        const { configs: workspaceConfigs, deps: workspaceDeps } =
-          await resolveWorkspace(rootConfig, inlineConfig, rootDeps)
+        const {
+          configs: workspaceConfigs,
+          deps: workspaceDeps,
+          concurrency: workspaceConcurrency,
+        } = await resolveWorkspace(rootConfig, inlineConfig, rootDeps)
+        if (workspaceConcurrency != null) {
+          concurrency = Math.min(concurrency ?? Infinity, workspaceConcurrency)
+        }
         debug('workspace configs %O', workspaceConfigs)
 
         const configs = (
@@ -61,5 +69,5 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
     throw new Error('No valid configuration found.')
   }
 
-  return { configs, deps: globalDeps }
+  return { configs, deps: globalDeps, concurrency }
 }

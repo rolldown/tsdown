@@ -75,6 +75,10 @@ cli
   .option('--exe', 'Bundle as executable')
   .option('-W, --workspace [dir]', 'Enable workspace mode')
   .option(
+    '--concurrency <count>',
+    'Maximum number of workspace package builds to run in parallel',
+  )
+  .option(
     '-F, --filter <pattern>',
     'Filter configs (cwd or name), e.g. /pkg-name$/ or pkg-name',
   )

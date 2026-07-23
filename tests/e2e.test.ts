@@ -971,6 +971,32 @@ test('workspace option', async (context) => {
   })
 })
 
+test('workspace concurrency option', async (context) => {
+  const files = {
+    'package.json': JSON.stringify({ name: 'workspace-concurrency' }),
+    'packages/foo/src/index.ts': `export default 10`,
+    'packages/foo/package.json': JSON.stringify({ name: 'foo' }),
+    'packages/bar/src/index.ts': `export default 12`,
+    'packages/bar/package.json': JSON.stringify({ name: 'bar' }),
+    'packages/bar/tsdown.config.ts': `
+      export default {
+        format: ['esm', 'cjs'],
+      }
+    `,
+  }
+  const options: UserConfig = {
+    workspace: { concurrency: 1 },
+    entry: ['src/index.ts'],
+  }
+  await testBuild({
+    context,
+    files,
+    options,
+    expectDir: '..',
+    expectPattern: '**/dist',
+  })
+})
+
 test('banner and footer option', async (context) => {
   const content = `export const foo: number = 42`
   const { fileMap } = await testBuild({

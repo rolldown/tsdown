@@ -20,7 +20,7 @@ export async function resolveWorkspace(
   config: UserConfig,
   inlineConfig: InlineConfig,
   rootDeps?: Set<string>,
-): Promise<{ configs: UserConfig[]; deps: Set<string> }> {
+): Promise<{ configs: UserConfig[]; deps: Set<string>; concurrency?: number }> {
   const normalized = mergeConfig(config, inlineConfig)
   const rootCwd = normalized.cwd || process.cwd()
   const deps = new Set<string>(rootDeps)
@@ -38,6 +38,13 @@ export async function resolveWorkspace(
   } else if (typeof workspace === 'string' || Array.isArray(workspace)) {
     workspace = { include: workspace }
   }
+
+  const concurrency = inlineConfig.concurrency ?? workspace.concurrency
+  if (
+    concurrency != null &&
+    (!Number.isInteger(concurrency) || concurrency < 1)
+  )
+    throw new Error('`workspace.concurrency` must be a positive integer')
 
   let {
     include: packages = 'auto',
@@ -89,5 +96,5 @@ export async function resolveWorkspace(
     )
   ).flat()
 
-  return { configs, deps }
+  return { configs, deps, concurrency }
 }

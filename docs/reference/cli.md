@@ -277,6 +277,10 @@ See also [Executable](../options/exe.md).
 
 Enable workspace mode for building multiple packages in a monorepo. Optionally specify the workspace root directory.
 
+## `--concurrency <count>`
+
+Maximum number of workspace package builds to run in parallel. Alias for the `workspace.concurrency` config option. Useful to limit resource usage (e.g. TypeScript declaration worker processes) in large workspaces. Defaults to unlimited.
+
 ## `-F, --filter <pattern>`
 
 Filter configs by working directory or name. Supports string matching and regex patterns (e.g., `/pkg-name$/` or `pkg-name`).

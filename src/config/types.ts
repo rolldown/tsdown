@@ -151,6 +151,17 @@ export interface Workspace {
    * Path to the workspace configuration file.
    */
   config?: boolean | string
+
+  /**
+   * Maximum number of package builds to run in parallel.
+   *
+   * Limits how many packages are built concurrently to avoid spawning an
+   * excessive number of subprocesses (e.g. TypeScript declaration workers)
+   * in large workspaces.
+   *
+   * @default Infinity
+   */
+  concurrency?: number
 }
 
 export type CIOption = 'ci-only' | 'local-only'
@@ -728,6 +739,12 @@ export interface InlineConfig extends UserConfig {
    * Filter configs by cwd or name.
    */
   filter?: RegExp | Arrayable<string>
+
+  /**
+   * Maximum number of workspace package builds to run in parallel.
+   * CLI alias for {@linkcode Workspace.concurrency | workspace.concurrency}.
+   */
+  concurrency?: number
 }
 
 export type UserConfigFn = (

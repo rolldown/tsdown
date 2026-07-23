@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  mapConcurrent,
   matchPattern,
   noop,
   resolveComma,
@@ -148,6 +149,48 @@ describe('matchPattern', () => {
     const regex = /foo/g
     regex.lastIndex = 5
     expect(matchPattern('foo', [regex])).toBe(true)
+  })
+})
+
+describe('mapConcurrent', () => {
+  test('preserves order of results', async () => {
+    const results = await mapConcurrent([3, 1, 2], 2, async (n) => {
+      await new Promise((resolve) => setTimeout(resolve, n * 10))
+      return n * 2
+    })
+    expect(results).toEqual([6, 2, 4])
+  })
+
+  test('limits the number of concurrent tasks', async () => {
+    let active = 0
+    let maxActive = 0
+    await mapConcurrent([1, 2, 3, 4, 5], 2, async () => {
+      active++
+      maxActive = Math.max(maxActive, active)
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      active--
+    })
+    expect(maxActive).toBe(2)
+  })
+
+  test('runs all tasks in parallel without concurrency', async () => {
+    let active = 0
+    let maxActive = 0
+    await mapConcurrent([1, 2, 3], undefined, async () => {
+      active++
+      maxActive = Math.max(maxActive, active)
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      active--
+    })
+    expect(maxActive).toBe(3)
+  })
+
+  test('rejects when a task fails', async () => {
+    await expect(
+      mapConcurrent([1, 2], 1, (n) =>
+        n === 2 ? Promise.reject(new Error('boom')) : Promise.resolve(n),
+      ),
+    ).rejects.toThrow('boom')
   })
 })
 

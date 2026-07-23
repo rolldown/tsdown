@@ -277,6 +277,10 @@ tsdown --copy public
 
 启用工作区模式，用于在 monorepo 中构建多个包。可选指定工作区根目录。
 
+## `--concurrency <count>`
+
+工作区中并行构建包的最大数量。是 `workspace.concurrency` 配置选项的别名。适用于在大型工作区中限制资源占用（例如 TypeScript 声明文件的 worker 进程数）。默认无限制。
+
 ## `-F, --filter <pattern>`
 
 按工作目录或名称过滤配置。支持字符串匹配和正则表达式（如 `/pkg-name$/` 或 `pkg-name`）。

@@ -69,6 +69,32 @@ export async function importWithError<T>(moduleName: string): Promise<T> {
   }
 }
 
+/**
+ * Like `Promise.all(items.map(fn))`, but runs at most `concurrency` tasks
+ * at the same time. `undefined` concurrency means unlimited.
+ */
+export async function mapConcurrent<T, R>(
+  items: T[],
+  concurrency: number | undefined,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  if (concurrency == null || concurrency >= items.length) {
+    return Promise.all(items.map(fn))
+  }
+
+  const results: R[] = Array.from({ length: items.length })
+  let next = 0
+  await Promise.all(
+    Array.from({ length: concurrency }, async () => {
+      while (next < items.length) {
+        const index = next++
+        results[index] = await fn(items[index])
+      }
+    }),
+  )
+  return results
+}
+
 export function typeAssert<T>(
   // eslint-disable-next-line unused-imports/no-unused-vars
   value: T,
