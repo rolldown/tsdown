@@ -36,6 +36,39 @@ await build({
 })
 ```
 
+### In-Memory Output
+
+Set `write: false` to access generated chunks and assets without writing the
+bundle output to disk:
+
+```ts
+import { build } from 'tsdown'
+
+const bundles = await build({
+  entry: ['src/index.ts'],
+  format: 'esm',
+  write: false,
+  clean: false,
+})
+
+for (const bundle of bundles) {
+  for (const output of bundle.chunks) {
+    const contents = output.type === 'chunk' ? output.code : output.source
+    console.log(output.fileName, contents)
+  }
+}
+```
+
+`build()` currently returns a `TsdownBundle[]`, with one bundle for each
+resolved configuration. Even a single configuration returns an array; its
+in-memory Rolldown outputs are available in `bundle.chunks`.
+
+The `write` option controls Rolldown's bundle output, while other file operations
+are configured separately. For example, `clean` defaults to `true`, so set
+`clean: false` as above if existing output directories must remain untouched.
+Explicitly enabled features such as `copy` or `exports` may still write files.
+`write: false` is incompatible with watch mode.
+
 ## API Reference
 
 ### build()
@@ -52,7 +85,7 @@ await build(options)
 - `options` - Build configuration object (same as config file)
 
 **Returns:**
-- `Promise<void>` - Resolves when build completes
+- `Promise<TsdownBundle[]>` - One bundle for each resolved configuration
 
 **Throws:**
 - Build errors if compilation fails
