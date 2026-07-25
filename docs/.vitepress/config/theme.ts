@@ -124,6 +124,7 @@ export function getLocaleConfig(lang: string) {
         { text: t('Output Format'), link: '/output-format.md' },
         { text: t('Output Directory'), link: '/output-directory.md' },
         { text: t('Cleaning'), link: '/cleaning.md' },
+        { text: t('Copy Files'), link: '/copy.md' },
         { text: t('Dependencies'), link: '/dependencies.md' },
         { text: t('Watch Mode'), link: '/watch-mode.md' },
         { text: t('Target'), link: '/target.md' },

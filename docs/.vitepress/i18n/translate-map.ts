@@ -15,6 +15,7 @@ const zhCN = {
   Options: '选项',
   Entry: '入口文件',
   Cleaning: '清理',
+  'Copy Files': '复制文件',
   Dependencies: '依赖',
   'Config File': '配置文件',
   Minification: '压缩',
