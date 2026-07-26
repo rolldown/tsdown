@@ -67,6 +67,8 @@ tsdown (Rolldown) uses [Oxc](https://oxc.rs/docs/guide/usage/transformer/lowerin
 - Browsers: `chrome`, `edge`, `firefox`, `ie`, `ios`, `opera`, `safari`, `samsung`
 - Runtimes: `node`, `deno`, `hermes`, `rhino`
 
+In addition, the special target `baseline-widely-available` is supported. It expands to the browser versions covered by [Baseline Widely available](https://web.dev/baseline) (e.g. `chrome111`, `edge111`, `firefox114`, `safari16.4`, `ios16.4`).
+
 ### Example
 
 ```bash

@@ -420,7 +420,7 @@ npm install -D postcss postcss-modules
 
 ### 合并模式（默认）
 
-默认情况下，所有 CSS 会合并为单个文件（默认为 `style.css`）：
+默认情况下，所有 CSS 会合并为单个文件（默认为 `style.css`）。例外是 [unbundle 模式](/zh-CN/options/unbundle)，此时 `css.splitting` 默认为 `true`，以保留模块结构：
 
 ```
 dist/
@@ -478,15 +478,15 @@ npm install -D postcss postcss-import postcss-modules
 
 ## 选项参考
 
-| 选项                      | 类型                          | 默认值           | 描述                                          |
-| ------------------------- | ----------------------------- | ---------------- | --------------------------------------------- |
-| `css.transformer`         | `'postcss' \| 'lightningcss'` | `'lightningcss'` | CSS 处理管线                                  |
-| `css.splitting`           | `boolean`                     | `false`          | 启用按 chunk 的 CSS 代码分割                  |
-| `css.fileName`            | `string`                      | `'style.css'`    | 合并 CSS 的文件名（当 `splitting: false` 时） |
-| `css.minify`              | `boolean`                     | `false`          | 启用 CSS 压缩                                 |
-| `css.modules`             | `object \| false`             | `{}`             | CSS modules 配置，或 `false` 禁用             |
-| `css.target`              | `string \| string[] \| false` | _继承 `target`_  | CSS 专用语法降级目标                          |
-| `css.postcss`             | `string \| object`            | —                | PostCSS 配置路径或内联选项                    |
-| `css.preprocessorOptions` | `object`                      | —                | CSS 预处理器选项                              |
-| `css.inject`              | `boolean`                     | `false`          | 在 JS 输出中保留 CSS 导入语句                 |
-| `css.lightningcss`        | `object`                      | —                | 传递给 Lightning CSS 的语法降级选项           |
+| 选项                      | 类型                          | 默认值                            | 描述                                          |
+| ------------------------- | ----------------------------- | --------------------------------- | --------------------------------------------- |
+| `css.transformer`         | `'postcss' \| 'lightningcss'` | `'lightningcss'`                  | CSS 处理管线                                  |
+| `css.splitting`           | `boolean`                     | `false`（`unbundle` 时为 `true`） | 启用按 chunk 的 CSS 代码分割                  |
+| `css.fileName`            | `string`                      | `'style.css'`                     | 合并 CSS 的文件名（当 `splitting: false` 时） |
+| `css.minify`              | `boolean`                     | `false`                           | 启用 CSS 压缩                                 |
+| `css.modules`             | `object \| false`             | `{}`                              | CSS modules 配置，或 `false` 禁用             |
+| `css.target`              | `string \| string[] \| false` | _继承 `target`_                   | CSS 专用语法降级目标                          |
+| `css.postcss`             | `string \| object`            | —                                 | PostCSS 配置路径或内联选项                    |
+| `css.preprocessorOptions` | `object`                      | —                                 | CSS 预处理器选项                              |
+| `css.inject`              | `boolean`                     | `false`                           | 在 JS 输出中保留 CSS 导入语句                 |
+| `css.lightningcss`        | `object`                      | —                                 | 传递给 Lightning CSS 的语法降级选项           |

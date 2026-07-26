@@ -71,10 +71,10 @@ export interface ExportsOptions {
   exclude?: (RegExp | string)[]
 
   /**
-   * Generate legacy fields (`main` and `module`) for older Node.js and bundlers
-   * that do not support package `exports` field.
+   * Generate legacy fields (`main`, `module`, and `types`) for older Node.js
+   * versions and bundlers that do not support the package `exports` field.
    *
-   * Defaults to false, if only ESM builds are included, true otherwise.
+   * Defaults to `false` if only ESM builds are included, `true` otherwise.
    *
    * @see {@link https://github.com/publint/publint/issues/24}
    */

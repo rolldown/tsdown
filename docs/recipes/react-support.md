@@ -57,7 +57,7 @@ There are 2 ways of transforming JSX/TSX files in `tsdown`:
 - **classic**
 - **automatic** (default)
 
-If you need to use classic JSX transformation, you can configure Rolldown's [`inputOptions.jsx`](https://rolldown.rs/reference/InputOptions.transform#jsx) option in your configuration file:
+If you need to use classic JSX transformation, you can configure Rolldown's [`transform.jsx`](https://rolldown.rs/reference/InputOptions.transform#jsx) option in your configuration file:
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -80,7 +80,7 @@ React Compiler is an innovative build-time tool that automatically optimizes you
 Currently, React Compiler is available only as a Babel plugin. To get started, you can either scaffold the `react-compiler` template as shown above, or integrate it manually:
 
 ```bash
-pnpm add -D @rolldown/plugin-babel @vitejs/plugin-react
+pnpm add -D @rolldown/plugin-babel @vitejs/plugin-react babel-plugin-react-compiler
 ```
 
 ```ts [tsdown.config.ts]

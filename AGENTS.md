@@ -9,7 +9,8 @@ This file provides guidance to coding agents when working with code in this repo
 **Key technologies:**
 
 - **Rolldown**: Core bundler (Rust-based Rollup alternative)
-- **pnpm**: Package manager (v10.33.0)
+- **pnpm**: Package manager (v11)
+- **Node.js**: `^22.18.0 || ^24.11.0 || >=26.0.0` (see `engines` in package.json)
 - **Vitest**: Testing framework
 - **TypeScript**: Strict mode with isolated declarations enabled
 - **ESM**: Pure ESM package (`"type": "module"`)
@@ -19,10 +20,10 @@ This file provides guidance to coding agents when working with code in this repo
 ### Building
 
 ```bash
-# Build tsdown using itself
+# Build tsdown using itself (runs from source via Node's `dev` condition)
 pnpm build
 
-# Development mode (runs tsdown directly via tsx)
+# Alias of `pnpm build`
 pnpm dev
 ```
 
@@ -37,7 +38,7 @@ pnpm test run
 
 # Run a specific test file
 pnpm test <file-pattern>
-# Example: pnpm test src/config/file.test.ts
+# Example: pnpm test src/config/options.test.ts
 
 # Run with UI
 pnpm test --ui
@@ -80,7 +81,7 @@ pnpm docs:preview
 ### Core Build Flow
 
 ```
-CLI (src/cli.ts)
+CLI (src/run.ts → src/cli.ts)
   → build() (src/build.ts)
   → resolveConfig() (src/config/index.ts)
   → buildWithConfigs()
@@ -100,8 +101,8 @@ CLI (src/cli.ts)
 **Multi-stage resolution pipeline:**
 
 1. **Load config file** (`src/config/file.ts`)
-   - Searches for `tsdown.config.{ts,js,json}` or `package.json` (tsdown field)
-   - Supports multiple loaders: `native` (Node.js native TS), `unrun` (transpiler), `auto` (intelligent selection)
+   - Searches for `tsdown.config.{ts,mts,cts,js,mjs,cjs,json}` or `package.json` (tsdown field)
+   - Supports multiple loaders: `native` (Node.js native TS), `tsx`, `unrun`, `auto` (intelligent selection)
    - Can load from Vite/Vitest configs via `fromVite` option
 
 2. **Resolve workspace** (`src/config/workspace.ts`)
@@ -137,10 +138,11 @@ Each feature is self-contained and modular:
 
 - `rolldown.ts` - Rolldown build options construction
 - `hooks.ts` - Hook system implementation using `hookable`
+- `plugin.ts` - `TsdownPlugin` interface: Rolldown plugins extended with `tsdownConfig` / `tsdownConfigResolved` hooks
 
 **Rolldown Plugins:**
 
-- `deps.ts` - Dependency management, external/inline validation
+- `deps.ts` - Dependency management (`deps` options: `alwaysBundle`, `neverBundle`, `onlyBundle`, `onlyImport`, `resolveDepSubpath`)
 - `node-protocol.ts` - Handles `node:` protocol additions/stripping
 - `shebang.ts` - Preserves shebang lines in output
 - `report.ts` - Bundle size reporting
@@ -151,7 +153,7 @@ Each feature is self-contained and modular:
 - `entry.ts` - Entry point resolution with glob support (including negation `!pattern`)
 - `target.ts` - Compilation targets from package.json or config
 - `tsconfig.ts` - TypeScript configuration resolution
-- `cjs.ts` - CommonJS deprecation warnings
+- `cjs.ts` - Warns when CJS output targets Node versions that support `require(esm)` (recommends ESM)
 
 **Output Processing:**
 
@@ -173,7 +175,7 @@ Each feature is self-contained and modular:
 
 ### Plugin Architecture
 
-Plugins follow Rolldown's interface. Internal plugins are added based on config, user plugins append last. The build supports dual-format output (ESM + CJS) with a second pass for CJS type declarations (`cjsDts`).
+Plugins follow Rolldown's interface. Internal plugins are added based on config, user plugins append last. User plugins may additionally implement tsdown-specific hooks (`tsdownConfig` to modify user config before resolution, `tsdownConfigResolved` to read the resolved config) — see `src/features/plugin.ts`. The build supports dual-format output (ESM + CJS) with a second pass for CJS type declarations (`cjsDts`).
 
 Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `ReportPlugin`, `ShebangPlugin`, `WatchPlugin`
 
@@ -183,7 +185,7 @@ Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `
 
 2. **Package-aware building:** Detects package.json, auto-generates exports field, validates bundled dependencies, runs package linters
 
-3. **Lazy feature loading:** Optional peer dependencies loaded on-demand (`@tsdown/css`, unplugin-unused, etc.)
+3. **Lazy feature loading:** Optional peer dependencies loaded on-demand (`@tsdown/css`, `@tsdown/exe`, unplugin-unused, tsx, unrun, etc.)
 
 4. **Watch mode coordination:** Config file changes trigger full rebuild restart; file changes tracked per bundle; keyboard shortcuts for manual rebuild/exit
 
@@ -216,18 +218,20 @@ Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `
 Test files are co-located with source files:
 
 ```
-src/config/file.ts
-src/config/file.test.ts
+src/config/options.ts
+src/config/options.test.ts
 ```
+
+Integration/e2e tests live in `tests/*.test.ts` (e.g. `tests/e2e.test.ts`, `tests/clean.test.ts`).
 
 Example test pattern:
 
 ```typescript
-import { describe, expect, it } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { testBuild } from '../tests/utils.ts'
 
 describe('feature name', () => {
-  it('should do something', async (context) => {
+  test('should do something', async (context) => {
     const { snapshot, warnings } = await testBuild({
       context,
       files: {
@@ -238,13 +242,13 @@ describe('feature name', () => {
         dts: true,
       },
     })
-    expect(snapshot).toMatchFileSnapshot()
+    expect(snapshot).contain('foo')
     expect(warnings).toHaveLength(0)
   })
 })
 ```
 
-**Snapshot testing:** Uses `expectFilesSnapshot` from `@sxzz/test-utils` to compare output files against snapshots in `tests/__snapshots__/`
+**Snapshot testing:** `testBuild()` automatically compares output files against snapshots in `tests/__snapshots__/` using `expectFilesSnapshot` from `@sxzz/test-utils` (disable with `snapshot: false`); the returned `snapshot` string can be asserted on directly
 
 ### Test Configuration
 
@@ -266,9 +270,10 @@ Entry points support:
 
 ### Config Loaders
 
-- `native` - Use Node.js native TypeScript support (Node 23+, Bun, Deno)
-- `unrun` - Use TypeScript transpiler (compatible with all Node versions)
-- `auto` - Automatically choose based on environment (default)
+- `native` - Use native TypeScript support (Node.js type stripping, Bun, Deno)
+- `tsx` - Load via `tsx` (optional peer dependency)
+- `unrun` - Use TypeScript transpiler (optional peer dependency)
+- `auto` - Automatically choose based on environment (default): `native` when supported, otherwise `unrun`
 
 ### Dual-Format Builds
 
@@ -299,7 +304,9 @@ tsdown detects `package.json` in the working directory to:
 - `fs.ts` - File system utilities (`fsExists()`, `fsStat()`, `fsRemove()`); use instead of Node.js fs directly
 - `logger.ts` - Structured logging (`logger.error()`, `.warn()`, `.info()`, `.debug()`) with colours via `ansis`; respects `logLevel` config
 - `chunks.ts` - Chunk manipulation utilities
+- `ci.ts` - CI environment detection
 - `format.ts` - Formatting utilities (byte sizes, etc.)
+- `json.ts` - Format-preserving JSON file writes (indentation, EOL, trailing newline)
 - `general.ts` - General utilities (glob resolution, type checking, etc.)
 - `package.ts` - Package.json reading and manipulation
 - `types.ts` - Shared TypeScript type definitions
@@ -309,6 +316,6 @@ tsdown detects `package.json` in the working directory to:
 Watch mode has special behaviors:
 
 - Config file changes trigger full restart (clears module cache)
-- Keyboard shortcuts: `r` (manual rebuild), `q` (quit)
+- Keyboard shortcuts: `r` (reload config and rebuild), `c` (clear console), `q` (quit), `h` (help)
 - Build errors don't stop watch mode
-- Resources cleaned via `AsyncDisposable` pattern
+- Resources cleaned via `Symbol.asyncDispose` on bundles

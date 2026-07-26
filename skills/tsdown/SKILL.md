@@ -66,12 +66,12 @@ export default defineConfig({
 | CLI Reference | All CLI commands and options | [reference-cli](references/reference-cli.md) |
 | Migrate from tsup | Migration guide and compatibility notes | [guide-migrate-from-tsup](references/guide-migrate-from-tsup.md) |
 | Plugins | Rolldown, Rollup, Unplugin support | [advanced-plugins](references/advanced-plugins.md) |
-
-> For comprehensive migration assistance with complete option mappings, install the dedicated [`tsdown-migrate`](../tsdown-migrate/SKILL.md) skill: `npx skills add rolldown/tsdown --skill tsdown-migrate`
 | Hooks | Lifecycle hooks for custom logic | [advanced-hooks](references/advanced-hooks.md) |
-| Programmatic API | Build from Node.js scripts | [advanced-programmatic](references/advanced-programmatic.md) |
+| Programmatic API | Build from Node.js scripts, in-memory builds (`write: false`) | [advanced-programmatic](references/advanced-programmatic.md) |
 | Rolldown Options | Pass options directly to Rolldown | [advanced-rolldown-options](references/advanced-rolldown-options.md) |
 | CI Environment | CI detection, `'ci-only'` / `'local-only'` values | [advanced-ci](references/advanced-ci.md) |
+
+> For comprehensive migration assistance with complete option mappings, install the dedicated [`tsdown-migrate`](../tsdown-migrate/SKILL.md) skill: `npx skills add rolldown/tsdown --skill tsdown-migrate`
 
 ## Build Options
 
@@ -99,6 +99,7 @@ export default defineConfig({
 | Only bundle | `deps: { onlyBundle: ['cac', 'bumpp'] }` - Whitelist | [option-dependencies](references/option-dependencies.md) |
 | Only import | `deps: { onlyImport: ['cac'] }` - Whitelist runtime imports in output | [option-dependencies](references/option-dependencies.md) |
 | Externalize all | `deps: { neverBundle: true }` | [option-dependencies](references/option-dependencies.md) |
+| Resolve subpaths | `deps: { resolveDepSubpath: true }` - Resolve external subpath imports (default `false`) | [option-dependencies](references/option-dependencies.md) |
 | Auto external | Automatic dependency/peer/optional externalization | [option-dependencies](references/option-dependencies.md) |
 
 ## Output Enhancement
@@ -111,6 +112,7 @@ export default defineConfig({
 | CSS handling | **[experimental]** `css: { ... }` — full pipeline with preprocessors, Lightning CSS, PostCSS, CSS modules, code splitting; requires `@tsdown/css` | [option-css](references/option-css.md) |
 | CSS modules | `css: { modules: { localsConvention: 'camelCase' } }` — scoped class names for `.module.css` files | [option-css](references/option-css.md) |
 | CSS inject | `css: { inject: true }` — preserve CSS imports in JS output | [option-css](references/option-css.md) |
+| Copy files | `copy: 'public'` or `copy: { from, to, flatten, rename }` - Copy static assets to output | [option-copy](references/option-copy.md) |
 | Unbundle mode | `unbundle: true` - Preserve directory structure | [option-unbundle](references/option-unbundle.md) |
 | Root directory | `root: 'src'` - Control output directory mapping | [option-root](references/option-root.md) |
 | Executable | **[experimental]** `exe: true` - Bundle as standalone executable, cross-platform via `@tsdown/exe` | [option-exe](references/option-exe.md) |
@@ -343,6 +345,7 @@ tsdown --minify                # Enable minification
 tsdown --dts                   # Generate declarations
 tsdown --exe                   # Bundle as standalone executable
 tsdown --unbundle              # Bundleless mode
+tsdown --copy public           # Copy static files to output
 
 # Entry options
 tsdown src/index.ts            # Single entry
@@ -353,6 +356,7 @@ tsdown src/a.ts src/b.ts       # Multiple entries
 tsdown -W                      # Enable workspace mode
 tsdown -W -F my-package        # Filter specific package
 tsdown --filter /^pkg-/        # Filter by regex
+tsdown -W --concurrency 4      # Limit parallel Rolldown builds
 
 # Development
 tsdown --watch                 # Watch mode

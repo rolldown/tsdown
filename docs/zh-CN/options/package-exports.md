@@ -2,7 +2,7 @@
 
 `tsdown` 可以自动推断并生成 `package.json` 中的 `exports` 字段。这有助于确保您的包导出始终与构建输出保持同步且正确。
 
-默认不会生成顶层的 `main`、`module` 和 `types` 字段。如果你需要为旧工具生成这些字段，请启用 `exports.legacy`。
+顶层的 `main`、`module` 和 `types` 字段由 `exports.legacy` 选项控制：仅构建 ESM 输出时默认为 `false`，其他情况下默认为 `true`。
 
 ## 启用自动导出
 
@@ -37,7 +37,7 @@ export default defineConfig({
 
 ## 传统包字段
 
-如果还需要为旧工具生成顶层的 `main`、`module` 和 `types` 字段，请启用 `exports.legacy`：
+`exports.legacy` 选项控制是否同时为旧工具生成顶层的 `main`、`module` 和 `types` 字段。仅构建 ESM 输出时默认为 `false`，包含其他格式（如 CJS）时默认为 `true`。可以显式设置来覆盖默认值：
 
 ```ts
 export default defineConfig({
@@ -109,9 +109,9 @@ export default defineConfig({
 ```ts
 export default defineConfig({
   exports: {
-    customExports(pkg, context) {
-      pkg['./foo'] = './foo.js'
-      return pkg
+    customExports(exports, context) {
+      exports['./foo'] = './foo.js'
+      return exports
     },
   },
 })

@@ -75,7 +75,7 @@ In this example, only `cac` and `bumpp` are allowed to be bundled. If any other 
 
 - **`onlyBundle` is an array** (e.g., `['cac', /^my-/]`): Only dependencies matching the list are allowed to be bundled. An error is thrown for any others. Unused patterns in the list will also be reported.
 - **`onlyBundle` is `false`**: All warnings and checks about bundled dependencies are suppressed.
-- **`onlyBundle` is not set** (default): A warning is shown if any `node_modules` dependencies are bundled, suggesting you add the `onlyBundle` option or set it to `false` to suppress warnings.
+- **`onlyBundle` is not set** (default): A hint is logged if any `node_modules` dependencies are bundled, suggesting you add the `onlyBundle` option or set it to `false` to disable the hint.
 
 ::: tip
 Make sure to include all required sub-dependencies in the `onlyBundle` list as well, not just the top-level packages you directly import.
@@ -200,6 +200,8 @@ The following top-level options are deprecated. Please migrate to the `deps` nam
 | ----------------- | ------------------- |
 | `external`        | `deps.neverBundle`  |
 | `noExternal`      | `deps.alwaysBundle` |
+
+Note that a deprecated option cannot be mixed with its replacement: setting both `external` and `deps.neverBundle` (or both `noExternal` and `deps.alwaysBundle`) throws an error.
 
 ## Summary
 

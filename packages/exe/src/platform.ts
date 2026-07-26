@@ -41,9 +41,15 @@ export interface ExeExtensionOptions {
    */
   targets?: ExeTarget[]
 
+  /**
+   * Customize the download URL for Node.js binaries, e.g. to use a mirror.
+   * Defaults to downloading from {@link https://nodejs.org/dist/}.
+   */
   getDownloadUrl?: (target: ExeTarget) => string | Promise<string>
 
   /**
+   * URL of the Node.js release index used to resolve the `latest` and
+   * `latest-lts` versions.
    * @default 'https://nodejs.org/dist/index.json'
    */
   nodeDistIndexUrl?: string

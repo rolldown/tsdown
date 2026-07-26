@@ -15,6 +15,8 @@ tsdown can generate bundles in multiple formats. Default is ESM.
 | `iife` | Immediately Invoked Function Expression | Browser `<script>` tags |
 | `umd` | Universal Module Definition | AMD, CommonJS, and globals |
 
+**Note:** CJS is in **maintenance-only mode**. Since the ecosystem is transitioning to ESM and Node.js now supports `require(esm)`, tsdown's CJS-specific features (such as `cjsDefault`) are kept for compatibility but will not be further enhanced or optimized. New libraries are encouraged to publish ESM-only.
+
 ## Usage
 
 ### CLI

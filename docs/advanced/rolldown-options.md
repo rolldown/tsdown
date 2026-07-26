@@ -57,12 +57,12 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   outputOptions: {
-    legalComments: 'inline',
+    comments: { legal: true },
   },
 })
 ```
 
-In this example, the `legalComments: 'inline'` option ensures that legal comments (e.g., license headers) are preserved in the output files.
+In this example, the `comments.legal` option ensures that legal comments (e.g., license headers) are preserved in the output files.
 
 ### Using a Function
 
@@ -74,7 +74,7 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   outputOptions(outputOptions, format) {
     if (format === 'esm') {
-      outputOptions.legalComments = 'inline'
+      outputOptions.comments = { legal: true }
     }
     return outputOptions
   },

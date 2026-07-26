@@ -56,5 +56,28 @@ If you want to create a custom plugin for `tsdown`, you can follow Rolldown's pl
 
 Refer to the [Rolldown Plugin Development Guide](https://rolldown.rs/apis/plugin-api) for detailed instructions on writing your own plugins.
 
+### tsdown-Specific Hooks
+
+In addition to Rolldown's lifecycle, plugins can implement two tsdown-specific hooks, modeled on Vite's [`config`](https://vite.dev/guide/api-plugin.html#config) and [`configResolved`](https://vite.dev/guide/api-plugin.html#configresolved) hooks:
+
+- **`tsdownConfig(config, inlineConfig)`** — Invoked before the user config is resolved. The hook may mutate `config` in place, or return a partial config that will be deep-merged into the current config. The second argument is the original inline config passed to `build()` (typically the CLI flags).
+- **`tsdownConfigResolved(resolvedConfig)`** — Invoked after tsdown has fully resolved the config, once per output format. Useful for reading the final config; mutations are not supported.
+
+```ts
+import type { TsdownPlugin } from 'tsdown'
+
+const myPlugin: TsdownPlugin = {
+  name: 'my-plugin',
+  tsdownConfig(config) {
+    // adjust the user config before resolution
+  },
+  tsdownConfigResolved(resolvedConfig) {
+    // read the final resolved config
+  },
+}
+```
+
+These hooks are detected via duck-typing, so existing Rolldown plugins continue to work unchanged. For detailed type definitions, see [`TsdownPlugin`](../reference/api/Interface.TsdownPlugin.md).
+
 > [!TIP]
 > Plugins are a great way to extend `tsdown`'s functionality. Whether you're using existing plugins or creating your own, they allow you to tailor the bundling process to your project's specific needs.

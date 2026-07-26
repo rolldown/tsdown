@@ -96,7 +96,25 @@ dist/
 |-------|------|-------------|
 | `platform` | `'win' \| 'darwin' \| 'linux'` | Target OS (nodejs.org naming) |
 | `arch` | `'x64' \| 'arm64'` | Target CPU architecture |
-| `nodeVersion` | `string` | Node.js version (must be `>=25.7.0`) |
+| `nodeVersion` | `string` | Node.js version (must be `>=25.7.0`), or `'latest'` / `'latest-lts'` to resolve automatically |
+
+### Custom Node.js Index and Download URL
+
+When downloading Node.js binaries (e.g. behind a corporate proxy or using a mirror), you can customize the sources:
+
+```ts
+export default defineConfig({
+  entry: ['src/cli.ts'],
+  exe: {
+    targets: [{ platform: 'linux', arch: 'x64', nodeVersion: 'latest-lts' }],
+    // Index used to resolve 'latest' / 'latest-lts' versions
+    nodeDistIndexUrl: 'https://mirrors.example.com/node/index.json', // default: https://nodejs.org/dist/index.json
+    // Fully custom download URL per target
+    getDownloadUrl: (target) =>
+      `https://mirrors.example.com/node/v${target.nodeVersion}/node-v${target.nodeVersion}-${target.platform}-${target.arch}.tar.gz`,
+  },
+})
+```
 
 ### Caching
 

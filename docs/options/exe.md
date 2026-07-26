@@ -124,11 +124,11 @@ build/
 
 Each target in the `targets` array accepts:
 
-| Field         | Type                           | Description                                              |
-| ------------- | ------------------------------ | -------------------------------------------------------- |
-| `platform`    | `'win' \| 'darwin' \| 'linux'` | Target operating system (aligned with nodejs.org naming) |
-| `arch`        | `'x64' \| 'arm64'`             | Target CPU architecture                                  |
-| `nodeVersion` | `string`                       | Node.js version to use (must be `>=25.7.0`)              |
+| Field         | Type                           | Description                                                                                                                                                |
+| ------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `platform`    | `'win' \| 'darwin' \| 'linux'` | Target operating system (aligned with nodejs.org naming)                                                                                                   |
+| `arch`        | `'x64' \| 'arm64'`             | Target CPU architecture                                                                                                                                    |
+| `nodeVersion` | `string`                       | Node.js version to use (must be `>=25.7.0`), or `'latest'` / `'latest-lts'` to resolve automatically from [nodejs.org](https://nodejs.org/dist/index.json) |
 
 :::warning
 When `targets` is specified, the `seaConfig.executable` option is ignored — the downloaded Node.js binary is used instead.
@@ -137,6 +137,27 @@ When `targets` is specified, the `seaConfig.executable` option is ignored — th
 :::tip Note
 When generating cross-platform executables (e.g., generating an executable for linux-x64 on darwin-arm64), `useCodeCache` and `useSnapshot` must be set to `false` to avoid generating incompatible executables. Since code cache and snapshots can only be loaded on the same platform where they are compiled, the generated executable might crash on startup when trying to load code cache or snapshots built on a different platform.
 :::
+
+### Custom Download Mirror
+
+By default, Node.js binaries are downloaded from [nodejs.org](https://nodejs.org/dist/). You can use a custom mirror via the following `exe` options:
+
+| Option             | Type                                    | Default                                | Description                                                        |
+| ------------------ | --------------------------------------- | -------------------------------------- | ------------------------------------------------------------------ |
+| `getDownloadUrl`   | `(target) => string \| Promise<string>` | —                                      | Returns the download URL for a target's Node.js archive            |
+| `nodeDistIndexUrl` | `string`                                | `'https://nodejs.org/dist/index.json'` | Release index used to resolve `'latest'` / `'latest-lts'` versions |
+
+```ts [tsdown.config.ts]
+export default defineConfig({
+  entry: ['src/cli.ts'],
+  exe: {
+    targets: [{ platform: 'linux', arch: 'x64', nodeVersion: 'latest-lts' }],
+    getDownloadUrl: ({ platform, arch, nodeVersion }) =>
+      `https://npmmirror.com/mirrors/node/v${nodeVersion}/node-v${nodeVersion}-${platform}-${arch}.tar.xz`,
+    nodeDistIndexUrl: 'https://npmmirror.com/mirrors/node/index.json',
+  },
+})
+```
 
 ### Caching
 

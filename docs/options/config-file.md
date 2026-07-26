@@ -9,7 +9,6 @@ By default, `tsdown` will search for a configuration file by looking in the curr
 - `tsdown.config.mjs`
 - `tsdown.config.cjs`
 - `tsdown.config.json`
-- `tsdown.config`
 
 Additionally, you can define your configuration directly in the `tsdown` field of your `package.json` file.
 

@@ -34,6 +34,7 @@ export default defineConfig({
     alwaysBundle: ['some-package'],
     onlyBundle: ['cac', 'bumpp'],
     onlyImport: ['cac'],
+    resolveDepSubpath: true,
   },
 })
 ```
@@ -67,7 +68,7 @@ export default defineConfig({
 })
 ```
 
-**Result:** Every import that follows npm package naming conventions is externalized as written, without being resolved. Other non-relative imports (`#` subpath imports, path aliases like `~/`) are resolved: they stay external if they resolve into node_modules, and are bundled if they map to local files. Combine with `alwaysBundle` to bundle selected dependencies.
+**Result:** Every import that follows npm package naming conventions is externalized as written, without being resolved. This is fast and even works when dependencies are not installed. Subpaths like `my-dep/utils` are preserved exactly (`resolveDepSubpath` has no effect). Other non-relative imports (`#` subpath imports, path aliases like `~/`) are resolved: they stay external if they resolve into node_modules, and are bundled if they map to local files. Combine with `alwaysBundle` to bundle selected dependencies.
 
 ### `deps.alwaysBundle`
 
@@ -132,6 +133,18 @@ export default defineConfig({
 - Declaration output (`.d.ts`) is checked too.
 
 **Limitation:** ES imports and dynamic `import()` expressions are checked. CJS `require()` calls are not detected.
+
+### `deps.resolveDepSubpath`
+
+By default, tsdown preserves external dependency subpath imports as written. Enable `resolveDepSubpath` to resolve subpath imports to their actual package-relative paths when a package has no `exports` field. For example, `my-dep/functions/lt` may become `my-dep/functions/lt.js`, and `my-dep/folder` may become `my-dep/folder/index.js`.
+
+```ts
+export default defineConfig({
+  deps: {
+    resolveDepSubpath: true,  // default: false
+  },
+})
+```
 
 ## Common Patterns
 
@@ -375,6 +388,7 @@ export default defineConfig({
 - `onlyBundle` → Whitelist bundled deps
 - `onlyImport` → Whitelist runtime imports in output
 - `neverBundle: true` → Externalize all dependencies
+- `resolveDepSubpath: true` → Resolve external dependency subpath imports to package-relative paths
 
 **Declaration files:**
 - Same bundling logic as JavaScript

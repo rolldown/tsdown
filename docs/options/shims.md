@@ -6,7 +6,7 @@ Shims are small pieces of code that provide compatibility between different modu
 
 In CommonJS, `__dirname` and `__filename` are built-in variables that provide the directory and file path of the current module. However, these variables are **not available in ESM** by default.
 
-To improve compatibility, when the `shims` option is enabled, `tsdown` will automatically generate these variables for ESM output. For example:
+To improve compatibility, when the `shims` option is enabled and `platform` is set to `node`, `tsdown` will automatically generate these variables for ESM output. For example:
 
 ```js
 console.log(__dirname) // Available in ESM when shims are enabled

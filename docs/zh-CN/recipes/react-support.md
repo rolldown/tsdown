@@ -57,7 +57,7 @@ export { MyButton } from './MyButton'
 - **classic（经典）**
 - **automatic（自动，默认）**
 
-如果需要使用经典 JSX 转换方式，可在配置文件中设置 Rolldown 的 [`inputOptions.jsx`](https://rolldown.rs/reference/InputOptions.transform#jsx) 选项：
+如果需要使用经典 JSX 转换方式，可在配置文件中设置 Rolldown 的 [`transform.jsx`](https://rolldown.rs/reference/InputOptions.transform#jsx) 选项：
 
 ```ts [tsdown.config.ts]
 import { defineConfig } from 'tsdown'
@@ -80,7 +80,7 @@ React Compiler 是一种创新的构建期优化工具，可自动优化 React �
 目前，React Compiler 仅作为 Babel 插件提供。您可以像上文所示脚手架 `react-compiler` 模板，或手动集成：
 
 ```bash
-pnpm add -D @rolldown/plugin-babel @vitejs/plugin-react
+pnpm add -D @rolldown/plugin-babel @vitejs/plugin-react babel-plugin-react-compiler
 ```
 
 ```ts [tsdown.config.ts]

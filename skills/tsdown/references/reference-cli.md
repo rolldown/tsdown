@@ -52,9 +52,10 @@ tsdown --no-config src/index.ts
 
 ### `--config-loader <loader>`
 
-Choose config loader (`auto`, `native`, `unrun`):
+Choose config loader (`auto`, `native`, `tsx`, `unrun`). `tsx` and `unrun` are optional peer dependencies — install them manually first:
 
 ```bash
+tsdown --config-loader tsx
 tsdown --config-loader unrun
 ```
 
@@ -356,6 +357,16 @@ Filter configs by name or working directory. Supports regex:
 tsdown -W -F my-package
 tsdown -W -F /^pkg-/
 ```
+
+### `--concurrency <count>`
+
+Maximum number of Rolldown builds to run in parallel. Defaults to unlimited:
+
+```bash
+tsdown -W --concurrency 4
+```
+
+Not supported in watch mode (ignored with a warning).
 
 ### `--unbundle`
 

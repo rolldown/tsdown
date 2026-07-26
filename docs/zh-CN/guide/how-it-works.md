@@ -13,7 +13,7 @@ tsdown 读取你的 `package.json` 和 `tsconfig.json` 来推断合理的默认�
 | package.json 中的 `types` 或 `typings` 字段                                    | 启用 `.d.ts` 生成                                                                              |
 | tsconfig.json 中的 `isolatedDeclarations`                                      | 使用快速的 **oxc-transform** 路径生成 dts                                                      |
 | package.json 中的 `engines.node`                                               | 从中推断编译[目标](../options/target.md)                                                       |
-| package.json 中的 `type: "module"`                                             | ESM 输出使用 `.js` 扩展名（而非 `.mjs`）                                                       |
+| package.json 中的 `type: "module"`                                             | 在 `fixedExtension` 未启用时，ESM 输出使用 `.js` 扩展名（而非 `.mjs`）                         |
 | 未指定 `entry`，但存在 `src/index.ts`                                          | 将其作为默认入口点                                                                             |
 | `platform: "node"`（默认值）                                                   | 启用 [`fixedExtension`](../reference/api/Interface.UserConfig#fixedextension)（`.mjs`/`.cjs`） |
 | `exports: true`                                                                | 在 package.json 中生成 `exports` 字段                                                          |
@@ -38,6 +38,7 @@ tsdown 读取你的 `package.json` 和 `tsconfig.json` 来推断合理的默认�
 | [`deps.onlyBundle`](../options/dependencies.md#deps-onlybundle)               | 允许打包的依赖白名单。任何不在列表中的依赖如果出现在 bundle 中将触发错误。适用于防止大型项目中的意外内联。 |
 | [`deps.neverBundle`](../options/dependencies.md#deps-neverbundle)             | 显式将额外的包标记为外部依赖（不打包），设置为 `true` 时外部化所有依赖。                                   |
 | [`deps.alwaysBundle`](../options/dependencies.md#deps-alwaysbundle)           | 强制打包特定的包，即使它们在 `dependencies` 中。                                                           |
+| [`deps.onlyImport`](../options/dependencies.md#deps-onlyimport)               | 允许构建产物在运行时导入的包白名单。产物中出现任何其他包的导入将触发错误。                                 |
 | [`deps.resolveDepSubpath`](../options/dependencies.md#deps-resolvedepsubpath) | 可选择将外部依赖的子路径导入解析为包内的实际相对路径。                                                     |
 
 详见[依赖](../options/dependencies.md)。
@@ -83,7 +84,7 @@ tsdown 生成 `.d.ts` 文件，使使用者获得完整的 TypeScript 支持。
 **启用 `exports: true` 后：**
 
 - tsdown 会分析你的入口点和输出文件，然后自动写入 `package.json` 中的 `exports` 字段。
-- 默认不会生成顶层的 `main`、`module` 和 `types` 字段。如果你需要为旧工具生成这些字段，请启用 `exports.legacy`。
+- 顶层的 `main`、`module` 和 `types` 字段会自动生成，除非你的构建是纯 ESM。可使用 `exports.legacy` 显式控制此行为。
 - 对于双格式构建（ESM + CJS），它会生成带有 `import` 和 `require` 条件的条件导出。
 
 **主要选项：**
@@ -126,4 +127,4 @@ tsdown 还为你处理的一些事项：
 - **输出目录** — 默认为 `dist/`。每次构建前会**清理输出目录**。使用 `--no-clean` 保留已有文件。详见[清理](../options/cleaning.md)。
 - **除屑优化** — 默认启用。无用代码会从输出中移除。详见[除屑优化](../options/tree-shaking.md)。
 - **运行平台** — 默认为 `node`。详见[运行平台](../options/platform.md)。
-- **构建目标** — 从 `package.json` 的 `engines` 字段推断，若无则默认为最新稳定版 Node.js。详见[构建目标](../options/target.md)。
+- **构建目标** — 从 `package.json` 的 `engines.node` 字段推断。如果 `target` 和 `engines.node` 均未设置，则不进行任何语法降级。详见[构建目标](../options/target.md)。

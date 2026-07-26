@@ -39,26 +39,36 @@ Rename `tsup` to `tsdown` in whichever dependency field it appears:
   }
 }
 
-// After
+// After (Stage 1 — migration checkpoint)
 {
   "devDependencies": {
-    "tsdown": "^0.22.13",
+    "tsdown": "0.22.14",
     "typescript": "^5.0.0"
   }
 }
 ```
 
-Use `^0.22.13` — the last tsdown version that still accepts deprecated tsup-compatible options (with warnings). Resolve all deprecation warnings before upgrading tsdown to the latest version.
+Use **`0.22.14` for Stage 1** — the last tsdown version that still accepts the deprecated tsup compatibility options and flags each one with a deprecation warning. Run the build on 0.22.14 and resolve every warning; v0.23+ silently ignores the removed options, so the warnings are the only reliable completeness check. Once the build is warning-free, upgrade to the latest tsdown (**Stage 2**):
+
+```json
+// Final state (Stage 2 — after a zero-warning build on 0.22.14)
+{
+  "devDependencies": {
+    "tsdown": "^0.23.0",
+    "typescript": "^5.0.0"
+  }
+}
+```
 
 ### All Dependency Fields
 
-| Field | tsup version | tsdown version |
-|-------|-------------|----------------|
-| `dependencies` | any | `^0.22.13` |
-| `devDependencies` | any | `^0.22.13` |
-| `optionalDependencies` | any | `^0.22.13` |
-| `peerDependencies` | any | `*` |
-| `peerDependenciesMeta` | rename key only | rename key only |
+| Field | tsup version | Stage 1 (migration) | Stage 2 (final) |
+|-------|-------------|---------------------|-----------------|
+| `dependencies` | any | `0.22.14` | `^0.23.0` |
+| `devDependencies` | any | `0.22.14` | `^0.23.0` |
+| `optionalDependencies` | any | `0.22.14` | `^0.23.0` |
+| `peerDependencies` | any | `*` | `*` |
+| `peerDependenciesMeta` | rename key only | rename key only | rename key only |
 
 ## Root Config Field
 

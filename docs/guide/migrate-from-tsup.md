@@ -29,7 +29,10 @@ npx tsdown-migrate packages/foo packages/bar
 > The migration tool will automatically install dependencies after migration. Make sure to run the command from within your project directory.
 
 > [!IMPORTANT]
-> The migration tool installs **tsdown v0.22.13**, the last version that still accepts deprecated tsup-compatible options (with warnings). Newer versions of tsdown have removed these options entirely. Run your build on v0.22.13, resolve **all** deprecation warnings, and then upgrade `tsdown` to the latest version.
+> Migration is a **two-stage** process. The migration tool installs **tsdown v0.22.14**, the last version that still accepts deprecated tsup-compatible options (with warnings). Newer versions of tsdown have removed these options entirely — they fail type checking and are silently ignored at runtime.
+>
+> 1. Run your build on v0.22.14 and resolve **every** deprecation warning — zero warnings means your config is fully migrated.
+> 2. Only then upgrade `tsdown` to the latest version (`^0.23.0` or later).
 
 ### Migration Options
 
@@ -69,7 +72,7 @@ Some options have been renamed for clarity:
 | `removeNodeProtocol: true` | `nodeProtocol: 'strip'`       | More flexible with multiple modes  |
 | `injectStyle: true`        | `css: { inject: true }`       | Moved into CSS namespace           |
 
-None of the old names work in the latest tsdown. Those that previously emitted deprecation warnings (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted up to tsdown v0.22.13 — if your config still uses any of them, migrate on v0.22.13 first.
+None of the old names work in the latest tsdown — they fail type checking and are silently ignored at runtime. Those that previously emitted deprecation warnings (`entryPoints`, `outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted up to tsdown v0.22.14 — if your config still uses any of them, migrate on v0.22.14 first.
 
 ### Deprecated but Compatible Options
 

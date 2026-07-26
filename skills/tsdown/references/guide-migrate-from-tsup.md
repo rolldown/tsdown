@@ -46,6 +46,7 @@ npx tsdown-migrate packages/foo packages/bar
 
 | tsup | tsdown |
 |------|--------|
+| `entryPoints` | `entry` |
 | `cjsInterop` | `cjsDefault` |
 | `esbuildPlugins` | `plugins` |
 | `outExtension` | `outExtensions` |
@@ -55,7 +56,40 @@ npx tsdown-migrate packages/foo packages/bar
 | `removeNodeProtocol: true` | `nodeProtocol: 'strip'` |
 | `injectStyle: true` | `css: { inject: true }` |
 
-The old names were accepted (with deprecation warnings) up to tsdown v0.22.13 and have been removed since. When migrating from tsup, install `tsdown@^0.22.13` first, resolve all deprecation warnings, then upgrade to the latest version.
+The old names were accepted (with deprecation warnings) up to tsdown v0.22.14 and have been removed since — v0.23+ silently ignores them, so a leftover tsup option won't error. Migrate in two stages: install `tsdown@0.22.14` first and resolve every deprecation warning (a warning-free build proves the mapping is complete), then upgrade to the latest version. The `tsdown-migrate` tool installs v0.22.14 for this reason.
+
+### Deprecated but Compatible Options
+
+These tsup options still work but emit deprecation warnings and will be removed in a future version — migrate them immediately:
+
+| tsup (deprecated) | tsdown (preferred) |
+|-------------------|--------------------|
+| `external: [...]` | `deps: { neverBundle: [...] }` |
+| `noExternal: [...]` | `deps: { alwaysBundle: [...] }` |
+
+tsdown also adds `deps.onlyBundle` for whitelisting allowed bundled packages.
+
+### Unsupported Options
+
+| Option | Status | Alternative |
+|--------|--------|-------------|
+| `splitting: false` | Always enabled | Code splitting cannot be disabled |
+| `metafile` | Not available | Use `devtools: true` for bundle analysis via Vite DevTools |
+| `swc` | Not supported | tsdown uses oxc for transformation (built-in) |
+| `experimentalDts` | Superseded | Use the `dts` option instead |
+| `legacyOutput` | Not supported | No alternative |
+| `plugins` (tsup experimental) | Incompatible | Migrate to Rolldown plugins |
+
+### Plugin System
+
+tsdown uses Rolldown plugins instead of esbuild plugins. If you use unplugin plugins, update the import path:
+
+```ts
+// Before (tsup)
+import plugin from 'unplugin-example/esbuild'
+// After (tsdown)
+import plugin from 'unplugin-example/rolldown'
+```
 
 ### Output Filename Differences
 
@@ -80,6 +114,16 @@ export default defineConfig({
   workspace: 'packages/*',  // Build all packages
 })
 ```
+
+#### Other tsdown-Exclusive Features
+
+- **`exports`**: Auto-generate the `exports` field in `package.json` with `exports: true`
+- **`publint`** / **`attw`**: Validate your package for common issues and type correctness
+- **`exe`**: Bundle as a Node.js standalone executable (SEA) with `exe: true`
+- **`devtools`**: Vite DevTools integration for bundle analysis with `devtools: true`
+- **`hooks`**: Lifecycle hooks (`build:prepare`, `build:before`, `build:done`)
+- **`css`**: Full CSS pipeline with preprocessors, Lightning CSS, PostCSS, CSS modules, and code splitting
+- **`globImport`**: Support for `import.meta.glob` (Vite-style glob imports)
 
 ## Migration Checklist
 

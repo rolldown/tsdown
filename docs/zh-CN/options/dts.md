@@ -15,7 +15,7 @@
 
 ## 启用 dts 生成
 
-如果您的 `package.json` 中包含 `types` 或 `typings` 字段，`tsdown` 会**默认启用**声明文件生成。
+如果您的 `package.json` 中包含 `types` 或 `typings` 字段，或者其 `exports` 字段中包含 `types` 入口，`tsdown` 会**默认启用**声明文件生成。
 
 您也可以通过 CLI 的 `--dts` 选项或在配置文件中设置 `dts: true` 来显式启用 `.d.ts` 文件生成。
 

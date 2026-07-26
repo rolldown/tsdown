@@ -28,6 +28,7 @@ The following options accept CI-aware values:
 - [`exports`](/options/package-exports) — Auto-generate `package.json` exports
 - `unused` — Unused dependency check
 - `devtools` — DevTools integration
+- [`exe`](/options/exe) — Standalone executable generation
 - `failOnWarn` — Fail on warnings (defaults to `false`)
 
 ### Basic Usage

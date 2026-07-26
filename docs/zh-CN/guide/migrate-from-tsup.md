@@ -29,7 +29,10 @@ npx tsdown-migrate packages/foo packages/bar
 > 迁移工具会在迁移后自动安装依赖。请确保在项目目录下运行该命令。
 
 > [!IMPORTANT]
-> 迁移工具会安装 **tsdown v0.22.13**——这是最后一个仍接受已弃用的 tsup 兼容选项（并发出警告）的版本。更新的 tsdown 版本已完全移除这些选项。请先在 v0.22.13 上运行构建，解决**所有**弃用警告，然后再将 `tsdown` 升级到最新版本。
+> 迁移是一个**两阶段**过程。迁移工具会安装 **tsdown v0.22.14**——这是最后一个仍接受已弃用的 tsup 兼容选项（并发出警告）的版本。更新的 tsdown 版本已完全移除这些选项——它们会导致类型检查失败，并在运行时被静默忽略。
+>
+> 1. 先在 v0.22.14 上运行构建，解决**每一个**弃用警告——零警告即表示配置已完全迁移。
+> 2. 之后再将 `tsdown` 升级到最新版本（`^0.23.0` 或更高）。
 
 ### 迁移选项
 
@@ -69,7 +72,7 @@ npx tsdown-migrate packages/foo packages/bar
 | `removeNodeProtocol: true` | `nodeProtocol: 'strip'`       | 更灵活，支持多种模式          |
 | `injectStyle: true`        | `css: { inject: true }`       | 移入 CSS 命名空间             |
 
-以上旧名称在最新版 tsdown 中均不可用。其中曾发出弃用警告的选项（`outExtension`、`skipNodeModulesBundle`、`publicDir`、`bundle`、`removeNodeProtocol`、`injectStyle`）在 tsdown v0.22.13 及之前的版本中仍可使用——如果您的配置仍在使用它们，请先在 v0.22.13 上完成迁移。
+以上旧名称在最新版 tsdown 中均不可用——它们会导致类型检查失败，并在运行时被静默忽略。其中曾发出弃用警告的选项（`entryPoints`、`outExtension`、`skipNodeModulesBundle`、`publicDir`、`bundle`、`removeNodeProtocol`、`injectStyle`）在 tsdown v0.22.14 及之前的版本中仍可使用——如果您的配置仍在使用它们，请先在 v0.22.14 上完成迁移。
 
 ### 已弃用但兼容的选项
 

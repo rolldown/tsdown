@@ -6,7 +6,7 @@ Shim 是用于 CommonJS (CJS) 和 ECMAScript Modules (ESM) 之间兼容性的小
 
 在 CommonJS 中，`__dirname` 和 `__filename` 是内置变量，分别提供当前模块的目录路径和文件路径。然而，这些变量在 ESM 中**默认不可用**。
 
-为了提高兼容性，当启用 `shims` 选项时，`tsdown` 会为 ESM 输出自动生成这些变量。例如：
+为了提高兼容性，当启用 `shims` 选项且 `platform` 设置为 `node` 时，`tsdown` 会为 ESM 输出自动生成这些变量。例如：
 
 ```js
 console.log(__dirname) // 启用 shims 时，ESM 中可用

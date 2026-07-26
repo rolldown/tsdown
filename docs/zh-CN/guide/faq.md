@@ -49,7 +49,7 @@ tsdown -W -F my-package
 
 ## 为什么我的依赖被打包了？ {#dependencies-bundled}
 
-默认情况下，tsdown 会打包所有导入的模块。要排除依赖（如 `package.json` 中列出的依赖），可使用 `deps` 配置：
+默认情况下，tsdown 会将 `package.json` 中 `dependencies`、`peerDependencies` 和 `optionalDependencies` 列出的包外置（externalize），但 `devDependencies` 和幽灵依赖（phantom dependencies）如果被导入则会被打包。如果某个依赖被意外打包，请确认它已列在 `package.json` 中。若要无条件外置所有依赖，可使用 `deps` 配置：
 
 ```ts
 export default defineConfig({

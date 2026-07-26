@@ -9,7 +9,6 @@
 - `tsdown.config.mjs`
 - `tsdown.config.cjs`
 - `tsdown.config.json`
-- `tsdown.config`
 
 此外，您还可以直接在 `package.json` 文件的 `tsdown` 字段中定义配置。
 

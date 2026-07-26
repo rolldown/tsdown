@@ -53,6 +53,20 @@ dist/
 
 每个输出文件都与其源文件一一对应，保留了原始代码库的模块结构。
 
+## 控制输出根目录
+
+默认情况下，输出目录结构基于所有入口文件的公共基础目录。您可以使用 [`root`](/zh-CN/options/root) 选项覆盖此行为：
+
+```ts
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  entry: ['src/index.ts'],
+  unbundle: true,
+  root: '.', // 在输出中保留 `src/` 前缀
+})
+```
+
 ## 适用场景
 
 非打包模式非常适合以下场景：

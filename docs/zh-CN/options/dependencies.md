@@ -75,7 +75,7 @@ export default defineConfig({
 
 - **`onlyBundle` 为数组**（例如 `['cac', /^my-/]`）：只有匹配列表的依赖才允许被打包，其他依赖会触发错误。列表中未使用的模式也会被报告。
 - **`onlyBundle` 为 `false`**：抑制所有关于打包依赖的警告和检查。
-- **`onlyBundle` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会显示一条警告，建议您添加 `onlyBundle` 选项或将其设置为 `false` 来抑制警告。
+- **`onlyBundle` 未设置**（默认）：如果有 `node_modules` 依赖被打包，会输出一条提示信息，建议您添加 `onlyBundle` 选项或将其设置为 `false` 来关闭提示。
 
 ::: tip
 请确保在 `onlyBundle` 中包含所有子依赖，不仅是直接导入的顶层包。
@@ -200,6 +200,8 @@ export default defineConfig({
 | ------------ | ------------------- |
 | `external`   | `deps.neverBundle`  |
 | `noExternal` | `deps.alwaysBundle` |
+
+请注意，废弃选项不能与其替代选项混用：同时设置 `external` 和 `deps.neverBundle`（或同时设置 `noExternal` 和 `deps.alwaysBundle`）会抛出错误。
 
 ## 总结
 

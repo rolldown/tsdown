@@ -49,7 +49,7 @@ Root-level configuration is automatically inherited by workspace packages.
 
 ## Why are my dependencies being bundled? {#dependencies-bundled}
 
-By default, tsdown bundles all imported modules. To exclude dependencies (e.g., those listed in `package.json`), use the `deps` configuration:
+By default, tsdown externalizes packages listed in your `package.json` `dependencies`, `peerDependencies`, and `optionalDependencies`, but bundles `devDependencies` and phantom dependencies if they are imported. If a dependency is being bundled unexpectedly, make sure it's listed in your `package.json`. To externalize all dependencies regardless, use the `deps` configuration:
 
 ```ts
 export default defineConfig({

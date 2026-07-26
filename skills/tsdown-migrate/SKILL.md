@@ -7,13 +7,16 @@ description: Migrate TypeScript library projects from tsup to tsdown. Provides c
 
 Knowledge base for AI agents to migrate tsup projects to tsdown — the Rolldown-powered library bundler.
 
-## Target Version
+## Target Version: Two-Stage Migration
 
-Migrate to **tsdown v0.22.13** (`tsdown@^0.22.13`), the last version that still accepts deprecated tsup-compatible options (with warnings). Newer versions of tsdown have removed these options entirely. After migrating, run the build, resolve **all** deprecation warnings, and only then upgrade `tsdown` to the latest version.
+tsdown v0.23 removed all previously-deprecated tsup compatibility options — `bundle`, `outExtension`, `publicDir`, `removeNodeProtocol`, `injectStyle`, and `skipNodeModulesBundle` are no longer recognized. They fail TypeScript type checking and are **silently ignored at runtime**, so a missed mapping on v0.23+ produces wrong output without any error. Migrating directly to v0.23+ is therefore unsafe. tsdown **v0.22.14** is the last version that still accepts these options and flags each one with a deprecation warning, making it the safe migration checkpoint. Migrate in **two stages**:
+
+1. **Stage 1 — migrate on `tsdown@0.22.14`**: Install `tsdown@0.22.14`, migrate the config per the tables below, run a build, and resolve **every** deprecation warning by mapping each flagged tsup option to its real tsdown equivalent. The warnings are the completeness check — the migration is not done until the build produces **zero warnings**.
+2. **Stage 2 — upgrade to the latest tsdown (`^0.23.0` or newer)**: Only after a warning-free build on 0.22.14. Since the config no longer uses any removed compat options, the silent-ignore behavior of v0.23+ is no longer a risk.
 
 ## Runtime Requirement
 
-`tsdown` requires **Node.js 22.18.0 or higher to run** (build-time only). The bundled output can still target lower Node.js versions via the [`target`](../tsdown/references/option-target.md) option, so a library that previously supported Node.js 18 / 20 with tsup can continue to do so after migrating.
+`tsdown` requires **Node.js `^22.18.0 || ^24.11.0 || >=26.0.0` to run** (build-time only) — that is, Node.js 22.18+, 24.11+, or 26+. Odd-numbered and EOL release lines (e.g. Node.js 23, 25) are not supported. The bundled output can still target lower Node.js versions via the [`target`](../tsdown/references/option-target.md) option, so a library that previously supported Node.js 18 / 20 with tsup can continue to do so after migrating.
 
 Recommended workflow when supporting Node.js 18 / 20:
 
@@ -35,9 +38,10 @@ Follow these steps to migrate a tsup project:
 2. **Update imports**: `'tsup'` → `'tsdown'`
 3. **Apply option mappings**: Rename/transform options per tables below
 4. **Preserve tsup defaults**: Explicitly set options that differ (format, clean, dts, target)
-5. **Update package.json**: Dependencies, scripts, root config field
+5. **Update package.json**: Dependencies (Stage 1: `tsdown@0.22.14`), scripts, root config field
 6. **Remove unsupported options**: Replace with alternatives where available
-7. **Test build**: Run `tsdown` and verify output
+7. **Test build on 0.22.14**: Run `tsdown` and resolve every deprecation warning — zero warnings required
+8. **Upgrade to latest tsdown** (`^0.23.0` or newer) and verify the build again
 
 ## Config File Migration
 
@@ -83,11 +87,11 @@ Replace all identifiers: `tsup` → `tsdown`, `TSUP` → `TSDOWN`.
 | `injectStyle: false` | _(remove)_ | Default behavior |
 | `skipNodeModulesBundle` | `deps: { neverBundle: true }` | Externalize all dependencies |
 
-None of the old names work in the latest tsdown — always emit the new names. Those that previously emitted deprecation warnings (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted up to tsdown v0.22.13.
+None of the old names are recognized by tsdown v0.23+ — always emit the new names. The compatibility options (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted with deprecation warnings up to v0.22.14 and removed entirely in v0.23; on v0.23+ leftovers are silently ignored, not errors, so builds misbehave without warning. This is why Stage 1 runs on v0.22.14, where every leftover is flagged.
 
-### Deprecated but Compatible
+### Deprecated but Still Accepted
 
-These tsup options still work in tsdown for backward compatibility, but emit deprecation warnings and **will be removed in a future version**. Migrate them immediately.
+`external` and `noExternal` are the **only** tsup option names tsdown v0.23 still accepts. They emit deprecation warnings, will be removed in a future version, and cannot be combined with their replacements (mixing `external` with `deps.neverBundle`, or `noExternal` with `deps.alwaysBundle`, throws an error). Always emit the replacements.
 
 | tsup (deprecated) | tsdown (preferred) | Notes |
 |--------------------|--------------------|-------|
@@ -119,6 +123,11 @@ export default defineConfig({
 ```
 
 tsdown also adds `deps.onlyBundle` (whitelist of allowed bundled packages) — no tsup equivalent.
+
+Dependency handling defaults in tsdown v0.23+:
+
+- `dependencies`, `peerDependencies`, and **`optionalDependencies`** are all externalized by default (tsup only externalizes `dependencies` and `peerDependencies`, so `optionalDependencies` may switch from bundled to external after migration).
+- `deps.resolveDepSubpath` (resolving subpath imports of externalized packages without an `exports` field) is **disabled by default**.
 
 ### Plugin Import Transforms
 
@@ -252,8 +261,9 @@ Use this checklist when performing a migration:
 - [ ] Set explicit defaults to preserve tsup behavior (format, clean, dts, target)
 - [ ] Remove unsupported options (splitting, metafile, swc, etc.)
 - [ ] Update package.json scripts (tsup→tsdown)
-- [ ] Update package.json dependencies (tsdown@^0.22.13)
+- [ ] Update package.json dependencies (Stage 1: tsdown@0.22.14)
 - [ ] Rename root-level tsup config field if present
-- [ ] Run tsdown and verify build output
+- [ ] Run tsdown on 0.22.14 and resolve every deprecation warning (zero warnings required)
+- [ ] Upgrade to the latest tsdown (^0.23.0 or newer) and verify the build again
 - [ ] Suggest new tsdown features to the user
 ```

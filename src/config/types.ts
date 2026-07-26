@@ -246,6 +246,13 @@ export interface UserConfig {
   define?: Record<string, string>
 
   /**
+   * Inject CJS `__dirname` and `__filename` shims into ESM output.
+   * Only applies when {@linkcode platform} is set to `node`.
+   *
+   * Note: `import.meta.url`, `import.meta.dirname`, and `import.meta.filename`
+   * are always shimmed in CJS output, regardless of this option.
+   *
+   * @see https://tsdown.dev/options/shims
    * @default false
    */
   shims?: boolean
@@ -318,7 +325,8 @@ export interface UserConfig {
   checks?: ChecksOptions & {
     /**
      * If the config includes the `cjs` format and
-     * one of its target >= node 20.19.0 / 22.12.0,
+     * one of its targets is a Node.js version that supports `require(esm)`
+     * (`^20.19.0 || >=22.12.0`),
      * warn the user about the deprecation of CommonJS.
      *
      * @default true
@@ -529,9 +537,10 @@ export interface UserConfig {
   /**
    * Enables generation of TypeScript declaration files (`.d.ts`).
    *
-   * By default, this option is auto-detected based on your project's `package.json`:
+   * By default, this option is auto-detected:
    * - If {@linkcode exe} is enabled, declaration file generation is disabled by default.
-   * - If the `types` field is present, or if the main `exports` contains a `types` entry, declaration file generation is enabled by default.
+   * - If the `types` or `typings` field is present in `package.json`, or if its `exports` field contains a `types` entry, declaration file generation is enabled by default.
+   * - Otherwise, if the resolved `tsconfig.json` has `declaration: true`, declaration file generation is enabled by default.
    * - Otherwise, declaration file generation is disabled by default.
    */
   dts?: WithEnabled<DtsOptions>
@@ -627,10 +636,12 @@ export interface UserConfig {
   // tsup compatibility
 
   /**
+   * Cannot be combined with `deps.neverBundle`; setting both throws an error.
    * @deprecated Use {@linkcode DepsConfig.neverBundle | deps.neverBundle} instead.
    */
   external?: ExternalOption
   /**
+   * Cannot be combined with `deps.alwaysBundle`; setting both throws an error.
    * @deprecated Use {@linkcode DepsConfig.alwaysBundle | deps.alwaysBundle} instead.
    */
   noExternal?: Arrayable<string | RegExp> | NoExternalFn

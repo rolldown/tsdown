@@ -6,9 +6,9 @@ This document contains information about how these skills were generated and how
 
 **Generated from documentation at:**
 
-- **Commit SHA**: `8e3fa9c0ccdb46da199a4220d0c4e2775c6bab89`
-- **Date**: 2026-03-08
-- **Commit**: refactor(css): improve LightningCSSOptions
+- **Commit SHA**: `826755e`
+- **Date**: 2026-07-27
+- **Commit**: perf: remove `asyncDispose` polyfill (v0.23.0-beta.1)
 
 **Source documentation:**
 
@@ -16,7 +16,7 @@ This document contains information about how these skills were generated and how
 - Project README: `/README.md`
 - CLAUDE.md: `/CLAUDE.md`
 
-**Generation date**: 2026-03-08
+**Generation date**: 2026-07-27
 
 ## Structure
 
@@ -26,7 +26,7 @@ skills/
 ├── tsdown/
 │   ├── README.md               # User-facing README
 │   ├── SKILL.md                # Main skill file with quick reference
-│   └── references/             # Detailed reference documentation (36 files)
+│   └── references/             # Detailed reference documentation (38 files)
 └── tsdown-migrate/
     ├── README.md               # User-facing README
     ├── SKILL.md                # Migration knowledge base for AI agents
@@ -51,7 +51,7 @@ Files are prefixed by category:
 - `guide-migrate-from-tsup.md` - Migration guide and compatibility
 - `guide-introduction.md` - Why tsdown, key features
 
-### Configuration Options (21 files)
+### Configuration Options (23 files)
 
 - `option-entry.md` - Entry point configuration
 - `option-output-format.md` - Output formats (ESM, CJS, IIFE, UMD)
@@ -64,6 +64,7 @@ Files are prefixed by category:
 - `option-tree-shaking.md` - Tree shaking configuration
 - `option-dependencies.md` - External and inline dependencies
 - `option-cleaning.md` - Output directory cleaning
+- `option-copy.md` - Copy static files to output directory
 - `option-watch-mode.md` - Watch mode configuration
 - `option-config-file.md` - Config file formats and loading
 - `option-shims.md` - ESM/CJS compatibility shims
@@ -105,13 +106,13 @@ When tsdown documentation changes:
 
 ```bash
 # Get changes in docs since generation
-git diff 8e3fa9c..HEAD -- docs/
+git diff 826755e..HEAD -- docs/
 
 # List changed files
-git diff --name-only 8e3fa9c..HEAD -- docs/
+git diff --name-only 826755e..HEAD -- docs/
 
 # Get summary of changes
-git log --oneline 8e3fa9c..HEAD -- docs/
+git log --oneline 826755e..HEAD -- docs/
 ```
 
 ### 2. Update Process
@@ -154,8 +155,9 @@ git log --oneline 8e3fa9c..HEAD -- docs/
 | ---------- | ------- | ---------------------------------------------------------------------- |
 | 2026-03-08 | 8e3fa9c | Full refresh: all docs reviewed, 35 reference files, complete coverage |
 | 2026-03-16 | — | Added tsdown-migrate skill with 3 reference files for AI-driven migration |
+| 2026-07-27 | 826755e | Refresh for v0.23: removed tsup compat options, `skipNodeModulesBundle`, `deps.onlyAllowBundle`, `dts.cjsReexport`; added `option-copy.md`; new `deps` options (`neverBundle: true`, `onlyImport`, `resolveDepSubpath`), `tsx` config loader, `--concurrency`, CSS modules, exe custom Node source; Node.js `^22.18.0 \|\| ^24.11.0 \|\| >=26.0.0`; two-stage tsup migration via v0.22.14 |
 
 ---
 
-Last updated: 2026-03-08
-Current SHA: 8e3fa9c
+Last updated: 2026-07-27
+Current SHA: 826755e

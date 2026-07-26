@@ -61,9 +61,13 @@ tsdown --target <target>
 
 ### 支持的目标
 
-- ECMAScript 版本：`es2015`、`es2020`、`esnext` 等
-- 浏览器版本：`chrome100`、`safari18`、`firefox110` 等
-- Node.js 版本：`node20.18`、`node16` 等
+tsdown（Rolldown）使用 [Oxc](https://oxc.rs/docs/guide/usage/transformer/lowering#target) 进行语法降级。支持以下环境名称（可附带版本号，例如 `chrome100`、`node18`、`es2020`）：
+
+- ECMAScript 版本：`es2015`、`es2016`、...、`es2025`、`esnext`
+- 浏览器：`chrome`、`edge`、`firefox`、`ie`、`ios`、`opera`、`safari`、`samsung`
+- 运行时：`node`、`deno`、`hermes`、`rhino`
+
+此外，还支持特殊目标 `baseline-widely-available`。它会展开为 [Baseline Widely available](https://web.dev/baseline) 覆盖的浏览器版本（例如 `chrome111`、`edge111`、`firefox114`、`safari16.4`、`ios16.4`）。
 
 ### 示例
 

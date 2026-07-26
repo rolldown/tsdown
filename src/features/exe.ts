@@ -37,7 +37,7 @@ export interface ExeOptions extends ExeExtensionOptions {
 /**
  * See also [Node.js SEA Documentation](https://nodejs.org/api/single-executable-applications.html#generating-single-executable-applications-with---build-sea)
  *
- * Note some default values are different from Node.js defaults to optimize for typical use cases (e.g. disabling experimental warning, enabling code cache). These can be overridden.
+ * Note some default values are different from Node.js defaults to optimize for typical use cases (e.g. disabling the experimental SEA warning). These can be overridden.
  */
 export interface SeaConfig {
   main?: string

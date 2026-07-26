@@ -99,18 +99,19 @@ export default defineConfig({
 
 ## React Compiler
 
-React Compiler automatically optimizes React code at build time.
+React Compiler automatically optimizes React code at build time. It is currently available only as a Babel plugin. You can scaffold the `react-compiler` starter template (`npx create-tsdown@latest -t react-compiler`) or integrate it manually.
 
 ### Install Dependencies
 
 ```bash
-pnpm add -D @rollup/plugin-babel babel-plugin-react-compiler
+pnpm add -D @rolldown/plugin-babel @vitejs/plugin-react
 ```
 
 ### Configure
 
 ```ts
-import pluginBabel from '@rollup/plugin-babel'
+import pluginBabel from '@rolldown/plugin-babel'
+import { reactCompilerPreset } from '@vitejs/plugin-react'
 
 export default defineConfig({
   entry: ['src/index.tsx'],
@@ -120,13 +121,7 @@ export default defineConfig({
   },
   plugins: [
     pluginBabel({
-      babelHelpers: 'bundled',
-      parserOpts: {
-        sourceType: 'module',
-        plugins: ['jsx', 'typescript'],
-      },
-      plugins: ['babel-plugin-react-compiler'],
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      presets: [reactCompilerPreset()],
     }),
   ],
   dts: true,

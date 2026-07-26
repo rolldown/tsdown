@@ -2,14 +2,14 @@
 
 This directory contains detailed reference documentation for the tsdown skill.
 
-## Created Files (35 total)
+## Created Files (38 total)
 
 ### Core Guides (3)
 - ✅ `guide-getting-started.md` - Installation, first bundle, CLI basics
 - ✅ `guide-migrate-from-tsup.md` - Migration guide from tsup
 - ✅ `guide-introduction.md` - Introduction and key features
 
-### Configuration Options (20)
+### Configuration Options (22)
 - ✅ `option-config-file.md` - Config file formats, loaders, workspace
 - ✅ `option-entry.md` - Entry point configuration with globs
 - ✅ `option-output-format.md` - Output formats (ESM, CJS, IIFE, UMD)
@@ -27,6 +27,8 @@ This directory contains detailed reference documentation for the tsdown skill.
 - ✅ `option-package-exports.md` - Auto-generate package.json exports
 - ✅ `option-css.md` - CSS handling (experimental, full pipeline: preprocessors, Lightning CSS, PostCSS, code splitting)
 - ✅ `option-unbundle.md` - Preserve directory structure
+- ✅ `option-root.md` - Root directory for output structure mapping
+- ✅ `option-copy.md` - Copy static files to output
 - ✅ `option-cjs-default.md` - CommonJS default export handling
 - ✅ `option-log-level.md` - Logging configuration
 - ✅ `option-lint.md` - Package validation (publint & attw)
@@ -56,7 +58,7 @@ This directory contains detailed reference documentation for the tsdown skill.
 
 ## Coverage Status
 
-**Created:** 35 files (100% complete)
+**Created:** 38 files (100% complete)
 
 ## Current Skill Features
 

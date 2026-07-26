@@ -28,6 +28,7 @@ tsdown 通过 `CI` 环境变量检测 CI 环境。当 `process.env.CI` 被设置
 - [`exports`](/zh-CN/options/package-exports) — 自动生成 `package.json` exports 字段
 - `unused` — 未使用依赖检查
 - `devtools` — DevTools 集成
+- [`exe`](/zh-CN/options/exe) — 独立可执行文件生成
 - `failOnWarn` — 遇警告时失败（默认值为 `false`）
 
 ### 基本用法

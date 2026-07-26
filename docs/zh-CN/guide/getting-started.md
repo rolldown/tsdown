@@ -1,9 +1,5 @@
 # 快速上手
 
-:::warning 🚧 测试版软件
-[Rolldown](https://rolldown.rs) 当前处于测试阶段。虽然它已经可以满足大多数生产环境的使用需求，但仍可能存在一些 bug 或不完善之处。
-:::
-
 ## 安装
 
 有多种方式可以开始使用 `tsdown`：
@@ -59,7 +55,7 @@ bun add -D typescript
 :::
 
 :::tip 兼容性说明
-**运行** `tsdown` 需要 Node.js 22.18.0 或更高版本。请确保您的开发环境满足此要求后再进行安装。虽然 `tsdown` 主要在 Node.js 下测试，但对 Deno 和 Bun 的支持仍为实验性，可能无法正常工作。
+**运行** `tsdown` 需要 Node.js `^22.18.0 || ^24.11.0 || >=26.0.0`（不支持 Node.js 23、25 等奇数版本）。请确保您的开发环境满足此要求后再进行安装。虽然 `tsdown` 主要在 Node.js 下测试，但对 Deno 和 Bun 的支持仍为实验性，可能无法正常工作。
 
 不过，这一要求仅作用于构建时的运行环境。通过 [`target`](../options/target.md) 选项，构建产物可以运行在更低版本的 Node.js 上，因此使用 `tsdown` 构建的库在运行时并不会被锁死在 Node.js 22+。
 
@@ -166,7 +162,7 @@ node dist/index.mjs
     "build": "tsdown"
   },
   "devDependencies": {
-    "tsdown": "^0.9.0"
+    "tsdown": "^0.23.0"
   }
 }
 ```

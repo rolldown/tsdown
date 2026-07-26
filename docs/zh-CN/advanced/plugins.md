@@ -56,5 +56,28 @@ export default defineConfig({
 
 详细说明请参阅 [Rolldown 插件开发指南](https://rolldown.rs/apis/plugin-api)。
 
+### tsdown 专属钩子
+
+除了 Rolldown 的生命周期外，插件还可以实现两个 tsdown 专属钩子，其设计参考了 Vite 的 [`config`](https://vite.dev/guide/api-plugin.html#config) 和 [`configResolved`](https://vite.dev/guide/api-plugin.html#configresolved) 钩子：
+
+- **`tsdownConfig(config, inlineConfig)`** — 在用户配置解析之前调用。该钩子可以直接原地修改 `config`，也可以返回一个部分配置，该配置将被深度合并到当前配置中。第二个参数是传递给 `build()` 的原始内联配置（通常为 CLI 参数）。
+- **`tsdownConfigResolved(resolvedConfig)`** — 在 tsdown 完全解析配置之后调用，每种输出格式各调用一次。适合用于读取最终配置；不支持在此进行修改。
+
+```ts
+import type { TsdownPlugin } from 'tsdown'
+
+const myPlugin: TsdownPlugin = {
+  name: 'my-plugin',
+  tsdownConfig(config) {
+    // adjust the user config before resolution
+  },
+  tsdownConfigResolved(resolvedConfig) {
+    // read the final resolved config
+  },
+}
+```
+
+这些钩子通过鸭子类型（duck-typing）检测，因此现有的 Rolldown 插件无需任何改动即可继续使用。详细的类型定义请参阅 [`TsdownPlugin`](../reference/api/Interface.TsdownPlugin.md)。
+
 > [!TIP]
 > 插件是扩展 `tsdown` 功能的绝佳方式。无论是使用现有插件还是自定义插件，都可以让您的打包流程更好地适应项目需求。

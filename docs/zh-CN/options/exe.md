@@ -124,11 +124,11 @@ build/
 
 `targets` 数组中的每个 target 接受以下字段：
 
-| 字段          | 类型                           | 描述                                   |
-| ------------- | ------------------------------ | -------------------------------------- |
-| `platform`    | `'win' \| 'darwin' \| 'linux'` | 目标操作系统（与 nodejs.org 命名一致） |
-| `arch`        | `'x64' \| 'arm64'`             | 目标 CPU 架构                          |
-| `nodeVersion` | `string`                       | 使用的 Node.js 版本（必须 `>=25.7.0`） |
+| 字段          | 类型                           | 描述                                                                                                                                    |
+| ------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `platform`    | `'win' \| 'darwin' \| 'linux'` | 目标操作系统（与 nodejs.org 命名一致）                                                                                                  |
+| `arch`        | `'x64' \| 'arm64'`             | 目标 CPU 架构                                                                                                                           |
+| `nodeVersion` | `string`                       | 使用的 Node.js 版本（必须 `>=25.7.0`），或使用 `'latest'` / `'latest-lts'` 从 [nodejs.org](https://nodejs.org/dist/index.json) 自动解析 |
 
 :::warning
 当指定 `targets` 时，`seaConfig.executable` 选项会被忽略——将使用下载的 Node.js 二进制文件。
@@ -137,6 +137,27 @@ build/
 :::tip 注意
 在进行跨平台可执行程序构建时（例如在 darwin-arm64 上生成 linux-x64 的可执行程序），必须将 `useCodeCache` 和 `useSnapshot` 设置为 `false`，以避免生成不兼容的可执行文件。由于代码缓存和快照只能在编译它们的同一平台上加载，生成的可执行文件在尝试加载在不同平台上构建的代码缓存或快照时可能会在启动时崩溃。
 :::
+
+### 自定义下载镜像
+
+默认情况下，Node.js 二进制文件从 [nodejs.org](https://nodejs.org/dist/) 下载。可以通过以下 `exe` 选项使用自定义镜像：
+
+| 选项               | 类型                                    | 默认值                                 | 描述                                                |
+| ------------------ | --------------------------------------- | -------------------------------------- | --------------------------------------------------- |
+| `getDownloadUrl`   | `(target) => string \| Promise<string>` | —                                      | 返回目标平台 Node.js 压缩包的下载 URL               |
+| `nodeDistIndexUrl` | `string`                                | `'https://nodejs.org/dist/index.json'` | 用于解析 `'latest'` / `'latest-lts'` 版本的发布索引 |
+
+```ts [tsdown.config.ts]
+export default defineConfig({
+  entry: ['src/cli.ts'],
+  exe: {
+    targets: [{ platform: 'linux', arch: 'x64', nodeVersion: 'latest-lts' }],
+    getDownloadUrl: ({ platform, arch, nodeVersion }) =>
+      `https://npmmirror.com/mirrors/node/v${nodeVersion}/node-v${nodeVersion}-${platform}-${arch}.tar.xz`,
+    nodeDistIndexUrl: 'https://npmmirror.com/mirrors/node/index.json',
+  },
+})
+```
 
 ### 缓存
 

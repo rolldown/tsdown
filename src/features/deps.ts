@@ -61,8 +61,9 @@ export interface DepsConfig {
    * Whitelist of dependencies allowed to be bundled from `node_modules`.
    * Throws an error if any unlisted dependency is bundled.
    *
-   * - `undefined` (default): Show warnings for bundled dependencies.
-   * - `false`: Suppress all warnings about bundled dependencies.
+   * - `undefined` (default): Log an info-level hint if any `node_modules`
+   *   dependencies are bundled.
+   * - `false`: Disable the hint and all checks about bundled dependencies.
    *
    * Note: Be sure to include all required sub-dependencies as well.
    */

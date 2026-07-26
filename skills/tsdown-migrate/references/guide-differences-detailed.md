@@ -22,6 +22,12 @@ Comprehensive comparison of tsdown and tsup for understanding migration impact a
 | `dts` | `false` | Auto if `types`/`typings` in package.json | Types generated automatically — usually desired |
 | `target` | _(none)_ | Reads `engines.node` from package.json | Compilation target auto-detected — usually desired |
 
+### Dependency Handling Defaults (tsdown v0.23+)
+
+- `dependencies`, `peerDependencies`, and `optionalDependencies` are all externalized by default. tsup only externalizes `dependencies` and `peerDependencies`, so `optionalDependencies` may switch from bundled to external after migration.
+- Other imports resolved from `node_modules` are bundled with a warning, unless whitelisted via `deps.onlyBundle`.
+- `deps.resolveDepSubpath` (resolving subpath imports of externalized packages without an `exports` field) is disabled by default.
+
 ## Feature Compatibility
 
 ### Fully Supported (works the same)
@@ -53,11 +59,11 @@ Comprehensive comparison of tsdown and tsup for understanding migration impact a
 | CSS inject | `injectStyle` | `css: { inject: true }` | Moved to css namespace |
 | Skip node_modules | `skipNodeModulesBundle` | `deps.neverBundle: true` | Externalize all dependencies |
 
-None of the old names work in the latest tsdown. Those that previously emitted deprecation warnings (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted up to tsdown v0.22.13.
+None of the old names in this table are recognized by tsdown v0.23+. The compatibility options (`outExtension`, `skipNodeModulesBundle`, `publicDir`, `bundle`, `removeNodeProtocol`, `injectStyle`) were accepted with deprecation warnings up to v0.22.14 and removed entirely in v0.23 — on v0.23+ leftovers are silently ignored at runtime. Always emit the tsdown names, and migrate in two stages (build on `tsdown@0.22.14` until zero deprecation warnings remain, then upgrade to `^0.23.0`+ — see SKILL.md).
 
-### Deprecated but Compatible
+### Deprecated but Still Accepted
 
-These tsup options still work in tsdown but emit deprecation warnings. They will be removed in a future version — migrate immediately.
+`external` and `noExternal` are the only tsup option names tsdown v0.23 still accepts. They emit deprecation warnings, will be removed in a future version, and cannot be combined with their replacements (mixing them throws an error) — migrate immediately.
 
 | Feature | tsup (deprecated) | tsdown (preferred) | Change |
 |---------|-------------------|--------------------|--------|
