@@ -34,9 +34,6 @@ import {
 import { debounce, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
 
-const asyncDispose: typeof Symbol.asyncDispose =
-  Symbol.asyncDispose || Symbol.for('Symbol.asyncDispose')
-
 /**
  * Build with tsdown.
  */
@@ -109,7 +106,7 @@ export async function buildWithConfigs(
     // Watch mode with shortcuts
     disposeCbs.push(shortcuts(restart))
     for (const bundle of bundles) {
-      disposeCbs.push(bundle[asyncDispose])
+      disposeCbs.push(bundle[Symbol.asyncDispose])
     }
   } else if (firstDevtoolsConfig) {
     typeAssert(firstDevtoolsConfig.devtools)
@@ -157,7 +154,7 @@ async function buildSingle(
     chunks,
     config,
     inlinedDeps: new Map(),
-    async [asyncDispose]() {
+    async [Symbol.asyncDispose]() {
       debouncedPostBuild.cancel()
       ab?.abort()
       await watcher?.close()
