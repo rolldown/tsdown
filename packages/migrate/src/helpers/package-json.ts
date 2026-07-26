@@ -8,7 +8,7 @@ import { outputDiff, renameKey } from '../utils.ts'
 // Migrated projects are pinned to the last v0.22.x release, which still
 // accepts deprecated tsup-compatible options (with warnings). Users should
 // resolve all deprecation warnings on this version before upgrading tsdown.
-const TSDOWN_VERSION = '^0.22.13'
+const TSDOWN_VERSION = '0.22.14'
 
 const DEP_FIELDS = {
   dependencies: TSDOWN_VERSION,
