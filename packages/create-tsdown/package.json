@@ -26,15 +26,6 @@
     },
     "./package.json": "./package.json"
   },
-  "types": "./dist/index.d.mts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*.d.mts",
-        "./*"
-      ]
-    }
-  },
   "bin": {
     "create-tsdown": "./src/run.ts"
   },

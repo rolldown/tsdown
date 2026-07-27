@@ -39,15 +39,6 @@
     "./package.json": "./package.json",
     "./client": "./client.d.ts"
   },
-  "types": "./dist/index.d.mts",
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*.d.mts",
-        "./*"
-      ]
-    }
-  },
   "bin": {
     "tsdown": "./src/run.ts"
   },
