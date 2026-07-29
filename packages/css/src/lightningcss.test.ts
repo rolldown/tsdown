@@ -1,6 +1,10 @@
+import path from 'node:path'
 import { browserslistToTargets } from 'lightningcss'
 import { expect, test } from 'vitest'
+import { globalLogger } from '../../../src/utils/logger.ts'
+import { writeFixtures } from '../../../tests/utils.ts'
 import {
+  bundleWithLightningCSS,
   esbuildTargetToLightningCSS,
   transformWithLightningCSS,
 } from './lightningcss.ts'
@@ -56,4 +60,20 @@ test('transformWithLightningCSS omits the map by default', async () => {
     },
   )
   expect(result.map).toBeUndefined()
+})
+
+test('bundleWithLightningCSS tracks @import-ed files as dependencies', async (context) => {
+  const { testDir } = await writeFixtures(context, {
+    'styles.css': `@import './partial.css';`,
+    'partial.css': `body { color: red }`,
+  })
+
+  const result = await bundleWithLightningCSS(
+    path.join(testDir, 'styles.css'),
+    {
+      logger: globalLogger,
+    },
+  )
+
+  expect(result.deps).toContain(path.join(testDir, 'partial.css'))
 })
