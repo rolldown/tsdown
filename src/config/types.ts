@@ -728,7 +728,7 @@ export type ResolvedConfig = Overwrite<
     nodeProtocol: 'strip' | boolean
     logger: Logger
     ignoreWatch: Array<string | RegExp>
-    deps: ResolvedDepsConfig
+    deps: Omit<ResolvedDepsConfig, 'dts'> & { dts?: ResolvedDepsConfig['dts'] }
     /**
      * Resolved root directory of input files
      */
