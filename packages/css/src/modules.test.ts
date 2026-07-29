@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { modulesToEsm } from './modules.ts'
+import { applyLocalsConvention, modulesToEsm } from './modules.ts'
 
 describe('modulesToEsm', () => {
   test('exports arbitrary module keys via aliased bindings', () => {
@@ -22,5 +22,38 @@ describe('modulesToEsm', () => {
     expect(code).toContain(
       'export default {"default":"mod_default","title":"mod_title","await":"mod_await","foo-bar":"mod_foo_bar"};',
     )
+  })
+})
+
+describe('applyLocalsConvention', () => {
+  test('camelCaseOnly exports only the camelized key', () => {
+    const result = applyLocalsConvention(
+      { 'foo-bar': 'a', baz: 'b' },
+      'camelCaseOnly',
+      'style.module.css',
+    )
+    expect(result).toEqual({ fooBar: 'a', baz: 'b' })
+  })
+
+  test('function convention maps each key through the callback', () => {
+    const result = applyLocalsConvention(
+      { 'foo-bar': 'a', baz: 'b' },
+      (name) => name.toUpperCase(),
+      'style.module.css',
+    )
+    expect(result).toEqual({ 'FOO-BAR': 'a', BAZ: 'b' })
+  })
+
+  test('function convention receives class name, scoped name, and filename', () => {
+    const calls: Array<[string, string, string]> = []
+    applyLocalsConvention(
+      { 'foo-bar': 'scoped_foo_bar' },
+      (original, generated, file) => {
+        calls.push([original, generated, file])
+        return original
+      },
+      'style.module.css',
+    )
+    expect(calls).toEqual([['foo-bar', 'scoped_foo_bar', 'style.module.css']])
   })
 })

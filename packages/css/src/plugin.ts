@@ -178,6 +178,7 @@ export function CssPlugin(
             modules = applyLocalsConvention(
               modules,
               modulesConfig.localsConvention,
+              cleanId,
             )
           }
           modulesConfig?.getJSON?.(cleanId, modules, cleanId)

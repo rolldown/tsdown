@@ -12,6 +12,17 @@ export type LightningCSSOptions = Omit<
   'filename' | 'code'
 >
 
+export type CSSModulesLocalsConvention =
+  | 'camelCase'
+  | 'camelCaseOnly'
+  | 'dashes'
+  | 'dashesOnly'
+  | ((
+      originalClassName: string,
+      generatedClassName: string,
+      inputFile: string,
+    ) => string)
+
 export interface CSSModulesOptions {
   /**
    * Controls the scoping behavior.
@@ -39,7 +50,7 @@ export interface CSSModulesOptions {
   /**
    * Transform convention for exported class names.
    */
-  localsConvention?: 'camelCase' | 'camelCaseOnly' | 'dashes' | 'dashesOnly'
+  localsConvention?: CSSModulesLocalsConvention
 
   /**
    * Whether to include global class names in the export.

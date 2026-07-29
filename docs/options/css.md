@@ -386,6 +386,21 @@ Controls how class names are exported in JavaScript:
 | `'dashes'`        | `foo-bar` | `foo-bar`, `fooBar` |
 | `'dashesOnly'`    | `foo-bar` | `fooBar`            |
 
+A function can also be passed to derive the exported name from each class name:
+
+```ts
+export default defineConfig({
+  css: {
+    modules: {
+      localsConvention: (originalClassName, generatedClassName, inputFile) =>
+        originalClassName.replaceAll(/-([a-z0-9])/g, (_, char) =>
+          char.toUpperCase(),
+        ),
+    },
+  },
+})
+```
+
 ### `generateScopedName`
 
 When using `transformer: 'lightningcss'` (default), this accepts a Lightning CSS [pattern string](https://lightningcss.dev/css-modules.html#custom-naming-conventions) (e.g., `'[hash]_[local]'`).
