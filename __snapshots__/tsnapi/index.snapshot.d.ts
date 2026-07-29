@@ -228,7 +228,9 @@ export type ResolvedConfig = Overwrite<MarkPartial<Omit<UserConfig, "workspace" 
   nodeProtocol: "strip" | boolean;
   logger: Logger;
   ignoreWatch: Array<string | RegExp>;
-  deps: ResolvedDepsConfig;
+  deps: Omit<ResolvedDepsConfig, "dts"> & {
+    dts?: ResolvedDepsConfig["dts"];
+  };
   root: string;
   configDeps: Set<string>;
   runBuild: ConcurrencyExecutor;
