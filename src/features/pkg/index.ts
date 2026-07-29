@@ -80,10 +80,9 @@ export async function bundleDone(
     }
 
     const chunks: ChunksByFormat = {}
-    const inlinedDeps = mergeInlinedDeps(ctx.bundles)
-    for (const bundle of ctx.bundles) {
-      if (!bundle.config.exports) continue
-
+    const exportsBundles = ctx.bundles.filter((bundle) => bundle.config.exports)
+    const inlinedDeps = mergeInlinedDeps(exportsBundles)
+    for (const bundle of exportsBundles) {
       chunks[bundle.config.format] ||= []
       chunks[bundle.config.format]!.push(...bundle.chunks)
     }
