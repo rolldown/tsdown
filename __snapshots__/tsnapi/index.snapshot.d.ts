@@ -91,6 +91,7 @@ export interface ReportOptions {
   gzip?: boolean;
   brotli?: boolean;
   maxCompressSize?: number;
+  summary?: boolean;
 }
 export interface ResolvedDepsConfig extends Pick<DepsConfig, "neverBundle" | "resolveDepSubpath"> {
   alwaysBundle?: NoExternalFn;

@@ -49,12 +49,21 @@ export interface ReportOptions {
    * @default 1_000_000 // 1 MB
    */
   maxCompressSize?: number
+
+  /**
+   * Only report the total size, skipping the per-file breakdown.
+   * Useful for libraries that emit many files in unbundle mode.
+   *
+   * @default false
+   */
+  summary?: boolean
 }
 
 const defaultOptions = {
   gzip: true,
   brotli: false,
   maxCompressSize: 1_000_000,
+  summary: false,
 } as const satisfies Required<ReportOptions>
 
 export function ReportPlugin(
@@ -131,20 +140,22 @@ export async function outputReport(
   const formatLabel =
     isDualFormat && prettyFormat(cjsDts ? 'cjs' : config.format)
 
-  for (const size of sizes) {
-    const filenameColor = size.dts ? green : noop
-    const filename = path.normalize(size.filename)
+  if (!options.summary) {
+    for (const size of sizes) {
+      const filenameColor = size.dts ? green : noop
+      const filename = path.normalize(size.filename)
 
-    config.logger.info(
-      config.nameLabel,
-      formatLabel,
-      dim(outDir + path.sep) +
-        filenameColor((size.isEntry ? bold : noop)(filename)),
-      ` `.repeat(filenameLength - size.filename.length),
-      dim(size.rawText),
-      options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,
-      options.brotli && size.brotliText && dim`│ brotli: ${size.brotliText}`,
-    )
+      config.logger.info(
+        config.nameLabel,
+        formatLabel,
+        dim(outDir + path.sep) +
+          filenameColor((size.isEntry ? bold : noop)(filename)),
+        ` `.repeat(filenameLength - size.filename.length),
+        dim(size.rawText),
+        options.gzip && size.gzipText && dim`│ gzip: ${size.gzipText}`,
+        options.brotli && size.brotliText && dim`│ brotli: ${size.brotliText}`,
+      )
+    }
   }
 
   const totalSizeText = formatBytes(totalRaw)
