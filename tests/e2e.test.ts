@@ -658,7 +658,7 @@ test('resolve paths in tsconfig', async (context) => {
     context,
     files,
     options: {
-      dts: { oxc: true },
+      dts: { generator: 'oxc' },
       tsconfig: 'tsconfig.build.json',
     },
   })
