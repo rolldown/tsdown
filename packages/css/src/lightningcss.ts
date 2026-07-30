@@ -101,6 +101,9 @@ export async function bundleWithLightningCSS(
     sourceMap: options.sourceMap,
     resolver: {
       async read(filePath: string) {
+        if (filePath !== filename) {
+          deps.push(filePath)
+        }
         let fileCode: string
         if (code != null && filePath === filename) {
           fileCode = code
