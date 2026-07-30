@@ -80,7 +80,9 @@ export async function processWithPostCSS(
   let modules: Record<string, string> | undefined
 
   if (modulesOptions?.isModule) {
-    const postcssModules: any = await importWithError('postcss-modules')
+    const postcssModules = await importWithError<{
+      default: typeof import('postcss-modules')
+    }>('postcss-modules')
     const userGetJSON = modulesOptions.config?.getJSON
     plugins.push(
       (postcssModules.default ?? postcssModules)({

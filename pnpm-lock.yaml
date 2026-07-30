@@ -65,8 +65,8 @@ catalogs:
       specifier: ^16.1.1
       version: 16.1.1
     postcss-modules:
-      specifier: ^6.0.1
-      version: 6.0.1
+      specifier: ^9.0.1
+      version: 9.0.1
     prettier:
       specifier: ^3.9.6
       version: 3.9.6
@@ -355,7 +355,7 @@ importers:
         version: 16.1.1(postcss@8.5.25)
       postcss-modules:
         specifier: catalog:dev
-        version: 6.0.1(postcss@8.5.25)
+        version: 9.0.1(postcss@8.5.25)
       prettier:
         specifier: catalog:dev
         version: 3.9.6
@@ -481,8 +481,8 @@ importers:
         specifier: catalog:prod
         version: 6.0.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.1)(yaml@2.9.0)
       postcss-modules:
-        specifier: ^6.0.0
-        version: 6.0.1(postcss@8.5.25)
+        specifier: ^6.0.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
+        version: 9.0.1(postcss@8.5.25)
       rolldown:
         specifier: ~1.2.1
         version: 1.2.1
@@ -4871,8 +4871,9 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
 
-  postcss-modules@6.0.1:
-    resolution: {integrity: sha512-zyo2sAkVvuZFFy0gc2+4O+xar5dYlaVy/ebO24KT0ftk/iJevSNyPyQellsBLlnccwh7f6V6Y4GvuKRYToNgpQ==}
+  postcss-modules@9.0.1:
+    resolution: {integrity: sha512-BrSXxWSls23TzqMuplpeMRL5VHnDOLh2H9EiHNTMIdLBFumJcurDIi47TBuvkn9GsoTLAoPjv2wLzAt1wdQ2aQ==}
+    engines: {node: '>=20.6'}
     peerDependencies:
       postcss: ^8.0.0
 
@@ -9952,7 +9953,7 @@ snapshots:
       icss-utils: 5.1.0(postcss@8.5.25)
       postcss: 8.5.25
 
-  postcss-modules@6.0.1(postcss@8.5.25):
+  postcss-modules@9.0.1(postcss@8.5.25):
     dependencies:
       generic-names: 4.0.0
       icss-utils: 5.1.0(postcss@8.5.25)
