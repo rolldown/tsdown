@@ -386,6 +386,25 @@ export default defineConfig({
 | `'dashes'`        | `foo-bar` | `foo-bar`、`fooBar` |
 | `'dashesOnly'`    | `foo-bar` | `fooBar`            |
 
+你也可以通过函数生成自定义导出名称。该函数接收原始类名、生成的作用域类名和输入文件：
+
+```ts
+export default defineConfig({
+  css: {
+    modules: {
+      localsConvention: (originalClassName, generatedClassName, inputFile) => {
+        return originalClassName.replaceAll(/-([a-z0-9])/g, (_, character) =>
+          character.toUpperCase(),
+        )
+      },
+    },
+  },
+})
+```
+
+函数形式适用于两种 CSS 转换器。它仅修改导出的 JavaScript 键；
+`generatedClassName` 仍作为该导出的值。
+
 ### `generateScopedName`
 
 使用 `transformer: 'lightningcss'`（默认）时，接受 Lightning CSS [模式字符串](https://lightningcss.dev/css-modules.html#custom-naming-conventions)（如 `'[hash]_[local]'`）。

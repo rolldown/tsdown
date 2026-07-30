@@ -30,6 +30,7 @@ catalogs:
     pkg-types: ^2.3.1
     postcss: ^8.5.25
     postcss-import: ^16.1.1
+    postcss-modules: ^6.0.1
     prettier: ^3.9.6
     rolldown-plugin-require-cjs: ^0.4.1
     sass: ^1.102.0

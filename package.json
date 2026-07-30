@@ -165,6 +165,7 @@
     "pkg-types": "catalog:dev",
     "postcss": "catalog:dev",
     "postcss-import": "catalog:dev",
+    "postcss-modules": "catalog:dev",
     "prettier": "catalog:dev",
     "publint": "catalog:peer",
     "rolldown-plugin-require-cjs": "catalog:dev",

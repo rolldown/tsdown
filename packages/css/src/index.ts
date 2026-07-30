@@ -1,6 +1,7 @@
 export { resolveCssOptions } from './options.ts'
 export { CssPlugin } from './plugin.ts'
 export type {
+  CSSModulesLocalsConvention,
   CSSModulesOptions,
   CssOptions,
   LessPreprocessorOptions,

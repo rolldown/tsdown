@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, type TestContext } from 'vitest'
 import { testBuild } from './utils.ts'
 
 describe('css', () => {
@@ -1687,6 +1687,59 @@ describe('css', () => {
       expect(js).toMatch(/"default"\s*:\s*"design-system-default"/)
       expect(js).toContain('.default')
       expect(css).toContain('.design-system-default')
+    })
+
+    async function testFunctionalLocalsConvention(
+      context: TestContext,
+      transformer: 'lightningcss' | 'postcss',
+    ) {
+      const calls: string[][] = []
+      const jsonCalls: Record<string, string>[] = []
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as styles } from './app.module.css'`,
+          'app.module.css': `.foo-1bar { color: red }`,
+        },
+        options: {
+          css: {
+            transformer,
+            modules: {
+              generateScopedName: 'mod_[local]',
+              getJSON(_cssFileName, json) {
+                jsonCalls.push(json)
+              },
+              localsConvention(
+                originalClassName,
+                generatedClassName,
+                inputFile,
+              ) {
+                calls.push([originalClassName, generatedClassName, inputFile])
+                return originalClassName.replaceAll(
+                  /-([a-z0-9])/g,
+                  (_, character: string) => character.toUpperCase(),
+                )
+              },
+            },
+          },
+        },
+      })
+
+      expect(calls).toHaveLength(1)
+      expect(calls[0]?.[0]).toBe('foo-1bar')
+      expect(calls[0]?.[1]).toBe('mod_foo-1bar')
+      expect(calls[0]?.[2]).toMatch(/app\.module\.css$/)
+      expect(fileMap['index.mjs']).toContain('"foo1bar": "mod_foo-1bar"')
+      expect(fileMap['index.mjs']).not.toContain('"foo-1bar"')
+      expect(jsonCalls).toEqual([{ foo1bar: 'mod_foo-1bar' }])
+    }
+
+    test('css module supports functional locals convention', (context) => {
+      return testFunctionalLocalsConvention(context, 'lightningcss')
+    })
+
+    test('css module supports functional locals convention with postcss', (context) => {
+      return testFunctionalLocalsConvention(context, 'postcss')
     })
   })
 

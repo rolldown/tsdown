@@ -222,6 +222,26 @@ export default defineConfig({
 
 Set `css.modules: false` to disable. Function-form `generateScopedName` requires `transformer: 'postcss'`.
 
+`localsConvention` also accepts a function compatible with Vite and
+`postcss-modules`:
+
+```ts
+export default defineConfig({
+  css: {
+    modules: {
+      localsConvention: (
+        originalClassName,
+        generatedClassName,
+        inputFile,
+      ) => originalClassName.replaceAll(/-([a-z0-9])/g, (_, c) => c.toUpperCase()),
+    },
+  },
+})
+```
+
+The function form works with both CSS transformers and returns the JavaScript
+export key.
+
 ### Optional Dependencies (PostCSS path)
 
 ```bash
