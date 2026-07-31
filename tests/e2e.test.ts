@@ -538,6 +538,43 @@ describe('deps', () => {
       )
       expect(pkg.inlinedDependencies).toBeUndefined()
     })
+
+    test('should not include inlined deps from configs without exports', async (context) => {
+      const { testDir } = await testBuild({
+        context,
+        files: {
+          ...node_modules,
+          'index.ts': `export { lib } from 'my-lib'`,
+          'standalone.ts': `import { lib } from 'my-lib'\nconsole.log(lib)`,
+          'package.json': JSON.stringify({
+            name: 'test-pkg',
+            version: '1.0.0',
+            dependencies: { 'my-lib': '1.2.3' },
+          }),
+          'tsdown.config.ts': `export default [
+          { entry: ['index.ts'], format: ['esm'], exports: true, dts: false },
+          {
+            entry: ['standalone.ts'],
+            format: ['cjs'],
+            outDir: 'dist/standalone',
+            dts: false,
+            deps: { alwaysBundle: [/.*/] },
+          },
+        ]`,
+        },
+        options: {
+          entry: undefined,
+          config: 'tsdown.config.ts',
+          dts: false,
+        },
+        snapshot: false,
+      })
+
+      const pkg = JSON.parse(
+        await readFile(path.join(testDir, 'package.json'), 'utf8'),
+      )
+      expect(pkg.inlinedDependencies).toBeUndefined()
+    })
   })
 })
 
