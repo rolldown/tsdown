@@ -7,7 +7,6 @@ import {
   type InlineConfig,
   type UserConfig,
 } from '../src/config/index.ts'
-import { build } from '../src/index.ts'
 import { slash } from '../src/utils/general.ts'
 import { globalLogger } from '../src/utils/logger.ts'
 import { chdir, testBuild, writeFixtures } from './utils.ts'
@@ -541,16 +540,18 @@ describe('deps', () => {
     })
 
     test('should not include inlined deps from configs without exports', async (context) => {
-      const { testDir } = await writeFixtures(context, {
-        ...node_modules,
-        'index.ts': `export { lib } from 'my-lib'`,
-        'standalone.ts': `import { lib } from 'my-lib'\nconsole.log(lib)`,
-        'package.json': JSON.stringify({
-          name: 'test-pkg',
-          version: '1.0.0',
-          dependencies: { 'my-lib': '1.2.3' },
-        }),
-        'tsdown.config.ts': `export default [
+      const { testDir } = await testBuild({
+        context,
+        files: {
+          ...node_modules,
+          'index.ts': `export { lib } from 'my-lib'`,
+          'standalone.ts': `import { lib } from 'my-lib'\nconsole.log(lib)`,
+          'package.json': JSON.stringify({
+            name: 'test-pkg',
+            version: '1.0.0',
+            dependencies: { 'my-lib': '1.2.3' },
+          }),
+          'tsdown.config.ts': `export default [
           { entry: ['index.ts'], format: ['esm'], exports: true, dts: false },
           {
             entry: ['standalone.ts'],
@@ -560,14 +561,14 @@ describe('deps', () => {
             deps: { alwaysBundle: [/.*/] },
           },
         ]`,
+        },
+        options: {
+          entry: undefined,
+          config: 'tsdown.config.ts',
+          dts: false,
+        },
+        snapshot: false,
       })
-
-      const restoreCwd = chdir(testDir)
-      try {
-        await build({ config: testDir, logLevel: 'silent' })
-      } finally {
-        restoreCwd()
-      }
 
       const pkg = JSON.parse(
         await readFile(path.join(testDir, 'package.json'), 'utf8'),
