@@ -2,6 +2,9 @@
 
 `tsdown` supports building Ember v2 addons (libraries) by integrating [`@nullvoxpopuli/ember-rolldown`](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown). This meta-plugin compiles `.gts`/`.gjs` and template-tag (`<template>`) sources into publishable output — a single `ember()` call replaces the usual stack of `@embroider/*` externals handling, `content-tag` preprocessing, and Babel wiring.
 
+> [!NOTE]
+> The plugin currently targets Ember libraries (v2 addons) only — it hasn't been tested for building apps.
+
 ## Minimal Example
 
 To configure `tsdown` for an Ember library, use the following setup in your `tsdown.config.ts`:

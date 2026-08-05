@@ -2,6 +2,9 @@
 
 `tsdown` 通过集成 [`@nullvoxpopuli/ember-rolldown`](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown) 支持构建 Ember v2 addon（库）。这个元插件（meta-plugin）将 `.gts`/`.gjs` 及模板标签（`<template>`）源码编译为可发布的产物——只需一个 `ember()` 调用，即可取代原本由 `@embroider/*` 外部依赖处理、`content-tag` 预处理和 Babel 配置组成的一整套工具链。
 
+> [!NOTE]
+> 该插件目前仅面向 Ember 库（v2 addon）——尚未针对构建应用（app）进行测试。
+
 ## 最简示例
 
 要为 Ember 库配置 `tsdown`，请在 `tsdown.config.ts` 中使用以下配置：
