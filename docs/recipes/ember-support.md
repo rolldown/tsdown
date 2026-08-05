@@ -12,6 +12,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['./src/index.ts'],
+  dts: true,
   plugins: [ember()],
 })
 ```
@@ -22,11 +23,16 @@ Create a typical Ember component:
 import type { TOC } from '@ember/component/template-only'
 
 export interface BadgeSignature {
+  Element: HTMLSpanElement
   Args: { label: string }
+  Blocks: { default: [] }
 }
 
 export const Badge: TOC<BadgeSignature> = <template>
-  <span class="badge">{{@label}}</span>
+  <span class="badge" ...attributes>
+    {{@label}}
+    {{yield}}
+  </span>
 </template>
 ```
 
