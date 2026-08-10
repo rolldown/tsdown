@@ -119,7 +119,7 @@ export async function attw(
     return
   }
   const {
-    profile = 'strict',
+    profile = 'esm-only',
     level = 'warn',
     ignoreRules = [],
     ...attwOptions
