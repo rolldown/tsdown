@@ -1,7 +1,7 @@
 import path from 'node:path'
-import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { importWithError, slash } from '../../utils/general.ts'
+import { styleText } from '../../utils/style.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type {
   CheckPackageOptions,
@@ -11,7 +11,7 @@ import type {
 import type { Buffer } from 'node:buffer'
 
 const debug = createDebug('tsdown:attw')
-const label = dim`[attw]`
+const label = styleText.dim(`[attw]`)
 
 const problemFlags: Record<ProblemKind, string> = {
   NoResolution: 'no-resolution',
@@ -179,7 +179,7 @@ export async function attw(
       options.nameLabel,
       label,
       'No problems found',
-      dim`(${Math.round(performance.now() - t)}ms)`,
+      styleText.dim(`(${Math.round(performance.now() - t)}ms)`),
     )
   }
 }

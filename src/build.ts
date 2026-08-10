@@ -1,4 +1,3 @@
-import { bold, green } from 'ansis'
 import { clearRequireCache } from 'import-without-cache'
 import {
   build as rolldownBuild,
@@ -33,6 +32,7 @@ import {
 } from './utils/chunks.ts'
 import { debounce, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
+import { styleText } from './utils/style.ts'
 
 /**
  * Build with tsdown.
@@ -175,7 +175,7 @@ async function buildSingle(
   if (!watch) {
     logger.success(
       config.nameLabel,
-      `Build complete in ${green(`${Math.round(performance.now() - startTime)}ms`)}`,
+      `Build complete in ${styleText.green(`${Math.round(performance.now() - startTime)}ms`)}`,
     )
     await postBuild()
   }
@@ -240,7 +240,7 @@ async function buildSingle(
           if (changedFile.length) {
             logger.clearScreen('info')
             logger.info(
-              `Found ${bold(changedFile.join(', '))} changed, rebuilding...`,
+              `Found ${styleText.bold(changedFile.join(', '))} changed, rebuilding...`,
             )
           }
           changedFile.length = 0

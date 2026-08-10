@@ -1,12 +1,12 @@
-import { dim } from 'ansis'
 import { createDebug } from 'obug'
 import { importWithError } from '../../utils/general.ts'
+import { styleText } from '../../utils/style.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type { Buffer } from 'node:buffer'
 import type { Options } from 'publint'
 
 const debug = createDebug('tsdown:publint')
-const label = dim`[publint]`
+const label = styleText.dim(`[publint]`)
 
 export interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {
   module?: [typeof import('publint'), typeof import('publint/utils')]
@@ -46,7 +46,7 @@ export async function publint(
       options.nameLabel,
       label,
       'No issues found',
-      dim`(${Math.round(performance.now() - t)}ms)`,
+      styleText.dim(`(${Math.round(performance.now() - t)}ms)`),
     )
     return
   }

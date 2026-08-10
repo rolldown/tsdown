@@ -1,7 +1,7 @@
 import process from 'node:process'
 import readline from 'node:readline'
-import { bgRed, bgYellow, blue, green, rgb, yellow, type Ansis } from 'ansis'
 import { toArray } from '../utils/general.ts'
+import { styleText, type StyleText } from '../utils/style.ts'
 import { noop } from './general.ts'
 import type { Arrayable } from '../utils/types.ts'
 import type { InternalModuleFormat } from 'rolldown'
@@ -108,7 +108,7 @@ export function createLogger(
     options: resolvedOptions,
 
     info(...msgs: any[]): void {
-      output('info', `${blue`ℹ`}${emojiDivier}${format(msgs)}`)
+      output('info', `${styleText.blue('ℹ')}${emojiDivier}${format(msgs)}`)
     },
 
     warn(...msgs: any[]): void {
@@ -119,7 +119,7 @@ export function createLogger(
         return this.error(...msgs)
       }
       warnedMessages.add(message)
-      output('warn', `\n${bgYellow` WARN `} ${message}\n`)
+      output('warn', `\n${styleText.bgYellow(' WARN ')} ${message}\n`)
     },
 
     warnOnce(...msgs: any[]): void {
@@ -134,16 +134,16 @@ export function createLogger(
       }
       warnedMessages.add(message)
 
-      output('warn', `\n${bgYellow` WARN `} ${message}\n`)
+      output('warn', `\n${styleText.bgYellow(' WARN ')} ${message}\n`)
     },
 
     error(...msgs: any[]): void {
-      output('error', `\n${bgRed` ERROR `} ${format(msgs)}\n`)
+      output('error', `\n${styleText.bgRed(' ERROR ')} ${format(msgs)}\n`)
       process.exitCode = 1
     },
 
     success(...msgs: any[]): void {
-      output('info', `${green`✔`}${emojiDivier}${format(msgs)}`)
+      output('info', `${styleText.green('✔')}${emojiDivier}${format(msgs)}`)
     },
 
     clearScreen(type) {
@@ -157,13 +157,21 @@ export function createLogger(
 
 export const globalLogger: Logger = createLogger()
 
-export function getNameLabel(ansis: Ansis, name?: string): string | undefined {
+export function getNameLabel(
+  styleText: StyleText,
+  name?: string,
+): string | undefined {
   if (!name) return undefined
-  return ansis(`[${name}]`)
+  return styleText(`[${name}]`)
 }
 
 export function prettyFormat(format: InternalModuleFormat): string {
-  const formatColor = format === 'es' ? blue : format === 'cjs' ? yellow : noop
+  const formatColor =
+    format === 'es'
+      ? styleText.blue
+      : format === 'cjs'
+        ? styleText.yellow
+        : noop
 
   let formatText: string
   switch (format) {
@@ -179,14 +187,14 @@ export function prettyFormat(format: InternalModuleFormat): string {
 }
 
 // Copied from https://github.com/antfu/vscode-pnpm-catalog-lens - MIT License
-const colors = new Map<string, Ansis>()
-export function generateColor(name: string = 'default'): Ansis {
+const colors = new Map<string, StyleText>()
+export function generateColor(name: string = 'default'): StyleText {
   if (colors.has(name)) {
     return colors.get(name)!
   }
-  let color: Ansis
+  let color: StyleText
   if (name === 'default') {
-    color = blue
+    color = styleText.blue
   } else {
     let hash = 0
     for (let i = 0; i < name.length; i++)
@@ -195,10 +203,14 @@ export function generateColor(name: string = 'default'): Ansis {
     const hue = hash % 360
     const saturation = 35
     const lightness = 55
-    color = rgb(...hslToRgb(hue, saturation, lightness))
+    color = styleText[rgbToHex(...hslToRgb(hue, saturation, lightness))]
   }
   colors.set(name, color)
   return color
+}
+
+function rgbToHex(r: number, g: number, b: number): `#${string}` {
+  return `#${r.toString(16).padStart(2, '0').slice(0, 2)}${g.toString(16).padStart(2, '0').slice(0, 2)}${b.toString(16).padStart(2, '0').slice(0, 2)}`
 }
 
 function hslToRgb(

@@ -1,12 +1,12 @@
 /* eslint-disable unicorn/no-top-level-side-effects */
 import process from 'node:process'
-import { blue, hex } from 'ansis'
 import { cac } from 'cac'
 import { VERSION as rolldownVersion } from 'rolldown'
 import { x } from 'tinyexec'
 import pkg from '../package.json' with { type: 'json' }
 import { enableDebug } from './features/debug.ts'
 import { globalLogger } from './utils/logger.ts'
+import { styleText } from './utils/style.ts'
 import type { UserConfig } from './config.ts'
 
 const cli = cac('tsdown')
@@ -85,7 +85,9 @@ cli
   .action(async (input: string[], flags: UserConfig) => {
     globalLogger.level = flags.logLevel || 'info'
     globalLogger.info(
-      `${blue`tsdown v${pkg.version}`} powered by ${hex('#ff7e17')`rolldown v${rolldownVersion}`}`,
+      `${styleText.blue(`tsdown v${pkg.version}`)} powered by ${styleText[
+        '#ff7e17,yellow'
+      ](`rolldown v${rolldownVersion}`)}`,
     )
     const { build } = await import('./build.ts')
     if (input.length > 0) flags.entry = input

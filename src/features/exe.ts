@@ -2,7 +2,6 @@ import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
-import { bold, dim, red } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
 import { x } from 'tinyexec'
@@ -10,6 +9,7 @@ import { isGreaterOrEqual, type SemVer } from 'verkit'
 import { formatBytes } from '../utils/format.ts'
 import { fsRemove, fsStat } from '../utils/fs.ts'
 import { importWithError, typeAssert } from '../utils/general.ts'
+import { styleText } from '../utils/style.ts'
 import type { ResolvedConfig, RolldownChunk } from '../config/types.ts'
 import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
 
@@ -275,14 +275,14 @@ async function buildSingleExe(
     const sizeText = formatBytes(stat.size)
     config.logger.info(
       config.nameLabel,
-      bold(path.relative(config.cwd, outputPath)),
-      ` ${dim(sizeText!)}`,
+      styleText.bold(path.relative(config.cwd, outputPath)),
+      ` ${styleText.dim(sizeText!)}`,
     )
   }
 
   config.logger.success(
     config.nameLabel,
-    `Built executable: ${red(path.relative(config.cwd, outputPath))}`,
-    dim`(${Math.round(performance.now() - t)}ms)`,
+    `Built executable: ${styleText.red(path.relative(config.cwd, outputPath))}`,
+    styleText.dim(`(${Math.round(performance.now() - t)}ms)`),
   )
 }

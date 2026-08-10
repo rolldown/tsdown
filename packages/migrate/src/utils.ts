@@ -1,4 +1,4 @@
-import { dim, green, red } from 'ansis'
+import { styleText } from '../../../src/utils/style.ts'
 
 // rename key but keep order
 export function renameKey(
@@ -20,7 +20,12 @@ export function renameKey(
 
 export function outputDiff(text: string): void {
   for (const line of text.split('\n')) {
-    const color = line[0] === '+' ? green : line[0] === '-' ? red : dim
+    const color =
+      line[0] === '+'
+        ? styleText.green
+        : line[0] === '-'
+          ? styleText.red
+          : styleText.dim
     console.info(color(line))
   }
 }

@@ -262,14 +262,14 @@ describe('suppressWarnings', () => {
 
 describe('getNameLabel', () => {
   test('returns undefined for empty name', () => {
-    const ansis = (s: string) => s
-    expect(getNameLabel(ansis as any)).toBeUndefined()
-    expect(getNameLabel(ansis as any, '')).toBeUndefined()
+    const styleText = (s: string) => s
+    expect(getNameLabel(styleText as any)).toBeUndefined()
+    expect(getNameLabel(styleText as any, '')).toBeUndefined()
   })
 
-  test('wraps name in brackets using ansis', () => {
-    const ansis = (s: string) => `styled:${s}`
-    expect(getNameLabel(ansis as any, 'mylib')).toBe('styled:[mylib]')
+  test('wraps name in brackets using styleText', () => {
+    const styleText = (s: string) => `styled:${s}`
+    expect(getNameLabel(styleText as any, 'mylib')).toBe('styled:[mylib]')
   })
 })
 

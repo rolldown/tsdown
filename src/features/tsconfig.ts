@@ -1,7 +1,7 @@
 import path from 'node:path'
-import { blue, type Ansis } from 'ansis'
 import { up as findUp } from 'empathic/find'
 import { fsStat } from '../utils/fs.ts'
+import { styleText, type StyleText } from '../utils/style.ts'
 import type { UserConfig } from '../config/index.ts'
 import type { Logger } from '../utils/logger.ts'
 
@@ -16,7 +16,7 @@ export async function resolveTsconfig(
   logger: Logger,
   tsconfig: UserConfig['tsconfig'],
   cwd: string,
-  color: Ansis,
+  color: StyleText,
   nameLabel?: string,
 ): Promise<string | false> {
   const original = tsconfig
@@ -25,7 +25,7 @@ export async function resolveTsconfig(
     if (tsconfig === true || tsconfig == null) {
       tsconfig = findTsconfig(cwd)
       if (original && !tsconfig) {
-        logger.warn(`No tsconfig found in ${blue(cwd)}`)
+        logger.warn(`No tsconfig found in ${styleText.blue(cwd)}`)
       }
     } else {
       const tsconfigPath = path.resolve(cwd, tsconfig)
@@ -35,12 +35,14 @@ export async function resolveTsconfig(
       } else if (stat?.isDirectory()) {
         tsconfig = findTsconfig(tsconfigPath)
         if (!tsconfig) {
-          logger.warn(`No tsconfig found in ${blue(tsconfigPath)}`)
+          logger.warn(`No tsconfig found in ${styleText.blue(tsconfigPath)}`)
         }
       } else {
         tsconfig = findTsconfig(cwd, tsconfig)
         if (!tsconfig) {
-          logger.warn(`tsconfig ${blue(original)} doesn't exist`)
+          logger.warn(
+            `tsconfig ${styleText.blue(original as string)} doesn't exist`,
+          )
         }
       }
     }

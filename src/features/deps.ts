@@ -1,7 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { isBuiltin } from 'node:module'
 import path from 'node:path'
-import { blue, underline, yellow } from 'ansis'
 import { createDebug } from 'obug'
 import { RE_DTS, RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { and, id, importerId, include } from 'rolldown/filter'
@@ -13,6 +12,7 @@ import {
   toArray,
   typeAssert,
 } from '../utils/general.ts'
+import { styleText } from '../utils/style.ts'
 import { shimFile } from './shims.ts'
 import type { ResolvedConfig, UserConfig } from '../config/types.ts'
 import type { TsdownBundle } from '../utils/chunks.ts'
@@ -260,10 +260,10 @@ export function DepsPlugin(
               }
 
               errors.push(
-                `${yellow(source)} is imported in ${blue(
+                `${styleText.yellow(source)} is imported in ${styleText.blue(
                   chunk.fileName,
-                )} but is not included in ${blue`deps.onlyImport`} option.\n` +
-                  `To fix this, either add it to ${blue`deps.onlyImport`} or bundle it manually by adding it to ${blue`deps.alwaysBundle`} option.`,
+                )} but is not included in ${styleText.blue(`deps.onlyImport`)} option.\n` +
+                  `To fix this, either add it to ${styleText.blue(`deps.onlyImport`)} or bundle it manually by adding it to ${styleText.blue(`deps.alwaysBundle`)} option.`,
               )
             }
           }
@@ -301,10 +301,10 @@ export function DepsPlugin(
               .filter((dep) => !matchPattern(dep, onlyBundle))
               .map(
                 (dep) =>
-                  `${yellow(dep)} is located in ${blue`node_modules`} but is not included in ${blue`deps.onlyBundle`} option.\n` +
-                  `To fix this, either add it to ${blue`deps.onlyBundle`}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
+                  `${styleText.yellow(dep)} is located in ${styleText.blue(`node_modules`)} but is not included in ${styleText.blue(`deps.onlyBundle`)} option.\n` +
+                  `To fix this, either add it to ${styleText.blue(`deps.onlyBundle`)}, declare it as a production or peer dependency in your package.json, or externalize it manually.\n` +
                   `Imported by\n${[...(importers.get(dep) || [])]
-                    .map((s) => `- ${underline(s)}`)
+                    .map((s) => `- ${styleText.underline(s)}`)
                     .join('\n')}`,
               ),
           )
@@ -321,8 +321,8 @@ export function DepsPlugin(
           if (unusedPatterns.length) {
             logger.info(
               nameLabel,
-              `The following entries in ${blue`deps.onlyBundle`} are not used in the bundle:\n${unusedPatterns
-                .map((pattern) => `- ${yellow(pattern)}`)
+              `The following entries in ${styleText.blue(`deps.onlyBundle`)} are not used in the bundle:\n${unusedPatterns
+                .map((pattern) => `- ${styleText.yellow(String(pattern))}`)
                 .join(
                   '\n',
                 )}\nConsider removing them to keep your configuration clean.`,
@@ -331,11 +331,11 @@ export function DepsPlugin(
         } else if (onlyBundle == null && deps.size) {
           logger.info(
             nameLabel,
-            `Hint: consider adding ${blue`deps.onlyBundle`} option to avoid unintended bundling of dependencies, or set ${blue`deps.onlyBundle: false`} to disable this hint.\n` +
-              `See more at ${underline`https://tsdown.dev/options/dependencies#deps-onlybundle`}\n` +
+            `Hint: consider adding ${styleText.blue(`deps.onlyBundle`)} option to avoid unintended bundling of dependencies, or set ${styleText.blue(`deps.onlyBundle: false`)} to disable this hint.\n` +
+              `See more at ${styleText.underline(`https://tsdown.dev/options/dependencies#deps-onlybundle`)}\n` +
               `Detected dependencies in bundle:\n${Array.from(
                 deps,
-                (dep) => `- ${blue(dep)}`,
+                (dep) => `- ${styleText.blue(dep)}`,
               ).join('\n')}`,
           )
         }

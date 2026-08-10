@@ -173,9 +173,6 @@ catalogs:
       specifier: ^0.6.0
       version: 0.6.0
   prod:
-    ansis:
-      specifier: ^4.3.1
-      version: 4.3.1
     cac:
       specifier: ^7.0.0
       version: 7.0.0
@@ -235,9 +232,6 @@ importers:
 
   .:
     dependencies:
-      ansis:
-        specifier: catalog:prod
-        version: 4.3.1
       cac:
         specifier: catalog:prod
         version: 7.0.0
@@ -519,9 +513,6 @@ importers:
       '@ast-grep/napi':
         specifier: catalog:migrate
         version: 0.45.1
-      ansis:
-        specifier: catalog:prod
-        version: 4.3.1
       cac:
         specifier: catalog:prod
         version: 7.0.0
@@ -3104,10 +3095,6 @@ packages:
   ansi-styles@4.3.0:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
-
-  ansis@4.3.1:
-    resolution: {integrity: sha512-BJ8/l4R5LRE7hW9WdSuGYrLSHi2ynxeFpDFbH0K/CgNeY/tyhk+vO6TYxXC5r5CpUhNVX310xzPsN/H9lCdfOA==}
-    engines: {node: '>=14'}
 
   are-docs-informative@0.1.1:
     resolution: {integrity: sha512-sqRsNQBwbKLRX0jV5Cu5uzmtflf892n4Vukz7T659ebL4pz3mpOqCMU7lxMoBTFwnp10E3YB5ZcyHM41W5bcDA==}
@@ -8042,8 +8029,6 @@ snapshots:
   ansi-styles@4.3.0:
     dependencies:
       color-convert: 2.0.1
-
-  ansis@4.3.1: {}
 
   are-docs-informative@0.1.1: {}
 

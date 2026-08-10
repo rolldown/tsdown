@@ -302,7 +302,7 @@ tsdown detects `package.json` in the working directory to:
 ### Utilities (`src/utils/`)
 
 - `fs.ts` - File system utilities (`fsExists()`, `fsStat()`, `fsRemove()`); use instead of Node.js fs directly
-- `logger.ts` - Structured logging (`logger.error()`, `.warn()`, `.info()`, `.debug()`) with colours via `ansis`; respects `logLevel` config
+- `logger.ts` - Structured logging (`logger.error()`, `.warn()`, `.info()`, `.debug()`) with colours via `util.styleText`; respects `logLevel` config
 - `chunks.ts` - Chunk manipulation utilities
 - `ci.ts` - CI environment detection
 - `format.ts` - Formatting utilities (byte sizes, etc.)
