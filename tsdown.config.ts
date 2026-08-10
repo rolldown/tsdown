@@ -1,8 +1,8 @@
 import { RequireCJS } from 'rolldown-plugin-require-cjs'
 import ApiSnapshot from 'tsnapi/rolldown'
-import { isCallOf } from 'unplugin-ast/ast-kit'
 import AST from 'unplugin-ast/rolldown'
 import { RemoveNode } from 'unplugin-ast/transformers'
+import { ast } from 'unplugin-ast/yuku'
 import { defineConfig } from './src/config.ts'
 
 export default defineConfig([
@@ -47,7 +47,7 @@ export default defineConfig([
       ApiSnapshot(),
       AST({
         exclude: ['**/*.d.ts'],
-        transformer: [RemoveNode((node) => isCallOf(node, 'typeAssert'))],
+        transformer: [RemoveNode((node) => ast.isCallOf(node, 'typeAssert'))],
       }),
     ],
   },
