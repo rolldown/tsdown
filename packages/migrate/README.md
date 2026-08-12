@@ -15,6 +15,21 @@ npx tsdown-migrate
 
 - `[...dirs]` - Directories to migrate (defaults to current directory)
 - `-d, --dry-run` - Preview changes without applying them
+- `-y, --yes` - Skip the migration confirmation prompt
+- `--package-manager <name>` - Override package manager auto-detection
+- `--no-install` - Skip dependency installation
+
+For non-interactive environments, explicitly confirm the migration. Use
+`--no-install` when the caller will install dependencies after running other
+migrations:
+
+```bash
+npx tsdown-migrate --yes --no-install
+```
+
+When installation is enabled, `tsdown-migrate` detects the package manager from
+the project's `packageManager` field or lockfile. If detection fails in a
+non-interactive environment, pass `--package-manager <name>` or `--no-install`.
 
 ### What It Does
 
@@ -22,7 +37,7 @@ npx tsdown-migrate
 - Transforms tsup config files to tsdown config format
 - Handles property renames, option transformations, and import path updates
 - Warns about unsupported options that need manual attention
-- Runs package manager install after successful migration
+- Runs package manager install after successful migration unless `--no-install`
 
 ## Documentation
 

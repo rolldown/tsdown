@@ -10,6 +10,9 @@ const cli = cac(pkg.name).version(pkg.version).help()
 cli
   .command('[...dirs]', 'Migrate a project to tsdown')
   .option('-d, --dry-run', 'Perform a dry run without making changes')
+  .option('-y, --yes', 'Skip the migration confirmation prompt')
+  .option('--package-manager <name>', 'Package manager to use for installation')
+  .option('--no-install', 'Skip dependency installation')
   .action((dirs: string[], options: Omit<MigrateOptions, 'dirs'>) =>
     migrate({ ...options, dirs }),
   )

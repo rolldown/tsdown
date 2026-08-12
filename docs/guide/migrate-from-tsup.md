@@ -40,6 +40,17 @@ The `migrate` command supports the following options to customize the migration 
 
 - `[...dirs]`: Specify directories to migrate. Supports glob patterns (e.g., `packages/*`). Defaults to the current directory if not specified.
 - `--dry-run` (or `-d`): Perform a dry run to preview the migration without making any changes.
+- `--yes` (or `-y`): Skip the migration confirmation prompt. This is required in non-interactive environments.
+- `--package-manager <name>`: Override package manager auto-detection for dependency installation.
+- `--no-install`: Skip dependency installation, for example when another migration tool will install dependencies afterward.
+
+For non-interactive environments, explicitly confirm the migration:
+
+```bash
+npx tsdown-migrate --yes --no-install
+```
+
+When installation is enabled, the migration tool detects the package manager from the project's `packageManager` field or lockfile. If detection fails in a non-interactive environment, pass `--package-manager <name>` or `--no-install`.
 
 With these options, you can easily tailor the migration process to fit your specific project setup.
 

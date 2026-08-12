@@ -28,6 +28,19 @@ npx tsdown-migrate packages/foo packages/bar
 
 - `[...dirs]` - Directories to migrate (supports globs)
 - `--dry-run` or `-d` - Preview changes without modifying files
+- `--yes` or `-y` - Skip confirmation (required in non-interactive environments)
+- `--package-manager <name>` - Override package manager auto-detection
+- `--no-install` - Skip dependency installation
+
+For non-interactive callers that install dependencies separately:
+
+```bash
+npx tsdown-migrate --yes --no-install
+```
+
+When installation is enabled, the tool detects the package manager from the
+project's `packageManager` field or lockfile. If detection fails without a TTY,
+pass `--package-manager <name>` or `--no-install`.
 
 **Important:** Commit your changes before running migration.
 

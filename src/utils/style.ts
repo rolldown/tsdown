@@ -30,11 +30,11 @@ const factory = (...formats: InspectColor[]) =>
       }
       return factory(...formats, format)
     },
-  })
+  }) as StyleText
 
 type Formats = InspectColor | `#${string}`
 export type StyleText = {
   (text: string, options?: StyleTextOptions): string
 } & { [key in Formats]: StyleText }
 
-export const styleText = factory() as StyleText
+export const styleText: StyleText = factory()

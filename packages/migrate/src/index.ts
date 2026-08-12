@@ -1,20 +1,89 @@
 import process from 'node:process'
-import { getCliCommand, parseNi, run } from '@antfu/ni'
+import {
+  AGENTS,
+  detect,
+  getCliCommand,
+  parseNi,
+  run,
+  type ExtendedResolvedCommand,
+} from '@antfu/ni'
 import consola from 'consola'
 import { glob } from 'tinyglobby'
 import { styleText } from '../../../src/utils/style.ts'
 import { migratePackageJson } from './helpers/package-json.ts'
 import { migrateTsupConfig } from './helpers/tsup-config.ts'
 
+export type PackageManager = (typeof AGENTS)[number]
+
 export interface MigrateOptions {
   dirs?: string[]
   dryRun?: boolean
+  install?: boolean
+  packageManager?: PackageManager
+  yes?: boolean
 }
 
-export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
+function isPackageManager(value: string): value is PackageManager {
+  return AGENTS.includes(value as PackageManager)
+}
+
+async function resolveInstallCommand(
+  cwd: string,
+  packageManager: PackageManager | undefined,
+  interactive: boolean,
+): Promise<ExtendedResolvedCommand> {
+  const agent = packageManager ?? (await detect({ cwd, programmatic: true }))
+
+  if (agent) {
+    const command = await parseNi(agent, [], {
+      cwd,
+      hasLock: true,
+      programmatic: true,
+    })
+    if (!command) {
+      throw new Error(
+        `Unable to resolve an install command for package manager "${agent}".`,
+      )
+    }
+    return command
+  }
+
+  if (interactive) {
+    const command = await getCliCommand(parseNi, [], { cwd })
+    if (command) return command
+    throw new Error('Package manager selection cancelled.')
+  }
+
+  throw new Error(
+    'Unable to detect a package manager in a non-interactive environment. ' +
+      'Add a packageManager field or lockfile, pass --package-manager <name>, or use --no-install.',
+  )
+}
+
+export async function migrate({
+  dirs,
+  dryRun,
+  install = true,
+  packageManager,
+  yes,
+}: MigrateOptions): Promise<void> {
+  if (packageManager && !isPackageManager(packageManager)) {
+    throw new Error(
+      `Unsupported package manager "${packageManager}". Expected one of: ${AGENTS.join(', ')}.`,
+    )
+  }
+
+  const interactive = process.stdin.isTTY && process.stdout.isTTY
+
   if (dryRun) {
     consola.info('Dry run enabled. No changes were made.')
-  } else {
+  } else if (!yes) {
+    if (!interactive) {
+      throw new Error(
+        'Non-interactive migration requires explicit confirmation. Re-run with --yes.',
+      )
+    }
+
     const confirm = await consola.prompt(
       `Before proceeding, review the migration guide at ${styleText.underline(`https://tsdown.dev/guide/migrate-from-tsup`)}, as this process will modify your files.\n` +
         `Uncommitted changes will be lost. Use the ${styleText.green(`--dry-run`)} flag to preview changes without applying them.\n\n` +
@@ -46,6 +115,9 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
     cwds = [baseCwd]
   }
 
+  const installCommand = install
+    ? await resolveInstallCommand(baseCwd, packageManager, interactive)
+    : undefined
   let migratedAny = false
 
   try {
@@ -77,13 +149,21 @@ export async function migrate({ dirs, dryRun }: MigrateOptions): Promise<void> {
     return
   }
 
-  consola.info('Migration completed. Installing dependencies...')
+  if (installCommand) {
+    consola.info('Migration completed. Installing dependencies...')
 
-  if (dryRun) {
-    consola.info('[dry-run] would run:', await getCliCommand(parseNi, []))
+    if (dryRun) {
+      consola.info('[dry-run] would run:', installCommand)
+    } else {
+      await run(
+        () => ({ ...installCommand, args: [...installCommand.args] }),
+        [],
+        { cwd: baseCwd, programmatic: true },
+      )
+      consola.success('Dependencies installed.')
+    }
   } else {
-    await run(parseNi, [], { cwd: baseCwd })
-    consola.success('Dependencies installed.')
+    consola.info('Migration completed. Dependency installation skipped.')
   }
 
   consola.box(

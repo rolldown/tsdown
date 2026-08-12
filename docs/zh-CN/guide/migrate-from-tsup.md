@@ -40,6 +40,17 @@ npx tsdown-migrate packages/foo packages/bar
 
 - `[...dirs]`：指定要迁移的目录。支持通配符模式（如 `packages/*`）。如果未指定，默认为当前目录。
 - `--dry-run`（或 `-d`）：执行预览迁移（dry run），不会进行任何实际更改。
+- `--yes`（或 `-y`）：跳过迁移确认提示。在非交互环境中必须使用此选项。
+- `--package-manager <name>`：覆盖依赖安装所使用的包管理器自动检测结果。
+- `--no-install`：跳过依赖安装，例如由其他迁移工具在后续统一安装依赖时使用。
+
+在非交互环境中，请显式确认迁移：
+
+```bash
+npx tsdown-migrate --yes --no-install
+```
+
+启用依赖安装时，迁移工具会从项目的 `packageManager` 字段或锁文件中检测包管理器。如果在非交互环境中检测失败，请传入 `--package-manager <name>` 或 `--no-install`。
 
 通过这些选项，您可以轻松调整迁移过程以适应您的特定项目结构。
 
