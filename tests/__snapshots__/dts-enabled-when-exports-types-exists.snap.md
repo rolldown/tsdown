@@ -2,9 +2,8 @@
 
 ```mts
 //#region index.d.ts
-declare const hello = "world";
+export declare const hello = "world";
 //#endregion
-export { hello };
 ```
 
 ## index.mjs

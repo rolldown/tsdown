@@ -26,28 +26,28 @@ catalogs:
     bumpp: ^12.2.0
     dedent: ^1.7.2
     eslint: ^10.8.1
-    memfs: ^4.68.0
+    memfs: ^4.68.1
     pkg-types: ^2.3.1
     postcss: ^8.5.26
-    postcss-import: ^16.1.1
+    postcss-import: ^16.2.0
     postcss-modules: ^9.0.1
     prettier: ^3.9.6
     rolldown-plugin-require-cjs: ^0.4.1
     sass: ^1.102.0
     tsnapi: ^1.2.0
-    tsx: ^4.23.11
+    tsx: ^4.23.12
     typescript: ~6.0.3
-    unplugin-ast: ^0.18.0
+    unplugin-ast: ^0.18.1
     unplugin-raw: ^0.7.0
     unplugin-vue: ^7.2.0
     unrun: ^0.3.1
     vitest: ^4.1.10
   docs:
     '@iconify-json/logos': ^1.2.12
-    '@shikijs/vitepress-twoslash': ^4.4.2
+    '@shikijs/vitepress-twoslash': ^4.4.3
     '@unocss/eslint-plugin': ^66.7.5
     '@vueuse/core': ^14.4.0
-    oxc-minify: ^0.143.0
+    oxc-minify: ^0.144.0
     typedoc: ^0.28.20
     typedoc-plugin-markdown: ^4.12.0
     typedoc-vitepress-theme: ^1.1.3
@@ -80,8 +80,8 @@ catalogs:
     package-manager-detector: ^1.8.0
     picomatch: ^4.0.5
     postcss-load-config: ^6.0.1
-    rolldown: ~1.2.3
-    rolldown-plugin-dts: ^0.28.0
+    rolldown: ~1.2.4
+    rolldown-plugin-dts: ^0.28.2
     tinyexec: ^1.3.0
     tinyglobby: ^0.2.17
     tree-kill: ^1.2.2

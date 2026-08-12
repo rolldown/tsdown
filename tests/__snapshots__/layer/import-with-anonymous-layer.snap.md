@@ -2,7 +2,9 @@
 
 ```css
 @layer {
- @layer {
-.box { background-color: red; } } } @layer { .box { background-color: green; } }
+@layer {
+.box { background-color: red; } } }
+@layer {
+.box { background-color: green; } }
 
 ```

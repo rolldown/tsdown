@@ -8,6 +8,9 @@ export {};
 ## style.css
 
 ```css
-/* postcss-processed */ .other { color: blue } .lib { color: green } .main { color: red }
+/* postcss-processed */
+.other { color: blue }
+.lib { color: green }
+.main { color: red }
 
 ```

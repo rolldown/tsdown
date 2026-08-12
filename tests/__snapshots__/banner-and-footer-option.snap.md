@@ -3,9 +3,8 @@
 ```mts
 // dts banner
 //#region index.d.ts
-declare const foo: number;
+export declare const foo: number;
 //#endregion
-export { foo };
 // dts footer
 ```
 
