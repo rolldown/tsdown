@@ -1807,6 +1807,11 @@ describe('css', () => {
       let value = 0
       for (const char of segment) {
         const digit = BASE64_CHARS.indexOf(char)
+        if (digit === -1) {
+          throw new Error(
+            `invalid base64 VLQ character ${JSON.stringify(char)} in segment ${JSON.stringify(segment)}`,
+          )
+        }
         value += (digit & 31) << shift
         if (digit & 32) {
           shift += 5
@@ -1815,6 +1820,11 @@ describe('css', () => {
           shift = 0
           value = 0
         }
+      }
+      if (shift !== 0) {
+        throw new Error(
+          `dangling VLQ continuation in segment ${JSON.stringify(segment)}`,
+        )
       }
       return fields
     }
