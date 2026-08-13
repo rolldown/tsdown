@@ -1798,6 +1798,71 @@ describe('css', () => {
       expect(outputFiles).toContain('index.mjs.map')
     })
 
+    const BASE64_CHARS =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+    function decodeVlqSegment(segment: string): number[] {
+      const fields: number[] = []
+      let shift = 0
+      let value = 0
+      for (const char of segment) {
+        const digit = BASE64_CHARS.indexOf(char)
+        value += (digit & 31) << shift
+        if (digit & 32) {
+          shift += 5
+        } else {
+          fields.push(value & 1 ? -(value >>> 1) : value >>> 1)
+          shift = 0
+          value = 0
+        }
+      }
+      return fields
+    }
+
+    /** 1-based original line the first segment of `generatedLine` maps to. */
+    function originalLineFor(
+      mappings: string,
+      generatedLine: number,
+    ): number | null {
+      let sourceLine = 0
+      const lines = mappings.split(';')
+      for (const [index, line] of lines.entries()) {
+        const segments = line ? line.split(',') : []
+        for (const [segmentIndex, segment] of segments.entries()) {
+          const fields = decodeVlqSegment(segment)
+          if (fields.length >= 4) sourceLine += fields[2]
+          if (index + 1 === generatedLine && segmentIndex === 0) {
+            return fields.length >= 4 ? sourceLine + 1 : null
+          }
+        }
+        if (index + 1 === generatedLine && segments.length === 0) return null
+      }
+      return null
+    }
+
+    test('css.inject keeps the emitted map aligned with the injected import', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'index.ts': `import './foo.css'\nexport const value = 42`,
+          'foo.css': `body { color: red }`,
+        },
+        options: { sourcemap: true, css: { inject: true } },
+      })
+
+      const code = fileMap['index.mjs']
+      expect(code.startsWith(`import './style.css';`)).toBe(true)
+
+      // `export const value = 42` is line 2 of index.ts. The injected css
+      // import shifts it down one generated line; the *emitted* map must
+      // follow (rolldown materializes the .map asset before generateBundle,
+      // so mutating chunk.map alone is not enough).
+      const generatedLine =
+        code.split('\n').findIndex((line) => line.includes('const value')) + 1
+      const map = JSON.parse(fileMap['index.mjs.map'])
+      expect(originalLineFor(map.mappings, generatedLine)).toBe(2)
+    })
+
     test('inline css does not warn SOURCEMAP_BROKEN', async (context) => {
       const { outputFiles, warnings } = await testBuild({
         context,
