@@ -22,14 +22,14 @@ catalogs:
     '@vitest/coverage-v8': ^4.1.10
     '@vitest/ui': ^4.1.10
     actionspack: ^0.1.5
-    baseline-browser-mapping: ^2.11.13
-    bumpp: ^12.2.0
+    baseline-browser-mapping: ^2.11.14
+    bumpp: ^12.2.1
     dedent: ^1.7.2
     eslint: ^10.8.1
     memfs: ^4.68.1
     pkg-types: ^2.3.1
     postcss: ^8.5.26
-    postcss-import: ^16.2.0
+    postcss-import: ^17.0.0
     postcss-modules: ^9.0.1
     prettier: ^3.9.6
     rolldown-plugin-require-cjs: ^0.4.1
@@ -55,10 +55,10 @@ catalogs:
     vite: ^8.2.1
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.6
-    vitepress-plugin-llms: ^1.13.4
+    vitepress-plugin-llms: ^1.13.5
     void: ^0.10.12
     vue: ^3.5.41
-    vue-tsc: ^3.3.9
+    vue-tsc: ^3.3.10
   migrate:
     '@antfu/ni': ^30.5.0
     '@ast-grep/napi': ^0.45.1
@@ -86,7 +86,7 @@ catalogs:
     tinyglobby: ^0.2.17
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
-    verkit: ^0.3.2
+    verkit: ^0.4.0
 
 allowBuilds:
   '@parcel/watcher': false

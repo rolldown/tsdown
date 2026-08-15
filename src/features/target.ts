@@ -1,4 +1,4 @@
-import { findMinimumForRange } from 'verkit'
+import { findMinimumForRange, normalize } from 'verkit'
 import { resolveComma, toArray } from '../utils/general.ts'
 import type { Logger } from '../utils/logger.ts'
 import type { StyleText } from '../utils/style.ts'
@@ -54,6 +54,7 @@ export function resolvePackageTarget(pkg?: PackageJson): string | undefined {
   if (!nodeVersion) return
   const nodeMinVersion = findMinimumForRange(nodeVersion)
   if (!nodeMinVersion) return
-  if (nodeMinVersion === '0.0.0') return
-  return `node${nodeMinVersion}`
+  const normalized = normalize(nodeMinVersion)
+  if (normalized === '0.0.0') return
+  return `node${normalized}`
 }
