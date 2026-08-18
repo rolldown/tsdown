@@ -364,7 +364,8 @@ export function DepsPlugin(
     }
 
     // `neverBundle: true`: imports that follow npm package naming
-    // conventions are externalized as written, without resolving them.
+    // conventions are externalized as written, without resolving them
+    // unless `resolveDepSubpath` rewrites the subpath.
     // Anything else (`#` subpath imports, path aliases like `~/` or `@/`)
     // may map to local files, so it is resolved and kept external only if
     // it lands in `node_modules`.
