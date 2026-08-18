@@ -68,7 +68,7 @@ export default defineConfig({
 })
 ```
 
-**Result:** Every import that follows npm package naming conventions is externalized as written, without being resolved. This is fast and even works when dependencies are not installed. Subpaths like `my-dep/utils` are preserved exactly (`resolveDepSubpath` has no effect). Other non-relative imports (`#` subpath imports, path aliases like `~/`) are resolved: they stay external if they resolve into node_modules, and are bundled if they map to local files. Combine with `alwaysBundle` to bundle selected dependencies.
+**Result:** Every import that follows npm package naming conventions is externalized as written, without being resolved. This is fast and even works when dependencies are not installed. Subpaths like `my-dep/utils` are preserved exactly unless `resolveDepSubpath` is enabled. Other non-relative imports (`#` subpath imports, path aliases like `~/`) are resolved: they stay external if they resolve into node_modules, and are bundled if they map to local files. Combine with `alwaysBundle` to bundle selected dependencies.
 
 ### `deps.alwaysBundle`
 

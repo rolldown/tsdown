@@ -376,8 +376,13 @@ export function DepsPlugin(
       if (id[0] === '\0' || id.startsWith('data:') || path.isAbsolute(id)) {
         return false
       }
-      if (isBuiltin(id) || RE_PACKAGE_SPECIFIER.test(id)) {
+      if (isBuiltin(id)) {
         return true
+      }
+      if (RE_PACKAGE_SPECIFIER.test(id)) {
+        const resolvedDep =
+          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        return resolvedDep ? [true, resolvedDep] : true
       }
       const resolved = await resolve()
       return (
