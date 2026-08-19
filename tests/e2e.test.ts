@@ -1509,6 +1509,21 @@ export { local } from './local'`,
     expect(fileMap['index.mjs']).toContain('local = 1')
   })
 
+  test('resolveDepSubpath resolves subpaths', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        ...node_modules,
+        'index.ts': `export { lt } from 'my-dep/functions/lt'`,
+      },
+      options: {
+        deps: { neverBundle: true, resolveDepSubpath: true },
+      },
+    })
+
+    expect(fileMap['index.mjs']).toContain('my-dep/functions/lt.js')
+  })
+
   test('# subpath imports are resolved', async (context) => {
     const { fileMap } = await testBuild({
       context,

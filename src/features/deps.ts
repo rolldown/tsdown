@@ -364,7 +364,8 @@ export function DepsPlugin(
     }
 
     // `neverBundle: true`: imports that follow npm package naming
-    // conventions are externalized as written, without resolving them.
+    // conventions are externalized as written, without resolving them
+    // unless `resolveDepSubpath` rewrites the subpath.
     // Anything else (`#` subpath imports, path aliases like `~/` or `@/`)
     // may map to local files, so it is resolved and kept external only if
     // it lands in `node_modules`.
@@ -376,8 +377,13 @@ export function DepsPlugin(
       if (id[0] === '\0' || id.startsWith('data:') || path.isAbsolute(id)) {
         return false
       }
-      if (isBuiltin(id) || RE_PACKAGE_SPECIFIER.test(id)) {
+      if (isBuiltin(id)) {
         return true
+      }
+      if (RE_PACKAGE_SPECIFIER.test(id)) {
+        const resolvedDep =
+          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        return resolvedDep ? [true, resolvedDep] : true
       }
       const resolved = await resolve()
       return (

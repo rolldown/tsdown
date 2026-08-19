@@ -140,7 +140,7 @@ export default defineConfig({
 
 When enabled, every import that follows npm package naming conventions (e.g. `lodash`, `@scope/pkg/utils`) is marked as external **as written, without being resolved**. This is fast and even works when dependencies are not installed. Note the following behaviors:
 
-- Package specifiers are preserved exactly as written; subpaths like `my-dep/utils` are not rewritten, and `resolveDepSubpath` has no effect.
+- Package specifiers are preserved exactly as written; subpaths like `my-dep/utils` are only rewritten when `resolveDepSubpath` is enabled.
 - Other non-relative imports — [subpath imports](https://nodejs.org/api/packages.html#subpath-imports) starting with `#` and path aliases like `~/utils` — are still resolved: if they resolve into `node_modules`, they are kept external with the original specifier; otherwise the resolved local file is bundled.
 
 `neverBundle: true` can be combined with `alwaysBundle` to bundle a few selected dependencies while externalizing everything else:
