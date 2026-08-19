@@ -27,7 +27,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { Plugin } from 'rolldown'
+import type { OutputBundle, OutputChunk, Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -304,33 +304,14 @@ export function CssPlugin(
             // Direct CSS modules in this chunk need a prepended import
             if (chunk.moduleIds.some((id) => styles.has(id))) {
               const cssFile = toCssFileName(chunk.fileName)
-              const relativePath = path.posix.relative(
-                path.posix.dirname(chunk.fileName),
-                cssFile,
-              )
-              const importPath =
-                relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `import '${importPath}';\n${chunk.code}`
-              if (chunk.map) {
-                chunk.map.mappings = `;${chunk.map.mappings}`
-              }
+              prependCssImport(bundle, chunk, cssFile)
             }
           } else {
             const hasCss =
               chunk.moduleIds.some((id) => styles.has(id)) ||
               chunk.imports.some((imp) => pureCssChunks.has(imp))
             if (hasCss) {
-              const cssFile = cssConfig.css.fileName
-              const relativePath = path.posix.relative(
-                path.posix.dirname(chunk.fileName),
-                cssFile,
-              )
-              const importPath =
-                relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `import '${importPath}';\n${chunk.code}`
-              if (chunk.map) {
-                chunk.map.mappings = `;${chunk.map.mappings}`
-              }
+              prependCssImport(bundle, chunk, cssConfig.css.fileName)
             }
           }
         }
@@ -500,6 +481,37 @@ async function processWithPostCSS(
     code: transformResult.code,
     map: transformResult.map ?? postcssResult.map,
     modules: postcssResult.modules,
+  }
+}
+
+/**
+ * Prepends `import '<css file>'` to a chunk, keeping its sourcemap aligned.
+ *
+ * The one-line prepend is compensated by prefixing the mappings with `;`.
+ * rolldown materializes the companion `.map` asset before `generateBundle`
+ * runs and does not propagate `chunk.map` mutations into it (unlike rollup,
+ * see https://github.com/rolldown/rolldown/issues/10676), so the asset is
+ * refreshed here too -- otherwise every mapping in the emitted map is one
+ * line early.
+ */
+function prependCssImport(
+  bundle: OutputBundle,
+  chunk: OutputChunk,
+  cssFile: string,
+): void {
+  const relativePath = path.posix.relative(
+    path.posix.dirname(chunk.fileName),
+    cssFile,
+  )
+  const importPath =
+    relativePath[0] === '.' ? relativePath : `./${relativePath}`
+  chunk.code = `import '${importPath}';\n${chunk.code}`
+  if (chunk.map) {
+    chunk.map.mappings = `;${chunk.map.mappings}`
+    const mapAsset = bundle[`${chunk.fileName}.map`]
+    if (mapAsset?.type === 'asset') {
+      mapAsset.source = JSON.stringify(chunk.map)
+    }
   }
 }
 
