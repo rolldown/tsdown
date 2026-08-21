@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/no-top-level-side-effects */
 import process from 'node:process'
-import { cac } from 'cac'
+import { cac, type CAC } from 'cac'
 import { VERSION as rolldownVersion } from 'rolldown'
 import { x } from 'tinyexec'
 import pkg from '../package.json' with { type: 'json' }
@@ -8,8 +8,34 @@ import { enableDebug } from './features/debug.ts'
 import { globalLogger } from './utils/logger.ts'
 import { styleText } from './utils/style.ts'
 import type { UserConfig } from './config.ts'
+import type { DepsConfig } from './features/deps.ts'
 
-const cli = cac('tsdown')
+/**
+ * cac camel-cases only the first segment of a dotted option name, so
+ * `--deps.never-bundle` is parsed into `{ deps: { 'never-bundle': ... } }` and
+ * never reaches {@linkcode DepsConfig.neverBundle | deps.neverBundle}.
+ *
+ * `--env.*` is deliberately left alone: its keys are user-defined environment
+ * variable names, not option names.
+ *
+ * **Internal API, not for public use**
+ * @private
+ */
+export function normalizeFlags(flags: UserConfig): UserConfig {
+  if (flags.deps && typeof flags.deps === 'object') {
+    flags.deps = Object.fromEntries(
+      Object.entries(flags.deps).map(([key, value]) => [
+        key.replaceAll(/([a-z])-([a-z])/g, (_, a: string, b: string) => {
+          return a + b.toUpperCase()
+        }),
+        value,
+      ]),
+    ) as DepsConfig
+  }
+  return flags
+}
+
+export const cli: CAC = cac('tsdown')
 cli.help().version(pkg.version)
 
 cli
@@ -91,7 +117,7 @@ cli
     )
     const { build } = await import('./build.ts')
     if (input.length > 0) flags.entry = input
-    await build(flags)
+    await build(normalizeFlags(flags))
   })
 
 cli
