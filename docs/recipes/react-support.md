@@ -144,6 +144,6 @@ React 19 ships the compiler runtime in `react`; targets 17 and 18 require the `r
 
 ::: warning
 
-The native React Compiler support is experimental and under active development. Options and behaviour may change, so review the generated output before using it in production.
+The native React Compiler support is experimental and under active development. Options and behavior may change, so review the generated output before using it in production.
 
 :::

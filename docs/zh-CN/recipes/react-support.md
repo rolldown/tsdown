@@ -121,7 +121,7 @@ export default defineConfig({
     react({
       compiler: true,
       // 仅在 dts: true 时需要：防止插件转换生成的 .d.ts 文件
-      exclude: [/\/node_modules\//, /\.d\.ts$/],
+      exclude: [/node_modules/, /\.d\.ts$/],
     }),
   ],
 })
