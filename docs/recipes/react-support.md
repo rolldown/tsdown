@@ -122,7 +122,7 @@ export default defineConfig({
       compiler: true,
       // Only needed when `dts: true`: prevent the plugin from
       // transforming the generated .d.ts files
-      exclude: [/\/node_modules\//, /\.d\.ts$/],
+      exclude: [/node_modules/, /\.d\.ts$/],
     }),
   ],
 })
