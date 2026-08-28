@@ -16,16 +16,16 @@ catalogs:
     '@sxzz/eslint-config': ^8.5.0
     '@sxzz/prettier-config': ^2.3.2
     '@sxzz/test-utils': ^0.5.18
-    '@types/node': ^26.2.0
+    '@types/node': ^26.4.0
     '@types/picomatch': ^4.0.3
     '@typescript/native-preview': npm:typescript@7.0.2
     '@vitest/coverage-v8': ^4.1.11
     '@vitest/ui': ^4.1.11
     actionspack: ^0.1.5
-    baseline-browser-mapping: ^2.11.15
-    bumpp: ^12.2.1
+    baseline-browser-mapping: ^2.11.20
+    bumpp: ^12.2.2
     dedent: ^1.7.2
-    eslint: ^10.8.1
+    eslint: ^10.9.1
     memfs: ^4.68.1
     pkg-types: ^2.3.1
     postcss: ^8.5.26
@@ -33,8 +33,8 @@ catalogs:
     postcss-modules: ^9.0.1
     prettier: ^3.9.6
     rolldown-plugin-require-cjs: ^0.4.1
-    sass: ^1.102.0
-    tsnapi: ^1.3.0
+    sass: ^1.103.1
+    tsnapi: ^1.4.0
     tsx: ^4.23.12
     typescript: ~6.0.3
     unplugin-ast: ^0.18.1
@@ -45,29 +45,29 @@ catalogs:
   docs:
     '@iconify-json/logos': ^1.2.13
     '@shikijs/vitepress-twoslash': ^4.4.3
-    '@unocss/eslint-plugin': ^66.7.5
+    '@unocss/eslint-plugin': ^66.8.1
     '@vueuse/core': ^14.4.0
     oxc-minify: ^0.147.0
     typedoc: ^0.28.20
-    typedoc-plugin-markdown: ^4.12.0
+    typedoc-plugin-markdown: ^4.13.0
     typedoc-vitepress-theme: ^1.1.3
-    unocss: ^66.7.5
-    vite: ^8.2.1
+    unocss: ^66.8.1
+    vite: ^8.2.2
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.6
     vitepress-plugin-llms: ^1.13.5
     void: ^0.10.12
-    vue: ^3.5.41
-    vue-tsc: ^3.3.10
+    vue: ^3.5.42
+    vue-tsc: ^3.3.11
   migrate:
     '@antfu/ni': ^30.5.0
-    '@ast-grep/napi': ^0.45.1
+    '@ast-grep/napi': ^0.45.2
     consola: ^3.4.2
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.5
-    '@vitejs/devtools': ^0.6.0
-    publint: ^0.3.23
+    '@vitejs/devtools': ^0.6.2
+    publint: ^0.3.24
     unplugin-unused: ^0.6.0
   prod:
     cac: ^7.0.0
@@ -78,9 +78,9 @@ catalogs:
     lightningcss: ^1.33.0
     obug: ^2.1.4
     package-manager-detector: ^1.8.0
-    picomatch: ^4.0.5
+    picomatch: ^4.0.7
     postcss-load-config: ^6.0.1
-    rolldown: ~1.2.4
+    rolldown: ~1.2.6
     rolldown-plugin-dts: ^0.28.2
     tinyexec: ^1.3.0
     tinyglobby: ^0.2.17
@@ -100,3 +100,4 @@ minimumReleaseAge: 0
 trustLockfile: true
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080 # 7 days
+virtualStoreType: global

@@ -177,6 +177,11 @@ describe('deps', () => {
               },
             },
           ],
+          inputOptions: {
+            experimental: {
+              attachDebugInfo: 'none',
+            },
+          },
         },
       })
     })

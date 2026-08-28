@@ -42,8 +42,8 @@ packages:
     external: true
     contentDigest: sha256:d59219cb79590abdb877deaa14e3b65a00c05318bf5a6f3b989b9162b5d08c35
     dependencies: []
-    requested: 9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-    resolved: 9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    requested: 3d3c42e5aac5ba805825da76410c181273ba90b1
+    resolved: 3d3c42e5aac5ba805825da76410c181273ba90b1
   github:actions/setup-node:
     source: github
     owner: actions
@@ -51,10 +51,10 @@ packages:
     path: .
     type: external-action
     external: true
-    contentDigest: sha256:ad45f1922115116fb4706651d0a9262332bc4e4f11eb2021e09789dd1af18085
+    contentDigest: sha256:5d765941ab5d8bef27f08e81b0b041cdb2df2050ea0261dc925d157a2bafbd2b
     dependencies: []
-    requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
-    resolved: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+    requested: 820762786026740c76f36085b0efc47a31fe5020
+    resolved: 820762786026740c76f36085b0efc47a31fe5020
   github:autofix-ci/action:
     source: github
     owner: autofix-ci
@@ -75,8 +75,8 @@ packages:
     external: true
     contentDigest: sha256:7903b0a83562cd93df4d70181e610d9a4d6aedf76c83197208a6fdc13614d6f1
     dependencies: []
-    requested: 0e279bb959325dab635dd2c09392533439d90093
-    resolved: 0e279bb959325dab635dd2c09392533439d90093
+    requested: 0977fd99725f1db4007ccb2928dbb4e90d06cc86
+    resolved: 0977fd99725f1db4007ccb2928dbb4e90d06cc86
   github:sxzz/workflows/.github/workflows/autofix.yml:
     source: github
     owner: sxzz
@@ -92,7 +92,7 @@ packages:
         requested: c5b2d67aa2274e7b5a18224e8171550871fc7e4a
         foundAt: sxzz/workflows/.github/workflows/autofix.yml#jobs.autofix.steps[2].uses
     requested: main
-    resolved: dd67f194be6388e12ee61ad0cd3b81cf74bfd294
+    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
   github:sxzz/workflows/.github/workflows/release-commit.yml:
     source: github
     owner: sxzz
@@ -105,7 +105,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release-commit.yml#jobs.release.steps[0].uses
     requested: main
-    resolved: dd67f194be6388e12ee61ad0cd3b81cf74bfd294
+    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
   github:sxzz/workflows/.github/workflows/release.yml:
     source: github
     owner: sxzz
@@ -118,7 +118,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release.yml#jobs.release.steps[0].uses
     requested: main
-    resolved: dd67f194be6388e12ee61ad0cd3b81cf74bfd294
+    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
   github:sxzz/workflows/.github/workflows/unit-test.yml:
     source: github
     owner: sxzz
@@ -131,23 +131,23 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/unit-test.yml#jobs.lint.steps[0].uses
     requested: main
-    resolved: dd67f194be6388e12ee61ad0cd3b81cf74bfd294
+    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
   github:sxzz/workflows/setup-js:
     source: github
     owner: sxzz
     repo: workflows
     path: setup-js
     type: composite
-    contentDigest: sha256:2574c542980ba20dda322e902ef5343e3f9a0a9d026a455ffbe2af084373f1a2
+    contentDigest: sha256:28ad5afa382d589bf87eda9ae710501365f4161f54fd8d1615549955061eaa2c
     dependencies:
       - package: github:actions/checkout
-        requested: 9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        requested: 3d3c42e5aac5ba805825da76410c181273ba90b1
         foundAt: sxzz/workflows/setup-js#runs.steps[0].uses
       - package: github:pnpm/action-setup
-        requested: 0e279bb959325dab635dd2c09392533439d90093
+        requested: 0977fd99725f1db4007ccb2928dbb4e90d06cc86
         foundAt: sxzz/workflows/setup-js#runs.steps[1].uses
       - package: github:actions/setup-node
-        requested: 48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        requested: 820762786026740c76f36085b0efc47a31fe5020
         foundAt: sxzz/workflows/setup-js#runs.steps[2].uses
     requested: main
-    resolved: dd67f194be6388e12ee61ad0cd3b81cf74bfd294
+    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
