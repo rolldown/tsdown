@@ -100,4 +100,3 @@ minimumReleaseAge: 0
 trustLockfile: true
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080 # 7 days
-virtualStoreType: global

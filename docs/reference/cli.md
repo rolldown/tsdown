@@ -11,7 +11,9 @@ The mapping between CLI flags and configuration options follows these rules:
 - `--foo.bar` sets `foo: { bar: true }`
 - `--format esm --format cjs` sets `format: ['esm', 'cjs']`
 
-CLI flags support both camelCase and kebab-case. For example, `--outDir` and `--out-dir` are equivalent.
+CLI flags support both camelCase and kebab-case. For example, `--outDir` and `--out-dir` are equivalent. Nested keys follow the same rule, so `--deps.never-bundle` and `--deps.neverBundle` are equivalent as well.
+
+Options whose keys are defined by you — `--env.*`, `--define.*`, `--alias.*`, `--entry.*` and `--loader.*` — are the exception: their keys are used exactly as written.
 
 This flexible pattern allows you to easily control and override configuration options directly from the command line.
 
