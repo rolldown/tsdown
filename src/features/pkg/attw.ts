@@ -3,11 +3,7 @@ import { createDebug } from 'obug'
 import { importWithError, slash } from '../../utils/general.ts'
 import { styleText } from '../../utils/style.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
-import type {
-  CheckPackageOptions,
-  Problem,
-  ProblemKind,
-} from '@arethetypeswrong/core'
+import type { Problem, ProblemKind } from '@arethetypeswrong/core'
 import type { Buffer } from 'node:buffer'
 
 const debug = createDebug('tsdown:attw')
@@ -28,7 +24,10 @@ const problemFlags: Record<ProblemKind, string> = {
   InternalResolutionError: 'internal-resolution-error',
 }
 
+/** @ts-ignore - optional dep */
+type CheckPackageOptions = import('@arethetypeswrong/core').CheckPackageOptions
 export interface AttwOptions extends CheckPackageOptions {
+  /** @ts-ignore - optional dep */
   module?: typeof import('@arethetypeswrong/core')
 
   /**

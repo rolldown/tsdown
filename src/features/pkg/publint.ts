@@ -3,12 +3,14 @@ import { importWithError } from '../../utils/general.ts'
 import { styleText } from '../../utils/style.ts'
 import type { ResolvedConfig } from '../../config/index.ts'
 import type { Buffer } from 'node:buffer'
-import type { Options } from 'publint'
 
 const debug = createDebug('tsdown:publint')
 const label = styleText.dim(`[publint]`)
 
+/** @ts-ignore - optional dep */
+type Options = import('publint').Options
 export interface PublintOptions extends Omit<Options, 'pack' | 'pkgDir'> {
+  /** @ts-ignore - optional dep */
   module?: [typeof import('publint'), typeof import('publint/utils')]
 }
 

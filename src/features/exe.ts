@@ -11,7 +11,7 @@ import { fsRemove, fsStat } from '../utils/fs.ts'
 import { importWithError, typeAssert } from '../utils/general.ts'
 import { styleText } from '../utils/style.ts'
 import type { ResolvedConfig, RolldownChunk } from '../config/types.ts'
-import type { ExeExtensionOptions, ExeTarget } from '@tsdown/exe'
+import type { ExeTarget } from '@tsdown/exe'
 
 export const NODE_SEA_MIN_VERSION: string = '25.7.0'
 export const NODE_SEA_MIN_VERSION_PARSED: SemVer = {
@@ -20,6 +20,8 @@ export const NODE_SEA_MIN_VERSION_PARSED: SemVer = {
   patch: 0,
 }
 
+/** @ts-ignore - optional dep */
+type ExeExtensionOptions = import('@tsdown/exe').ExeExtensionOptions
 export interface ExeOptions extends ExeExtensionOptions {
   seaConfig?: Omit<SeaConfig, 'main' | 'output' | 'mainFormat'>
   /**

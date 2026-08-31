@@ -250,6 +250,7 @@ export type TsdownInputOption = Arrayable<string | Record<string, Arrayable<stri
 export type TsdownPluginOption<A = any> = Awaitable<TsdownPlugin<A> | RolldownPlugin<A> | {
   name: string;
 } | undefined | null | void | false | TsdownPluginOption<A>[]>;
+export type UnusedOptions = import("unplugin-unused").Options;
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>;
 export type UserConfigFn = (_: InlineConfig, _: {
   ci: boolean;
@@ -282,5 +283,4 @@ export declare const version: string;
 export { DtsOptions }
 export { Rolldown }
 export { TreeshakingOptions }
-export { UnusedOptions }
 // #endregion

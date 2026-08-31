@@ -1,6 +1,8 @@
 import { importWithError } from '../utils/general.ts'
-import type { StartOptions } from '@vitejs/devtools/cli-commands'
 import type { InputOptions } from 'rolldown'
+
+/** @ts-ignore - optional dep */
+type StartOptions = import('@vitejs/devtools/cli-commands').StartOptions
 
 export interface DevtoolsOptions extends NonNullable<InputOptions['devtools']> {
   /**

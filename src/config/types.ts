@@ -34,7 +34,6 @@ import type {
   MarkPartial,
   Overwrite,
 } from '../utils/types.ts'
-import type { CssOptions } from '@tsdown/css'
 import type { Hookable } from 'hookable'
 import type {
   ChecksOptions,
@@ -48,7 +47,9 @@ import type {
   TreeshakingOptions,
 } from 'rolldown'
 import type { Options as DtsOptions } from 'rolldown-plugin-dts'
-import type { Options as UnusedOptions } from 'unplugin-unused'
+
+/** @ts-ignore - optional dep */
+type UnusedOptions = import('unplugin-unused').Options
 
 export type Sourcemap = boolean | 'inline' | 'hidden'
 export type Format = ModuleFormat
@@ -142,6 +143,9 @@ export type WithEnabled<T> =
        */
       enabled?: boolean | CIOption
     })
+
+/** @ts-ignore - optional dep */
+type CssOptions = import('@tsdown/css').CssOptions
 
 /**
  * Options for tsdown.
