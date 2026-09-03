@@ -34,7 +34,7 @@ afterEach(() => {
 })
 
 declare module 'vitest' {
-  interface Assertion<T = any> extends CustomMatchers<T> {}
+  interface Assertion<R> extends CustomMatchers<R> {}
   interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 

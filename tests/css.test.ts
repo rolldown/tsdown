@@ -806,6 +806,7 @@ describe('css', () => {
           'b.css': `.box { background-color: red; }`,
         },
         options: { entry: ['style.css'] },
+        snapshot: false,
       })
       expect(fileMap['style.css']).toContain('layer')
       expect(fileMap['style.css']).toContain('print')

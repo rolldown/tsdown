@@ -19,8 +19,8 @@ catalogs:
     '@types/node': ^26.4.1
     '@types/picomatch': ^4.0.3
     '@typescript/native-preview': npm:typescript@7.0.2
-    '@vitest/coverage-v8': ^4.1.11
-    '@vitest/ui': ^4.1.11
+    '@vitest/coverage-v8': ^5.0.0
+    '@vitest/ui': ^5.0.0
     actionspack: ^0.1.5
     baseline-browser-mapping: ^2.11.20
     bumpp: ^12.3.0
@@ -28,7 +28,7 @@ catalogs:
     eslint: ^10.9.1
     memfs: ^4.69.1
     pkg-types: ^2.3.2
-    postcss: ^8.5.27
+    postcss: ^8.5.28
     postcss-import: ^17.0.0
     postcss-modules: ^9.0.1
     prettier: ^3.9.6
@@ -41,7 +41,7 @@ catalogs:
     unplugin-raw: ^0.8.0
     unplugin-vue: ^7.2.0
     unrun: ^0.3.1
-    vitest: ^4.1.11
+    vitest: ^5.0.0
   docs:
     '@iconify-json/logos': ^1.2.13
     '@shikijs/vitepress-twoslash': ^4.4.3

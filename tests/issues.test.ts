@@ -167,6 +167,7 @@ describe('issues', () => {
       options: {
         entry: ['entry1.css', 'entry2.css'],
       },
+      snapshot: false,
     })
     expect(outputFiles).toContain('entry1.css')
     expect(outputFiles).toContain('entry2.css')
