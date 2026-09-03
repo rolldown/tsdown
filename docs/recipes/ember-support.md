@@ -1,13 +1,13 @@
 # Ember Support
 
-`tsdown` supports building Ember v2 addons (libraries) by integrating [`@nullvoxpopuli/ember-rolldown`](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown). This meta-plugin compiles `.gts`/`.gjs` and template-tag (`<template>`) sources into publishable output — a single `ember()` call replaces the usual stack of `@embroider/*` externals handling, `content-tag` preprocessing, and Babel wiring.
+`tsdown` can build Ember v2 addons (libraries) with [`@nullvoxpopuli/ember-rolldown`](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown). This meta-plugin compiles `.gts` and `.gjs` files, including their `<template>` tags, into publishable output. A single `ember()` call replaces the usual `@embroider/*` externalization setup, `content-tag` preprocessing, and Babel integration.
 
 > [!NOTE]
-> The plugin currently targets Ember libraries (v2 addons) only — it hasn't been tested for building apps.
+> The plugin currently targets Ember libraries (v2 addons); building Ember apps has not been tested.
 
 ## Minimal Example
 
-To configure `tsdown` for an Ember library, use the following setup in your `tsdown.config.ts`:
+Configure an Ember library in `tsdown.config.ts` as follows:
 
 ```ts [tsdown.config.ts]
 import { ember } from '@nullvoxpopuli/ember-rolldown'
@@ -15,7 +15,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['./src/index.ts'],
-  dts: true,
+  dts: { sourcemap: true },
   plugins: [ember()],
 })
 ```
@@ -45,7 +45,7 @@ And export it from your entry file:
 export { Badge } from './components/badge.gts'
 ```
 
-This builds your entries to `dist/*.js` and `dist/*.d.ts` with sourcemaps, leaving Ember's virtual packages (e.g. `@ember/component`, `@glimmer/tracking`) and your `dependencies` / `peerDependencies` external for the consuming app to resolve.
+The build writes `.js` and `.d.ts` files for each entry to `dist/`, along with their source maps. Ember virtual packages (such as `@ember/component` and `@glimmer/tracking`) and packages listed in `dependencies` or `peerDependencies` remain external and are resolved by the consuming app.
 
 Install the required dependency:
 
@@ -70,11 +70,11 @@ bun add -D @nullvoxpopuli/ember-rolldown
 :::
 
 > [!NOTE]
-> `@nullvoxpopuli/ember-rolldown` requires Node.js 24+ and TypeScript 6.
+> `@nullvoxpopuli/ember-rolldown` requires Node.js 24+. Because the package ships TypeScript source, type-checking a project that uses it also requires TypeScript 6+ and a `lib` setting that includes `es2025` (for example, `esnext`).
 
 ## Declarations
 
-`.gts`/`.gjs` (template-tag) modules exist only inside the bundler's module graph, so declarations are emitted with [isolated declarations](../options/dts.md#with-isolateddeclarations) — the tsconfig your build uses must enable it (`ember()` errors otherwise):
+`.gts` and `.gjs` template-tag modules exist only in the bundler's module graph, so their declarations must be generated with [isolated declarations](../options/dts.md#with-isolateddeclarations). The `tsconfig` used for the build must enable `isolatedDeclarations`; otherwise, `ember()` reports an error:
 
 ```jsonc [tsconfig.json]
 {
@@ -84,7 +84,7 @@ bun add -D @nullvoxpopuli/ember-rolldown
 }
 ```
 
-This means every exported value carries an explicit type annotation, like the `TOC<BadgeSignature>` annotation above. If your package also contains dev-only code that shouldn't be constrained this way (a demo app, in-package tests), point tsdown's `tsconfig` option at a publish-only config:
+`isolatedDeclarations` requires sufficient type annotations on exports so declarations can be generated without cross-file type inference. For example, the component above uses the explicit `TOC<BadgeSignature>` type annotation. If your package also contains development-only code that should not be subject to this constraint, such as a demo app or in-package tests, point the `tsdown` `tsconfig` option to a publish-only config:
 
 ```ts [tsdown.config.ts]
 export default defineConfig({
@@ -98,15 +98,15 @@ export default defineConfig({
 
 `ember()` returns a set of Rolldown plugins that:
 
-- Keep your `dependencies`, `peerDependencies`, and the Ember virtual packages external, so the consuming app resolves them.
-- Preprocess `<template>` tags via [`content-tag`](https://github.com/embroider-build/content-tag) and map `.gts`/`.gjs` modules so Rolldown understands them.
-- Run Babel only on the files that actually need it (template tags, decorators); everything else stays on Rolldown's fast native transforms.
-- Verify the tsconfig enables `isolatedDeclarations`.
+- Keep packages from `dependencies` and `peerDependencies`, along with Ember virtual packages, external for the consuming app to resolve.
+- Preprocess `<template>` tags with [`content-tag`](https://github.com/embroider-build/content-tag) and map `.gts`/`.gjs` to `.ts`/`.js` so Rolldown can process them.
+- Run Babel only on files that need it, such as files with template tags or decorators. All other files use Rolldown's fast native transforms.
+- Verify that the `tsconfig` enables `isolatedDeclarations`.
 
-A Babel config is optional: without one, templates, decorators, and TypeScript are handled by built-in defaults; with one, your config runs instead.
+A Babel configuration is optional. Without one, `ember()` uses built-in defaults to handle templates, decorators, and TypeScript. If you provide one, `ember()` uses it instead.
 
 ## CSS
 
-Components that import co-located CSS (`import './badge.css'`) require [`@tsdown/css`](../options/css.md); tsdown auto-detects it and bundles imported stylesheets into a single CSS file in `dist/`. Set `css: { inject: true }` to keep the CSS import statement in the output, so consuming apps load the styles through the module graph.
+If a component imports co-located CSS (`import './badge.css'`), install [`@tsdown/css`](../options/css.md) in your project. `tsdown` detects the package automatically and bundles imported stylesheets into a single CSS file in `dist/`. Set `css: { inject: true }` to preserve an import for that generated CSS file in the JavaScript output, allowing consuming apps to load the styles through the module graph.
 
-For advanced topics — app re-exports for classic (name-based) resolution, `ember-scoped-css` integration, and publish-specific Babel configs — see the [plugin documentation](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown#readme).
+For advanced topics such as app re-exports for classic name-based resolution, `ember-scoped-css` integration, and publish-specific Babel configurations, see the [plugin documentation](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown#readme).

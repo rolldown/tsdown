@@ -1,13 +1,13 @@
 # Ember 支持
 
-`tsdown` 通过集成 [`@nullvoxpopuli/ember-rolldown`](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown) 支持构建 Ember v2 addon（库）。这个元插件（meta-plugin）将 `.gts`/`.gjs` 及模板标签（`<template>`）源码编译为可发布的产物——只需一个 `ember()` 调用，即可取代原本由 `@embroider/*` 外部依赖处理、`content-tag` 预处理和 Babel 配置组成的一整套工具链。
+`tsdown` 可借助 [`@nullvoxpopuli/ember-rolldown`](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown) 构建 Ember v2 addon（库）。该元插件会将 `.gts` 和 `.gjs` 文件（包括其中的 `<template>` 标签）编译为可发布的产物。只需调用一次 `ember()`，即可取代通常所需的 `@embroider/*` 外部化配置、`content-tag` 预处理和 Babel 集成。
 
 > [!NOTE]
-> 该插件目前仅面向 Ember 库（v2 addon）——尚未针对构建应用（app）进行测试。
+> 该插件目前仅面向 Ember 库（v2 addon）；尚未测试 Ember 应用的构建。
 
 ## 最简示例
 
-要为 Ember 库配置 `tsdown`，请在 `tsdown.config.ts` 中使用以下配置：
+在 `tsdown.config.ts` 中按如下方式配置 Ember 库：
 
 ```ts [tsdown.config.ts]
 import { ember } from '@nullvoxpopuli/ember-rolldown'
@@ -15,7 +15,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['./src/index.ts'],
-  dts: true,
+  dts: { sourcemap: true },
   plugins: [ember()],
 })
 ```
@@ -45,7 +45,7 @@ export const Badge: TOC<BadgeSignature> = <template>
 export { Badge } from './components/badge.gts'
 ```
 
-该配置会将您的入口构建为带有 sourcemap 的 `dist/*.js` 和 `dist/*.d.ts`，同时将 Ember 的虚拟包（如 `@ember/component`、`@glimmer/tracking`）以及您的 `dependencies` / `peerDependencies` 保持为外部依赖，由使用方应用解析。
+构建后会在 `dist/` 中生成与各入口对应的 `.js` 和 `.d.ts` 文件及其源映射。Ember 虚拟包（如 `@ember/component` 和 `@glimmer/tracking`）以及列在 `dependencies` 或 `peerDependencies` 中的包不会被打包，而由使用该库的应用解析。
 
 安装所需依赖：
 
@@ -70,11 +70,11 @@ bun add -D @nullvoxpopuli/ember-rolldown
 :::
 
 > [!NOTE]
-> `@nullvoxpopuli/ember-rolldown` 需要 Node.js 24+ 和 TypeScript 6。
+> `@nullvoxpopuli/ember-rolldown` 需要 Node.js 24+。由于该包直接发布 TypeScript 源码，如需对使用该包的项目进行类型检查，还需使用 TypeScript 6+，并在 `lib` 中包含 `es2025`（例如 `esnext`）。
 
 ## 声明文件
 
-`.gts`/`.gjs`（模板标签）模块仅存在于打包器的模块图中，因此声明文件通过[隔离声明（isolated declarations）](../options/dts.md#启用-isolateddeclarations)生成——构建所使用的 tsconfig 必须启用该选项（否则 `ember()` 会报错）：
+`.gts` 和 `.gjs` 这类模板标签模块只存在于打包器的模块图中，因此必须使用 [`isolatedDeclarations`](../options/dts.md#启用-isolateddeclarations) 生成声明文件。构建所用的 `tsconfig` 必须启用该选项，否则 `ember()` 会报错：
 
 ```jsonc [tsconfig.json]
 {
@@ -84,7 +84,7 @@ bun add -D @nullvoxpopuli/ember-rolldown
 }
 ```
 
-这意味着每个导出的值都需要显式的类型注解，例如上文的 `TOC<BadgeSignature>`。如果您的包中还包含不应受此约束的仅供开发的代码（例如包内的演示应用或测试），可将 tsdown 的 `tsconfig` 选项指向仅用于发布的配置文件：
+`isolatedDeclarations` 要求为导出的 API 提供足够的类型标注，使工具无需跨文件类型推断即可生成声明文件。例如，上文的组件使用了显式的 `TOC<BadgeSignature>` 类型注解。如果包内还包含不应受此约束的仅供开发的代码（如演示应用或包内测试），可将 `tsdown` 的 `tsconfig` 选项指向仅用于发布的配置文件：
 
 ```ts [tsdown.config.ts]
 export default defineConfig({
@@ -98,15 +98,15 @@ export default defineConfig({
 
 `ember()` 返回一组 Rolldown 插件，它们会：
 
-- 将您的 `dependencies`、`peerDependencies` 以及 Ember 虚拟包保持为外部依赖，由使用方应用解析。
-- 通过 [`content-tag`](https://github.com/embroider-build/content-tag) 预处理 `<template>` 标签，并映射 `.gts`/`.gjs` 模块，使 Rolldown 能够识别它们。
-- 仅对真正需要的文件（模板标签、装饰器）运行 Babel；其余文件仍使用 Rolldown 快速的原生转换。
-- 校验 tsconfig 是否启用了 `isolatedDeclarations`。
+- 将 `dependencies` 和 `peerDependencies` 中的包以及 Ember 虚拟包保留为外部依赖，由使用该库的应用解析。
+- 使用 [`content-tag`](https://github.com/embroider-build/content-tag) 预处理 `<template>` 标签，并将 `.gts`/`.gjs` 映射为 `.ts`/`.js`，使 Rolldown 能够处理它们。
+- 仅对包含模板标签、装饰器等确需 Babel 处理的文件运行 Babel；其他文件仍使用 Rolldown 的快速原生转换。
+- 检查构建所用的 `tsconfig` 是否启用了 `isolatedDeclarations`。
 
-Babel 配置是可选的：没有配置时，模板、装饰器和 TypeScript 由内置默认值处理；有配置时，则使用您的配置。
+Babel 配置可省略。未提供时，`ember()` 会使用内置默认配置处理模板、装饰器和 TypeScript；提供后则改用自定义配置。
 
 ## CSS
 
-导入同目录 CSS 的组件（`import './badge.css'`）需要安装 [`@tsdown/css`](../options/css.md)；tsdown 会自动检测并将导入的样式表打包为 `dist/` 中的单个 CSS 文件。设置 `css: { inject: true }` 可在产物中保留 CSS 导入语句，使使用方应用通过模块图加载样式。
+若组件导入了与其同目录的 CSS（`import './badge.css'`），项目需安装 [`@tsdown/css`](../options/css.md)。`tsdown` 会自动检测该包，并将导入的样式表合并到 `dist/` 中的一个 CSS 文件。设置 `css: { inject: true }` 后，生成的 JavaScript 会保留指向该 CSS 文件的导入语句，使用该库的应用便可通过模块图加载样式。
 
-关于更多高级主题——用于经典（基于名称）解析的应用再导出（app re-exports）、`ember-scoped-css` 集成以及发布专用的 Babel 配置——请参阅[插件文档](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown#readme)。
+如需了解用于支持经典名称解析的 `app re-exports`、`ember-scoped-css` 集成和发布专用 Babel 配置等高级用法，请参阅[插件文档](https://github.com/NullVoxPopuli/ember.nvp/tree/main/packages/rolldown#readme)。
