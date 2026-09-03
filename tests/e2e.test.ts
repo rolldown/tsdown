@@ -3,7 +3,7 @@ import path from 'node:path'
 import { RE_NODE_MODULES } from 'rolldown-plugin-dts/internal'
 import { describe, expect, test, vi } from 'vitest'
 import {
-  resolveConfig,
+  resolveConfig as _resolveConfig,
   type InlineConfig,
   type UserConfig,
 } from '../src/config/index.ts'
@@ -11,6 +11,12 @@ import { slash } from '../src/utils/general.ts'
 import { globalLogger } from '../src/utils/logger.ts'
 import { chdir, testBuild, writeFixtures } from './utils.ts'
 import type { Plugin } from 'rolldown'
+
+const watch = {
+  restart: () => Promise.reject(),
+  close: () => Promise.reject(),
+}
+const resolveConfig = (config: InlineConfig) => _resolveConfig(config, watch)
 
 const pluginMockDepCode: Plugin = {
   name: 'mock-dep-code',

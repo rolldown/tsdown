@@ -7,7 +7,7 @@ import { format } from 'prettier'
 import { glob } from 'tinyglobby'
 import { mergeUserOptions } from '../src/config/options.ts'
 import { build } from '../src/index.ts'
-import type { InlineConfig, TsdownBundle } from '../src/config/index.ts'
+import type { InlineConfig, TsdownHandle } from '../src/config/index.ts'
 import type { LogOrStringHandler, RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
 
@@ -133,7 +133,7 @@ export async function testBuild({
   snapshot: string
   fileMap: Record<string, string>
   warnings: RollupLog[]
-  bundle: TsdownBundle[]
+  bundle: TsdownHandle
 }> {
   const { expect } = context
   const { testName, testDir } = await writeFixtures(context, files, fixture)

@@ -68,14 +68,16 @@ export interface UserConfig {
   external?: ExternalOption;
   noExternal?: Arrayable<string | RegExp> | NoExternalFn;
 }
+export interface UserConfigFnContext {
+  ci: boolean;
+  rootConfig?: UserConfig;
+  watch: TsdownHandle["watch"];
+}
 // #endregion
 
 // #region Types
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>;
-export type UserConfigFn = (_: InlineConfig, _: {
-  ci: boolean;
-  rootConfig?: UserConfig;
-}) => Awaitable<Arrayable<UserConfig>>;
+export type UserConfigFn = (_: InlineConfig, _: UserConfigFnContext) => Awaitable<Arrayable<UserConfig>>;
 // #endregion
 
 // #region Functions

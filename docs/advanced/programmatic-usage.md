@@ -24,7 +24,7 @@ bundle output to disk:
 ```ts twoslash
 import { build } from 'tsdown'
 
-const bundles = await build({
+const { bundles } = await build({
   entry: ['src/index.ts'],
   format: 'esm',
   write: false,
@@ -39,9 +39,12 @@ for (const bundle of bundles) {
 }
 ```
 
-`build()` currently returns a `TsdownBundle[]`, with one bundle for each
-resolved configuration. Even a single configuration returns an array; its
-in-memory Rolldown outputs are available in `bundle.chunks`.
+`build()` returns a `TsdownHandle`. Its `bundles` array contains one bundle for
+each resolved configuration. In watch mode, `watch.restart()` restarts the build
+and resolves to the new handle, while `watch.close()` gracefully closes all
+watchers. Each handle can only be restarted once. Even a single configuration
+produces an array; its in-memory Rolldown outputs are available in
+`bundle.chunks`.
 
 The `write` option controls Rolldown's bundle output, while other file operations
 are configured separately. For example, `clean` defaults to `true`, so set

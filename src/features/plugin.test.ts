@@ -1,8 +1,17 @@
 import { describe, expect, test, vi } from 'vitest'
 import { chdir, writeFixtures } from '../../tests/utils.ts'
-import { resolveConfig } from '../config/index.ts'
+import {
+  resolveConfig as _resolveConfig,
+  type InlineConfig,
+} from '../config/index.ts'
 import { flattenPlugins, type TsdownPlugin } from './plugin.ts'
 import type { Plugin } from 'rolldown'
+
+const watch = {
+  restart: () => Promise.reject(),
+  close: () => Promise.reject(),
+}
+const resolveConfig = (config: InlineConfig) => _resolveConfig(config, watch)
 
 describe('flattenPlugins', () => {
   test('flattens nested arrays', async () => {

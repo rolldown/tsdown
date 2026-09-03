@@ -9,6 +9,13 @@ export interface TsdownBundle extends AsyncDisposable {
   config: ResolvedConfig
   inlinedDeps: Map<string, Set<string>>
 }
+export interface TsdownHandle {
+  bundles: TsdownBundle[]
+  watch: {
+    restart: () => Promise<TsdownHandle>
+    close: () => Promise<void>
+  }
+}
 
 export function addOutDirToChunks(
   chunks: Array<OutputChunk | OutputAsset>,
