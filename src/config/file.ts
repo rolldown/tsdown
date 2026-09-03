@@ -5,12 +5,16 @@ import { pathToFileURL } from 'node:url'
 import { depsStore, init, isSupported } from 'import-without-cache'
 import { createDebug } from 'obug'
 import { createConfigCoreLoader } from 'unconfig-core'
-import { isInCI } from '../utils/ci.ts'
 import { fsStat } from '../utils/fs.ts'
 import { importWithError, toArray } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import { styleText } from '../utils/style.ts'
-import type { InlineConfig, UserConfig, UserConfigExport } from './types.ts'
+import type {
+  InlineConfig,
+  UserConfig,
+  UserConfigExport,
+  UserConfigFnContext,
+} from './types.ts'
 import type {
   ConfigEnv,
   UserConfig as ViteUserConfig,
@@ -65,8 +69,8 @@ const configPrefix = 'tsdown.config'
 
 export async function loadConfigFile(
   inlineConfig: InlineConfig,
+  context: UserConfigFnContext,
   workspace?: string,
-  rootConfig?: UserConfig,
 ): Promise<{
   configs: UserConfig[]
   deps?: Set<string>
@@ -136,7 +140,7 @@ export async function loadConfigFile(
 
     exported = await exported
     if (typeof exported === 'function') {
-      exported = await exported(inlineConfig, { ci: isInCI(), rootConfig })
+      exported = await exported(inlineConfig, context)
     }
   }
 

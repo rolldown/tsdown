@@ -24,7 +24,11 @@ import type { ExportsOptions } from '../features/pkg/exports.ts'
 import type { PublintOptions } from '../features/pkg/publint.ts'
 import type { TsdownPlugin, TsdownPluginOption } from '../features/plugin.ts'
 import type { ReportOptions } from '../features/report.ts'
-import type { RolldownChunk, TsdownBundle } from '../utils/chunks.ts'
+import type {
+  RolldownChunk,
+  TsdownBundle,
+  TsdownHandle,
+} from '../utils/chunks.ts'
 import type { ConcurrencyExecutor } from '../utils/general.ts'
 import type { Logger, LogLevel } from '../utils/logger.ts'
 import type { PackageJsonWithPath, PackageType } from '../utils/package.ts'
@@ -104,6 +108,7 @@ export type {
   SeaConfig,
   TreeshakingOptions,
   TsdownBundle,
+  TsdownHandle,
   TsdownHooks,
   TsdownPlugin,
   TsdownPluginOption,
@@ -676,9 +681,15 @@ export interface InlineConfig extends UserConfig {
   concurrency?: number
 }
 
+export interface UserConfigFnContext {
+  ci: boolean
+  rootConfig?: UserConfig
+  watch: TsdownHandle['watch']
+}
+
 export type UserConfigFn = (
   inlineConfig: InlineConfig,
-  context: { ci: boolean; rootConfig?: UserConfig },
+  context: UserConfigFnContext,
 ) => Awaitable<Arrayable<UserConfig>>
 
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>

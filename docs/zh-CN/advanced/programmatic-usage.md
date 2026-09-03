@@ -23,7 +23,7 @@ await build({
 ```ts twoslash
 import { build } from 'tsdown'
 
-const bundles = await build({
+const { bundles } = await build({
   entry: ['src/index.ts'],
   format: 'esm',
   write: false,
@@ -38,7 +38,7 @@ for (const bundle of bundles) {
 }
 ```
 
-`build()` 当前返回 `TsdownBundle[]`，每个解析后的配置对应一个 bundle。即使只有单个配置，返回值也是数组；内存中的 Rolldown 输出位于 `bundle.chunks`。
+`build()` 返回 `TsdownHandle`。其中 `bundles` 数组为每个解析后的配置包含一个 bundle。在监听模式下，`watch.restart()` 用于重启构建并返回新的 handle，`watch.close()` 会优雅地关闭所有 watcher。每个 handle 只能重启一次。即使只有单个配置，`bundles` 也是数组；内存中的 Rolldown 输出位于 `bundle.chunks`。
 
 `write` 选项控制 Rolldown 打包产物的写入，其他文件操作则单独配置。例如，`clean` 默认为 `true`，因此如果必须保留现有输出目录，请像上面的示例一样设置 `clean: false`。显式启用的 `copy` 或 `exports` 等功能仍可能写入文件。`write: false` 与监听模式不兼容。
 

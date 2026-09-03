@@ -8,10 +8,10 @@ import { styleText } from '../utils/style.ts'
 export interface Shortcut {
   key: string
   description: string
-  action: () => void | Promise<void>
+  action: () => void | Promise<unknown>
 }
 
-export function shortcuts(restart: () => void): () => void {
+export function shortcuts(restart: () => Promise<unknown>): () => void {
   let actionRunning = false
   async function onInput(input: string) {
     if (actionRunning) return
@@ -20,9 +20,7 @@ export function shortcuts(restart: () => void): () => void {
       {
         key: 'r',
         description: 'reload config and rebuild',
-        action() {
-          restart()
-        },
+        action: restart,
       },
       {
         key: 'c',

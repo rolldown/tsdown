@@ -29,6 +29,7 @@ import {
   addOutDirToChunks,
   type RolldownChunk,
   type TsdownBundle,
+  type TsdownHandle,
 } from './utils/chunks.ts'
 import { debounce, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
@@ -39,11 +40,37 @@ import { styleText } from './utils/style.ts'
  */
 export async function build(
   inlineConfig: InlineConfig = {},
-): Promise<TsdownBundle[]> {
+): Promise<TsdownHandle> {
   globalLogger.level = inlineConfig.logLevel || 'info'
-  const { configs, deps: configDeps } = await resolveConfig(inlineConfig)
 
-  return buildWithConfigs(configs, configDeps, () => build(inlineConfig))
+  let isConfigResolved = false
+  const { configs, deps } = await resolveConfig(inlineConfig, {
+    restart,
+    close,
+  })
+  const handlePromise = buildWithConfigs(configs, deps, () =>
+    build(inlineConfig),
+  )
+  isConfigResolved = true
+  return await handlePromise
+
+  async function restart() {
+    if (!isConfigResolved) {
+      throw new Error(
+        '`watch.restart` cannot be called before config resolution is complete.',
+      )
+    }
+    return (await handlePromise).watch.restart()
+  }
+
+  async function close() {
+    if (!isConfigResolved) {
+      throw new Error(
+        '`watch.close` cannot be called before config resolution is complete.',
+      )
+    }
+    return (await handlePromise).watch.close()
+  }
 }
 
 /**
@@ -55,8 +82,9 @@ export async function build(
 export async function buildWithConfigs(
   configs: ResolvedConfig[],
   configDeps: Set<string>,
-  _restart: () => void,
-): Promise<TsdownBundle[]> {
+  rebuild: () => Promise<TsdownHandle>,
+): Promise<TsdownHandle> {
+  const hasWatchConfig = configs.some((config) => config.watch)
   let cleanPromise: Promise<void> | undefined
   const clean = () => {
     if (cleanPromise) return cleanPromise
@@ -64,14 +92,27 @@ export async function buildWithConfigs(
   }
 
   const disposeCbs: Array<() => void | PromiseLike<void>> = []
-  let restarting = false
-  async function restart() {
-    if (restarting) return
-    restarting = true
+  let restarted = false
 
+  function assertWatchMode() {
+    if (!hasWatchConfig) {
+      throw new Error('`watch` is only available in watch mode.')
+    }
+  }
+  async function close() {
+    assertWatchMode()
     await Promise.all(disposeCbs.map((cb) => cb()))
+  }
+
+  async function restart() {
+    assertWatchMode()
+    if (restarted) {
+      throw new Error('`watch.restart` can only be called once per handle.')
+    }
+    restarted = true
+    await close()
     clearRequireCache()
-    _restart()
+    return rebuild()
   }
 
   const configChunksByPkg = initBundleByPkg(configs)
@@ -91,7 +132,10 @@ export async function buildWithConfigs(
         configDeps,
         isDualFormat,
         clean,
-        restart,
+        () => {
+          if (restarted) return
+          restart().catch((error) => globalLogger.error(error))
+        },
         done,
       )
     }),
@@ -101,7 +145,6 @@ export async function buildWithConfigs(
     (config) => config.devtools && config.devtools.ui,
   )
 
-  const hasWatchConfig = configs.some((config) => config.watch)
   if (hasWatchConfig) {
     // Watch mode with shortcuts
     disposeCbs.push(shortcuts(restart))
@@ -114,7 +157,10 @@ export async function buildWithConfigs(
     startDevtoolsUI(firstDevtoolsConfig.devtools)
   }
 
-  return bundles
+  return {
+    bundles,
+    watch: { restart, close },
+  }
 }
 
 /**
@@ -164,7 +210,7 @@ async function buildSingle(
   const configs = await initBuildOptions()
   if (watch) {
     watcher = rolldownWatch(configs)
-    handleWatcher(watcher)
+    await handleWatcher(watcher)
   } else {
     const outputs = await config.runBuild(() => rolldownBuild(configs))
     for (const { output } of outputs) {
@@ -183,6 +229,7 @@ async function buildSingle(
   return bundle
 
   function handleWatcher(watcher: RolldownWatcher) {
+    const ready = Promise.withResolvers<void>()
     const changedFile: string[] = []
     let hasError = false
 
@@ -226,6 +273,7 @@ async function buildSingle(
 
           chunks.length = 0
           hasError = false
+          ready.resolve()
           break
         }
 
@@ -261,6 +309,8 @@ async function buildSingle(
         }
       }
     })
+
+    return ready.promise
   }
 
   async function initBuildOptions() {

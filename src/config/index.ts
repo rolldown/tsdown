@@ -1,11 +1,16 @@
 import path from 'node:path'
 import { createDebug } from 'obug'
+import { isInCI } from '../utils/ci.ts'
 import { createConcurrencyExecutor } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
 import { loadConfigFile } from './file.ts'
 import { resolveUserConfig } from './options.ts'
 import { resolveWorkspace } from './workspace.ts'
-import type { InlineConfig, ResolvedConfig } from './types.ts'
+import type {
+  InlineConfig,
+  ResolvedConfig,
+  UserConfigFnContext,
+} from './types.ts'
 
 export * from './types.ts'
 
@@ -19,7 +24,10 @@ const debug = createDebug('tsdown:config')
 
 // resolved configs count = 1 (inline config) * root config count * workspace count * sub config count
 
-export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
+export async function resolveConfig(
+  inlineConfig: InlineConfig,
+  watch: UserConfigFnContext['watch'],
+): Promise<{
   configs: ResolvedConfig[]
   deps: Set<string>
 }> {
@@ -29,8 +37,14 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
     inlineConfig.cwd = path.resolve(inlineConfig.cwd)
   }
 
-  const { configs: rootConfigs, deps: rootDeps } =
-    await loadConfigFile(inlineConfig)
+  const context: UserConfigFnContext = {
+    ci: isInCI(),
+    watch,
+  }
+  const { configs: rootConfigs, deps: rootDeps } = await loadConfigFile(
+    inlineConfig,
+    context,
+  )
   const globalDeps = new Set<string>(rootDeps)
   const runBuild = createConcurrencyExecutor(inlineConfig.concurrency)
 
@@ -38,7 +52,7 @@ export async function resolveConfig(inlineConfig: InlineConfig): Promise<{
     await Promise.all(
       rootConfigs.map(async (rootConfig): Promise<ResolvedConfig[]> => {
         const { configs: workspaceConfigs, deps: workspaceDeps } =
-          await resolveWorkspace(rootConfig, inlineConfig, rootDeps)
+          await resolveWorkspace(rootConfig, inlineConfig, context, rootDeps)
         debug('workspace configs %O', workspaceConfigs)
 
         const configs = (

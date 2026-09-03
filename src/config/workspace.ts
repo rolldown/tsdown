@@ -5,7 +5,7 @@ import { glob } from 'tinyglobby'
 import { slash } from '../utils/general.ts'
 import { loadConfigFile } from './file.ts'
 import { mergeConfig } from './options.ts'
-import type { InlineConfig, UserConfig } from './types.ts'
+import type { InlineConfig, UserConfig, UserConfigFnContext } from './types.ts'
 
 const debug = createDebug('tsdown:config:workspace')
 
@@ -19,6 +19,7 @@ const DEFAULT_EXCLUDE_WORKSPACE = [
 export async function resolveWorkspace(
   config: UserConfig,
   inlineConfig: InlineConfig,
+  context: UserConfigFnContext,
   rootDeps?: Set<string>,
 ): Promise<{ configs: UserConfig[]; deps: Set<string> }> {
   const normalized = mergeConfig(config, inlineConfig)
@@ -70,6 +71,7 @@ export async function resolveWorkspace(
     throw new Error('No workspace packages found, please check your config')
   }
 
+  context = { ...context, rootConfig: normalized }
   const configs = (
     await Promise.all(
       packages.map(async (cwd) => {
@@ -80,8 +82,8 @@ export async function resolveWorkspace(
             config: workspaceConfig,
             cwd,
           },
+          context,
           cwd,
-          normalized,
         )
         workspaceDeps?.forEach((dep) => deps.add(dep))
         return configs.map((config) => mergeConfig(normalized, config))

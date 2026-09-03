@@ -119,6 +119,13 @@ export interface TsdownBundle extends AsyncDisposable {
   config: ResolvedConfig;
   inlinedDeps: Map<string, Set<string>>;
 }
+export interface TsdownHandle {
+  bundles: TsdownBundle[];
+  watch: {
+    restart: () => Promise<TsdownHandle>;
+    close: () => Promise<void>;
+  };
+}
 export interface TsdownHooks {
   "build:prepare": (_: BuildContext) => void | Promise<void>;
   "build:before": (_: BuildContext & RolldownContext) => void | Promise<void>;
@@ -196,6 +203,11 @@ export interface UserConfig {
   external?: ExternalOption;
   noExternal?: Arrayable<string | RegExp> | NoExternalFn;
 }
+export interface UserConfigFnContext {
+  ci: boolean;
+  rootConfig?: UserConfig;
+  watch: TsdownHandle["watch"];
+}
 export interface Workspace {
   include?: "auto" | (string & {}) | string[];
   exclude?: Arrayable<string>;
@@ -252,18 +264,15 @@ export type TsdownPluginOption<A = any> = Awaitable<TsdownPlugin<A> | RolldownPl
 } | undefined | null | void | false | TsdownPluginOption<A>[]>;
 export type UnusedOptions = import("unplugin-unused").Options;
 export type UserConfigExport = Awaitable<Arrayable<UserConfig> | UserConfigFn>;
-export type UserConfigFn = (_: InlineConfig, _: {
-  ci: boolean;
-  rootConfig?: UserConfig;
-}) => Awaitable<Arrayable<UserConfig>>;
+export type UserConfigFn = (_: InlineConfig, _: UserConfigFnContext) => Awaitable<Arrayable<UserConfig>>;
 export type WithEnabled<T> = boolean | undefined | CIOption | (T & {
   enabled?: boolean | CIOption;
 });
 // #endregion
 
 // #region Functions
-export declare function build(_?: InlineConfig): Promise<TsdownBundle[]>;
-export declare function buildWithConfigs(_: ResolvedConfig[], _: Set<string>, _: () => void): Promise<TsdownBundle[]>;
+export declare function build(_?: InlineConfig): Promise<TsdownHandle>;
+export declare function buildWithConfigs(_: ResolvedConfig[], _: Set<string>, _: () => Promise<TsdownHandle>): Promise<TsdownHandle>;
 export declare function defineConfig(_: UserConfig): UserConfig;
 export declare function defineConfig(_: UserConfig[]): UserConfig[];
 export declare function defineConfig(_: UserConfigFn): UserConfigFn;
