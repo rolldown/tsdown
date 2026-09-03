@@ -133,7 +133,8 @@ export async function buildWithConfigs(
         isDualFormat,
         clean,
         () => {
-          if (!restarted) restart()
+          if (restarted) return
+          restart().catch((error) => globalLogger.error(error))
         },
         done,
       )
@@ -156,7 +157,10 @@ export async function buildWithConfigs(
     startDevtoolsUI(firstDevtoolsConfig.devtools)
   }
 
-  return { bundles, watch: { restart, close } }
+  return {
+    bundles,
+    watch: { restart, close },
+  }
 }
 
 /**
