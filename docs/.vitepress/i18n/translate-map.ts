@@ -40,6 +40,7 @@ const zhCN = {
   'React Support': 'React 支持',
   'Solid Support': 'Solid 支持',
   'Svelte Support': 'Svelte 支持',
+  'Ember Support': 'Ember 支持',
   'WASM Support': 'WASM 支持',
 
   Advanced: '高级功能',
