@@ -10,7 +10,15 @@
     "types": ["node"],
     "allowImportingTsExtensions": true,
     "strict": true,
+    "exactOptionalPropertyTypes": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": false,
+    "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": false,
     "declaration": true,
     "noEmit": true,
     "stripInternal": true,
@@ -18,6 +26,7 @@
     "isolatedDeclarations": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
   "include": [
