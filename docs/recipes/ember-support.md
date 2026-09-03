@@ -15,7 +15,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['./src/index.ts'],
-  dts: { sourcemap: true },
+  dts: true,
   plugins: [ember()],
 })
 ```
@@ -45,7 +45,7 @@ And export it from your entry file:
 export { Badge } from './components/badge.gts'
 ```
 
-The build writes `.js` and `.d.ts` files for each entry to `dist/`, along with their source maps. Ember virtual packages (such as `@ember/component` and `@glimmer/tracking`) and packages listed in `dependencies` or `peerDependencies` remain external and are resolved by the consuming app.
+The build writes `.js` and `.d.ts` files for each entry to `dist/` and emits source maps for the JavaScript output. Ember virtual packages (such as `@ember/component` and `@glimmer/tracking`) and packages listed in `dependencies` or `peerDependencies` remain external and are resolved by the consuming app.
 
 Install the required dependency:
 

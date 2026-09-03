@@ -15,7 +15,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
   entry: ['./src/index.ts'],
-  dts: { sourcemap: true },
+  dts: true,
   plugins: [ember()],
 })
 ```
@@ -45,7 +45,7 @@ export const Badge: TOC<BadgeSignature> = <template>
 export { Badge } from './components/badge.gts'
 ```
 
-构建后会在 `dist/` 中生成与各入口对应的 `.js` 和 `.d.ts` 文件及其源映射。Ember 虚拟包（如 `@ember/component` 和 `@glimmer/tracking`）以及列在 `dependencies` 或 `peerDependencies` 中的包不会被打包，而由使用该库的应用解析。
+构建后会在 `dist/` 中生成与各入口对应的 `.js` 和 `.d.ts` 文件，并为 JavaScript 产物生成源映射。Ember 虚拟包（如 `@ember/component` 和 `@glimmer/tracking`）以及列在 `dependencies` 或 `peerDependencies` 中的包不会被打包，而由使用该库的应用解析。
 
 安装所需依赖：
 
