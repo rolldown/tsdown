@@ -2,7 +2,6 @@
   "name": "tsdown",
   "type": "module",
   "version": "0.23.0-rc.1",
-  "packageManager": "pnpm@12.1.0",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -64,6 +63,13 @@
   },
   "engines": {
     "node": "^22.18.0 || ^24.11.0 || >=26.0.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^12.3.1",
+      "onFail": "download"
+    }
   },
   "scripts": {
     "lint": "eslint --cache --max-warnings 0 .",
