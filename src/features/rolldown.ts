@@ -255,7 +255,7 @@ async function resolveInputOptions(
       resolve: {
         alias,
       },
-      tsconfig: tsconfig || undefined,
+      tsconfig: tsconfig ?? undefined,
       treeshake,
       platform: cjsDts || format === 'cjs' ? 'node' : platform,
       transform: {
