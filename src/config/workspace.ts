@@ -2,7 +2,9 @@ import path from 'node:path'
 import process from 'node:process'
 import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
+import { fsExists } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
+import { globalLogger } from '../utils/logger.ts'
 import { loadConfigFile } from './file.ts'
 import { mergeConfig } from './options.ts'
 import type { InlineConfig, UserConfig, UserConfigFnContext } from './types.ts'
@@ -56,7 +58,7 @@ export async function resolveWorkspace(
       .filter((file) => file !== 'package.json') // exclude root package.json
       .map((file) => slash(path.resolve(rootCwd, file, '..')))
   } else {
-    packages = (
+    const matched = (
       await glob(packages, {
         ignore: exclude,
         cwd: rootCwd,
@@ -65,6 +67,31 @@ export async function resolveWorkspace(
         expandDirectories: false,
       })
     ).map((file) => slash(path.resolve(file)))
+
+    // `include` selects directories, so it can select a directory that is not a
+    // package — one left behind by a rename, for example. Those entries inherit
+    // this config and then fail entry resolution with its name, so only
+    // directories that own a manifest join the workspace, as they do under `auto`.
+    const probed = await Promise.all(
+      matched.map(async (directory) => ({
+        directory,
+        isPackage: await fsExists(path.join(directory, 'package.json')),
+      })),
+    )
+    packages = probed
+      .filter((entry) => entry.isPackage)
+      .map((entry) => entry.directory)
+    const skipped = probed
+      .filter((entry) => !entry.isPackage)
+      .map((entry) => slash(path.relative(rootCwd, entry.directory)))
+      .toSorted()
+    if (skipped.length > 0) {
+      globalLogger.warn(
+        `workspace include matched ${skipped.length} directories without a package.json; skipping:\n${skipped
+          .map((directory) => `  - ${directory}`)
+          .join('\n')}`,
+      )
+    }
   }
 
   if (packages.length === 0) {

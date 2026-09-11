@@ -958,6 +958,34 @@ test('workspace option', async (context) => {
   })
 })
 
+test('workspace include skips directories without a package.json', async (context) => {
+  const files = {
+    'package.json': JSON.stringify({ name: 'workspace-stray-directory' }),
+    'packages/foo/src/index.ts': `export default 10`,
+    'packages/foo/package.json': JSON.stringify({ name: 'foo' }),
+    'packages/ghost/.gitkeep': '',
+  }
+  const warn = vi.spyOn(globalLogger, 'warn').mockImplementation(() => {})
+
+  try {
+    await testBuild({
+      context,
+      files,
+      options: {
+        workspace: ['packages/*'],
+        entry: ['src/index.ts'],
+      },
+      expectDir: '..',
+      expectPattern: '**/dist',
+    })
+
+    expect(warn).toHaveBeenCalledOnce()
+    expect(warn.mock.calls[0]?.[0]).toContain('packages/ghost')
+  } finally {
+    warn.mockRestore()
+  }
+})
+
 test('inline concurrency limits Rolldown builds', async (context) => {
   const files = {
     'package.json': JSON.stringify({ name: 'workspace-concurrency' }),
