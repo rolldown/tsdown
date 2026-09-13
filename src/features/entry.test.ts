@@ -250,4 +250,53 @@ describe('toObjectEntry', () => {
       'src/utils/helper': path.join(testDir, 'src/utils/helper.ts'),
     })
   })
+
+  test('object entry with custom root', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+      'src/utils/helper.ts': '',
+    })
+    const root = testDir
+    const [result, resolvedRoot] = await toObjectEntry(
+      { main: 'src/index.ts', helper: 'src/utils/helper.ts' },
+      testDir,
+      root,
+    )
+    expect(resolvedRoot).toBe(root)
+    // Object entry keys are user-provided, so the root must not rename them.
+    expect(result).toEqual({
+      main: 'src/index.ts',
+      helper: 'src/utils/helper.ts',
+    })
+  })
+
+  test('object entry with glob key and custom root', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+      'src/utils/helper.ts': '',
+    })
+    const root = testDir
+    const [result, resolvedRoot] = await toObjectEntry(
+      { 'lib/*': 'src/**/*.ts' },
+      testDir,
+      root,
+    )
+    expect(resolvedRoot).toBe(root)
+    expect(result).toEqual({
+      'lib/index': path.join(testDir, 'src/index.ts'),
+      'lib/utils/helper': path.join(testDir, 'src/utils/helper.ts'),
+    })
+  })
+
+  test('object entry without custom root', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+      'src/utils/helper.ts': '',
+    })
+    const [, resolvedRoot] = await toObjectEntry(
+      { main: 'src/index.ts', helper: 'src/utils/helper.ts' },
+      testDir,
+    )
+    expect(resolvedRoot).toBe('src')
+  })
 })
