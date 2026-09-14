@@ -44,8 +44,7 @@
   "files": [
     "client.d.ts",
     "dist",
-    "esm-shims.js",
-    "schema.json"
+    "esm-shims.js"
   ],
   "publishConfig": {
     "access": "public",
@@ -80,6 +79,8 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --cache --write .",
+    "schema:generate": "node ./scripts/generate-schema.ts --out ./schema.json && prettier --write ./schema.json",
+    "schema:check": "node ./scripts/generate-schema.ts --check --out ./schema.json",
     "release": "node ./scripts/release.ts",
     "docs:dev": "pnpm -C docs run dev",
     "docs:build": "pnpm -C docs run build",
@@ -157,6 +158,7 @@
     "@types/picomatch": "catalog:dev",
     "@typescript/native-preview": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
+    "@valibot/to-json-schema": "catalog:dev",
     "@vitejs/devtools": "catalog:peer",
     "@vitest/coverage-v8": "catalog:dev",
     "@vitest/ui": "catalog:dev",
@@ -185,6 +187,7 @@
     "unplugin-unused": "catalog:peer",
     "unplugin-vue": "catalog:dev",
     "unrun": "catalog:dev",
+    "valibot": "catalog:dev",
     "vite": "catalog:docs",
     "vitest": "catalog:dev",
     "vue": "catalog:docs"

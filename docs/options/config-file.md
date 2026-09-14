@@ -18,7 +18,7 @@ When using `tsdown.config.json`, add the schema reference to enable editor autoc
 
 ```json [tsdown.config.json]
 {
-  "$schema": "https://unpkg.com/tsdown/schema.json",
+  "$schema": "https://raw.githubusercontent.com/rolldown/tsdown/main/schema.json",
   "entry": "src/index.ts",
   "format": "esm",
   "dts": true

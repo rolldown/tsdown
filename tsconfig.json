@@ -31,6 +31,7 @@
   },
   "include": [
     "src",
+    "scripts/schema-generator",
     "packages/*/src",
     "tests",
     "packages/*/tests",
