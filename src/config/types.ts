@@ -398,7 +398,7 @@ export interface UserConfig {
    */
   clean?: boolean | string[]
   /**
-   * @default false
+   * @default 'dce-only'
    */
   minify?: boolean | 'dce-only' | MinifyOptions
   footer?: ChunkAddon
