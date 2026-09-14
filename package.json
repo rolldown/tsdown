@@ -35,6 +35,7 @@
       "dev": "./src/run.ts",
       "default": "./dist/run.mjs"
     },
+    "./schema.json": "./schema.json",
     "./package.json": "./package.json",
     "./client": "./client.d.ts"
   },
@@ -44,7 +45,8 @@
   "files": [
     "client.d.ts",
     "dist",
-    "esm-shims.js"
+    "esm-shims.js",
+    "schema.json"
   ],
   "publishConfig": {
     "access": "public",
@@ -54,6 +56,7 @@
       "./internal": "./dist/internal.mjs",
       "./plugins": "./dist/plugins.mjs",
       "./run": "./dist/run.mjs",
+      "./schema.json": "./schema.json",
       "./package.json": "./package.json",
       "./client": "./client.d.ts"
     },
