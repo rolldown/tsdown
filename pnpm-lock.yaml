@@ -190,7 +190,7 @@ catalogs:
       specifier: npm:typescript@7.0.2
       version: 7.0.2
     '@valibot/to-json-schema':
-      specifier: 1.8.0
+      specifier: ^1.8.0
       version: 1.8.0
     '@vitest/coverage-v8':
       specifier: ^5.0.0
@@ -259,7 +259,7 @@ catalogs:
       specifier: ^0.3.1
       version: 0.3.1
     valibot:
-      specifier: 1.5.0
+      specifier: ^1.5.0
       version: 1.5.0
     vitest:
       specifier: ^5.0.0
