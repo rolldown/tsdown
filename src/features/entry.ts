@@ -50,7 +50,7 @@ export function toObjectEntry(
   }
 
   if (!Array.isArray(entry)) {
-    return resolveObjectEntry(entry, cwd)
+    return resolveObjectEntry(entry, cwd, root)
   }
   return resolveArrayEntry(entry, cwd, root)
 }
@@ -69,6 +69,7 @@ export function isGlobEntry(entry: TsdownInputOption | undefined): boolean {
 async function resolveObjectEntry(
   entries: Record<string, string | string[]>,
   cwd: string,
+  root?: string,
 ): Promise<[entry: Record<string, string>, root: string]> {
   const entry = Object.fromEntries(
     (
@@ -130,8 +131,8 @@ async function resolveObjectEntry(
       )
     ).flat(),
   )
-  const root = lowestCommonAncestor(...Object.values(entry))
-  return [entry, root]
+  const computedRoot = root || lowestCommonAncestor(...Object.values(entry))
+  return [entry, computedRoot]
 }
 
 async function resolveArrayEntry(
