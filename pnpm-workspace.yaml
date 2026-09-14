@@ -10,31 +10,31 @@ overrides:
 
 catalogs:
   create:
-    '@clack/prompts': ^1.8.0
+    '@clack/prompts': ^1.8.1
     giget: ^3.3.1
   dev:
     '@sxzz/eslint-config': ^8.6.0
     '@sxzz/prettier-config': ^2.3.2
     '@sxzz/test-utils': ^0.5.18
-    '@types/node': ^26.4.1
+    '@types/node': ^26.5.1
     '@types/picomatch': ^4.0.3
     '@typescript/native-preview': npm:typescript@7.0.2
     '@vitest/coverage-v8': ^5.0.0
     '@vitest/ui': ^5.0.0
     actionspack: ^0.1.5
-    baseline-browser-mapping: ^2.11.22
+    baseline-browser-mapping: ^2.11.23
     bumpp: ^12.3.0
     dedent: ^1.7.2
     eslint: ^10.10.0
-    memfs: ^4.74.0
+    memfs: ^4.78.0
     pkg-types: ^2.3.3
     postcss: ^8.5.28
     postcss-import: ^17.0.0
     postcss-modules: ^9.0.1
     prettier: ^3.9.6
     rolldown-plugin-require-cjs: ^0.4.1
-    sass: ^1.104.0
-    tsnapi: ^1.4.2
+    sass: ^1.104.1
+    tsnapi: ^1.5.0
     tsx: ^4.23.13
     typescript: ~6.0.3
     unplugin-ast: ^0.19.0
@@ -55,7 +55,7 @@ catalogs:
     vite: ^8.3.0
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.6
-    vitepress-plugin-llms: ^1.13.5
+    vitepress-plugin-llms: ^1.14.0
     void: ^0.10.13
     vue: ^3.5.42
     vue-tsc: ^3.3.11
