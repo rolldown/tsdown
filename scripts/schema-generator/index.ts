@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { toJsonSchema, type JsonSchema } from '@valibot/to-json-schema'
+import prettier from 'prettier'
 import ts from 'typescript'
 import * as v from 'valibot'
 
@@ -120,12 +121,14 @@ export function generateSchema(options: GenerateSchemaOptions): JsonSchema {
   })
 }
 
-export function writeSchema(options: WriteSchemaOptions): void {
+export async function writeSchema(options: WriteSchemaOptions): Promise<void> {
   const { outputPath, ...generateOptions } = options
-  writeFileSync(
-    path.resolve(outputPath),
-    `${JSON.stringify(generateSchema(generateOptions), null, 2)}\n`,
+  const resolvedOutputPath = path.resolve(outputPath)
+  const formatted = await prettier.format(
+    JSON.stringify(generateSchema(generateOptions)),
+    { filepath: resolvedOutputPath },
   )
+  writeFileSync(resolvedOutputPath, formatted)
 }
 
 export function checkSchema(options: CheckSchemaOptions): void {
@@ -219,10 +222,17 @@ class TypeConverter {
       const schemas = type.types
         .map((member) => this.convert(member, depth + 1))
         .filter((schema): schema is v.GenericSchema => schema !== undefined)
-      if (schemas.length === 0) return undefined
-      if (schemas.length === 1) return schemas[0]
+      const meaningfulSchemas = schemas.filter(
+        (schema) => !isEmptyObjectSchema(schema),
+      )
+      if (meaningfulSchemas.length === 0) return schemas[0]
+      if (meaningfulSchemas.length === 1) return meaningfulSchemas[0]
       return v.intersect(
-        schemas as [v.GenericSchema, v.GenericSchema, ...v.GenericSchema[]],
+        meaningfulSchemas as [
+          v.GenericSchema,
+          v.GenericSchema,
+          ...v.GenericSchema[],
+        ],
       )
     }
 
@@ -293,6 +303,8 @@ class TypeConverter {
       let hasRequiredUnsupportedProperty = false
 
       for (const property of properties) {
+        if (property.name === 'plugins') continue
+
         const declaration =
           property.valueDeclaration ?? property.declarations?.[0]
         const propertyType = this.checker.getTypeOfSymbolAtLocation(
@@ -522,6 +534,14 @@ function getLiteralPropertyName(name: ts.PropertyName): string | undefined {
     return name.text
   }
   return undefined
+}
+
+function isEmptyObjectSchema(schema: v.GenericSchema): boolean {
+  return (
+    (schema.type === 'object' || schema.type === 'strict_object') &&
+    'entries' in schema &&
+    Object.keys(schema.entries as Record<string, unknown>).length === 0
+  )
 }
 
 function hashString(value: string): string {

@@ -45,5 +45,24 @@ describe('tsdown schema generator', () => {
       | undefined
     expect(objectSchema?.additionalProperties).toBe(false)
     expect(objectSchema?.properties?.$schema).toEqual({ type: 'string' })
+
+    const serialized = JSON.stringify(generated)
+    expect(serialized).not.toContain('"plugins"')
+    expect(
+      Object.keys(generated.$defs ?? {}).some((name) =>
+        name.toLowerCase().includes('plugin'),
+      ),
+    ).toBe(false)
+
+    const workspace = generated.$defs?.Workspace as
+      | {
+          properties?: {
+            include?: { anyOf?: Array<Record<string, unknown>> }
+          }
+        }
+      | undefined
+    const includeSchemas = workspace?.properties?.include?.anyOf ?? []
+    expect(includeSchemas).toContainEqual({ type: 'string' })
+    expect(includeSchemas.some((schema) => 'allOf' in schema)).toBe(false)
   })
 })
