@@ -19,6 +19,7 @@ catalogs:
     '@types/node': ^26.5.1
     '@types/picomatch': ^4.0.3
     '@typescript/native-preview': npm:typescript@7.0.2
+    '@valibot/to-json-schema': ^1.8.0
     '@vitest/coverage-v8': ^5.0.0
     '@vitest/ui': ^5.0.0
     actionspack: ^0.1.5
@@ -41,6 +42,7 @@ catalogs:
     unplugin-raw: ^0.8.0
     unplugin-vue: ^7.2.0
     unrun: ^0.3.1
+    valibot: ^1.5.0
     vitest: ^5.0.0
   docs:
     '@iconify-json/logos': ^1.2.14

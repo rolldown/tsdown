@@ -31,6 +31,7 @@
   },
   "include": [
     "src",
+    "scripts",
     "packages/*/src",
     "tests",
     "packages/*/tests",

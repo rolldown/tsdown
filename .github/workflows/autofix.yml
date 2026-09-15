@@ -36,7 +36,7 @@ jobs:
         run: $PACKAGE_MANAGER install $NO_FROZEN_LOCKFILE
 
       - name: Fix
-        run: pnpm run format && pnpm run lint --fix && pnpm build --update-snapshot
+        run: pnpm schema:generate && pnpm run format && pnpm run lint --fix && pnpm build --update-snapshot
 
       - name: Commit
         uses: autofix-ci/action@c5b2d67aa2274e7b5a18224e8171550871fc7e4a

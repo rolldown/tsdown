@@ -189,6 +189,9 @@ catalogs:
     '@typescript/native-preview':
       specifier: npm:typescript@7.0.2
       version: 7.0.2
+    '@valibot/to-json-schema':
+      specifier: ^1.8.0
+      version: 1.8.0
     '@vitest/coverage-v8':
       specifier: ^5.0.0
       version: 5.0.0
@@ -255,6 +258,9 @@ catalogs:
     unrun:
       specifier: ^0.3.1
       version: 0.3.1
+    valibot:
+      specifier: ^1.5.0
+      version: 1.5.0
     vitest:
       specifier: ^5.0.0
       version: 5.0.0
@@ -463,6 +469,9 @@ importers:
       '@unocss/eslint-plugin':
         specifier: catalog:docs
         version: 66.10.2(eslint@10.10.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
+      '@valibot/to-json-schema':
+        specifier: catalog:dev
+        version: 1.8.0(valibot@1.5.0(typescript@6.0.3))
       '@vitejs/devtools':
         specifier: catalog:peer
         version: 0.7.3(@devframes/json-render@0.9.19(@devframes/hub@0.9.19(crossws@0.4.12(srvx@1.0.4))(devframe@0.9.19(cac@7.0.0)(srvx@1.0.4)))(devframe@0.9.19(cac@7.0.0)(srvx@1.0.4)))(crossws@0.4.12(srvx@1.0.4))(srvx@1.0.4)(vite@8.3.0)
@@ -547,6 +556,9 @@ importers:
       unrun:
         specifier: catalog:dev
         version: 0.3.1(synckit@0.11.13)
+      valibot:
+        specifier: catalog:dev
+        version: 1.5.0(typescript@6.0.3)
       vite:
         specifier: ^8.3.0
         version: 8.3.0(@types/node@26.5.1)(@vitejs/devtools@0.7.3)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.104.1)(sass@1.104.1)(tsx@4.23.13)(yaml@2.9.1)
@@ -2995,6 +3007,11 @@ packages:
     resolution: {integrity: sha512-xO608n5/8m0TvIwSHfWBxzqqfwAMuUJTGFlNFbClCA11gXxb8HPq0/K0ZKl7fmZ+fYsQGlWsUzaGLiNGMueHgQ==}
     peerDependencies:
       vite: ^8.3.0
+
+  '@valibot/to-json-schema@1.8.0':
+    resolution: {integrity: sha512-a0M+uwCuQZEPAo65NYkFSJ14O5c213KoSZmPdoCfuFvUhfULi4T2Z6Tpjv6lTVMW9RoLm74RpRAjNEa43KcN+g==}
+    peerDependencies:
+      valibot: ^1.5.0
 
   '@vitejs/devtools-kit@0.7.3':
     resolution: {integrity: sha512-MsYO9EJ3fzanvS4FJ6C9Dh2iiR4ynhcp5C3lJEKHRZBr8wOyTBSbCP1ic81KHnm3Q5GbGt4lKBHTq7PZfpdmbg==}
@@ -8032,6 +8049,10 @@ snapshots:
       - crossws
       - ocache
       - srvx
+
+  '@valibot/to-json-schema@1.8.0(valibot@1.5.0(typescript@6.0.3))':
+    dependencies:
+      valibot: 1.5.0(typescript@6.0.3)
 
   '@vitejs/devtools-kit@0.7.3(cac@7.0.0)(crossws@0.4.12(srvx@1.0.4))(srvx@1.0.4)(vite@8.3.0)':
     dependencies:
