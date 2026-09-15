@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { parseSync } from 'rolldown/utils'
 import type { CssStyles } from './post.ts'
 import type { OutputAsset, OutputChunk } from 'rolldown'
 
@@ -48,8 +49,6 @@ export function removePureCssChunks(
 
   if (!pureCssChunkNames.length) return
 
-  const replaceEmptyChunk = getEmptyChunkReplacer(pureCssChunkNames)
-
   for (const chunk of Object.values(bundle)) {
     if (chunk.type !== 'chunk') continue
 
@@ -63,7 +62,10 @@ export function removePureCssChunks(
     })
 
     if (chunkImportsPureCssChunk) {
-      chunk.code = replaceEmptyChunk(chunk.code)
+      chunk.code = getEmptyChunkReplacer(
+        pureCssChunkNames,
+        chunk.fileName,
+      )(chunk.code)
     }
   }
 
@@ -74,27 +76,99 @@ export function removePureCssChunks(
 }
 
 /**
- * Create a replacer function that replaces import statements for pure CSS
- * chunks with block comments of the same length, preserving source map offsets.
+ * Create a replacer function that removes pure CSS imports and side-effect requires
+ * with same-length replacements, preserving source map offsets.
  */
 export function getEmptyChunkReplacer(
   pureCssChunkNames: string[],
+  chunkFileName = '',
 ): (code: string) => string {
   const emptyChunkFiles = pureCssChunkNames
     .map((file) => escapeRegex(path.basename(file)))
     .join('|')
+  const emptyChunkPaths = new Set(
+    pureCssChunkNames.map((file) =>
+      path.posix.normalize(
+        path.posix.relative(path.posix.dirname(chunkFileName), file),
+      ),
+    ),
+  )
 
   const emptyChunkRE = new RegExp(
     String.raw`\bimport\s*["'][^"']*(?:${emptyChunkFiles})["'];`,
     'g',
   )
 
-  return (code: string) =>
-    code.replace(emptyChunkRE, (m) => {
+  return (code: string) => {
+    const withoutImports = code.replace(emptyChunkRE, (m) => {
       return `/* empty css ${''.padEnd(m.length - 15)}*/`
     })
+    return replaceEmptyCssRequires(withoutImports, emptyChunkPaths)
+  }
 }
 
+function replaceEmptyCssRequires(
+  code: string,
+  emptyChunkPaths: Set<string>,
+): string {
+  const ast = parseSync('chunk.js', code)
+  if (ast.errors?.length) return code
+  const replacements: Array<{ start: number; end: number; sequence: boolean }> =
+    []
+  type AstNode = { type?: string; [key: string]: unknown }
+
+  function visitSequence(node: AstNode, statement: AstNode): void {
+    if (node.type === 'SequenceExpression') {
+      for (const expression of node.expressions as AstNode[])
+        visitSequence(expression, statement)
+      return
+    }
+    if (node.type !== 'CallExpression') return
+    const callee = node.callee as AstNode | undefined
+    const args = Reflect.get(node, 'arguments')
+    const argument = Array.isArray(args)
+      ? (args[0] as AstNode | undefined)
+      : undefined
+    if (
+      callee?.type !== 'Identifier' ||
+      callee.name !== 'require' ||
+      !Array.isArray(args) ||
+      args.length !== 1 ||
+      (argument?.type !== 'Literal' && argument?.type !== 'StringLiteral') ||
+      typeof argument.value !== 'string' ||
+      (!argument.value.startsWith('./') && !argument.value.startsWith('../')) ||
+      !emptyChunkPaths.has(path.posix.normalize(argument.value)) ||
+      typeof node.start !== 'number' ||
+      typeof node.end !== 'number'
+    )
+      return
+    replacements.push({
+      start: node.start,
+      end: node.end,
+      sequence:
+        (statement.expression as AstNode | undefined)?.type ===
+        'SequenceExpression',
+    })
+  }
+
+  for (const statement of ast.program.body as unknown as AstNode[]) {
+    if (statement.type === 'ExpressionStatement') {
+      visitSequence(statement.expression as AstNode, statement)
+    }
+  }
+  let result = code
+  for (const { start, end, sequence } of replacements.toSorted(
+    (a, b) => b.start - a.start,
+  )) {
+    const length = end - start
+    const replacement =
+      sequence || length < 15
+        ? 'void 0'.padEnd(length)
+        : '/* empty css */'.padEnd(length, ' ')
+    result = result.slice(0, start) + replacement + result.slice(end)
+  }
+  return result
+}
 function escapeRegex(str: string): string {
   return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
 }
