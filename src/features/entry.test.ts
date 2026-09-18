@@ -1,7 +1,9 @@
 import path from 'node:path'
 import { describe, expect, test } from 'vitest'
 import { writeFixtures } from '../../tests/utils.ts'
-import { toObjectEntry } from './entry.ts'
+import { createLogger } from '../utils/logger.ts'
+import { styleText } from '../utils/style.ts'
+import { resolveEntry, toObjectEntry } from './entry.ts'
 
 describe('toObjectEntry', () => {
   test('string entry', async (context) => {
@@ -298,5 +300,17 @@ describe('toObjectEntry', () => {
       testDir,
     )
     expect(resolvedRoot).toBe('src')
+  })
+})
+
+describe('resolveEntry', () => {
+  // #1067
+  test('unmatched entry error includes the cwd', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/index.ts': '',
+    })
+    await expect(
+      resolveEntry(createLogger(), ['src/*.js'], testDir, styleText),
+    ).rejects.toThrow(`Cannot find entry: ["src/*.js"] in ${testDir}`)
   })
 })
