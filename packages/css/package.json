@@ -15,6 +15,7 @@
   "bugs": {
     "url": "https://github.com/rolldown/tsdown/issues"
   },
+  "sideEffects": false,
   "exports": {
     ".": {
       "dev": "./src/index.ts",
