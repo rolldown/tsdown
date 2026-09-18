@@ -298,4 +298,19 @@ button {
     expect(fileMap['index.mjs']).toContain('polyfill-uuid')
     expect(fileMap['index.mjs']).not.toMatch(/from ['"]crypto['"]/)
   })
+
+  test('#1067', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'pkgs/a/package.json': JSON.stringify({ name: 'a' }),
+        'pkgs/a/index.ts': `export const a = 1`,
+        'pkgs/ghost/README.md': 'stale directory, holds no package',
+      },
+      options: { workspace: ['pkgs/*'] },
+      expectDir: '..',
+      expectPattern: '**/dist',
+    })
+    expect(outputFiles).toContain('pkgs/a/dist/index.mjs')
+  })
 })
