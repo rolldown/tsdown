@@ -159,6 +159,50 @@ describe('clean', () => {
     ).rejects.toThrow('Cannot clean the current working directory')
   })
 
+  test('should not clean a custom cwd', async (context) => {
+    const files = {
+      'pkg/index.ts': 'export const hello = "world"',
+    }
+
+    // `cwd` points at a package directory, as it does in workspace mode, while
+    // the process stays in the test directory.
+    await expect(
+      testBuild({
+        context,
+        files,
+        options: (cwd) => ({
+          cwd: path.join(cwd, 'pkg'),
+          clean: ['.'],
+        }),
+      }),
+    ).rejects.toThrow('Cannot clean the current working directory')
+  })
+
+  test('should resolve clean patterns against a custom cwd', async (context) => {
+    const files = {
+      'pkg/index.ts': 'export const hello = "world"',
+      'pkg/pkg/old-file.js': 'old content',
+    }
+
+    const testDir = getTestDir(context.task)
+
+    await testBuild({
+      context,
+      files,
+      options: (cwd) => ({
+        cwd: path.join(cwd, 'pkg'),
+        clean: ['pkg'],
+      }),
+      snapshot: false,
+    })
+
+    // `pkg` is relative to the custom cwd, so it means `pkg/pkg`, not the cwd
+    const staleExists = await fsExists(
+      path.join(testDir, 'pkg', 'pkg', 'old-file.js'),
+    )
+    expect(staleExists).toBe(false)
+  })
+
   test('should clean nested directories', async (context) => {
     const files = {
       'index.ts': 'export const hello = "world"',
