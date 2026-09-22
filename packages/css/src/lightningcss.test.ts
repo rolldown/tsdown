@@ -77,3 +77,65 @@ test('bundleWithLightningCSS tracks @import-ed files as dependencies', async (co
 
   expect(result.deps).toContain(path.join(testDir, 'partial.css'))
 })
+
+const KEYFRAMES_CSS = `
+  @keyframes fade-out {
+    from { opacity: 1 }
+    to { opacity: 0 }
+  }
+  .fade { animation: fade-out 2s ease-in-out }
+`
+
+function expectKeyframesNotRenamed(code: string) {
+  expect(code).toContain('@keyframes fade-out')
+  expect(code).not.toMatch(/@keyframes \S+_fade-out/)
+}
+
+test('transformWithLightningCSS respects lightningcss.cssModules.animation: false', async () => {
+  const result = await transformWithLightningCSS(KEYFRAMES_CSS, 'styles.css', {
+    cssModules: true,
+    lightningcss: { cssModules: { animation: false } },
+  })
+
+  expectKeyframesNotRenamed(result.code)
+  // CSS modules scoping still applies to class names.
+  expect(result.code).not.toContain('.fade')
+})
+
+test('transformWithLightningCSS renames keyframes without animation: false', async () => {
+  const result = await transformWithLightningCSS(KEYFRAMES_CSS, 'styles.css', {
+    cssModules: true,
+  })
+
+  expect(result.code).not.toContain('@keyframes fade-out')
+  expect(result.code).toMatch(/@keyframes \S+_fade-out/)
+})
+
+test('transformWithLightningCSS merges object-form cssModules configs', async () => {
+  const result = await transformWithLightningCSS(KEYFRAMES_CSS, 'styles.css', {
+    cssModules: { pattern: '[local]' },
+    lightningcss: { cssModules: { animation: false } },
+  })
+
+  expectKeyframesNotRenamed(result.code)
+  // `pattern: '[local]'` from `css.modules` object form is preserved.
+  expect(result.code).toContain('.fade')
+})
+
+test('bundleWithLightningCSS respects lightningcss.cssModules.animation: false', async (context) => {
+  const { testDir } = await writeFixtures(context, {
+    'styles.css': KEYFRAMES_CSS,
+  })
+
+  const result = await bundleWithLightningCSS(
+    path.join(testDir, 'styles.css'),
+    {
+      logger: globalLogger,
+      cssModules: true,
+      lightningcss: { cssModules: { animation: false } },
+    },
+  )
+
+  expectKeyframesNotRenamed(result.code)
+  expect(result.code).not.toContain('.fade')
+})
