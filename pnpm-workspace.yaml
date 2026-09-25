@@ -47,7 +47,7 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^4.4.3
     '@unocss/eslint-plugin': ^66.10.2
     '@vueuse/core': ^14.4.0
-    oxc-minify: ^0.149.0
+    oxc-minify: ^0.151.0
     typedoc: ^0.28.20
     typedoc-plugin-markdown: ^4.13.0
     typedoc-vitepress-theme: ^1.1.4
@@ -56,7 +56,7 @@ catalogs:
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.7.6
     vitepress-plugin-llms: ^1.14.0
-    void: ^0.10.13
+    void: ^0.20.0
     vue: ^3.5.42
     vue-tsc: ^3.3.11
   migrate:
@@ -86,7 +86,7 @@ catalogs:
     tinyglobby: ^0.2.17
     tree-kill: ^1.2.2
     unconfig-core: ^7.5.0
-    verkit: ^0.4.0
+    verkit: ^0.5.0
 
 allowBuilds:
   '@parcel/watcher': false
