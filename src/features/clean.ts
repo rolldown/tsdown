@@ -56,9 +56,10 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
       files.push(...(await glob(patterns, { ...globOptions, cwd: config.cwd })))
     }
 
-    const normalizedOutDir = config.outDir.replace(RE_LAST_SLASH, '')
+    // Glob results use forward slashes, so compare them in the same form
+    const normalizedOutDir = slash(config.outDir).replace(RE_LAST_SLASH, '')
     for (const file of files) {
-      const normalizedFile = file.replace(RE_LAST_SLASH, '')
+      const normalizedFile = slash(file).replace(RE_LAST_SLASH, '')
       if (normalizedFile !== normalizedOutDir) {
         removes.add(file)
       }
