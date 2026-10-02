@@ -1,13 +1,12 @@
+import fs from 'node:fs'
 import { mkdir, mkdtemp, writeFile } from 'node:fs/promises'
-import { createRequire, syncBuiltinESMExports } from 'node:module'
+import { syncBuiltinESMExports } from 'node:module'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { fsExists, fsRemove } from '../utils/fs.ts'
 import { cleanOutDir, resolveClean } from './clean.ts'
 import type { ResolvedConfig, UserConfig } from '../config/index.ts'
-
-const fs = createRequire(import.meta.url)('node:fs') as typeof import('node:fs')
 
 let cwd: string
 
