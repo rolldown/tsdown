@@ -46,7 +46,7 @@ catalogs:
     '@iconify-json/logos': ^1.2.14
     '@shikijs/vitepress-twoslash': ^4.4.3
     '@unocss/eslint-plugin': ^66.10.2
-    '@vueuse/core': ^14.4.0
+    '@vueuse/core': ^15.0.0
     oxc-minify: ^0.149.0
     typedoc: ^0.28.20
     typedoc-plugin-markdown: ^4.13.0
