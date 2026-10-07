@@ -7,6 +7,6 @@ jobs:
     if: github.repository == 'rolldown/tsdown'
     uses: sxzz/workflows/.github/workflows/autofix.yml@main
     with:
-      command: pnpm run format && pnpm run lint --fix && pnpm build --update-snapshot
+      command: pnpm schema:generate && pnpm run format && pnpm run lint --fix && pnpm build --update-snapshot
     permissions:
       contents: read
