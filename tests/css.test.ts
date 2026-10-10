@@ -1,7 +1,166 @@
 import { describe, expect, test, type TestContext } from 'vitest'
-import { testBuild } from './utils.ts'
+import {
+  findDanglingRelativeImports,
+  readOutputFiles,
+  runCjsSentinel,
+  runEsmSentinel,
+  testBuild,
+} from './utils.ts'
 
 describe('css', () => {
+  describe('CJS unbundle CSS chunks', () => {
+    test('keeps same-basename CSS imports resolvable', async (context) => {
+      const { outputDir } = await testBuild({
+        context,
+        snapshot: false,
+        files: {
+          'index.ts': "export { sentinel } from './Card.tsx'",
+          'Card.tsx': "import './card.css'; export const sentinel = 'ok'",
+          'card.css': '.card { color: red }',
+        },
+        options: {
+          format: 'cjs',
+          unbundle: true,
+          css: { fileName: 'index.css' },
+        },
+      })
+      const files = await readOutputFiles(outputDir)
+      expect(findDanglingRelativeImports(files)).toEqual([])
+      expect(
+        Object.entries(files).some(
+          ([file, content]) =>
+            file.endsWith('.css') && content.includes('color: red'),
+        ),
+      ).toBe(true)
+      const cjsEntry = Object.keys(files).find(
+        (file) => file === 'index.cjs' || file === 'index.js',
+      )
+      expect(cjsEntry).toBeDefined()
+      if (cjsEntry) await runCjsSentinel(outputDir, cjsEntry, 'ok')
+    })
+
+    test('keeps differently named CSS imports resolvable', async (context) => {
+      const { outputDir } = await testBuild({
+        context,
+        snapshot: false,
+        files: {
+          'index.ts': "export { sentinel } from './Card.tsx'",
+          'Card.tsx': "import './style.css'; export const sentinel = 'ok'",
+          'style.css': '.card { color: blue }',
+        },
+        options: { format: 'cjs', unbundle: true },
+      })
+      const files = await readOutputFiles(outputDir)
+      expect(findDanglingRelativeImports(files)).toEqual([])
+      const cjsEntry = Object.keys(files).find(
+        (file) => file === 'index.cjs' || file === 'index.js',
+      )
+      expect(cjsEntry).toBeDefined()
+      if (cjsEntry) await runCjsSentinel(outputDir, cjsEntry, 'ok')
+      expect(
+        Object.entries(files).some(
+          ([file, content]) =>
+            file.endsWith('.css') && content.includes('color: #00f'),
+        ),
+      ).toBe(true)
+    })
+
+    test('keeps ESM same-basename CSS imports resolvable', async (context) => {
+      const { outputDir } = await testBuild({
+        context,
+        snapshot: false,
+        files: {
+          'index.ts': "export { sentinel } from './Card.tsx'",
+          'Card.tsx': "import './card.css'; export const sentinel = 'ok'",
+          'card.css': '.card { color: green }',
+        },
+        options: { format: 'esm', unbundle: true },
+      })
+      const files = await readOutputFiles(outputDir)
+      expect(findDanglingRelativeImports(files)).toEqual([])
+      expect(
+        Object.entries(files).some(
+          ([file, content]) =>
+            file.endsWith('.css') && content.includes('color: green'),
+        ),
+      ).toBe(true)
+      const esmEntry = Object.keys(files).find((file) => file === 'index.mjs')
+      expect(esmEntry).toBeDefined()
+      if (esmEntry) await runEsmSentinel(outputDir, esmEntry, 'ok')
+    })
+
+    test('uses the configured CSS filename when splitting is disabled', async (context) => {
+      const { outputDir } = await testBuild({
+        context,
+        snapshot: false,
+        files: {
+          'index.ts': "import './style.css'; export const sentinel = 'ok'",
+          'style.css': '.app { color: purple }',
+        },
+        options: {
+          format: 'cjs',
+          unbundle: true,
+          css: { splitting: false, fileName: 'index.css' },
+        },
+      })
+      const files = await readOutputFiles(outputDir)
+      expect(Object.hasOwn(files, 'index.css')).toBe(true)
+      const cjsEntry = Object.keys(files).find(
+        (file) => file === 'index.cjs' || file === 'index.js',
+      )
+      expect(cjsEntry).toBeDefined()
+      if (cjsEntry) await runCjsSentinel(outputDir, cjsEntry, 'ok')
+      expect(
+        Object.entries(files).some(
+          ([file, content]) =>
+            file.endsWith('.css') && content.includes('color: purple'),
+        ),
+      ).toBe(true)
+    })
+
+    test('does not rewrite a real relative JS dependency', async (context) => {
+      const { outputDir } = await testBuild({
+        context,
+        snapshot: false,
+        files: {
+          'index.ts': "export { sentinel } from './dep.ts'",
+          'dep.ts': "export const sentinel = 'ok'",
+        },
+        options: { format: 'cjs', unbundle: true },
+      })
+      const files = await readOutputFiles(outputDir)
+      expect(findDanglingRelativeImports(files)).toEqual([])
+      const cjsEntry = Object.keys(files).find(
+        (file) => file === 'index.cjs' || file === 'index.js',
+      )
+      expect(cjsEntry).toBeDefined()
+      if (cjsEntry) await runCjsSentinel(outputDir, cjsEntry, 'ok')
+      expect(
+        Object.values(files).some((content) => content.includes('sentinel')),
+      ).toBe(true)
+    })
+  })
+
+  test('keeps minified CJS CSS imports resolvable', async (context) => {
+    const { outputDir } = await testBuild({
+      context,
+      snapshot: false,
+      files: {
+        'index.ts': "export { sentinel } from './Card.tsx'",
+        'Card.tsx': "import './card.css'; export const sentinel = 'ok'",
+        'card.css': '.card { color: red }',
+      },
+      options: { format: 'cjs', unbundle: true, minify: true },
+    })
+    const files = await readOutputFiles(outputDir)
+    expect(findDanglingRelativeImports(files)).toEqual([])
+    const cjsEntry = Object.keys(files).find(
+      (file) => file === 'index.cjs' || file === 'index.js',
+    )
+    expect(cjsEntry).toBeDefined()
+    if (cjsEntry) await runCjsSentinel(outputDir, cjsEntry, 'ok')
+  })
+
   test('basic', async (context) => {
     const { outputFiles } = await testBuild({
       context,
