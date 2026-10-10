@@ -35,6 +35,7 @@ export function WatchPlugin(
       }
 
       // Watch copy source files
+      // eslint-disable-next-line unicorn/prefer-early-return
       if (config.copy) {
         const resolvedEntries = await resolveCopyEntries(config)
 

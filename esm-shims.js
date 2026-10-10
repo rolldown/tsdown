@@ -1,3 +1,5 @@
+/* eslint-disable unused-imports/no-unused-vars */ // unused-imports bug?
+
 // Shim globals in esm bundle
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'

@@ -358,10 +358,12 @@ const defu = createDefu((obj, key, value, namespace) => {
     return true
   }
 
-  if (Array.isArray(obj[key]) && Array.isArray(value)) {
-    obj[key] = value
-    return true
+  if (!Array.isArray(obj[key]) || !Array.isArray(value)) {
+    return
   }
+
+  obj[key] = value
+  return true
 })
 
 export function mergeConfig(
@@ -404,9 +406,9 @@ export function resolveFeatureOption<T>(
   defaults: T,
 ): T | false {
   if (typeof value === 'object' && value !== null) {
-    return resolveCIOption(value.enabled ?? true) ? value : false
+    return resolveCIOption(value.enabled ?? true) && value
   }
-  return resolveCIOption(value) ? defaults : false
+  return resolveCIOption(value) && defaults
 }
 
 function resolveCIOption(value: boolean | CIOption): boolean {

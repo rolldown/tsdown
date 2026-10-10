@@ -375,6 +375,7 @@ function resolveCssModulesConfig(
     cssModulesConfig.pattern = '[local]'
   }
 
+  // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
   return Object.keys(cssModulesConfig).length > 0 ? cssModulesConfig : true
 }
 

@@ -208,6 +208,7 @@ export function DepsPlugin(
           shouldExternal = shouldExternal[0]
         }
         const nodeBuiltinModule = isBuiltin(id)
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         const moduleSideEffects = nodeBuiltinModule ? false : undefined
 
         debug('shouldExternal: %o = %o', id, shouldExternal)
@@ -383,6 +384,7 @@ export function DepsPlugin(
       if (RE_PACKAGE_SPECIFIER.test(id)) {
         const resolvedDep =
           shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
       const resolved = await resolve()
@@ -395,6 +397,7 @@ export function DepsPlugin(
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
         const resolvedDep =
           shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
 

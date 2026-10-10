@@ -15,10 +15,11 @@ export function NodeProtocolPlugin(nodeProtocolOption: 'strip' | true): Plugin {
     resolveId: {
       order: 'pre',
       filter: {
-        id:
+        id: new RegExp(
           nodeProtocolOption === 'strip'
-            ? new RegExp(`^node:(${modulesWithoutProtocol.join('|')})$`)
-            : new RegExp(`^(${modulesWithoutProtocol.join('|')})$`),
+            ? `^node:(${modulesWithoutProtocol.join('|')})$`
+            : `^(${modulesWithoutProtocol.join('|')})$`,
+        ),
       },
       handler:
         nodeProtocolOption === 'strip'

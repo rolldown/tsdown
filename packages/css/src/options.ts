@@ -237,7 +237,7 @@ export function resolveCssOptions(
     fileName: options.fileName ?? defaultCssBundleName,
     minify: options.minify ?? false,
     inject: options.inject ?? false,
-    modules: options.modules === false ? false : (options.modules ?? {}),
+    modules: options.modules !== false && (options.modules ?? {}),
     target: cssTarget,
     preprocessorOptions: options.preprocessorOptions,
     lightningcss: options.lightningcss,

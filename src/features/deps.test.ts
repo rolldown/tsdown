@@ -210,11 +210,12 @@ describe('DepsPlugin with neverBundle: true', () => {
   it('resolves ids that do not follow npm naming conventions', async () => {
     const handler = getHandler({ neverBundle: true })
     const resolve = vi.fn((id: string) =>
-      Promise.resolve(
-        id === '#dep'
-          ? { id: '/project/node_modules/my-dep/index.js' }
-          : { id: '/project/src/local.ts' },
-      ),
+      Promise.resolve({
+        id:
+          id === '#dep'
+            ? '/project/node_modules/my-dep/index.js'
+            : '/project/src/local.ts',
+      }),
     )
 
     // resolves into node_modules → external with the original specifier
