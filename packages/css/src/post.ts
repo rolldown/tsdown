@@ -2,7 +2,7 @@ import { transformWithLightningCSS } from './lightningcss.ts'
 import { defaultCssBundleName, type ResolvedCssOptions } from './options.ts'
 import { removePureCssChunks } from './pure-chunk.ts'
 import { toCssFileName } from './utils.ts'
-import type { Plugin } from 'rolldown'
+import type { OutputAsset, OutputChunk, Plugin } from 'rolldown'
 
 export type CssStyles = Map<string, string>
 
@@ -13,7 +13,10 @@ export function CssPostPlugin(
   >,
   styles: CssStyles,
 ): Plugin {
-  const collectedCSS: string[] = []
+  // Keyed by the chunk's preliminary file name: that is what `renderChunk`
+  // sees as `fileName`, and what `generateBundle` exposes as
+  // `preliminaryFileName`.
+  const chunkCSSMap = new Map<string, string>()
 
   async function finalizeCss(css: string): Promise<string> {
     if (!config.minify) return css
@@ -49,7 +52,7 @@ export function CssPostPlugin(
         chunkCSS += '\n'
       }
 
-      collectedCSS.push(chunkCSS)
+      chunkCSSMap.set(chunk.fileName, chunkCSS)
     },
 
     async generateBundle(_outputOptions, bundle) {
@@ -80,8 +83,27 @@ export function CssPostPlugin(
             source: chunkCSS,
           })
         }
-      } else if (collectedCSS.length > 0) {
-        let allCSS = collectedCSS.join('')
+      } else if (chunkCSSMap.size > 0) {
+        // Merge in import order rather than render order, following Vite: a
+        // chunk's static imports come before the chunk itself, and dynamically
+        // imported chunks come last so their styles take precedence.
+        let allCSS = ''
+        const collected = new Set<OutputChunk>()
+        const dynamicImports = new Set<string>()
+
+        const collect = (chunk: OutputChunk | OutputAsset | undefined) => {
+          if (!chunk || chunk.type !== 'chunk' || collected.has(chunk)) return
+          collected.add(chunk)
+          for (const imp of chunk.imports) collect(bundle[imp])
+          for (const imp of chunk.dynamicImports) dynamicImports.add(imp)
+          allCSS += chunkCSSMap.get(chunk.preliminaryFileName) ?? ''
+        }
+
+        for (const chunk of Object.values(bundle)) {
+          if (chunk.type === 'chunk' && chunk.isEntry) collect(chunk)
+        }
+        for (const fileName of dynamicImports) collect(bundle[fileName])
+
         if (allCSS) {
           allCSS = await finalizeCss(allCSS)
           this.emitFile({
@@ -91,7 +113,7 @@ export function CssPostPlugin(
             originalFileName: defaultCssBundleName,
           })
         }
-        collectedCSS.length = 0
+        chunkCSSMap.clear()
       }
 
       removePureCssChunks(bundle, styles)
