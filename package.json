@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
   "type": "module",
-  "version": "0.23.0",
+  "version": "0.23.1",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
