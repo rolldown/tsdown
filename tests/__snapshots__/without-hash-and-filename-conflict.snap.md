@@ -18,8 +18,7 @@ export { foo$1 as n, foo as t };
 ## index.mjs
 
 ```mjs
-import { n as foo$1, t as foo } from "./foo.mjs";
-export { foo, foo$1 as utilsFoo };
+export { t as foo, n as utilsFoo } from "./foo.mjs";
 
 ```
 

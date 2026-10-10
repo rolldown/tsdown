@@ -1,8 +1,7 @@
 ## index.mjs
 
 ```mjs
-import { sub } from "./sub.mjs";
-export { sub };
+export { sub } from "./sub.mjs";
 
 ```
 

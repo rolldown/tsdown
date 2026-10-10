@@ -4,8 +4,7 @@
 import 'node:path';
 import 'node:url';
 import.meta.url;
-import { chunk as e } from './shared.mjs';
-export { e as chunk };
+export { chunk } from './shared.mjs';
 
 ```
 
@@ -15,8 +14,7 @@ export { e as chunk };
 import 'node:path';
 import 'node:url';
 import.meta.url;
-import { chunk as e } from './shared.mjs';
-export { e as chunk };
+export { chunk } from './shared.mjs';
 
 ```
 
@@ -25,8 +23,8 @@ export { e as chunk };
 ```mjs
 import e from 'node:path';
 import t from 'node:url';
-const n = t.fileURLToPath(import.meta.url),
-  r = [e.dirname(n), n];
+const n = /* @__PURE__ */ t.fileURLToPath(import.meta.url),
+  r = [/* @__PURE__ */ e.dirname(n), n];
 export { r as chunk };
 
 ```

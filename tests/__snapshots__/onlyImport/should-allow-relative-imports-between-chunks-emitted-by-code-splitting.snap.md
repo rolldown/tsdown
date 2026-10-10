@@ -1,17 +1,15 @@
 ## a.mjs
 
 ```mjs
-import { t as shared } from "./shared.mjs";
+export { t as shared } from "./shared.mjs";
 export * from "cac";
-export { shared };
 
 ```
 
 ## b.mjs
 
 ```mjs
-import { t as shared } from "./shared.mjs";
-export { shared };
+export { t as shared } from "./shared.mjs";
 
 ```
 

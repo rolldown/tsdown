@@ -5,7 +5,7 @@ import process from 'node:process'
 import { createDebug } from 'obug'
 import { RE_DTS } from 'rolldown-plugin-dts/internal'
 import { x } from 'tinyexec'
-import { isGreaterOrEqual, type SemVer } from 'verkit'
+import { isGreaterThanOrEqual, type SemVer } from 'verkit'
 import { formatBytes } from '../utils/format.ts'
 import { fsRemove, fsStat } from '../utils/fs.ts'
 import { importWithError, typeAssert } from '../utils/general.ts'
@@ -86,7 +86,7 @@ export function validateSea({
     )
   }
 
-  if (!isGreaterOrEqual(process.version, NODE_SEA_MIN_VERSION_PARSED)) {
+  if (!isGreaterThanOrEqual(process.version, NODE_SEA_MIN_VERSION_PARSED)) {
     throw new Error(
       `Node.js version ${process.version} does not support \`exe\` option. Please upgrade to Node.js ${NODE_SEA_MIN_VERSION} or later.`,
     )
