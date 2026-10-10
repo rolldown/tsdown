@@ -63,7 +63,7 @@ export function resolveClean(
     clean = []
   }
 
-  if (clean.some((item) => path.resolve(item) === cwd)) {
+  if (clean.some((item) => path.resolve(cwd, item) === cwd)) {
     throw new Error(
       'Cannot clean the current working directory. Please specify a different path to clean option.',
     )
