@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { createDebug } from 'obug'
-import { glob } from 'tinyglobby'
+import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsRemove } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
 import { globalLogger } from '../utils/logger.ts'
@@ -25,16 +25,41 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
     }
 
     if (!config.clean.length) continue
-    const files = await glob(config.clean, {
-      cwd: config.cwd,
-      absolute: true,
-      onlyFiles: false,
-      dot: true,
-    })
 
-    const normalizedOutDir = config.outDir.replace(RE_LAST_SLASH, '')
+    // Matching a literal `outDir` pattern from `cwd` makes the glob list `cwd`
+    // itself, so list only the contents of `outDir` instead. Negated patterns
+    // can exclude files inside `outDir`, so keep the combined glob for them.
+    const outDir = path.resolve(config.outDir)
+    const scopeToOutDir = config.clean.every(
+      (pattern) => !pattern.startsWith('!'),
+    )
+    let cleansOutDir = false
+    const patterns: string[] = []
+    for (const pattern of config.clean) {
+      if (
+        scopeToOutDir &&
+        !isDynamicPattern(pattern) &&
+        path.resolve(config.cwd, pattern) === outDir
+      ) {
+        cleansOutDir = true
+      } else {
+        patterns.push(pattern)
+      }
+    }
+
+    const globOptions = { absolute: true, onlyFiles: false, dot: true }
+    const files: string[] = []
+    if (cleansOutDir) {
+      files.push(...(await glob('**', { ...globOptions, cwd: outDir })))
+    }
+    if (patterns.length) {
+      files.push(...(await glob(patterns, { ...globOptions, cwd: config.cwd })))
+    }
+
+    // Glob results use forward slashes, so compare them in the same form
+    const normalizedOutDir = slash(config.outDir).replace(RE_LAST_SLASH, '')
     for (const file of files) {
-      const normalizedFile = file.replace(RE_LAST_SLASH, '')
+      const normalizedFile = slash(file).replace(RE_LAST_SLASH, '')
       if (normalizedFile !== normalizedOutDir) {
         removes.add(file)
       }
