@@ -24,9 +24,14 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - uses: sxzz/workflows/setup-js@main
-      - run: pnpm run docs:generate
-      - run: |
+      - name: Setup JS
+        uses: sxzz/workflows/setup-js@main
+
+      - name: Generate Docs
+        run: pnpm run docs:generate
+
+      - name: Deploy to Void
+        run: |
           pnpm -C docs run void connect "$VOID_API_URL" --no-login
           pnpm -C docs run void deploy
         env:

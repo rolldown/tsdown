@@ -51,9 +51,11 @@ jobs:
           NO_FROZEN_LOCKFILE: ''
         run: $PACKAGE_MANAGER install $NO_FROZEN_LOCKFILE
 
-      - run: pnpm run docs:generate
+      - name: Generate Docs
+        run: pnpm run docs:generate
 
-      - run: |-
+      - name: Deploy to Void
+        run: |-
           pnpm -C docs run void connect "$VOID_API_URL" --no-login
           pnpm -C docs run void deploy
         env:
