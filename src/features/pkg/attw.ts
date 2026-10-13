@@ -147,7 +147,7 @@ export async function attw(
 
   let errorMessage: string | undefined
   if (checkResult.types) {
-    const problems = checkResult.problems.filter((problem) => {
+    const problems = checkResult.problems.filter((problem, index) => {
       // Exclude ignored problem kinds
       if (ignoreRules.includes(problemFlags[problem.kind])) {
         return false
@@ -157,8 +157,17 @@ export async function attw(
       if ('resolutionKind' in problem) {
         return !profiles[profile]?.includes(problem.resolutionKind)
       }
-      // Include all other problem types
-      return true
+      // File-based problems record affected resolutions on the entrypoints.
+      return (
+        profile === 'strict' ||
+        Object.values(checkResult.entrypoints).some((entrypoint) =>
+          Object.entries(entrypoint.resolutions).some(
+            ([resolutionKind, resolution]) =>
+              !profiles[profile]?.includes(resolutionKind) &&
+              resolution.visibleProblems?.includes(index),
+          ),
+        )
+      )
     })
 
     if (problems.length) {
