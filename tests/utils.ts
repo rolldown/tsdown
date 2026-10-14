@@ -1,7 +1,9 @@
+import { execFile } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+import { promisify } from 'node:util'
 import { expectFilesSnapshot } from '@sxzz/test-utils'
 import { format } from 'prettier'
 import { glob } from 'tinyglobby'
@@ -10,6 +12,8 @@ import { build } from '../src/index.ts'
 import type { InlineConfig, TsdownHandle } from '../src/config/index.ts'
 import type { LogOrStringHandler, RollupLog } from 'rolldown'
 import type { RunnerTask, TestContext } from 'vitest'
+
+const execFileAsync = promisify(execFile)
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const tmpDir = path.resolve(dirname, 'temp')
@@ -239,6 +243,78 @@ export async function testBuild({
 
 function filenamify(input: string) {
   return input.replace(/^\W+/, '').replaceAll(/\W+/g, '-')
+}
+
+export async function readOutputFiles(
+  outputDir: string,
+): Promise<Record<string, string>> {
+  const files = await glob('**/*.{js,mjs,cjs,css}', {
+    cwd: outputDir,
+    onlyFiles: true,
+  })
+  return Object.fromEntries(
+    await Promise.all(
+      files.map(async (file) => [
+        file,
+        await readFile(path.join(outputDir, file), 'utf8'),
+      ]),
+    ),
+  )
+}
+
+export async function runEsmSentinel(
+  outputDir: string,
+  entry: string,
+  expected: string,
+): Promise<void> {
+  await execFileAsync(
+    process.execPath,
+    [
+      '-e',
+      'import(process.argv[1]).then((module) => { if (module.sentinel !== process.argv[2]) process.exit(1) })',
+      pathToFileURL(path.resolve(outputDir, entry)).href,
+      expected,
+    ],
+    { cwd: outputDir, timeout: 5_000 },
+  )
+}
+
+export async function runCjsSentinel(
+  outputDir: string,
+  entry: string,
+  expected: string,
+): Promise<void> {
+  await execFileAsync(
+    process.execPath,
+    [
+      '-e',
+      'const module = require(process.argv[1]); if (module.sentinel !== process.argv[2]) process.exit(1)',
+      path.resolve(outputDir, entry),
+      expected,
+    ],
+    { cwd: outputDir, timeout: 5_000 },
+  )
+}
+
+export function findDanglingRelativeImports(
+  files: Record<string, string>,
+): string[] {
+  const references =
+    /require\(\s*["'](\.[^"']+)["']\s*\)|(?:import|export)\s+["'](\.[^"']+)["']/g
+  const dangling: string[] = []
+  for (const [file, code] of Object.entries(files)) {
+    if (!/\.(?:cjs|mjs|js)$/.test(file)) continue
+    for (const match of code.matchAll(references)) {
+      const reference = match[1] ?? match[2]
+      const target = path.posix.normalize(
+        path.posix.join(path.posix.dirname(file), reference),
+      )
+      if (!Object.hasOwn(files, target)) {
+        dangling.push(`${file} -> ${reference}`)
+      }
+    }
+  }
+  return dangling
 }
 
 export function chdir(dir: string) {
