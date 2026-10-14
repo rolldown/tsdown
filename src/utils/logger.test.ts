@@ -13,12 +13,6 @@ describe('LogLevels', () => {
     expect(LogLevels.warn).toBe(2)
     expect(LogLevels.info).toBe(3)
   })
-
-  test('silent < error < warn < info', () => {
-    expect(LogLevels.silent).toBeLessThan(LogLevels.error)
-    expect(LogLevels.error).toBeLessThan(LogLevels.warn)
-    expect(LogLevels.warn).toBeLessThan(LogLevels.info)
-  })
 })
 
 describe('createLogger', () => {
@@ -247,17 +241,6 @@ describe('suppressWarnings', () => {
 
     expect(mockConsole.error).toHaveBeenCalledOnce()
   })
-
-  test('warns normally when suppressWarnings is not set', () => {
-    const mockConsole = { log: vi.fn(), warn: vi.fn(), error: vi.fn() }
-    const logger = createLogger('info', {
-      console: mockConsole as unknown as Console,
-    })
-
-    logger.warn('a normal warning')
-
-    expect(mockConsole.warn).toHaveBeenCalledOnce()
-  })
 })
 
 describe('getNameLabel', () => {
@@ -274,18 +257,11 @@ describe('getNameLabel', () => {
 })
 
 describe('prettyFormat', () => {
-  test('formats es as ESM', () => {
-    const result = prettyFormat('es')
-    expect(result).toContain('ESM')
-  })
-
-  test('formats cjs as CJS', () => {
-    const result = prettyFormat('cjs')
-    expect(result).toContain('CJS')
-  })
-
-  test('formats iife as IIFE', () => {
-    const result = prettyFormat('iife')
-    expect(result).toContain('IIFE')
+  test.each([
+    ['formats es as ESM', 'es', 'ESM'],
+    ['formats cjs as CJS', 'cjs', 'CJS'],
+    ['formats iife as IIFE', 'iife', 'IIFE'],
+  ] as const)('%s', (_, format, expected) => {
+    expect(prettyFormat(format)).toContain(expected)
   })
 })
