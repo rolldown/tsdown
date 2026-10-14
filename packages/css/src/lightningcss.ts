@@ -42,6 +42,32 @@ export interface BundleCssResult {
   modules?: Record<string, string>
 }
 
+/**
+ * Merge the css-modules config coming from `css.modules` (boolean or object)
+ * with any object-form `cssModules` given via `css.lightningcss`, so nested
+ * lightningcss options (e.g. `cssModules: { animation: false }`) are not
+ * silently dropped when `css.modules` resolves to `true`.
+ */
+function resolveLightningCssModules(
+  cssModules: boolean | CSSModulesConfig | undefined,
+  lightningcss: LightningCSSOptions | undefined,
+): boolean | CSSModulesConfig | undefined {
+  const lightningCssModules = lightningcss?.cssModules
+  if (
+    typeof cssModules === 'object' &&
+    typeof lightningCssModules === 'object'
+  ) {
+    // `css.modules` object form wins over nested lightningcss options.
+    return { ...lightningCssModules, ...cssModules }
+  }
+  if (typeof lightningCssModules === 'object') {
+    // Preserve object-form `cssModules` from `css.lightningcss` even when
+    // `css.modules` is just `true` (or unset).
+    return lightningCssModules
+  }
+  return cssModules ?? lightningCssModules
+}
+
 export async function transformWithLightningCSS(
   code: string,
   filename: string,
@@ -66,7 +92,10 @@ export async function transformWithLightningCSS(
     ...options.lightningcss,
     targets,
     minify: options.minify,
-    cssModules: options.cssModules,
+    cssModules: resolveLightningCssModules(
+      options.cssModules,
+      options.lightningcss,
+    ),
     sourceMap: options.sourceMap,
     inputSourceMap: options.inputSourceMap,
   })
@@ -97,7 +126,10 @@ export async function bundleWithLightningCSS(
     ...options.lightningcss,
     targets,
     minify: options.minify,
-    cssModules: options.cssModules,
+    cssModules: resolveLightningCssModules(
+      options.cssModules,
+      options.lightningcss,
+    ),
     sourceMap: options.sourceMap,
     resolver: {
       async read(filePath: string) {
