@@ -1486,6 +1486,44 @@ describe('resolve dep subpath without exports field', () => {
 
     expect(fileMap['index.mjs']).toContain('my-dep/folder/index.js')
   })
+
+  test('each package is checked for exports separately', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'node_modules/my-dep/package.json': JSON.stringify({
+          name: 'my-dep',
+          main: 'index.js',
+        }),
+        'node_modules/my-dep/functions/lt.js': `export const lt = () => {}`,
+        'node_modules/my-dep/functions/gt.js': `export const gt = () => {}`,
+        'node_modules/with-exports/package.json': JSON.stringify({
+          name: 'with-exports',
+          exports: { './*': './dist/*.js' },
+        }),
+        'node_modules/with-exports/dist/a.js': `export const a = 1`,
+        'node_modules/with-exports/dist/b.js': `export const b = 2`,
+        'index.ts': `export * from './one'
+export * from './two'`,
+        'one.ts': `export { lt } from 'my-dep/functions/lt'
+export { a } from 'with-exports/a'`,
+        'two.ts': `export { gt } from 'my-dep/functions/gt'
+export { b } from 'with-exports/b'`,
+        'package.json': JSON.stringify({
+          name: 'test-pkg',
+          dependencies: { 'my-dep': '^1.0.0', 'with-exports': '^1.0.0' },
+        }),
+      },
+      options: {
+        deps: { resolveDepSubpath: true },
+      },
+    })
+
+    expect(fileMap['index.mjs']).toContain('my-dep/functions/lt.js')
+    expect(fileMap['index.mjs']).toContain('my-dep/functions/gt.js')
+    expect(fileMap['index.mjs']).toMatch(/from ["']with-exports\/a["']/)
+    expect(fileMap['index.mjs']).toMatch(/from ["']with-exports\/b["']/)
+  })
 })
 
 describe('neverBundle: true', () => {
