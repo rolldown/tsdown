@@ -151,16 +151,3 @@ export function resolveClean(
 
   return clean
 }
-
-export async function cleanChunks(
-  outDir: string,
-  chunks: Array<OutputAsset | OutputChunk>,
-): Promise<void> {
-  await Promise.all(
-    chunks.map(async (chunk) => {
-      const filePath = path.resolve(outDir, chunk.fileName)
-      debug('Removing chunk file', filePath)
-      await fsRemove(filePath)
-    }),
-  )
-}
