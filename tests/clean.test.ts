@@ -377,4 +377,103 @@ describe('clean', () => {
       await handle.watch.close()
     }
   })
+
+  test('watch rebuild keeps every format that shares the output directory', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'index.ts': 'export const hello = "world"',
+    })
+    const distPath = path.join(testDir, 'dist')
+    const stalePath = path.join(distPath, 'obsolete.js')
+    const mjsPath = path.join(distPath, 'index.mjs')
+    const cjsPath = path.join(distPath, 'index.cjs')
+    const mtsPath = path.join(distPath, 'index.d.mts')
+    const ctsPath = path.join(distPath, 'index.d.cts')
+    await mkdir(distPath, { recursive: true })
+    await writeFile(stalePath, 'obsolete')
+
+    let wroteChange = false
+    let outputExistedAtRebuildStart: boolean | undefined
+    const { promise: rebuilt, resolve: releaseRebuild } =
+      Promise.withResolvers<void>()
+
+    async function outputsReady(): Promise<boolean> {
+      return (
+        (await fsExists(mjsPath)) &&
+        (await fsExists(cjsPath)) &&
+        (await fsExists(mtsPath)) &&
+        (await fsExists(ctsPath))
+      )
+    }
+
+    const handle = await build({
+      cwd: testDir,
+      config: false,
+      entry: 'index.ts',
+      outDir: 'dist',
+      format: ['esm', 'cjs'],
+      dts: true,
+      tsconfig: false,
+      failOnWarn: false,
+      logLevel: 'silent',
+      watch: true,
+      clean: true,
+      plugins: [
+        {
+          name: 'probe-watch-dual-format',
+          async buildStart() {
+            if (!wroteChange) return
+            const exists = await outputsReady()
+            outputExistedAtRebuildStart =
+              (outputExistedAtRebuildStart ?? true) && exists
+          },
+        },
+      ],
+      // `onSuccess` runs for the first format only.
+      async onSuccess() {
+        if (!wroteChange) {
+          const deadline = Date.now() + 5_000
+          while (!(await outputsReady()) && Date.now() < deadline) {
+            await new Promise((resolve) => setTimeout(resolve, 20))
+          }
+          expect(await fsExists(stalePath)).toBe(false)
+          expect(await outputsReady()).toBe(true)
+          wroteChange = true
+          await writeFile(
+            path.join(testDir, 'index.ts'),
+            'export const hello = "changed"',
+          )
+          return
+        }
+
+        const deadline = Date.now() + 5_000
+        while (Date.now() < deadline) {
+          const [mjs, cjs] = await Promise.all([
+            readFile(mjsPath, 'utf8').catch(() => ''),
+            readFile(cjsPath, 'utf8').catch(() => ''),
+          ])
+          if (
+            mjs.includes('changed') &&
+            cjs.includes('changed') &&
+            (await outputsReady())
+          ) {
+            releaseRebuild()
+            return
+          }
+          await new Promise((resolve) => setTimeout(resolve, 20))
+        }
+      },
+    })
+
+    try {
+      await rebuilt
+      expect(outputExistedAtRebuildStart).toBe(true)
+      expect(await fsExists(stalePath)).toBe(false)
+      expect(await fsExists(mtsPath)).toBe(true)
+      expect(await fsExists(ctsPath)).toBe(true)
+      expect(await readFile(mjsPath, 'utf8')).toContain('changed')
+      expect(await readFile(cjsPath, 'utf8')).toContain('changed')
+    } finally {
+      await handle.watch.close()
+    }
+  })
 })
