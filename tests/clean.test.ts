@@ -290,6 +290,32 @@ describe('clean', () => {
     expect(await fsExists(outputPath)).toBe(true)
   })
 
+  test('keeps every format that shares the output directory', async (context) => {
+    const testDir = getTestDir(context.task)
+    const distPath = path.join(testDir, 'dist')
+    await mkdir(distPath, { recursive: true })
+    await writeFile(path.join(distPath, 'stale.js'), 'old')
+
+    await testBuild({
+      context,
+      files: {
+        'index.ts': 'export const hello = "world"',
+      },
+      snapshot: false,
+      options: {
+        clean: true,
+        format: ['esm', 'cjs'],
+        dts: true,
+      },
+    })
+
+    expect(await fsExists(path.join(distPath, 'stale.js'))).toBe(false)
+    expect(await fsExists(path.join(distPath, 'index.mjs'))).toBe(true)
+    expect(await fsExists(path.join(distPath, 'index.cjs'))).toBe(true)
+    expect(await fsExists(path.join(distPath, 'index.d.mts'))).toBe(true)
+    expect(await fsExists(path.join(distPath, 'index.d.cts'))).toBe(true)
+  })
+
   test('watch rebuild keeps the previous output until it is replaced', async (context) => {
     const { testDir } = await writeFixtures(context, {
       'index.ts': 'export const hello = "world"',
@@ -300,8 +326,8 @@ describe('clean', () => {
     await mkdir(distPath, { recursive: true })
     await writeFile(stalePath, 'obsolete')
 
-    let rebuilds = 0
     let outputExistedAtRebuildStart = false
+    let wroteChange = false
     const { promise: rebuilt, resolve: releaseRebuild } =
       Promise.withResolvers<void>()
 
@@ -320,17 +346,19 @@ describe('clean', () => {
         {
           name: 'probe-watch-clean',
           async buildStart() {
-            rebuilds += 1
-            if (rebuilds === 1) return
+            if (!wroteChange) return
             outputExistedAtRebuildStart = await fsExists(outputPath)
           },
         },
       ],
       async onSuccess() {
-        if (rebuilds > 1) {
+        const output = await readFile(outputPath, 'utf8').catch(() => '')
+        if (output.includes('changed')) {
           releaseRebuild()
           return
         }
+        if (wroteChange) return
+        wroteChange = true
         expect(await fsExists(stalePath)).toBe(false)
         expect(await fsExists(outputPath)).toBe(true)
         await writeFile(

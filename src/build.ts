@@ -11,7 +11,7 @@ import {
   type ResolvedConfig,
 } from './config/index.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
-import { cleanOutDir, cleanPreservingOutputs } from './features/clean.ts'
+import { finishOutput, markBuilding } from './features/clean.ts'
 import { copy } from './features/copy.ts'
 import { startDevtoolsUI } from './features/devtools.ts'
 import { isGlobEntry, toObjectEntry } from './features/entry.ts'
@@ -85,15 +85,9 @@ export async function buildWithConfigs(
   rebuild: () => Promise<TsdownHandle>,
 ): Promise<TsdownHandle> {
   const hasWatchConfig = configs.some((config) => config.watch)
-  // Several one-shot builds wipe first, then write into the same tree.
-  // A single build and watch rebuilds emit first and delete only stale files,
-  // so a consumer watching `outDir` never sees it emptied.
-  const cleanBeforeEmit = configs.filter((config) => !config.watch).length > 1
-  let cleanPromise: Promise<void> | undefined
-  const clean = () => {
-    if (cleanPromise) return cleanPromise
-    return (cleanPromise = cleanOutDir(configs))
-  }
+  // Every format is in flight until it settles, so a clean waits for the
+  // others that share its outDir instead of deleting their files.
+  for (const config of configs) markBuilding(config)
 
   const disposeCbs: Array<() => void | PromiseLike<void>> = []
   let restarted = false
@@ -135,8 +129,6 @@ export async function buildWithConfigs(
         options,
         configDeps,
         isDualFormat,
-        clean,
-        cleanBeforeEmit,
         () => {
           if (restarted) return
           restart().catch((error) => globalLogger.error(error))
@@ -176,8 +168,6 @@ async function buildSingle(
   config: ResolvedConfig,
   configDeps: Set<string>,
   isDualFormat: boolean,
-  clean: () => Promise<void>,
-  cleanBeforeEmit: boolean,
   restart: () => void,
   done: (bundle: TsdownBundle) => Promise<void>,
 ): Promise<TsdownBundle> {
@@ -188,10 +178,6 @@ async function buildSingle(
 
   const startTime = performance.now()
   await hooks.callHook('build:prepare', context)
-
-  if (cleanBeforeEmit) {
-    await clean()
-  }
 
   // output rolldown config for debugging
   const debugRolldownConfigDir = await getDebugRolldownDir()
@@ -275,6 +261,7 @@ async function buildSingle(
       switch (event.code) {
         case 'START': {
           debouncedPostBuild.cancel()
+          markBuilding(config)
           chunks.length = 0
           hasError = false
           ready.resolve()
@@ -282,7 +269,9 @@ async function buildSingle(
         }
 
         case 'END': {
-          if (!hasError) {
+          if (hasError) {
+            finishOutput(config).catch((error) => logger.error(error))
+          } else {
             debouncedPostBuild()
           }
           break
@@ -359,9 +348,7 @@ async function buildSingle(
   async function postBuild() {
     // Snapshot before the first await: the next watch cycle clears `chunks`.
     const emitted = chunks.slice()
-    if (!cleanBeforeEmit) {
-      await cleanPreservingOutputs(config, emitted)
-    }
+    await finishOutput(config, emitted)
     await copy(config)
     await buildExe(config, chunks)
 

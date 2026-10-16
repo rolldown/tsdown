@@ -4,7 +4,7 @@ By default, `tsdown` removes **stale files** from the output directory (`outDir`
 
 Watch mode uses the same rule on every successful rebuild. A tool that reads `outDir` while `tsdown --watch` is running (Vite, Nest, `tsc --watch`) keeps seeing the previous files until each one is replaced. The directory is not emptied first.
 
-A one-shot build of a single configuration works the same way. When several one-shot configurations are built together, their clean targets are wiped **before** emit, so those builds can write into one shared directory without deleting each other's output afterwards.
+Builds that share an output directory, including the ESM and CJS formats of one package, are cleaned together. Each format keeps the files it just emitted. Only files that none of them emitted again are removed, and only after the last of those builds has finished.
 
 Disable cleaning entirely with `--no-clean`:
 

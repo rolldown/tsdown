@@ -393,10 +393,10 @@ export interface UserConfig {
   /**
    * Remove stale build output.
    *
-   * Defaults to the output directory. A single build and watch rebuilds
-   * overwrite emitted files, then delete only the files that were not
-   * emitted again. Several one-shot builds still wipe their clean targets
-   * before emitting, so they can share one output directory.
+   * Defaults to the output directory. Emitted files are overwritten in
+   * place. After every build that shares that directory has finished,
+   * files that none of them emitted again are deleted. ESM and CJS outputs
+   * in the same directory are kept together.
    *
    * @default true
    */

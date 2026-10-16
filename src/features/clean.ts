@@ -13,42 +13,41 @@ const debug = createDebug('tsdown:clean')
 const RE_LAST_SLASH = /[/\\]$/
 
 /**
- * Directories that are wiped before emit when several one-shot builds share
- * the clean step. A single build, and every watch rebuild, uses
- * {@link cleanPreservingOutputs} instead so consumers never see an empty
- * output directory.
+ * Files each build last emitted, keyed by cwd + outDir + format.
+ * A clean keeps the union, so ESM and CJS sharing one `outDir` do not
+ * delete each other.
  */
-export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
-  const removes = new Set<string>()
+const emittedByKey = new Map<string, { outDir: string; files: Set<string> }>()
 
-  for (const config of configs) {
-    ensureExtraCleanTargets(config)
-    if (!config.clean.length) continue
-    const files = await glob(config.clean, {
-      cwd: config.cwd,
-      absolute: true,
-      onlyFiles: false,
-      dot: true,
+/** Builds that have been asked to run and have not settled yet. */
+const building = new Set<string>()
+
+export function markBuilding(config: ResolvedConfig): void {
+  building.add(outputKey(config))
+}
+
+/**
+ * Record this build's outputs and clean once no other build is still
+ * writing into the same directory.
+ *
+ * Pass no chunks when the build failed: the previous output stays protected.
+ * Returns after a clean when this build was the last one in flight.
+ */
+export async function finishOutput(
+  config: ResolvedConfig,
+  chunks?: readonly RolldownChunk[],
+): Promise<void> {
+  const key = outputKey(config)
+  if (chunks) {
+    emittedByKey.set(outputKey(config), {
+      outDir: normalizePath(config.outDir),
+      files: await outputFiles(config, chunks),
     })
-
-    const outDir = normalizePath(config.outDir)
-    for (const file of files) {
-      const normalizedFile = normalizePath(file)
-      if (normalizedFile !== outDir) {
-        removes.add(normalizedFile)
-      }
-    }
   }
-  if (!removes.size) return
+  building.delete(key)
 
-  globalLogger.info(`Cleaning ${removes.size} files`)
-  await Promise.all(
-    [...removes].map(async (file) => {
-      debug('Removing', file)
-      await fsRemove(file)
-    }),
-  )
-  debug('Removed %d files', removes.size)
+  if (!config.clean.length || isOutDirBusy(config)) return
+  await cleanPreservingOutputs(config)
 }
 
 /**
@@ -60,24 +59,18 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
  */
 export async function cleanPreservingOutputs(
   config: ResolvedConfig,
-  chunks: readonly RolldownChunk[],
 ): Promise<void> {
   ensureExtraCleanTargets(config)
   if (!config.clean.length) return
 
-  const preservedFiles = new Set(
-    chunks.map((chunk) =>
-      normalizePath(
-        path.resolve(chunk.outDir || config.outDir, chunk.fileName),
-      ),
-    ),
-  )
-  if (config.copy) {
-    const copied = await resolveCopyEntries(config)
-    for (const entry of copied) preservedFiles.add(normalizePath(entry.to))
+  const outDir = normalizePath(config.outDir)
+  const preservedFiles = new Set<string>()
+  for (const emitted of emittedByKey.values()) {
+    if (emitted.outDir !== outDir) continue
+    for (const file of emitted.files) preservedFiles.add(file)
   }
 
-  const preservedRoots = [normalizePath(config.outDir)]
+  const preservedRoots = [outDir]
   const matched = await glob(config.clean, {
     cwd: config.cwd,
     absolute: true,
@@ -98,6 +91,38 @@ export async function cleanPreservingOutputs(
     await fsRemove(file)
   }
   debug('Removed %d files', stale.length)
+}
+
+function outputKey(config: ResolvedConfig): string {
+  return `${normalizePath(config.cwd)}\0${normalizePath(config.outDir)}\0${config.format}`
+}
+
+function isOutDirBusy(config: ResolvedConfig): boolean {
+  const outDir = normalizePath(config.outDir)
+  const cwd = normalizePath(config.cwd)
+  for (const key of building) {
+    const [otherCwd, otherOutDir] = key.split('\0', 2)
+    if (otherCwd === cwd && otherOutDir === outDir) return true
+  }
+  return false
+}
+
+async function outputFiles(
+  config: ResolvedConfig,
+  chunks: readonly RolldownChunk[],
+): Promise<Set<string>> {
+  const files = new Set(
+    chunks.map((chunk) =>
+      normalizePath(
+        path.resolve(chunk.outDir || config.outDir, chunk.fileName),
+      ),
+    ),
+  )
+  if (!config.copy) return files
+
+  const copied = await resolveCopyEntries(config)
+  for (const entry of copied) files.add(normalizePath(entry.to))
+  return files
 }
 
 function ensureExtraCleanTargets(config: ResolvedConfig): void {
