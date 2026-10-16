@@ -391,9 +391,13 @@ export interface UserConfig {
    */
   sourcemap?: Sourcemap
   /**
-   * Clean directories before build.
+   * Remove stale build output.
    *
-   * Default to output directory.
+   * Defaults to the output directory. A single build and watch rebuilds
+   * overwrite emitted files, then delete only the files that were not
+   * emitted again. Several one-shot builds still wipe their clean targets
+   * before emitting, so they can share one output directory.
+   *
    * @default true
    */
   clean?: boolean | string[]

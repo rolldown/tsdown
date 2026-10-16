@@ -87,7 +87,7 @@ CLI (src/run.ts → src/cli.ts)
   → buildWithConfigs()
   → buildSingle() for each config
     → Hook: build:prepare
-    → cleanOutDir()
+    → cleanOutDir() only when several one-shot builds run together; otherwise cleanPreservingOutputs() after emit
     → getBuildOptions() → constructs Rolldown config
     → Hook: build:before
     → rolldownBuild() / rolldownWatch()
