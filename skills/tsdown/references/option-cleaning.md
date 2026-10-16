@@ -1,10 +1,10 @@
 # Output Directory Cleaning
 
-Control how the output directory is cleaned before builds.
+Control how stale output files are removed.
 
 ## Overview
 
-By default, tsdown **cleans the output directory** before each build to remove stale files from previous builds.
+By default, tsdown **overwrites emitted files and then deletes only stale ones**. The output directory is not emptied before a single build or a watch rebuild. Several one-shot builds that run together still wipe their clean targets first so they can share one directory.
 
 ## Basic Usage
 
@@ -31,15 +31,16 @@ export default defineConfig({
 
 ### With Cleaning (Default)
 
-Before each build:
-1. All files in `outDir` are removed
-2. Fresh build starts with empty directory
-3. Only current build outputs remain
+For a single build and for watch rebuilds:
+1. Emitted files are overwritten in place
+2. After the write succeeds, files under the clean target that were not emitted are removed
+3. The output directory itself stays in place the whole time
+
+Several one-shot builds started together still wipe their clean targets before emitting.
 
 **Benefits:**
-- No stale files
-- Predictable output
-- Clean slate each build
+- No stale files once the build finishes
+- Watchers of `outDir` keep resolving the previous output during the rebuild
 
 ### Without Cleaning
 
@@ -158,32 +159,9 @@ export default defineConfig({
 
 ## Watch Mode Behavior
 
-In watch mode, cleaning behavior is important:
+With `clean: true` (the default), a watch rebuild overwrites the files it emits and, after that write succeeds, deletes outputs from the previous build that were not emitted again. Consumers watching `outDir` do not see the directory disappear between rebuilds.
 
-### Clean on First Build Only
-
-```ts
-export default defineConfig((options) => ({
-  entry: ['src/index.ts'],
-  watch: options.watch,
-  clean: !options.watch,  // Only clean initial build
-}))
-```
-
-**Result:**
-- First build: Clean
-- Subsequent rebuilds: Incremental
-
-### Always Clean
-
-```ts
-export default defineConfig({
-  watch: true,
-  clean: true,  // Clean every rebuild
-})
-```
-
-**Trade-off:** Slower rebuilds, but always fresh output.
+`clean: false` keeps every previous file, including hashed chunks that are no longer part of the build.
 
 ## Tips
 

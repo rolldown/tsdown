@@ -27,7 +27,6 @@ import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
 import { getShims } from './shims.ts'
-import { WatchPlugin } from './watch.ts'
 import type {
   DtsOptions,
   NormalizedFormat,
@@ -107,7 +106,6 @@ async function resolveInputOptions(
     treeshake,
     tsconfig,
     unused,
-    watch,
   } = config
   const loggerLevelIndex = LogLevels[logger.level]
   const isSuppressed = createSuppressWarnings(logger.options?.suppressWarnings)
@@ -178,10 +176,6 @@ async function resolveInputOptions(
 
   if (report && loggerLevelIndex >= 3 /* info */) {
     plugins.push(ReportPlugin(config, cjsDts, isDualFormat))
-  }
-
-  if (watch) {
-    plugins.push(WatchPlugin(configDeps, bundle))
   }
 
   if (!cjsDts) {

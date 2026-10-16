@@ -1,18 +1,14 @@
+import path from 'node:path'
 import { clearRequireCache } from 'import-without-cache'
-import {
-  build as rolldownBuild,
-  watch as rolldownWatch,
-  type BuildOptions,
-  type RolldownWatcher,
-} from 'rolldown'
+import { build as rolldownBuild, type BuildOptions } from 'rolldown'
 import {
   resolveConfig,
   type InlineConfig,
   type ResolvedConfig,
 } from './config/index.ts'
 import { warnLegacyCJS } from './features/cjs.ts'
-import { cleanChunks, cleanOutDir } from './features/clean.ts'
-import { copy } from './features/copy.ts'
+import { finishOutput, markBuilding } from './features/clean.ts'
+import { copy, resolveCopyEntries } from './features/copy.ts'
 import { startDevtoolsUI } from './features/devtools.ts'
 import { isGlobEntry, toObjectEntry } from './features/entry.ts'
 import { buildExe } from './features/exe.ts'
@@ -24,14 +20,14 @@ import {
   getDebugRolldownDir,
 } from './features/rolldown.ts'
 import { shortcuts } from './features/shortcuts.ts'
-import { endsWithConfig } from './features/watch.ts'
+import { endsWithConfig, watchForRebuild } from './features/watch.ts'
 import {
   addOutDirToChunks,
   type RolldownChunk,
   type TsdownBundle,
   type TsdownHandle,
 } from './utils/chunks.ts'
-import { debounce, typeAssert } from './utils/general.ts'
+import { debounce, resolveComma, toArray, typeAssert } from './utils/general.ts'
 import { globalLogger } from './utils/logger.ts'
 import { styleText } from './utils/style.ts'
 
@@ -85,11 +81,9 @@ export async function buildWithConfigs(
   rebuild: () => Promise<TsdownHandle>,
 ): Promise<TsdownHandle> {
   const hasWatchConfig = configs.some((config) => config.watch)
-  let cleanPromise: Promise<void> | undefined
-  const clean = () => {
-    if (cleanPromise) return cleanPromise
-    return (cleanPromise = cleanOutDir(configs))
-  }
+  // Every format is in flight until it settles, so a clean waits for the
+  // others that share its outDir instead of deleting their files.
+  for (const config of configs) markBuilding(config)
 
   const disposeCbs: Array<() => void | PromiseLike<void>> = []
   let restarted = false
@@ -131,7 +125,6 @@ export async function buildWithConfigs(
         options,
         configDeps,
         isDualFormat,
-        clean,
         () => {
           if (restarted) return
           restart().catch((error) => globalLogger.error(error))
@@ -171,7 +164,6 @@ async function buildSingle(
   config: ResolvedConfig,
   configDeps: Set<string>,
   isDualFormat: boolean,
-  clean: () => Promise<void>,
   restart: () => void,
   done: (bundle: TsdownBundle) => Promise<void>,
 ): Promise<TsdownBundle> {
@@ -180,20 +172,14 @@ async function buildSingle(
 
   warnLegacyCJS(config)
 
-  const startTime = performance.now()
   await hooks.callHook('build:prepare', context)
-
-  await clean()
 
   // output rolldown config for debugging
   const debugRolldownConfigDir = await getDebugRolldownDir()
 
   const chunks: RolldownChunk[] = []
-  let watcher: RolldownWatcher | undefined
   let ab: AbortController | undefined
-  const debouncedPostBuild = debounce(() => {
-    postBuild().catch((error) => logger.error(error))
-  }, 100)
+  let stopWatching: (() => void) | undefined
 
   let hasBuilt = false
   const bundle: TsdownBundle = {
@@ -201,118 +187,65 @@ async function buildSingle(
     config,
     inlinedDeps: new Map(),
     async [Symbol.asyncDispose]() {
-      debouncedPostBuild.cancel()
       ab?.abort()
-      await watcher?.close()
+      await Promise.resolve(stopWatching?.())
     },
   }
 
   const configs = await initBuildOptions()
-  if (watch) {
-    watcher = rolldownWatch(configs)
-    await handleWatcher(watcher)
-  } else {
-    const outputs = await config.runBuild(() => rolldownBuild(configs))
-    for (const { output } of outputs) {
-      chunks.push(...addOutDirToChunks(output, outDir))
+
+  async function emit(): Promise<void> {
+    const emitStartedAt = performance.now()
+    chunks.length = 0
+    markBuilding(config)
+    try {
+      const outputs = await config.runBuild(() => rolldownBuild(configs))
+      chunks.length = 0
+      for (const { output } of outputs) {
+        chunks.push(...addOutDirToChunks(output, outDir))
+      }
+      logger.success(
+        config.nameLabel,
+        `Build complete in ${styleText.green(`${Math.round(performance.now() - emitStartedAt)}ms`)}`,
+      )
+      await postBuild()
+    } catch (error) {
+      await finishOutput(config)
+      throw error
     }
   }
 
-  if (!watch) {
-    logger.success(
-      config.nameLabel,
-      `Build complete in ${styleText.green(`${Math.round(performance.now() - startTime)}ms`)}`,
-    )
-    await postBuild()
+  await emit()
+  if (watch) {
+    let rebuildQueue: Promise<void> = Promise.resolve()
+    const rebuild = debounce((file: string, event: string) => {
+      rebuildQueue = rebuildQueue
+        .then(() => onFileChange(file, event))
+        .catch((error: unknown) => logger.error(error))
+    }, 100)
+    const extraWatch = new Set<string>(configDeps)
+    if (typeof config.tsconfig === 'string') extraWatch.add(config.tsconfig)
+    if (config.pkg) extraWatch.add(config.pkg.packageJsonPath)
+    if (typeof config.watch !== 'boolean') {
+      for (const file of resolveComma(toArray(config.watch))) {
+        extraWatch.add(path.resolve(config.cwd, file))
+      }
+    }
+    if (config.copy) {
+      for (const entry of await resolveCopyEntries(config)) {
+        extraWatch.add(entry.from)
+      }
+    }
+    const fsWatcher = watchForRebuild(config, extraWatch, (file, event) => {
+      rebuild(file, event)
+    })
+    stopWatching = () => {
+      rebuild.cancel()
+      fsWatcher.close()
+    }
   }
 
   return bundle
-
-  function handleWatcher(watcher: RolldownWatcher) {
-    const ready = Promise.withResolvers<void>()
-    const changedFile: string[] = []
-    let hasError = false
-
-    watcher.on('change', async (id, event) => {
-      if (event.event === 'update') {
-        changedFile.push(id)
-        // Cancel pending postBuild immediately on file change,
-        // before the new build cycle starts. This prevents duplicate
-        // onSuccess execution when rapid file changes (e.g. VS Code
-        // auto-save) trigger multiple build cycles.
-        debouncedPostBuild.cancel()
-        ab?.abort()
-      }
-      if (configDeps.has(id) || endsWithConfig.test(id)) {
-        globalLogger.info(`Reload config: ${id}, restarting...`)
-        restart()
-      }
-      // eslint-disable-next-line unicorn/prefer-early-return
-      if (
-        (event.event === 'create' || event.event === 'delete') &&
-        config.rawEntry &&
-        isGlobEntry(config.rawEntry)
-      ) {
-        const [newEntry] = await toObjectEntry(config.rawEntry, config.cwd)
-        const currentKeys = Object.keys(config.entry).toSorted().join('\0')
-        const newKeys = Object.keys(newEntry).toSorted().join('\0')
-        if (currentKeys !== newKeys) {
-          globalLogger.info('Entry files changed, restarting...')
-          restart()
-        }
-      }
-    })
-
-    watcher.on('event', async (event) => {
-      switch (event.code) {
-        case 'START': {
-          debouncedPostBuild.cancel()
-
-          if (config.clean.length) {
-            await cleanChunks(config.outDir, chunks)
-          }
-
-          chunks.length = 0
-          hasError = false
-          ready.resolve()
-          break
-        }
-
-        case 'END': {
-          if (!hasError) {
-            debouncedPostBuild()
-          }
-          break
-        }
-
-        case 'BUNDLE_START': {
-          if (changedFile.length) {
-            logger.clearScreen('info')
-            logger.info(
-              `Found ${styleText.bold(changedFile.join(', '))} changed, rebuilding...`,
-            )
-          }
-          changedFile.length = 0
-          break
-        }
-
-        case 'BUNDLE_END': {
-          await event.result.close()
-          logger.success(config.nameLabel, `Rebuilt in ${event.duration}ms.`)
-          break
-        }
-
-        case 'ERROR': {
-          await event.result.close()
-          logger.error(event.error)
-          hasError = true
-          break
-        }
-      }
-    })
-
-    return ready.promise
-  }
 
   async function initBuildOptions() {
     const buildOptions = await getBuildOptions(
@@ -353,7 +286,32 @@ async function buildSingle(
     return configs
   }
 
+  async function onFileChange(file: string, event: string): Promise<void> {
+    if (configDeps.has(file) || endsWithConfig.test(file)) {
+      globalLogger.info(`Reload config: ${file}, restarting...`)
+      restart()
+      return
+    }
+    if (event === 'rename' && config.rawEntry && isGlobEntry(config.rawEntry)) {
+      const [newEntry] = await toObjectEntry(config.rawEntry, config.cwd)
+      const currentKeys = Object.keys(config.entry).toSorted().join('\0')
+      const newKeys = Object.keys(newEntry).toSorted().join('\0')
+      if (currentKeys !== newKeys) {
+        globalLogger.info('Entry files changed, restarting...')
+        restart()
+        return
+      }
+    }
+    logger.clearScreen('info')
+    logger.info(`Found ${styleText.bold(file)} changed, rebuilding...`)
+    await emit()
+  }
+
   async function postBuild() {
+    // Snapshot before the first await. The next `emit` clears `chunks`, so
+    // `exe` and hooks still see this build's output.
+    const emitted = chunks.slice()
+    await finishOutput(config, emitted)
     await copy(config)
     await buildExe(config, chunks)
 
