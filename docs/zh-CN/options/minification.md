@@ -31,15 +31,13 @@ hello(x)
 ::: code-group
 
 ```js [dist/index.mjs (未使用 --minify)]
-//#region src/index.ts
+// src/index.ts
 const x = 1
 function hello(x$1) {
   console.log('Hello World')
   console.log(x$1)
 }
 hello(x)
-
-//#endregion
 ```
 
 <!-- prettier-ignore -->

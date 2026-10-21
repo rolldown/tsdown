@@ -26,9 +26,8 @@ body {
 ## index.mjs
 
 ```mjs
-//#region index.ts
+// index.ts
 const loadAsync = () => import("./async-la_KkjCS.mjs");
-//#endregion
 export { loadAsync };
 
 ```

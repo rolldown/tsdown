@@ -2,9 +2,8 @@
 
 ```mjs
 import { main } from "#dep";
-//#region local.ts
+// local.ts
 const local = 1;
-//#endregion
 export { local, main };
 
 ```

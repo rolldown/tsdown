@@ -1,7 +1,7 @@
 ## index.mjs
 
 ```mjs
-//#region \0rolldown/runtime.js
+// \0rolldown/runtime.js
 var __defProp = Object.defineProperty;
 var __exportAll = (all, no_symbols) => {
 	let target = {};
@@ -12,13 +12,11 @@ var __exportAll = (all, no_symbols) => {
 	if (!no_symbols) __defProp(target, Symbol.toStringTag, { value: "Module" });
 	return target;
 };
-//#endregion
-//#region index.ts
+// index.ts
 const modules = /* #__PURE__ */ Object.assign({
 	"./modules/a.ts": /* @__PURE__ */ __exportAll({ a: () => 1 }),
 	"./modules/b.ts": /* @__PURE__ */ __exportAll({ b: () => 2 })
 });
-//#endregion
 export { modules };
 
 ```

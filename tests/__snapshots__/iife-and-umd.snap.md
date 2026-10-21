@@ -3,7 +3,6 @@
 ```js
 var Lib = (function(exports) {
 	Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-	//#endregion
 	exports.foo = true;
 	return exports;
 })({});
@@ -17,7 +16,6 @@ var Lib = (function(exports) {
 	typeof exports === "object" && typeof module !== "undefined" ? factory(exports) : typeof define === "function" && define.amd ? define(["exports"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.Lib = {}));
 })(this, function(exports) {
 	Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-	//#endregion
 	exports.foo = true;
 });
 

@@ -10,9 +10,8 @@ export { bar, version };
 ## package.mjs
 
 ```mjs
-//#region package.json
+// package.json
 var version = "0.0.0";
-//#endregion
 export { version };
 
 ```
@@ -20,9 +19,8 @@ export { version };
 ## utils/bar.mjs
 
 ```mjs
-//#region src/utils/bar.ts
+// src/utils/bar.ts
 const bar = 2;
-//#endregion
 export { bar };
 
 ```

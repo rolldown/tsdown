@@ -2,9 +2,8 @@
 
 ```mjs
 // banner:a.mjs
-//#region a.ts
+// a.ts
 const a = 1;
-//#endregion
 export { a };
 
 // footer:a.mjs
@@ -14,9 +13,8 @@ export { a };
 
 ```mjs
 // banner:b.mjs
-//#region b.ts
+// b.ts
 const b = 2;
-//#endregion
 export { b };
 
 // footer:b.mjs

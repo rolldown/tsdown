@@ -2,9 +2,8 @@
 
 ```cjs
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
-//#region foo.ts
+// foo.ts
 const foo = 1;
-//#endregion
 exports.foo = foo;
 
 ```

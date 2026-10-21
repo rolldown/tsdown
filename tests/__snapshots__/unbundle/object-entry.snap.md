@@ -8,9 +8,8 @@ export { sub } from "./sub.mjs";
 ## sub.mjs
 
 ```mjs
-//#region src/sub.ts
+// src/sub.ts
 const sub = "Hello, World!";
-//#endregion
 export { sub };
 
 ```

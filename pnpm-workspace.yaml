@@ -15,62 +15,62 @@ catalogs:
   dev:
     '@sxzz/eslint-config': ^8.7.0
     '@sxzz/prettier-config': ^2.3.3
-    '@sxzz/test-utils': ^0.5.19
+    '@sxzz/test-utils': ^0.5.20
     '@types/node': ^26.6.5
     '@types/picomatch': ^4.0.3
-    '@typescript/native-preview': npm:typescript@7.0.2
-    '@vitest/coverage-v8': ^5.0.3
-    '@vitest/ui': ^5.0.3
+    '@vitest/coverage-v8': ^5.0.5
+    '@vitest/ui': ^5.0.5
     actionspack: ^0.1.5
-    baseline-browser-mapping: ^2.11.28
+    baseline-browser-mapping: ^2.11.30
     bumpp: ^12.3.0
     dedent: ^1.7.2
-    eslint: ^10.12.0
+    eslint: ^10.13.0
     memfs: ^4.80.0
-    pkg-types: ^2.3.3
-    postcss: ^8.5.29
-    postcss-import: ^17.0.0
+    pkg-types: ^2.4.0
+    postcss: ^8.5.31
+    postcss-import: ^17.0.1
     postcss-modules: ^9.0.1
     prettier: ^3.9.10
     rolldown-plugin-require-cjs: ^0.4.2
-    sass: ^1.105.1
+    sass: ^1.106.0
     tsnapi: ^1.5.0
     tsx: ^4.23.15
     typescript: ~6.0.3
-    unplugin-ast: ^0.19.1
+    typescript-next: npm:typescript@7.1.0-beta
+    unplugin-ast: ^0.19.2
     unplugin-raw: ^0.8.0
     unplugin-vue: ^8.0.0
     unrun: ^0.3.1
-    vitest: ^5.0.3
+    vitest: ^5.0.5
   docs:
-    '@iconify-json/logos': ^1.2.15
+    '@iconify-json/logos': ^1.2.17
     '@shikijs/vitepress-twoslash': ^4.5.0
-    '@unocss/eslint-plugin': ^66.10.5
+    '@unocss/eslint-plugin': ^66.11.0
     '@vueuse/core': ^15.0.0
-    oxc-minify: ^0.153.0
+    oxc-minify: ^0.155.0
     typedoc: ^0.28.20
-    typedoc-plugin-markdown: ^4.13.1
+    typedoc-plugin-markdown: ^4.14.1
     typedoc-vitepress-theme: ^1.1.4
-    unocss: ^66.10.5
-    vite: ^8.3.4
+    unocss: ^66.11.0
+    vite: ^8.3.5
     vitepress: ^2.0.0-alpha.17
-    vitepress-plugin-group-icons: ^1.7.7
+    vitepress-plugin-group-icons: ^1.8.1
     vitepress-plugin-llms: ^1.14.0
-    void: ^1.0.0
-    vue: ^3.5.43
+    void: ^1.1.12
+    vue: ^3.5.44
     vue-tsc: ^3.3.13
   migrate:
     '@antfu/ni': ^30.6.0
-    '@ast-grep/napi': ^0.50.0
+    '@ast-grep/napi': ^0.51.0
     consola: ^3.4.2
     diff: ^9.0.0
   peer:
     '@arethetypeswrong/core': ^0.18.5
-    '@vitejs/devtools': ^0.7.6
+    '@vitejs/devtools': ^0.8.0
     publint: ^0.3.25
     unplugin-unused: ^0.6.0
   prod:
-    cac: ^7.0.1
+    cac: ^7.1.0
     defu: ^6.1.7
     empathic: ^2.1.0
     hookable: ^6.1.2
@@ -80,8 +80,8 @@ catalogs:
     package-manager-detector: ^1.9.0
     picomatch: ^4.0.7
     postcss-load-config: ^6.0.1
-    rolldown: ~1.2.13
-    rolldown-plugin-dts: ^0.28.7
+    rolldown: ~1.2.15
+    rolldown-plugin-dts: ^0.29.0-beta.2
     tinyexec: ^1.3.1
     tinyglobby: ^0.2.17
     tree-kill: ^1.2.2

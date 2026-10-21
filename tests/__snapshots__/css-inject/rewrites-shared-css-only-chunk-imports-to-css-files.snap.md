@@ -1,4 +1,4 @@
-## async-a-DAFWDwf6.css
+## async-a-DxZaYA0i.css
 
 ```css
 .a {
@@ -7,25 +7,23 @@
 
 ```
 
-## async-a-DAFWDwf6.mjs
+## async-a-DxZaYA0i.mjs
 
 ```mjs
-import './async-a-DAFWDwf6.css';
+import './async-a-DxZaYA0i.css';
 import "./shared-la_KkjCS.css";
-//#region async-a.ts
+// async-a.ts
 const a = 1;
-//#endregion
 export { a };
 
 ```
 
-## async-b-D9ELMaDM.mjs
+## async-b-CtX62dOP.mjs
 
 ```mjs
 import "./shared-la_KkjCS.css";
-//#region async-b.ts
+// async-b.ts
 const b = 2;
-//#endregion
 export { b };
 
 ```
@@ -33,10 +31,9 @@ export { b };
 ## index.mjs
 
 ```mjs
-//#region index.ts
-const loadA = () => import("./async-a-DAFWDwf6.mjs");
-const loadB = () => import("./async-b-D9ELMaDM.mjs");
-//#endregion
+// index.ts
+const loadA = () => import("./async-a-DxZaYA0i.mjs");
+const loadB = () => import("./async-b-CtX62dOP.mjs");
 export { loadA, loadB };
 
 ```
