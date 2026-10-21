@@ -36,7 +36,7 @@ catalogs:
     tsnapi: ^1.5.0
     tsx: ^4.23.15
     typescript: ~6.0.3
-    typescript-next: npm:typescript@7.1.0-beta
+    typescript-next: npm:typescript@7.1.0-dev.20261021.1
     unplugin-ast: ^0.19.2
     unplugin-raw: ^0.8.0
     unplugin-vue: ^8.0.0
