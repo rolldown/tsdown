@@ -1,16 +1,14 @@
 ## foo.mjs
 
 ```mjs
-//#region utils/foo.ts
+// utils/foo.ts
 const foo$1 = (a) => {
 	console.log("utils/foo:" + a);
 };
-//#endregion
-//#region foo.ts
+// foo.ts
 const foo = (a) => {
 	console.log("foo:" + a);
 };
-//#endregion
 export { foo$1 as n, foo as t };
 
 ```
@@ -26,10 +24,9 @@ export { t as foo, n as utilsFoo } from "./foo.mjs";
 
 ```mjs
 import { n as foo$1, t as foo } from "./foo.mjs";
-//#region run.ts
+// run.ts
 foo("hello world");
 foo$1("hello world");
-//#endregion
 export {};
 
 ```

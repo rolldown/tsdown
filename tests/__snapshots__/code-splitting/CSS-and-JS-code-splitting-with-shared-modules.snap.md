@@ -1,10 +1,9 @@
 ## a.mjs
 
 ```mjs
-import { t as shared_default } from "./shared-DXaYTfQF.mjs";
-//#region a.ts
+import { t as shared_default } from "./shared-2xofchEv.mjs";
+// a.ts
 console.log(shared_default() + 1);
-//#endregion
 export {};
 
 ```
@@ -12,10 +11,9 @@ export {};
 ## b.mjs
 
 ```mjs
-import { t as shared_default } from "./shared-DXaYTfQF.mjs";
-//#region b.ts
+import { t as shared_default } from "./shared-2xofchEv.mjs";
+// b.ts
 console.log(shared_default() + 2);
-//#endregion
 export {};
 
 ```
@@ -46,14 +44,13 @@ body {
 
 ```
 
-## shared-DXaYTfQF.mjs
+## shared-2xofchEv.mjs
 
 ```mjs
-//#region shared.ts
+// shared.ts
 function shared_default() {
 	return 3;
 }
-//#endregion
 export { shared_default as t };
 
 ```

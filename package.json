@@ -71,7 +71,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.11.2",
+      "version": "12.14.0",
       "onFail": "download"
     }
   },
@@ -147,7 +147,7 @@
   },
   "inlinedDependencies": {
     "package-manager-detector": "1.9.0",
-    "pkg-types": "2.3.3"
+    "pkg-types": "2.4.0"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
@@ -158,7 +158,6 @@
     "@tsdown/exe": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/picomatch": "catalog:dev",
-    "@typescript/native-preview": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
     "@vitejs/devtools": "catalog:peer",
     "@vitest/coverage-v8": "catalog:dev",
@@ -182,6 +181,7 @@
     "tsnapi": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
+    "typescript-next": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
     "unplugin-raw": "catalog:dev",

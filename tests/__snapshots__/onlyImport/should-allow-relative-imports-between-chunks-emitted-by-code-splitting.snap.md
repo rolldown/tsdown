@@ -16,9 +16,8 @@ export { t as shared } from "./shared.mjs";
 ## shared.mjs
 
 ```mjs
-//#region shared.ts
+// shared.ts
 const shared = 1;
-//#endregion
 export { shared as t };
 
 ```
