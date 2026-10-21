@@ -1,4 +1,4 @@
-/* eslint-disable unused-imports/no-unused-vars */ // unused-imports bug?
+// unused-imports bug?
 
 // Shim globals in esm bundle
 import path from 'node:path'
