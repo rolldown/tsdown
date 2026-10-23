@@ -355,23 +355,24 @@ interface ProcessResult {
 
 function resolveCssModulesConfig(
   modulesOptions: CSSModulesOptions | false | undefined,
+  lightningCssModules: boolean | CSSModulesConfig | undefined,
   isModule: boolean,
   logger: Logger,
 ): boolean | CSSModulesConfig | undefined {
   if (!isModule) return undefined
 
   const config = typeof modulesOptions === 'object' ? modulesOptions : undefined
-  if (!config) return true
 
-  const cssModulesConfig: CSSModulesConfig = {}
-  if (typeof config.generateScopedName === 'string') {
+  const cssModulesConfig: CSSModulesConfig =
+    typeof lightningCssModules === 'object' ? { ...lightningCssModules } : {}
+  if (typeof config?.generateScopedName === 'string') {
     cssModulesConfig.pattern = config.generateScopedName
-  } else if (typeof config.generateScopedName === 'function') {
+  } else if (typeof config?.generateScopedName === 'function') {
     logger.warn(
       '[@tsdown/css] `generateScopedName` as a function is not supported with `transformer: "lightningcss"`. Use a string pattern or switch to `transformer: "postcss"`.',
     )
   }
-  if (config.scopeBehaviour === 'global') {
+  if (config?.scopeBehaviour === 'global') {
     cssModulesConfig.pattern = '[local]'
   }
 
@@ -391,6 +392,7 @@ async function processWithLightningCSS(
   const lang = getPreprocessorLangFromId(id)
   const cssModules = resolveCssModulesConfig(
     config.css.modules,
+    config.css.lightningcss?.cssModules,
     isModule,
     logger,
   )
