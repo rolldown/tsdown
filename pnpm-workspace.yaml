@@ -13,7 +13,7 @@ catalogs:
     '@clack/prompts': ^1.8.1
     giget: ^3.3.1
   dev:
-    '@sxzz/eslint-config': ^8.7.0
+    '@sxzz/eslint-config': ^8.8.0
     '@sxzz/prettier-config': ^2.3.3
     '@sxzz/test-utils': ^0.5.20
     '@types/node': ^26.6.5
@@ -22,7 +22,7 @@ catalogs:
     '@vitest/coverage-v8': ^5.0.5
     '@vitest/ui': ^5.0.5
     actionspack: ^0.1.5
-    baseline-browser-mapping: ^2.11.30
+    baseline-browser-mapping: ^2.11.31
     bumpp: ^12.3.0
     dedent: ^1.7.2
     eslint: ^10.13.0
@@ -33,7 +33,7 @@ catalogs:
     postcss-modules: ^9.0.1
     prettier: ^3.9.10
     rolldown-plugin-require-cjs: ^0.4.2
-    sass: ^1.106.0
+    sass: ^1.106.1
     tsnapi: ^1.5.0
     tsx: ^4.23.15
     typescript: ~6.0.3
@@ -58,7 +58,7 @@ catalogs:
     vitepress: ^2.0.0-alpha.17
     vitepress-plugin-group-icons: ^1.8.1
     vitepress-plugin-llms: ^1.14.0
-    void: ^1.1.12
+    void: ^1.2.1
     vue: ^3.5.44
     vue-tsc: ^3.3.13
   migrate:
