@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { exec } from 'tinyexec'
 import { describe, expect, test } from 'vitest'
-import { testBuild } from './utils.ts'
+import { getTestDir, testBuild } from './utils.ts'
 
 describe('issues', () => {
   test('#61', async (context) => {
@@ -272,6 +272,39 @@ button {
     expect(fileMap['style.css']).toContain('.mod_btn')
     expect(fileMap['index.mjs']).toContain('mod_btn')
   })
+
+  test.for(['lightningcss', 'postcss'] as const)(
+    '#1095 (%s)',
+    async (transformer, context) => {
+      const Vue = (await import('unplugin-vue/rolldown')).default
+      // A relative `src` gets an empty scope id in unplugin-vue 8.0.0 (unplugin/unplugin-vue#202)
+      const btn = path.join(getTestDir(context.task), 'Button.css')
+      const { outputDir } = await testBuild({
+        context,
+        files: {
+          'index.ts': `export { default as MyButton } from './Button.vue'`,
+          'Button.vue': `<template><button class="btn">Click</button></template>\n<style src="${btn}" scoped />`,
+          'Button.css': `@import './base.css';\n.btn { color: red; }`,
+          'base.css': `.base { margin: 0; }`,
+        },
+        options: {
+          plugins: [Vue({ isProduction: true })],
+          deps: { neverBundle: true },
+          css: { transformer, inject: true, splitting: true },
+        },
+        snapshot: false,
+      })
+      const js = await readFile(path.join(outputDir, 'index.mjs'), 'utf8')
+      const css = await readFile(path.join(outputDir, 'index.css'), 'utf8')
+      const scopeId = /__scopeId", "(data-v-[\da-f]+)/.exec(js)?.[1]
+      expect(scopeId).toBeDefined()
+      expect(css).toContain(`.btn[${scopeId}]`)
+      // `@import` is inlined before Vue's scoped transform, so imported rules are scoped too
+      expect(css).toContain(`.base[${scopeId}]`)
+      expect(css).not.toContain('@import')
+      expect(js).toContain(`import './index.css'`)
+    },
+  )
 
   test('#772', async (context) => {
     const { fileMap, outputFiles } = await testBuild({
