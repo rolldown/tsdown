@@ -185,9 +185,15 @@ export function DepsPlugin(
   tsdownBundle: TsdownBundle,
 ): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
+  // Keyed by package.json path. Every subpath import of a package reads the
+  // same file, so read it once per build.
+  const hasExportsCache: HasExportsCache = new Map()
 
   return {
     name: 'tsdown:deps',
+    buildStart() {
+      hasExportsCache.clear()
+    },
     resolveId: {
       filter: [include(and(id(/^[^.]/), importerId(/./)))],
       async handler(id, importer, extraOptions) {
@@ -383,7 +389,8 @@ export function DepsPlugin(
       }
       if (RE_PACKAGE_SPECIFIER.test(id)) {
         const resolvedDep =
-          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+          shouldResolveDepSubpath &&
+          (await resolveDepSubpath(id, resolve, hasExportsCache))
         // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
@@ -396,7 +403,8 @@ export function DepsPlugin(
     if (deps) {
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
         const resolvedDep =
-          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+          shouldResolveDepSubpath &&
+          (await resolveDepSubpath(id, resolve, hasExportsCache))
         // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
@@ -497,7 +505,24 @@ export function getTypesPackageName(id: string): string | undefined {
   return `@types/${name.replace(/^@/, '').replace('/', '__')}`
 }
 
-async function resolveDepSubpath(id: string, resolve: ResolveFn) {
+// `undefined` when the package.json can't be read or parsed
+type HasExportsCache = Map<string, Promise<boolean | undefined>>
+
+async function readHasExports(
+  packageJsonPath: string,
+): Promise<boolean | undefined> {
+  try {
+    return !!JSON.parse(await readFile(packageJsonPath, 'utf8')).exports
+  } catch {
+    return undefined
+  }
+}
+
+async function resolveDepSubpath(
+  id: string,
+  resolve: ResolveFn,
+  hasExportsCache: HasExportsCache,
+) {
   const parts = id.split('/')
   // ignore scope
   if (parts[0][0] === '@') parts.shift()
@@ -507,15 +532,13 @@ async function resolveDepSubpath(id: string, resolve: ResolveFn) {
   const resolved = await resolve()
   if (!resolved?.packageJsonPath) return
 
-  let pkgJson: Record<string, any>
-  try {
-    pkgJson = JSON.parse(await readFile(resolved.packageJsonPath, 'utf8'))
-  } catch {
-    return
+  let hasExports = hasExportsCache.get(resolved.packageJsonPath)
+  if (!hasExports) {
+    hasExports = readHasExports(resolved.packageJsonPath)
+    hasExportsCache.set(resolved.packageJsonPath, hasExports)
   }
-
-  // no `exports` field
-  if (pkgJson.exports) return
+  // only rewrite packages that have a readable package.json without `exports`
+  if ((await hasExports) !== false) return
 
   const parsed = parseNodeModulesPath(resolved.id)
   if (!parsed) return
