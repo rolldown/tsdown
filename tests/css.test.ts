@@ -185,6 +185,65 @@ describe('css', () => {
     },
   )
 
+  test('merged css follows import order across shared chunks', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `
+          import { buttonReset } from './base'
+          import './index.css'
+          export const navItem = buttonReset + ' nav-item'
+        `,
+        'other.ts': `export { buttonReset } from './base'`,
+        'base.ts': `
+          import './base.css'
+          export const buttonReset = 'button-reset'
+        `,
+        'base.css': `.button-reset { padding: 0 }`,
+        'index.css': `.nav-item { padding: 12px }`,
+      },
+      options: {
+        entry: ['index.ts', 'other.ts'],
+      },
+    })
+
+    // `base` is shared by both entries, so it ends up in its own chunk. Its
+    // styles are imported before `index.css` and must come first.
+    const css = fileMap['style.css']
+    expect(css.indexOf('.button-reset')).toBeGreaterThanOrEqual(0)
+    expect(css.indexOf('.button-reset')).toBeLessThan(css.indexOf('.nav-item'))
+  })
+
+  test('merged css puts dynamically imported chunks last', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `
+          import './index.css'
+          export const load = () => import('./async')
+          export { shared } from './shared'
+        `,
+        'async.ts': `import './async.css'`,
+        'shared.ts': `
+          import './shared.css'
+          export const shared = 1
+        `,
+        'other.ts': `export { shared } from './shared'`,
+        'index.css': `.index { color: red }`,
+        'async.css': `.async { color: blue }`,
+        'shared.css': `.shared { color: green }`,
+      },
+      options: {
+        entry: ['index.ts', 'other.ts'],
+      },
+    })
+
+    const css = fileMap['style.css']
+    const order = ['.shared', '.index', '.async'].map((s) => css.indexOf(s))
+    expect(order.every((i) => i >= 0)).toBe(true)
+    expect(order).toEqual(order.toSorted((a, b) => a - b))
+  })
+
   test('css.minify option accepted', async (context) => {
     const { outputFiles } = await testBuild({
       context,
