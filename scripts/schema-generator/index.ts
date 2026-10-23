@@ -6,22 +6,16 @@ import prettier from 'prettier'
 import ts from 'typescript'
 import * as v from 'valibot'
 
-export type SchemaRoot = 'type' | 'array' | 'object-or-array'
-
-export interface GenerateSchemaOptions {
+export interface SchemaOptions {
   cwd?: string
   sourcePath: string
   tsconfigPath?: string
   typeName: string
-  root?: SchemaRoot
 }
 
-export interface WriteSchemaOptions extends GenerateSchemaOptions {
+export interface GenerateSchemaOptions extends SchemaOptions {
   outputPath: string
-}
-
-export interface CheckSchemaOptions extends GenerateSchemaOptions {
-  schemaPath: string
+  check?: boolean
 }
 
 export interface GeneratedValibotSchema {
@@ -43,7 +37,7 @@ const builtinObjectNames = new Set([
 ])
 
 export function generateValibotSchema(
-  options: GenerateSchemaOptions,
+  options: SchemaOptions,
 ): GeneratedValibotSchema {
   const cwd = path.resolve(options.cwd ?? process.cwd())
   const tsconfigPath = path.resolve(
@@ -53,7 +47,9 @@ export function generateValibotSchema(
   const config = ts.readConfigFile(tsconfigPath, ts.sys.readFile)
 
   if (config.error) {
-    throw new Error(formatDiagnostic(config.error))
+    throw new Error(
+      ts.flattenDiagnosticMessageText(config.error.messageText, '\n'),
+    )
   }
 
   const parsed = ts.parseJsonConfigFileContent(
@@ -93,18 +89,10 @@ export function generateValibotSchema(
     checker.getDeclaredTypeOfSymbol(symbol),
   )
   const objectSchema = addSchemaProperty(typeSchema)
-  const root = options.root ?? 'type'
-
-  let schema: v.GenericSchema
-  if (root === 'type') {
-    schema = objectSchema
-  } else if (root === 'array') {
-    schema = v.array(typeSchema)
-  } else {
-    schema = v.union([objectSchema, v.array(objectSchema)])
-  }
-
-  schema = v.pipe(schema, v.metadata({ title: options.typeName }))
+  const schema = v.pipe(
+    v.union([objectSchema, v.array(objectSchema)]),
+    v.metadata({ title: options.typeName }),
+  )
 
   return {
     schema,
@@ -112,7 +100,7 @@ export function generateValibotSchema(
   }
 }
 
-export function generateSchema(options: GenerateSchemaOptions): JsonSchema {
+export function generateJsonSchema(options: SchemaOptions): JsonSchema {
   const generated = generateValibotSchema(options)
   return toJsonSchema(generated.schema, {
     target: 'draft-2020-12',
@@ -121,30 +109,31 @@ export function generateSchema(options: GenerateSchemaOptions): JsonSchema {
   })
 }
 
-export async function writeSchema(options: WriteSchemaOptions): Promise<void> {
-  const { outputPath, ...generateOptions } = options
+export async function generateSchema(
+  options: GenerateSchemaOptions,
+): Promise<void> {
+  const { outputPath, check, ...generateOptions } = options
   const resolvedOutputPath = path.resolve(outputPath)
-  const formatted = await prettier.format(
-    JSON.stringify(generateSchema(generateOptions)),
-    { filepath: resolvedOutputPath },
-  )
-  writeFileSync(resolvedOutputPath, formatted)
-}
+  const expected = generateJsonSchema(generateOptions)
 
-export function checkSchema(options: CheckSchemaOptions): void {
-  const { schemaPath, ...generateOptions } = options
-  const expected = generateSchema(generateOptions)
-  const resolvedSchemaPath = path.resolve(schemaPath)
+  if (check) {
+    let actual: JsonSchema
+    try {
+      actual = JSON.parse(
+        readFileSync(resolvedOutputPath, 'utf8'),
+      ) as JsonSchema
+    } catch {
+      throw new Error(`Schema is missing or invalid: ${resolvedOutputPath}`)
+    }
 
-  let actual: JsonSchema
-  try {
-    actual = JSON.parse(readFileSync(resolvedSchemaPath, 'utf8')) as JsonSchema
-  } catch {
-    throw new Error(`Schema is missing or invalid: ${resolvedSchemaPath}`)
-  }
-
-  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-    throw new Error(`Schema is stale: ${resolvedSchemaPath}`)
+    if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+      throw new Error(`Schema is stale: ${resolvedOutputPath}`)
+    }
+  } else {
+    const formatted = await prettier.format(JSON.stringify(expected), {
+      filepath: resolvedOutputPath,
+    })
+    writeFileSync(resolvedOutputPath, formatted)
   }
 }
 
@@ -164,9 +153,7 @@ class TypeConverter {
   readonly definitions: Record<string, v.GenericSchema> = {}
   private readonly activeTypes = new Set<ts.Type>()
   private readonly activeDefinitions = new Set<string>()
-  private readonly definitionNames = new Map<string, string>()
   private readonly usedDefinitionNames = new Map<string, string>()
-  private readonly lazyDefinitions = new Map<string, v.GenericSchema>()
   private readonly checker: ts.TypeChecker
   private readonly sourceFile: ts.SourceFile
 
@@ -213,9 +200,7 @@ class TypeConverter {
         .filter((schema): schema is v.GenericSchema => schema !== undefined)
       if (schemas.length === 0) return undefined
       if (schemas.length === 1) return schemas[0]
-      return v.union(
-        schemas as [v.GenericSchema, v.GenericSchema, ...v.GenericSchema[]],
-      )
+      return v.union(schemas)
     }
 
     if (type.isIntersection()) {
@@ -227,13 +212,7 @@ class TypeConverter {
       )
       if (meaningfulSchemas.length === 0) return schemas[0]
       if (meaningfulSchemas.length === 1) return meaningfulSchemas[0]
-      return v.intersect(
-        meaningfulSchemas as [
-          v.GenericSchema,
-          v.GenericSchema,
-          ...v.GenericSchema[],
-        ],
-      )
+      return v.intersect(meaningfulSchemas)
     }
 
     if (type.flags & (ts.TypeFlags.Any | ts.TypeFlags.Unknown)) {
@@ -280,7 +259,7 @@ class TypeConverter {
         .map(
           (elementType) => this.convert(elementType, depth + 1) ?? v.unknown(),
         )
-      return v.tuple(elementTypes as v.TupleItems)
+      return v.tuple(elementTypes)
     }
 
     if (
@@ -321,11 +300,7 @@ class TypeConverter {
 
         const tags = property.getJsDocTags()
         const deprecatedTag = tags.find((tag) => tag.name === 'deprecated')
-        const deprecatedText = deprecatedTag
-          ? typeof deprecatedTag.text === 'string'
-            ? deprecatedTag.text
-            : ts.displayPartsToString(deprecatedTag.text ?? [])
-          : ''
+        const deprecatedText = ts.displayPartsToString(deprecatedTag?.text)
         const defaultTag = tags.find((tag) => tag.name === 'default')
         const defaultValue = defaultTag
           ? parseLiteralDefault(defaultTag.text)
@@ -383,21 +358,13 @@ class TypeConverter {
     const existing = this.definitions[name]
     if (existing) return existing
 
-    const lazy =
-      this.lazyDefinitions.get(name) ??
-      v.lazy(() => this.definitions[name] ?? v.unknown())
-    this.lazyDefinitions.set(name, lazy)
-    if (this.activeDefinitions.has(name)) return lazy
+    if (this.activeDefinitions.has(name)) {
+      return v.lazy(() => this.definitions[name])
+    }
 
     this.activeDefinitions.add(name)
-    this.activeTypes.add(type)
-    const schema = this.convertInline(type, depth + 1)
-    this.activeTypes.delete(type)
+    const schema = this.convertInline(type, depth + 1) ?? v.unknown()
     this.activeDefinitions.delete(name)
-    if (!schema) {
-      this.definitions[name] = v.unknown()
-      return this.definitions[name]
-    }
     this.definitions[name] = schema
     return schema
   }
@@ -433,13 +400,9 @@ class TypeConverter {
       undefined,
       ts.TypeFormatFlags.NoTruncation,
     )
-    const existingName = this.definitionNames.get(key)
-    if (existingName) return existingName
-
     const usedKey = this.usedDefinitionNames.get(baseName)
     const name =
       usedKey && usedKey !== key ? `${baseName}_${hashString(key)}` : baseName
-    this.definitionNames.set(key, name)
     this.usedDefinitionNames.set(name, key)
     return name
   }
@@ -455,10 +418,9 @@ class TypeConverter {
 }
 
 function parseLiteralDefault(
-  text: string | ts.SymbolDisplayPart[] | undefined,
+  text: ts.SymbolDisplayPart[] | undefined,
 ): unknown {
-  const source =
-    typeof text === 'string' ? text : ts.displayPartsToString(text ?? [])
+  const source = ts.displayPartsToString(text)
   if (!source.trim()) return undefined
 
   const file = ts.createSourceFile(
@@ -503,7 +465,6 @@ function parseLiteralExpression(expression: ts.Expression): unknown {
   if (ts.isArrayLiteralExpression(expression)) {
     const values: unknown[] = []
     for (const element of expression.elements) {
-      if (!ts.isExpression(element)) return undefined
       const value = parseLiteralExpression(element)
       if (value === undefined) return undefined
       values.push(value)
@@ -551,8 +512,4 @@ function hashString(value: string): string {
     hash = Math.imul(hash, 16777619)
   }
   return (hash >>> 0).toString(16)
-}
-
-function formatDiagnostic(diagnostic: ts.Diagnostic): string {
-  return ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n')
 }
