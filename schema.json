@@ -965,6 +965,11 @@
           "description": "Whether to emit warnings when files generated have the same name with different contents.",
           "default": true
         },
+        "moduleLevelDirective": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Whether to emit warnings for module-level directives other than `use strict`.",
+          "default": true
+        },
         "commonJsVariableInEsm": {
           "anyOf": [{ "const": false }, { "const": true }],
           "description": "Whether to emit warnings when a CommonJS variable is used in an ES module.\n\nCommonJS variables like `module` and `exports` are treated as global variables in ES modules and may not work as expected.",
@@ -1005,10 +1010,15 @@
           "description": "Whether to emit warnings when Rolldown could not clean the output directory.\n\nSee [`output.cleanDir`](https://rolldown.rs/reference/OutputOptions.cleanDir).",
           "default": true
         },
+        "bundlerTimings": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Whether to emit warnings when plugins and option callbacks take significant time during the build process.",
+          "default": true
+        },
         "pluginTimings": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Whether to emit warnings when plugins take significant time during the build process.",
-          "default": true
+          "description": "Deprecated: Use {@linkcode bundlerTimings }. If `bundlerTimings` and `pluginTimings` have values, Rolldown uses `bundlerTimings`.",
+          "deprecated": true
         },
         "duplicateShebang": {
           "anyOf": [{ "const": false }, { "const": true }],
@@ -1038,6 +1048,11 @@
         "namespaceConflict": {
           "anyOf": [{ "const": false }, { "const": true }],
           "description": "Whether to emit warnings when multiple star re-exports provide the same name from different modules.",
+          "default": true
+        },
+        "shimmedExport": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Whether to emit warnings when a missing export is replaced with an undefined binding.",
           "default": true
         }
       },
@@ -1583,7 +1598,14 @@
                       "deprecated": true,
                       "default": false
                     },
-                    "lazy": { "anyOf": [{ "const": false }, { "const": true }] }
+                    "lazy": {
+                      "anyOf": [{ "const": false }, { "const": true }]
+                    },
+                    "hotUpdate": {
+                      "anyOf": [{ "const": false }, { "const": true }],
+                      "description": "Call the `hotUpdate` plugin hook. The `hotUpdate` option of `dev()` also turns it on.",
+                      "default": false
+                    }
                   },
                   "required": [],
                   "additionalProperties": false
@@ -1602,7 +1624,7 @@
                 { "const": "simple" },
                 { "const": "full" }
               ],
-              "description": "Attach debug information to the output bundle.\n\nAvailable modes:\n- `none`: No debug information is attached.\n- `simple`: Attach comments indicating which files the bundled code comes from. These comments could be removed by the minifier.\n- `full`: Attach detailed debug information to the output bundle. These comments are using legal comment syntax, so they won't be removed by the minifier.",
+              "description": "Attach debug information to the output bundle.\n\nAvailable modes:\n- `none`: No debug information is attached.\n- `simple`: Attach a `// <module id>` comment where the code of each module starts, like esbuild and Bun. These comments could be removed by the minifier.\n- `full`: Same as `simple`, and also attach comments that tell why each chunk exists. These chunk comments use legal comment syntax, so they won't be removed by the minifier.",
               "default": "simple"
             },
             "chunkImportMap": {
@@ -1619,7 +1641,7 @@
                   "additionalProperties": false
                 }
               ],
-              "description": "Enables automatic generation of a chunk import map asset during build.\n\nThis map only includes chunks with hashed filenames, where keys are derived from the facade module\nname or primary chunk name. It produces stable and unique hash-based filenames, effectively preventing\ncascading cache invalidation caused by content hashes and maximizing browser cache reuse.\n\nThe output defaults to `importmap.json` unless overridden via `fileName`. A base URL prefix\n(default `\"/\"`) can be applied to all paths. The resulting JSON is a valid import map and can be\ndirectly injected into HTML via `<script type=\"importmap\">`.",
+              "description": "Enables automatic generation of a chunk import map asset during build.\n\nThis map includes chunks with hashed filenames. Entry keys use their facade module ID. Common chunks\nuse their name; later chunks with the same name use their smallest original module ID.\nModules copied into a file by `experimentalInlineCommonChunks` remain in `moduleIds` but do not\naffect that file's key.\nKeeping these keys independent of content hashes reduces cascading cache invalidation when\na dependency changes.\n\nThe output defaults to `importmap.json` unless overridden via `fileName`. A base URL prefix\n(default `\"/\"`) can be applied to all paths. The resulting JSON is a valid import map and can be\ndirectly injected into HTML via `<script type=\"importmap\">`.",
               "default": false
             },
             "onDemandWrapping": {
@@ -1681,7 +1703,7 @@
           "properties": { "sessionId": { "type": "string" } },
           "required": [],
           "additionalProperties": false,
-          "description": "Devtools integration options.\n\nWhen enabled, Rolldown writes JSON-lines devtools output under\n`node_modules/.rolldown/{session_id}/`, resolved against {@linkcode cwd}.\nConsumers can parse the output with `@rolldown/debug` after\n`await bundle.close()` resolves."
+          "description": "Devtools integration options.\n\nWhen enabled, Rolldown writes JSON-lines devtools output under\n`node_modules/.rolldown/{session_id}/`, resolved against {@linkcode cwd}.\nConsumers can parse the output with `@rolldown/debug` after\n`await bundle.close()` resolves.\n\n`sessionId` replaces the generated session id. It must be one path segment: not empty, not\n`.` or `..`, and without `/`, `\\` or NUL. Rolldown does not check that it is unique: give each\nbundler that runs at the same time its own `sessionId`, or their devtools output mixes.\nThe name `unknown-session` is reserved regardless of case."
         },
         "preserveEntrySignatures": {
           "anyOf": [
@@ -2356,6 +2378,11 @@
           "description": "Remove whitespace.",
           "default": true
         },
+        "asciiOnly": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Escape non-ASCII characters in string literals, untagged template literals, regular\nexpression literals and identifier names.\n\nUses `\\uXXXX` for characters up to U+FFFF and `\\u{...}` for higher code points.\nRegular expressions use escaped UTF-16 surrogate pairs for higher code points instead;\nescaping changes the observable `RegExp.prototype.source` value.\n\nCode point escapes (`\\u{...}`) require ES2015 or later; this option does not provide\nES5-compatible output.\n\nNon-ASCII characters are left unescaped in tagged template quasis (whose raw text is\nobservable), JSX names and text, JSX attribute strings, hashbangs and preserved comments.\nJavaScript expressions inside tagged templates and JSX are escaped normally.",
+          "default": false
+        },
         "legalComments": {
           "anyOf": [
             { "const": "none" },
@@ -2463,6 +2490,10 @@
     "CodeSplittingGroup": {
       "type": "object",
       "properties": {
+        "debugName": {
+          "type": "string",
+          "description": "`debugName` gives this group a label in the bundler timing report.\n\nSet this option when `name` is a function. This option does not change the chunk name."
+        },
         "name": {
           "type": "string",
           "description": "Name of the group. It will be also used as the name of the chunk and replace the `[name]` placeholder in the {@linkcode OutputOptions.chunkFileNamesoutput.chunkFileNames} option.\n\nFor example,\n\n```js\nimport { defineConfig } from 'rolldown';\n\nexport default defineConfig({\n  output: {\n    codeSplitting: {\n      groups: [\n        {\n          name: 'libs',\n          test: /node_modules/,\n        },\n      ],\n    },\n  },\n});\n```\nwill create a chunk named `libs-[hash].js` in the end.\n\nIt's ok to have the same name for different groups. Rolldown will deduplicate the chunk names if necessary.\n\n#### Dynamic `name()`\n\nIf `name` is a function, it will be called with the module id as the argument. The function should return a string or `null`. If it returns `null`, the module will be ignored by this group.\n\nNotice, each returned new name will be treated as a separate group.\n\nFor example,\n\n```js\nimport { defineConfig } from 'rolldown';\n\nexport default defineConfig({\n  output: {\n    codeSplitting: {\n      groups: [\n        {\n          name: (moduleId) => moduleId.includes('node_modules') ? 'libs' : 'app',\n          minSize: 100 * 1024,\n        },\n      ],\n    },\n  },\n});\n```\n\n:::warning\nConstraints like `minSize`, `maxSize`, etc. are applied separately for different names returned by the function.\n:::\n\n:::warning\nRolldown calls a function `name` once for each captured module, in a deterministic order. It calls `test` for every candidate module of the group first. Do not read a \"current module\" variable that `test` wrote, because that variable holds the last module `test` saw. Store such state under the module id instead.\n:::"
@@ -2523,6 +2554,25 @@
       "required": ["name"],
       "additionalProperties": false
     },
+    "ExperimentalInlineCommonChunksOptions": {
+      "type": "object",
+      "properties": {
+        "maxSize": {
+          "type": "number",
+          "description": "Common chunks whose pre-render size (the sum of the transformed source sizes of their modules,\nin bytes) is strictly smaller than this value are candidates for inlining.\nUse `Infinity` to remove the size limit.\n\nA value greater than `0` requires `output.format: 'es'`, an explicit\n`preserveEntrySignatures: false` and code splitting, and it turns on\n{@linkcode OutputOptions.strictExecutionOrderstrictExecutionOrder} when that option is\nomitted. `output.strictExecutionOrder: false` is an error, `output.preserveModules`,\n`experimental.devMode` and `experimental.onDemandWrapping` must be off.",
+          "default": 0
+        },
+        "exclude": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ],
+          "description": "A matcher for module ids, or an array of them: a string (matched as a regular expression), a\nRegExp, or a function, each applied like {@linkcode CodeSplittingGroup.testtest}. A common\nchunk is kept as a file when any of its modules matches any matcher."
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
     "CodeSplittingOptions": {
       "type": "object",
       "properties": {
@@ -2554,6 +2604,10 @@
           "type": "array",
           "items": { "$ref": "#/$defs/CodeSplittingGroup" },
           "description": "Groups to be used for code splitting."
+        },
+        "experimentalInlineCommonChunks": {
+          "$ref": "#/$defs/ExperimentalInlineCommonChunksOptions",
+          "description": "Replace small automatic common chunks with factory copies in their consumers."
         }
       },
       "required": [],
@@ -2589,6 +2643,11 @@
         "file": {
           "type": "string",
           "description": "The file path for the single generated chunk.\n\nThe {@linkcode diroutput.dir} option should be used instead if multiple chunks are generated."
+        },
+        "charset": {
+          "anyOf": [{ "const": "ascii" }, { "const": "utf8" }],
+          "description": "Controls how non-ASCII characters are represented in generated JavaScript.\n\n- `'utf8'`: Preserve non-ASCII characters.\n- `'ascii'`: Escape non-ASCII characters where possible.",
+          "default": "utf8"
         },
         "exports": {
           "anyOf": [
@@ -2847,7 +2906,7 @@
         },
         "strictExecutionOrder": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Preserve source module execution order across generated chunks.\n\nWhen enabled, Rolldown wraps ESM modules so their bodies run in source order regardless of chunk placement. Interop wrappers for CommonJS and require-of-ESM modules are unchanged, and external modules are not affected. `experimental.onDemandWrapping` replaces wrap-all with a conservative plan derived from predicted chunk execution hazards.\n\n> [!WARNING]\n> Enabling this option increases bundle size because wrapped modules need runtime init helpers.",
+          "description": "Preserve source module execution order across generated chunks.\n\nWhen enabled, Rolldown wraps ESM modules so their bodies run in source order regardless of chunk placement. Interop wrappers for CommonJS and require-of-ESM modules are unchanged, and external modules are not affected. `experimental.onDemandWrapping` replaces wrap-all with a conservative plan derived from predicted chunk execution hazards.\n\n> [!WARNING]\n> Enabling this option increases bundle size because wrapped modules need runtime init helpers.\n\n{@linkcode CodeSplittingOptions.experimentalInlineCommonChunksexperimentalInlineCommonChunks}\nwith a `maxSize` above `0` turns this option on when it is omitted.",
           "default": false
         },
         "strict": {
@@ -3505,66 +3564,7 @@
       "required": ["dts"],
       "additionalProperties": false
     },
-    "Omit_e1330183": {
-      "type": "object",
-      "properties": {
-        "stripInternal": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Do not emit declarations for code that has an"
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "TsgoOptions": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Path to a custom `tsgo` executable."
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "FileExtensionInfo": {
-      "type": "object",
-      "properties": {
-        "extension": { "type": "string" },
-        "isMixedContent": { "anyOf": [{ "const": false }, { "const": true }] },
-        "scriptKind": {
-          "anyOf": [
-            { "const": 0 },
-            { "const": 1 },
-            { "const": 2 },
-            { "const": 3 },
-            { "const": 4 },
-            { "const": 5 },
-            { "const": 6 },
-            { "const": 7 }
-          ]
-        }
-      },
-      "required": ["extension", "isMixedContent"],
-      "additionalProperties": false
-    },
-    "CustomLanguage": {
-      "type": "object",
-      "properties": {
-        "extensionPatterns": {
-          "type": "array",
-          "items": {},
-          "description": "Patterns that identify files written in this language."
-        },
-        "tsFileExtensionInfos": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/FileExtensionInfo" },
-          "description": "Extra file extensions passed to the TypeScript compiler."
-        }
-      },
-      "required": ["extensionPatterns"],
-      "additionalProperties": false
-    },
+    "Generator": {},
     "WatchOptions": {
       "type": "object",
       "properties": {
@@ -4640,14 +4640,7 @@
       "type": "object",
       "properties": {},
       "required": [],
-      "additionalProperties": {
-        "anyOf": [
-          { "const": false },
-          { "const": true },
-          { "$ref": "#/$defs/Record_519c04ca" },
-          { "type": "array", "items": { "$ref": "#/$defs/Record_519c04ca" } }
-        ]
-      }
+      "additionalProperties": { "anyOf": [{}, {}, {}, {}] }
     },
     "Record_ab245659": {
       "type": "object",
@@ -4792,29 +4785,131 @@
       "required": [],
       "additionalProperties": false
     },
+    "TscOptions": {
+      "type": "object",
+      "properties": {
+        "vue": {
+          "anyOf": [
+            { "const": false },
+            { "const": true },
+            { "$ref": "#/$defs/VueLanguageOptions" }
+          ],
+          "description": "Registers the built-in Vue language integration using `vue-tsc`.\n\nThis is a shortcut for a preconfigured {@link Options.customLanguages}\nentry and requires the `tsc` generator.",
+          "default": false
+        },
+        "build": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Uses TypeScript build mode (`tsc -b`) and follows project references.",
+          "default": false
+        },
+        "incremental": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Persists build-mode outputs, including `.tsbuildinfo`, to disk for reuse.\nWhen disabled, build outputs stay in memory."
+        },
+        "parallel": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Runs `tsc` or `vue-tsc` in a separate process.\nCustom languages supplied through {@link Options.customLanguages} are not\nsupported in the worker process.",
+          "default": false
+        },
+        "eager": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Loads every file listed by `tsconfig.json` into the TypeScript program.\n\nUseful when one config covers multiple packages or entry points.",
+          "default": false
+        },
+        "newContext": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Uses an isolated TypeScript cache instead of the shared global context.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Omit_e1330183": {
+      "type": "object",
+      "properties": {
+        "stripInternal": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Do not emit declarations for code that has an"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "TsgoOptions": {
+      "type": "object",
+      "properties": {
+        "runExternalCode": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Allows TypeScript to execute content mappers configured in tsconfig.\nCannot be combined with `tsgo.vfs` when content mappers are configured.",
+          "default": false
+        },
+        "moduleUrl": {
+          "type": "string",
+          "description": "A `file://` URL of the TypeScript module that provides the TypeScript Go API.\n\nUse `import.meta.resolve()` to select an npm alias or another compatible\nTypeScript module."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path passed to the TypeScript Go API as `tsserverPath`."
+        },
+        "vfs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Supplies Rolldown-transformed source code to the `tsgo` API through a\nvirtual filesystem.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "FileExtensionInfo": {
+      "type": "object",
+      "properties": {
+        "extension": { "type": "string" },
+        "isMixedContent": { "anyOf": [{ "const": false }, { "const": true }] },
+        "scriptKind": {
+          "anyOf": [
+            { "const": 0 },
+            { "const": 1 },
+            { "const": 2 },
+            { "const": 3 },
+            { "const": 4 },
+            { "const": 5 },
+            { "const": 6 },
+            { "const": 7 }
+          ]
+        }
+      },
+      "required": ["extension", "isMixedContent"],
+      "additionalProperties": false
+    },
+    "CustomLanguage": {
+      "type": "object",
+      "properties": {
+        "extensionPatterns": {
+          "type": "array",
+          "items": {},
+          "description": "Patterns that identify files written in this language."
+        },
+        "tsFileExtensionInfos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/FileExtensionInfo" },
+          "description": "Extra file extensions passed to the TypeScript compiler."
+        }
+      },
+      "required": ["extensionPatterns"],
+      "additionalProperties": false
+    },
     "Options": {
       "type": "object",
       "properties": {
-        "oxc": {
-          "$ref": "#/$defs/Omit_e1330183",
-          "description": "Options for the `oxc` generator.\n\nThe top-level {@link GeneralOptions.sourcemapsourcemap} option controls\ndeclaration maps."
-        },
-        "tsgo": {
-          "$ref": "#/$defs/TsgoOptions",
-          "description": "**[Experimental]** Options for the `tsgo` generator.\n\nUsed when {@link GeneralOptions.generatorgenerator} is `'tsgo'` or\nTypeScript 7 is detected."
-        },
-        "customLanguages": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/CustomLanguage" },
-          "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`; `tsgo` does not support custom languages."
-        },
         "generator": {
           "anyOf": [
             { "const": "tsc" },
             { "const": "oxc" },
-            { "const": "tsgo" }
+            { "const": "tsgo" },
+            { "$ref": "#/$defs/Generator" }
           ],
-          "description": "The generator used to produce declaration files.\n\n- `'tsc'` supports the full TypeScript type system.\n- `'oxc'` is faster but requires code compatible with\n  [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations).\n- `'tsgo'` uses the experimental TypeScript Go compiler.\n\nWhen omitted, the plugin selects `'oxc'` for `isolatedDeclarations`,\n`'tsgo'` for TypeScript 7, and `'tsc'` otherwise. Volar-based custom\nlanguages require `'tsc'`."
+          "description": "The generator used to produce declaration files.\n\n- `'tsc'` supports the full TypeScript type system.\n- `'oxc'` is faster but requires code compatible with\n  [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations).\n- `'tsgo'` uses the experimental TypeScript Go API.\n- A custom {@link Generator} implementation can be provided directly.\n\nWhen omitted, the plugin selects `'oxc'` for `isolatedDeclarations`,\n`'tsgo'` when TypeScript exposes the declaration emit API, and `'tsc'`\notherwise. Volar-based custom languages require `'tsc'`."
         },
         "entry": {
           "anyOf": [
@@ -4843,19 +4938,19 @@
             { "const": false },
             { "const": true }
           ],
-          "description": "A `tsconfig.json` path, resolved relative to {@link cwd}.\n\nWhen omitted or `true`, the nearest config is discovered from {@link cwd}.\nSet to `false` to disable config loading."
+          "description": "A `tsconfig.json` path, resolved relative to {@link cwd}.\n\nWhen omitted or `true`, the nearest config is discovered from {@link cwd}.\nSet to `false` to disable config loading. The `tsgo` generator requires a\nconfig file."
         },
         "tsconfigRaw": {
           "$ref": "#/$defs/Omit_89a7186e",
-          "description": "Raw `tsconfig.json` values merged over the loaded config."
+          "description": "Raw `tsconfig.json` values merged over the loaded config.\nThe plugin's current `tsgo` implementation does not apply these overrides\nto the TypeScript program."
         },
         "compilerOptions": {
           "$ref": "#/$defs/CompilerOptions",
-          "description": "Compiler options merged over those loaded from `tsconfig.json`."
+          "description": "Compiler options merged over those loaded from `tsconfig.json`.\nIn the plugin's current `tsgo` implementation, these affect plugin behavior\nbut do not override the program's compiler options. Set those options in\nthe config file instead."
         },
         "sourcemap": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Emits declaration maps (`.d.ts.map`)."
+          "description": "Emits declaration maps (`.d.ts.map`).\nWith `tsgo`, source mappings also require `compilerOptions.declarationMap`\nto be enabled in the on-disk config; `sourcemap: true` alone is insufficient."
         },
         "resolver": {
           "anyOf": [{ "const": "tsc" }, { "const": "oxc" }],
@@ -4876,42 +4971,26 @@
           "$ref": "#/$defs/Logger",
           "description": "Logger used for plugin messages."
         },
-        "build": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Uses TypeScript build mode (`tsc -b`) and follows project references.",
-          "default": false
-        },
-        "incremental": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Persists build-mode outputs, including `.tsbuildinfo`, to disk for reuse.\nWhen disabled, build outputs stay in memory."
-        },
-        "vue": {
-          "anyOf": [
-            { "const": false },
-            { "const": true },
-            { "$ref": "#/$defs/VueLanguageOptions" }
-          ],
-          "description": "Registers the built-in Vue language integration using `vue-tsc`.\n\nThis is a shortcut for a preconfigured {@link Options.customLanguages}\nentry and requires the `tsc` generator.",
-          "default": false
-        },
-        "parallel": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Runs `tsc` or `vue-tsc` in a separate process.",
-          "default": false
-        },
-        "eager": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Loads every file listed by `tsconfig.json` into the TypeScript program.\n\nUseful when one config covers multiple packages or entry points.",
-          "default": false
-        },
-        "newContext": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Uses an isolated TypeScript cache instead of the shared global context.",
-          "default": false
-        },
         "emitJs": {
           "anyOf": [{ "const": false }, { "const": true }],
           "description": "Generates declarations for JavaScript files with JSDoc types."
+        },
+        "tsc": {
+          "$ref": "#/$defs/TscOptions",
+          "description": "Options for the built-in `tsc` generator."
+        },
+        "oxc": {
+          "$ref": "#/$defs/Omit_e1330183",
+          "description": "Options for the `oxc` generator.\n\nThe top-level {@link Options.sourcemapsourcemap} option controls\ndeclaration maps."
+        },
+        "tsgo": {
+          "$ref": "#/$defs/TsgoOptions",
+          "description": "**[Experimental]** Options for the TypeScript Go generator."
+        },
+        "customLanguages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CustomLanguage" },
+          "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`. Non-Volar languages can use `tsgo` together\nwith {@link TsgoOptions.vfs`tsgo.vfs`}."
         }
       },
       "required": [],
