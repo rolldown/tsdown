@@ -186,6 +186,9 @@ catalogs:
     '@types/picomatch':
       specifier: ^4.0.3
       version: 4.0.3
+    '@valibot/to-json-schema':
+      specifier: ^1.8.0
+      version: 1.8.0
     '@vitest/coverage-v8':
       specifier: ^5.0.5
       version: 5.0.5
@@ -255,6 +258,9 @@ catalogs:
     unrun:
       specifier: ^0.3.1
       version: 0.3.1
+    valibot:
+      specifier: ^1.5.0
+      version: 1.5.0
     vitest:
       specifier: ^5.0.5
       version: 5.0.5
@@ -460,6 +466,9 @@ importers:
       '@unocss/eslint-plugin':
         specifier: catalog:docs
         version: 66.11.0(eslint@10.13.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
+      '@valibot/to-json-schema':
+        specifier: catalog:dev
+        version: 1.8.0(valibot@1.5.0(typescript@6.0.3))
       '@vitejs/devtools':
         specifier: catalog:peer
         version: 0.8.0(crossws@0.4.15(srvx@1.0.6))(srvx@1.0.6)(vite@8.3.5)
@@ -547,6 +556,9 @@ importers:
       unrun:
         specifier: catalog:dev
         version: 0.3.1(synckit@0.11.13)
+      valibot:
+        specifier: catalog:dev
+        version: 1.5.0(typescript@6.0.3)
       vite:
         specifier: ^8.3.5
         version: 8.3.5(@types/node@26.6.5)(@vitejs/devtools@0.8.0)(esbuild@0.28.2)(jiti@2.7.0)(sass-embedded@1.106.0)(sass@1.106.0)(tsx@4.23.15)(yaml@2.9.1)
@@ -3061,6 +3073,11 @@ packages:
     resolution: {integrity: sha512-1kfKcuF8bAAf+ZDkvCYsDhAfAz+vM6d5SjntabPSrsv7O1h7++r93Nw/gOE30nrITKZ1UynLE0yXO0GQ2zmrkg==}
     peerDependencies:
       vite: ^8.3.5
+
+  '@valibot/to-json-schema@1.8.0':
+    resolution: {integrity: sha512-a0M+uwCuQZEPAo65NYkFSJ14O5c213KoSZmPdoCfuFvUhfULi4T2Z6Tpjv6lTVMW9RoLm74RpRAjNEa43KcN+g==}
+    peerDependencies:
+      valibot: ^1.5.0
 
   '@vitejs/devtools-kit@0.8.0':
     resolution: {integrity: sha512-R4bXaPpKXbNY2sUuJMhnsSSgHkxOorkMa1gFI6I8ISSARW6TjXbj+GZK6JRdmn9TTn/kKMCGUhREHr/UcHXLAw==}
@@ -8155,6 +8172,10 @@ snapshots:
       - cac
       - ocache
       - srvx
+
+  '@valibot/to-json-schema@1.8.0(valibot@1.5.0(typescript@6.0.3))':
+    dependencies:
+      valibot: 1.5.0(typescript@6.0.3)
 
   '@vitejs/devtools-kit@0.8.0(@devframes/agentic@1.2.6)(cac@7.1.0)(crossws@0.4.15(srvx@1.0.6))(srvx@1.0.6)(vite@8.3.5)':
     dependencies:
