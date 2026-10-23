@@ -2,9 +2,8 @@
 
 ```mjs
 import './style.css';
-//#region index.ts
+// index.ts
 const a = 1;
-//#endregion
 export { a };
 
 ```

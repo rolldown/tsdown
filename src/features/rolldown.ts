@@ -322,6 +322,7 @@ async function resolveOutputOptions(
       preserveModulesRoot: unbundle ? config.root : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
+      // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
       codeSplitting: config.exe ? false : undefined,
     },
     config.outputOptions,

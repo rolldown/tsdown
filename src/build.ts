@@ -124,9 +124,9 @@ export async function buildWithConfigs(
   globalLogger.info('Build start')
   const bundles = await Promise.all(
     configs.map((options) => {
-      const isDualFormat = options.pkg
-        ? configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
-        : true
+      const isDualFormat =
+        !options.pkg ||
+        configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
       return buildSingle(
         options,
         configDeps,
@@ -247,6 +247,7 @@ async function buildSingle(
         globalLogger.info(`Reload config: ${id}, restarting...`)
         restart()
       }
+      // eslint-disable-next-line unicorn/prefer-early-return
       if (
         (event.event === 'create' || event.event === 'delete') &&
         config.rawEntry &&

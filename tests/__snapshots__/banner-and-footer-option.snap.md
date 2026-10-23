@@ -2,9 +2,7 @@
 
 ```mts
 // dts banner
-//#region index.d.ts
 export declare const foo: number;
-//#endregion
 // dts footer
 ```
 
@@ -12,9 +10,8 @@ export declare const foo: number;
 
 ```mjs
 // js banner
-//#region index.ts
+// index.ts
 const foo = 42;
-//#endregion
 export { foo };
 
 // js footer

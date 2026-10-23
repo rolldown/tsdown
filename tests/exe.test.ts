@@ -1,12 +1,12 @@
 import path from 'node:path'
 import process from 'node:process'
 import { x } from 'tinyexec'
-import { isGreaterOrEqual } from 'verkit'
+import { isGreaterThanOrEqual } from 'verkit'
 import { describe, expect, test } from 'vitest'
 import { NODE_SEA_MIN_VERSION_PARSED } from '../src/features/exe.ts'
 import { testBuild } from './utils.ts'
 
-const nodeSupportsBuiltinSea = isGreaterOrEqual(
+const nodeSupportsBuiltinSea = isGreaterThanOrEqual(
   process.version,
   NODE_SEA_MIN_VERSION_PARSED,
 )

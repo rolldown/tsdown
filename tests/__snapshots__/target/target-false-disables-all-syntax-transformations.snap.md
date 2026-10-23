@@ -1,9 +1,8 @@
 ## index.mjs
 
 ```mjs
-//#region index.ts
+// index.ts
 const foo = a?.b?.();
-//#endregion
 export { foo };
 
 ```

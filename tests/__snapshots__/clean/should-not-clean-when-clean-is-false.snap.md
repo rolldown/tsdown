@@ -1,9 +1,8 @@
 ## index.mjs
 
 ```mjs
-//#region index.ts
+// index.ts
 const hello = "world";
-//#endregion
 export { hello };
 
 ```

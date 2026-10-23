@@ -10,54 +10,38 @@ import {
 } from './general.ts'
 
 describe('toArray', () => {
-  test('wraps single value in array', () => {
-    expect(toArray('foo')).toEqual(['foo'])
-  })
-
-  test('returns array as-is', () => {
-    expect(toArray(['a', 'b'])).toEqual(['a', 'b'])
-  })
-
-  test('returns empty array for null', () => {
-    expect(toArray(null)).toEqual([])
-  })
-
-  test('returns empty array for undefined', () => {
-    expect(toArray(undefined)).toEqual([])
-  })
-
-  test('returns default value array for null with default', () => {
-    expect(toArray(null, 'default')).toEqual(['default'])
-  })
-
-  test('returns default value array for undefined with default', () => {
-    expect(toArray(undefined, 'default')).toEqual(['default'])
-  })
-
-  test('wraps number in array', () => {
-    expect(toArray(42)).toEqual([42])
-  })
-
-  test('wraps false in array', () => {
-    expect(toArray(false)).toEqual([false])
+  test.each<[string, unknown, unknown, unknown[]]>([
+    ['wraps single value in array', 'foo', undefined, ['foo']],
+    ['returns array as-is', ['a', 'b'], undefined, ['a', 'b']],
+    ['returns empty array for null', null, undefined, []],
+    ['returns empty array for undefined', undefined, undefined, []],
+    [
+      'returns default value array for null with default',
+      null,
+      'default',
+      ['default'],
+    ],
+    [
+      'returns default value array for undefined with default',
+      undefined,
+      'default',
+      ['default'],
+    ],
+    ['wraps number in array', 42, undefined, [42]],
+    ['wraps false in array', false, undefined, [false]],
+  ])('%s', (_, val, defaultValue, expected) => {
+    expect(toArray(val, defaultValue)).toEqual(expected)
   })
 })
 
 describe('resolveComma', () => {
-  test('splits comma-separated values', () => {
-    expect(resolveComma(['esm,cjs'])).toEqual(['esm', 'cjs'])
-  })
-
-  test('handles values without commas', () => {
-    expect(resolveComma(['esm', 'cjs'])).toEqual(['esm', 'cjs'])
-  })
-
-  test('handles mixed values', () => {
-    expect(resolveComma(['esm,cjs', 'iife'])).toEqual(['esm', 'cjs', 'iife'])
-  })
-
-  test('handles empty array', () => {
-    expect(resolveComma([])).toEqual([])
+  test.each<[string, string[], string[]]>([
+    ['splits comma-separated values', ['esm,cjs'], ['esm', 'cjs']],
+    ['handles values without commas', ['esm', 'cjs'], ['esm', 'cjs']],
+    ['handles mixed values', ['esm,cjs', 'iife'], ['esm', 'cjs', 'iife']],
+    ['handles empty array', [], []],
+  ])('%s', (_, input, expected) => {
+    expect(resolveComma(input)).toEqual(expected)
   })
 })
 
@@ -87,20 +71,17 @@ describe('resolveRegex', () => {
 })
 
 describe('slash', () => {
-  test('replaces backslashes with forward slashes', () => {
-    expect(slash(String.raw`foo\bar\baz`)).toBe('foo/bar/baz')
-  })
-
-  test('leaves forward slashes unchanged', () => {
-    expect(slash('foo/bar/baz')).toBe('foo/bar/baz')
-  })
-
-  test('handles empty string', () => {
-    expect(slash('')).toBe('')
-  })
-
-  test('handles mixed slashes', () => {
-    expect(slash(String.raw`foo\bar/baz`)).toBe('foo/bar/baz')
+  test.each([
+    [
+      'replaces backslashes with forward slashes',
+      String.raw`foo\bar\baz`,
+      'foo/bar/baz',
+    ],
+    ['leaves forward slashes unchanged', 'foo/bar/baz', 'foo/bar/baz'],
+    ['handles empty string', '', ''],
+    ['handles mixed slashes', String.raw`foo\bar/baz`, 'foo/bar/baz'],
+  ])('%s', (_, input, expected) => {
+    expect(slash(input)).toBe(expected)
   })
 })
 
@@ -213,19 +194,5 @@ describe('createConcurrencyExecutor', () => {
     await expect(first).rejects.toThrow('boom')
     await second
     expect(order).toEqual([1, 2])
-  })
-})
-
-describe('promiseWithResolvers', () => {
-  test('returns a promise that resolves', async () => {
-    const { promise, resolve } = Promise.withResolvers<string>()
-    resolve('hello')
-    expect(await promise).toBe('hello')
-  })
-
-  test('resolve is callable before awaiting', async () => {
-    const { promise, resolve } = Promise.withResolvers<number>()
-    resolve(42)
-    await expect(promise).resolves.toBe(42)
   })
 })
