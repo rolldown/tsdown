@@ -263,17 +263,14 @@ async function buildSingle(
       }
     })
 
-    async function onRebuildStart() {
-      if (!hasBuilt) return
-      await hooks.callHook('build:prepare', context)
-    }
-
     watcher.on('event', async (event) => {
       switch (event.code) {
         case 'START': {
           debouncedPostBuild.cancel()
 
-          await onRebuildStart()
+          if (hasBuilt) {
+            await hooks.callHook('build:prepare', context)
+          }
 
           if (config.clean.length) {
             await cleanChunks(config.outDir, chunks)

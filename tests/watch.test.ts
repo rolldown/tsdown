@@ -32,10 +32,7 @@ test('build:prepare on initial watch build and rebuild', async (context) => {
     })
     expect(prepare).toHaveBeenCalledTimes(1)
 
-    await writeFile(
-      path.join(testDir, 'index.ts'),
-      'export const value = 2',
-    )
+    await writeFile(path.join(testDir, 'index.ts'), 'export const value = 2')
 
     await vi.waitFor(() => {
       expect(prepare).toHaveBeenCalledTimes(2)
