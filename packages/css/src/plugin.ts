@@ -24,6 +24,7 @@ import {
   RE_CSS,
   RE_CSS_INLINE,
   RE_INLINE,
+  shouldSkipTransform,
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
@@ -43,14 +44,6 @@ interface CssPluginResult {
   pre: Plugin[]
   /** Plugins that run AFTER user plugins (CSS collection & emission) */
   post: Plugin[]
-}
-
-function shouldSkipTransform(id: string, cleanId: string): boolean {
-  const isInline = RE_INLINE.test(id)
-  // Skip CSS files with non-inline queries (e.g. ?raw handled by other plugins),
-  // but allow through virtual CSS from other plugins (e.g. Vue SFC `lang.css`)
-  // where the clean path itself is not a CSS file.
-  return id !== cleanId && !isInline && CSS_LANGS_RE.test(cleanId)
 }
 
 export function CssPlugin(
@@ -415,9 +408,8 @@ async function processWithLightningCSS(
     })
   }
 
-  // Virtual modules (with query strings) can't use file-based bundling;
-  // ?inline is excluded because the underlying file is real.
-  if (id !== cleanId && !RE_INLINE.test(id)) {
+  // Virtual CSS (e.g. `Comp.vue?vue&type=style&lang.css`) has no real file to bundle
+  if (!RE_CSS.test(cleanId)) {
     return transformWithLightningCSS(code, cleanId, {
       target: config.css.target,
       lightningcss: config.css.lightningcss,
@@ -427,29 +419,25 @@ async function processWithLightningCSS(
     })
   }
 
-  if (RE_CSS.test(cleanId)) {
-    const bundleResult = await bundleWithLightningCSS(
-      cleanId,
-      {
-        target: config.css.target,
-        lightningcss: config.css.lightningcss,
-        minify: config.css.minify,
-        cssModules,
-        preprocessorOptions: config.css.preprocessorOptions,
-        sourceMap: config.sourceMap,
-        logger,
-      },
-      code,
-    )
-    deps.push(...bundleResult.deps)
-    return {
-      code: bundleResult.code,
-      map: bundleResult.map,
-      modules: bundleResult.modules,
-    }
+  const bundleResult = await bundleWithLightningCSS(
+    cleanId,
+    {
+      target: config.css.target,
+      lightningcss: config.css.lightningcss,
+      minify: config.css.minify,
+      cssModules,
+      preprocessorOptions: config.css.preprocessorOptions,
+      sourceMap: config.sourceMap,
+      logger,
+    },
+    code,
+  )
+  deps.push(...bundleResult.deps)
+  return {
+    code: bundleResult.code,
+    map: bundleResult.map,
+    modules: bundleResult.modules,
   }
-
-  return { code: '' }
 }
 
 async function processWithPostCSS(
