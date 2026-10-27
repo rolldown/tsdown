@@ -391,9 +391,13 @@ export interface UserConfig {
    */
   sourcemap?: Sourcemap
   /**
-   * Clean directories before build.
+   * Remove stale build output.
    *
-   * Default to output directory.
+   * Defaults to the output directory. Emitted files are overwritten in
+   * place. After every build that shares that directory has finished,
+   * files that none of them emitted again are deleted. ESM and CJS outputs
+   * in the same directory are kept together.
+   *
    * @default true
    */
   clean?: boolean | string[]
