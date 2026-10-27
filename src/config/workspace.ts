@@ -2,8 +2,9 @@ import path from 'node:path'
 import process from 'node:process'
 import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
+import { fsExists } from '../utils/fs.ts'
 import { slash } from '../utils/general.ts'
-import { loadConfigFile } from './file.ts'
+import { configExtensions, configPrefix, loadConfigFile } from './file.ts'
 import { mergeConfig } from './options.ts'
 import type { InlineConfig, UserConfig, UserConfigFnContext } from './types.ts'
 
@@ -15,6 +16,19 @@ const DEFAULT_EXCLUDE_WORKSPACE = [
   '**/test?(s)/**',
   '**/t?(e)mp/**',
 ]
+
+const PACKAGE_MARKERS = [
+  'package.json',
+  ...configExtensions.map((ext) => `${configPrefix}.${ext}`),
+]
+
+/** A directory is only a workspace package if it holds a package.json or a tsdown config. */
+async function isPackageDirectory(dir: string): Promise<boolean> {
+  const found = await Promise.all(
+    PACKAGE_MARKERS.map((marker) => fsExists(path.resolve(dir, marker))),
+  )
+  return found.includes(true)
+}
 
 export async function resolveWorkspace(
   config: UserConfig,
@@ -45,6 +59,7 @@ export async function resolveWorkspace(
     exclude = DEFAULT_EXCLUDE_WORKSPACE,
     config: workspaceConfig,
   } = workspace
+  let skipped = 0
   if (packages === 'auto') {
     packages = (
       await glob('**/package.json', {
@@ -65,10 +80,31 @@ export async function resolveWorkspace(
         expandDirectories: false,
       })
     ).map((file) => slash(path.resolve(file)))
+
+    // An explicit config path names the config, so package-ness is not the signal.
+    if (typeof workspaceConfig !== 'string') {
+      const isPackage = await Promise.all(packages.map(isPackageDirectory))
+      const matched = packages.length
+      packages = packages.filter((dir, index) => {
+        if (!isPackage[index]) {
+          debug(
+            'skipping directory without package.json or tsdown config %s',
+            dir,
+          )
+        }
+        return isPackage[index]
+      })
+      skipped = matched - packages.length
+    }
   }
 
   if (packages.length === 0) {
-    throw new Error('No workspace packages found, please check your config')
+    const detail = skipped
+      ? ` (${skipped} matched ${skipped === 1 ? 'directory contains' : 'directories contain'} no package.json or tsdown config)`
+      : ''
+    throw new Error(
+      `No workspace packages found, please check your config${detail}`,
+    )
   }
 
   context = { ...context, rootConfig: normalized }
