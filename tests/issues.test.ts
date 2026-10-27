@@ -96,7 +96,7 @@ describe('issues', () => {
         entry: ['src/dom/dom.ts', 'src/node/node.ts'],
         tsconfig: 'tsconfig.json',
         dts: {
-          tsc: { build: true },
+          build: true,
         },
       },
     })
