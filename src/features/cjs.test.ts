@@ -32,6 +32,14 @@ describe('warnCjsPlatform', () => {
     expect(warnOnce).not.toHaveBeenCalled()
   })
 
+  test('does not warn for the neutral platform', () => {
+    const warnOnce = run(
+      { format: 'cjs', platform: 'neutral' },
+      { platform: 'node' },
+    )
+    expect(warnOnce).not.toHaveBeenCalled()
+  })
+
   test('does not warn for the node platform', () => {
     const warnOnce = run(
       { format: 'cjs', platform: 'node' },

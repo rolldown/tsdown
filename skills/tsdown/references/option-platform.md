@@ -91,7 +91,7 @@ export default defineConfig({
 
 ## CJS Format Limitation
 
-**CJS format always uses `node` platform**, and tsdown warns when another platform is set.
+**CJS format always uses `node` platform**, and tsdown warns when `platform: 'browser'` is set.
 
 ```ts
 export default defineConfig({

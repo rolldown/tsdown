@@ -35,7 +35,8 @@ export function warnCjsPlatform(
 ): void {
   if (
     config.format !== 'cjs' ||
-    config.platform === 'node' ||
+    // `neutral` makes no runtime assumptions, so building CJS for Node.js is expected
+    config.platform !== 'browser' ||
     // the user forced another platform via `inputOptions`
     inputOptions.platform !== 'node'
   ) {
