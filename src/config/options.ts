@@ -183,23 +183,29 @@ export async function resolveUserConfig(
       '`envPrefix` includes an empty string; filtering is disabled. All environment variables from the env file and process.env will be injected into the build. Ensure this is intended to avoid accidental leakage of sensitive information.',
     )
   }
-  const envFromProcess = filterEnv(process.env, envPrefix)
-  if (envFile) {
-    const resolvedPath = path.resolve(cwd, envFile)
-    logger.info(nameLabel, `env file: ${color(resolvedPath)}`)
-
-    const parsed = parseEnv(await readFile(resolvedPath, 'utf8'))
-    const envFromFile = filterEnv(parsed, envPrefix)
-
-    // precedence: env file < process.env < tsdown option
-    env = { ...envFromFile, ...envFromProcess, ...env }
-  } else {
-    // precedence: process.env < tsdown option
-    env = { ...envFromProcess, ...env }
-  }
-  debug(`Environment variables: %O`, env)
-
   configDeps = new Set(configDeps)
+
+  const envFromProcess = filterEnv(process.env, envPrefix)
+  const envFromFiles: Record<string, string | undefined> = {}
+  for (const file of toArray(envFile)) {
+    const resolvedPath = path.resolve(cwd, file)
+    const content = await readFile(resolvedPath, 'utf8').catch((error) => {
+      if (error.code === 'ENOENT') return null
+      throw error
+    })
+    if (content == null) {
+      debug('env file not found, skipped: %s', resolvedPath)
+      continue
+    }
+    logger.info(nameLabel, `env file: ${color(resolvedPath)}`)
+    configDeps.add(resolvedPath)
+    // later files take precedence
+    Object.assign(envFromFiles, parseEnv(content))
+  }
+
+  // precedence: env files < process.env < tsdown option
+  env = { ...filterEnv(envFromFiles, envPrefix), ...envFromProcess, ...env }
+  debug(`Environment variables: %O`, env)
 
   if (fromVite) {
     const viteUserConfig = await loadViteConfig(

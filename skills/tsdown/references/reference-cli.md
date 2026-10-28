@@ -222,10 +222,11 @@ Access as `import.meta.env.*` or `process.env.*`.
 
 ### `--env-file <file>`
 
-Load environment variables from file:
+Load environment variables from file. Repeat to load several files (later files win, missing files are skipped):
 
 ```bash
 tsdown --env-file .env.production
+tsdown --env-file .env --env-file .env.local
 ```
 
 ### `--env-prefix <prefix>`

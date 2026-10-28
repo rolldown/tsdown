@@ -787,6 +787,29 @@ test('env-file flag', async (context) => {
   expect(snapshot).contains('const debug = true')
 })
 
+test('multiple env files', async (context) => {
+  const files = {
+    'index.ts': `export const foo = import.meta.env.TSDOWN_FOO
+    export const bar = import.meta.env.TSDOWN_BAR
+    `,
+    '.env': `TSDOWN_FOO=foo
+    TSDOWN_BAR=bar`,
+    '.env.local': `TSDOWN_BAR=local`,
+  }
+  const { snapshot } = await testBuild({
+    context,
+    files,
+    options: {
+      envFile: ['.env', '.env.missing', '.env.local'],
+    },
+  })
+  expect(snapshot).contains('const foo = "foo"')
+  expect(snapshot).contains(
+    'const bar = "local"',
+    'Later env files should override earlier ones',
+  )
+})
+
 test('env-prefix flag', async (context) => {
   const files = {
     'index.ts': `export const foo = import.meta.env.MYAPP_FOO
