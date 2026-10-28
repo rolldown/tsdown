@@ -53,8 +53,11 @@
           "default": {}
         },
         "envFile": {
-          "type": "string",
-          "description": "Path to env file providing compile-time env variables."
+          "anyOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ],
+          "description": "Path(s) to env files providing compile-time env variables.\n\nFiles are loaded in order, so later files override earlier ones.\nMissing files are skipped."
         },
         "envPrefix": {
           "anyOf": [
@@ -418,8 +421,11 @@
             "default": {}
           },
           "envFile": {
-            "type": "string",
-            "description": "Path to env file providing compile-time env variables."
+            "anyOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ],
+            "description": "Path(s) to env files providing compile-time env variables.\n\nFiles are loaded in order, so later files override earlier ones.\nMissing files are skipped."
           },
           "envPrefix": {
             "anyOf": [

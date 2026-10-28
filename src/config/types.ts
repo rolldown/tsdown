@@ -242,11 +242,14 @@ export interface UserConfig {
    */
   env?: Record<string, any>
   /**
-   * Path to env file providing compile-time env variables.
+   * Path(s) to env files providing compile-time env variables.
+   *
+   * Files are loaded in order, so later files override earlier ones.
+   * Missing files are skipped.
    * @example
-   * `.env`, `.env.production`, etc.
+   * `.env`, `['.env', '.env.local']`, etc.
    */
-  envFile?: string
+  envFile?: string | string[]
   /**
    * When loading env variables from `envFile`, only include variables with these prefixes.
    * @default 'TSDOWN_'

@@ -207,7 +207,7 @@ Note that environment variables defined with `--env.VAR_NAME` can only be access
 
 ## `--env-file <file>`
 
-Load environment variables from a file. When used together with `--env`, variables in `--env` take precedence.
+Load environment variables from a file. The flag can be repeated to load several files: later files override earlier ones, and missing files are skipped. When used together with `--env`, variables in `--env` take precedence.
 
 :::tip
 To prevent accidental exposure of sensitive information, only environment variables prefixed with `TSDOWN_` are injected by default. You can customize this behavior using the [`--env-prefix`](#env-prefix) flag.
@@ -215,6 +215,7 @@ To prevent accidental exposure of sensitive information, only environment variab
 
 ```bash
 tsdown --env-file .env.production
+tsdown --env-file .env --env-file .env.local
 ```
 
 ## `--env-prefix <prefix>` {#env-prefix}
