@@ -37,9 +37,9 @@ export interface AttwOptions extends CheckPackageOptions {
    * The available profiles are:
    * - `strict`: requires all resolutions
    * - `node16`: ignores node10 resolution failures
-   * - `esm-only`: ignores CJS resolution failures
+   * - `esm-only`: ignores node10 and CJS resolution failures
    *
-   * @default 'strict'
+   * @default 'esm-only'
    */
   profile?: 'strict' | 'node16' | 'esm-only'
   /**
@@ -147,19 +147,25 @@ export async function attw(
 
   let errorMessage: string | undefined
   if (checkResult.types) {
-    const problems = checkResult.problems.filter((problem) => {
-      // Exclude ignored problem kinds
-      if (ignoreRules.includes(problemFlags[problem.kind])) {
-        return false
+    // File-based problems have no `resolutionKind`; only `visibleProblems` ties them to a resolution.
+    const ignoredResolutions = profiles[profile] ?? []
+    const visibleProblems = new Set<number>()
+    for (const entrypoint of Object.values(checkResult.entrypoints)) {
+      for (const [resolutionKind, resolution] of Object.entries(
+        entrypoint.resolutions,
+      )) {
+        if (ignoredResolutions.includes(resolutionKind)) continue
+        resolution.visibleProblems?.forEach((index) =>
+          visibleProblems.add(index),
+        )
       }
+    }
 
-      // Only apply profile filter to problems that have resolutionKind
-      if ('resolutionKind' in problem) {
-        return !profiles[profile]?.includes(problem.resolutionKind)
-      }
-      // Include all other problem types
-      return true
-    })
+    const problems = checkResult.problems.filter(
+      (problem, index) =>
+        !ignoreRules.includes(problemFlags[problem.kind]) &&
+        visibleProblems.has(index),
+    )
 
     if (problems.length) {
       const problemList = problems
