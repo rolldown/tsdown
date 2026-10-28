@@ -27,7 +27,7 @@ import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
-import { getShims } from './shims.ts'
+import { ShimsPlugin } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
 import type {
   DtsOptions,
@@ -104,7 +104,6 @@ async function resolveInputOptions(
     platform,
     plugins: userPlugins,
     report,
-    shims,
     target,
     treeshake,
     tsconfig,
@@ -196,7 +195,7 @@ async function resolveInputOptions(
     plugins.push(...cssPostPlugins)
   }
 
-  let define: TransformOptions['define'] = {
+  const define: TransformOptions['define'] = {
     ...config.define,
     ...Object.keys(env).reduce((acc, key) => {
       const value = JSON.stringify(env[key])
@@ -206,14 +205,8 @@ async function resolveInputOptions(
     }, Object.create(null)),
   }
 
-  let inject: TransformOptions['inject']
-  if (shims && !cjsDts) {
-    const shims = getShims(config)
-    inject = shims.inject
-    define = { ...define, ...shims.define }
-    if (shims.plugin) {
-      plugins.push(shims.plugin)
-    }
+  if (!cjsDts) {
+    plugins.push(ShimsPlugin(config, format))
   }
 
   // `neverBundle: true` is handled by DepsPlugin instead of rolldown's
@@ -263,7 +256,6 @@ async function resolveInputOptions(
       transform: {
         target,
         define,
-        inject,
       },
       plugins,
       moduleTypes: {

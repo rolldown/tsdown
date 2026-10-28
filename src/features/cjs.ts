@@ -45,9 +45,8 @@ export function warnCjsPlatform(
 
   config.logger.warnOnce(
     config.nameLabel,
-    `The \`cjs\` format always targets Node.js, so \`platform: '${config.platform}'\` is ignored for it.\n` +
-      `To silence this, set \`platform: 'node'\` for the \`cjs\` format, e.g. \`format: { esm: {}, cjs: { platform: 'node' } }\`.\n` +
-      `To build CJS for another platform anyway, set \`inputOptions: { platform: '${config.platform}' }\`. ` +
-      '`import.meta.url`, `import.meta.filename` and `import.meta.dirname` will no longer be rewritten.',
+    "The `cjs` format always targets Node.js, so `platform: 'browser'` is ignored for it.\n" +
+      "Use `platform: 'neutral'` if the code isn't browser-only, " +
+      "or set `inputOptions: { platform: 'browser' }` to build CJS for the browser anyway.",
   )
 }

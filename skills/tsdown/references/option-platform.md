@@ -101,7 +101,7 @@ export default defineConfig({
 })
 ```
 
-To force another platform for CJS, override it via `inputOptions` (`import.meta.*` is then no longer rewritten):
+Use `platform: 'neutral'` if the code isn't browser-only. To force the browser platform for CJS, override it via `inputOptions`:
 
 ```ts
 export default defineConfig({

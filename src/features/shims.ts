@@ -1,5 +1,6 @@
 import path from 'node:path'
 import type { ResolvedConfig } from '../config/index.ts'
+import type { NormalizedFormat } from '../config/types.ts'
 import type { Plugin } from 'rolldown'
 
 export const shimFile: string = path.resolve(
@@ -26,24 +27,44 @@ const __TSDOWN_SHIM_FILENAME__ = /* @__PURE__ */ __tsdown_shims_url.fileURLToPat
 const __TSDOWN_SHIM_DIRNAME__ = /* @__PURE__ */ __tsdown_shims_path.dirname(__TSDOWN_SHIM_FILENAME__)
 `
 
-export const shimsPlugin: Plugin = {
-  name: 'tsdown:shims-banner',
-  banner: shimsInjectCode,
+const cjsImportMetaDefine: Record<string, string> = {
+  'import.meta.url': 'require("url").pathToFileURL(__filename).href',
+  'import.meta.filename': '__filename',
+  'import.meta.dirname': '__dirname',
 }
 
-export function getShims(config: ResolvedConfig): {
-  define?: Record<string, string>
-  inject?: Record<string, [string, string]>
-  plugin?: Plugin
-} {
-  if (config.format !== 'es' || config.platform !== 'node') return {}
+/**
+ * Shims are decided in the `options` hook, from the final `platform` after the
+ * user's `inputOptions` are merged.
+ */
+export function ShimsPlugin(
+  config: ResolvedConfig,
+  format: NormalizedFormat,
+): Plugin {
+  let banner = false
 
-  if (config.unbundle) {
-    return {
-      define: shimsDefine,
-      plugin: shimsPlugin,
-    }
+  return {
+    name: 'tsdown:shims',
+    options(options) {
+      const isNode = options.platform === 'node'
+      const transform = (options.transform ||= {})
+
+      // Rolldown only rewrites `import.meta` for CJS on the node platform
+      if (format === 'cjs') {
+        if (!isNode) {
+          transform.define = { ...cjsImportMetaDefine, ...transform.define }
+        }
+        return
+      }
+
+      if (format !== 'es' || !config.shims || !isNode) return
+      if (config.unbundle) {
+        transform.define = { ...transform.define, ...shimsDefine }
+        banner = true
+      } else {
+        transform.inject = { ...transform.inject, ...shimsInject }
+      }
+    },
+    banner: () => (banner ? shimsInjectCode : ''),
   }
-
-  return { inject: shimsInject }
 }
