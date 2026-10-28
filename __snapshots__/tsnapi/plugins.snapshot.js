@@ -6,5 +6,6 @@ export function DepsPlugin(_, _) {}
 export function NodeProtocolPlugin(_) {}
 export function ReportPlugin(_, _, _) {}
 export function ShebangPlugin(_, _, _, _) {}
+export function ShimsPlugin(_, _) {}
 export function WatchPlugin(_, _) {}
 // #endregion
