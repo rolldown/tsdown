@@ -177,7 +177,7 @@ Each feature is self-contained and modular:
 
 Plugins follow Rolldown's interface. Internal plugins are added based on config, user plugins append last. User plugins may additionally implement tsdown-specific hooks (`tsdownConfig` to modify user config before resolution, `tsdownConfigResolved` to read the resolved config) — see `src/features/plugin.ts`. The build supports dual-format output (ESM + CJS) with a second pass for CJS type declarations (`cjsDts`).
 
-Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `ReportPlugin`, `ShebangPlugin`, `WatchPlugin`
+Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `ReportPlugin`, `ShebangPlugin`, `ShimsPlugin`, `WatchPlugin`
 
 ### Key Architectural Patterns
 
