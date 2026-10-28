@@ -90,12 +90,11 @@ export function CssPlugin(
     resolveId: {
       filter: { id: RE_CSS_INLINE },
       async handler(source, ...args) {
-        const cleanSource = getCleanId(source)
-        const resolved = await this.resolve(cleanSource, ...args)
+        const resolved = await this.resolve(source, ...args)
         if (resolved) {
           return {
             ...resolved,
-            id: `${resolved.id}?inline`,
+            id: `${getCleanId(resolved.id)}?inline`,
           }
         }
       },

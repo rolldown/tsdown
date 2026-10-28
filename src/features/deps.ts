@@ -30,6 +30,11 @@ const debug = createDebug('tsdown:deps')
 const RE_PACKAGE_SPECIFIER =
   /^(?:@[a-z0-9-][a-z0-9-._]*\/)?[a-z0-9-][a-z0-9-._]*(?:\/|$)/
 
+/**
+ * `?inline` CSS is embedded as a string, so it can't stay an external import.
+ */
+const RE_CSS_INLINE = /\.(?:css|less|sass|scss|styl|stylus)\?(?:.*&)?inline\b/
+
 type ResolveFn = () => Promise<ResolvedId | null>
 
 export type NoExternalFn = (
@@ -363,6 +368,7 @@ export function DepsPlugin(
     if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }
+    if (RE_CSS_INLINE.test(id)) return false
 
     // `neverBundle: true`: imports that follow npm package naming
     // conventions are externalized as written, without resolving them
