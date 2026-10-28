@@ -91,13 +91,23 @@ export default defineConfig({
 
 ## CJS Format Limitation
 
-**CJS format always uses `node` platform** and cannot be changed.
+**CJS format always uses `node` platform**, and tsdown warns when another platform is set.
 
 ```ts
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['cjs'],
-  platform: 'browser',  // Ignored for CJS
+  platform: 'browser',  // Ignored for CJS, with a warning
+})
+```
+
+To force another platform for CJS, override it via `inputOptions` (`import.meta.*` is then no longer rewritten):
+
+```ts
+export default defineConfig({
+  format: ['cjs'],
+  platform: 'browser',
+  inputOptions: { platform: 'browser' },
 })
 ```
 

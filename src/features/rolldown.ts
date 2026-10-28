@@ -21,6 +21,7 @@ import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
 import { importWithError, pkgExists, toArray } from '../utils/general.ts'
 import { createSuppressWarnings, LogLevels } from '../utils/logger.ts'
+import { warnCjsPlatform } from './cjs.ts'
 import { DepsPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
@@ -53,6 +54,7 @@ export async function getBuildOptions(
     cjsDts,
     isDualFormat,
   )
+  if (!cjsDts) warnCjsPlatform(config, inputOptions)
 
   const outputOptions: OutputOptions = await resolveOutputOptions(
     inputOptions,

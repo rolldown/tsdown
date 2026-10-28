@@ -1,5 +1,6 @@
 import { coerce, parseRange, satisfies } from 'verkit'
 import type { ResolvedConfig } from '../config/index.ts'
+import type { InputOptions } from 'rolldown'
 
 const RANGE_REQUIRING_ESM = parseRange('^20.19.0 || >=22.12.0')
 
@@ -26,4 +27,26 @@ export function warnLegacyCJS(config: ResolvedConfig): void {
         'Learn more at https://nodejs.org/en/learn/modules/publishing-a-package#how-did-we-get-here',
     )
   }
+}
+
+export function warnCjsPlatform(
+  config: ResolvedConfig,
+  inputOptions: InputOptions,
+): void {
+  if (
+    config.format !== 'cjs' ||
+    config.platform === 'node' ||
+    // the user forced another platform via `inputOptions`
+    inputOptions.platform !== 'node'
+  ) {
+    return
+  }
+
+  config.logger.warnOnce(
+    config.nameLabel,
+    `The \`cjs\` format always targets Node.js, so \`platform: '${config.platform}'\` is ignored for it.\n` +
+      `To silence this, set \`platform: 'node'\` for the \`cjs\` format, e.g. \`format: { esm: {}, cjs: { platform: 'node' } }\`.\n` +
+      `To build CJS for another platform anyway, set \`inputOptions: { platform: '${config.platform}' }\`. ` +
+      '`import.meta.url`, `import.meta.filename` and `import.meta.dirname` will no longer be rewritten.',
+  )
 }
