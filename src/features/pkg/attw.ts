@@ -147,19 +147,28 @@ export async function attw(
 
   let errorMessage: string | undefined
   if (checkResult.types) {
-    const problems = checkResult.problems.filter((problem) => {
-      // Exclude ignored problem kinds
-      if (ignoreRules.includes(problemFlags[problem.kind])) {
-        return false
+    // Match the attw CLI: a problem is kept only if it is visible from a
+    // resolution kind the profile still requires. File-based problems
+    // (e.g. `InternalResolutionError`) have no `resolutionKind` of their own,
+    // so `visibleProblems` is the only place that links them to a resolution.
+    const ignoredResolutions = profiles[profile] ?? []
+    const visibleProblems = new Set<number>()
+    for (const entrypoint of Object.values(checkResult.entrypoints)) {
+      for (const [resolutionKind, resolution] of Object.entries(
+        entrypoint.resolutions,
+      )) {
+        if (ignoredResolutions.includes(resolutionKind)) continue
+        resolution.visibleProblems?.forEach((index) =>
+          visibleProblems.add(index),
+        )
       }
+    }
 
-      // Only apply profile filter to problems that have resolutionKind
-      if ('resolutionKind' in problem) {
-        return !profiles[profile]?.includes(problem.resolutionKind)
-      }
-      // Include all other problem types
-      return true
-    })
+    const problems = checkResult.problems.filter(
+      (problem, index) =>
+        !ignoreRules.includes(problemFlags[problem.kind]) &&
+        visibleProblems.has(index),
+    )
 
     if (problems.length) {
       const problemList = problems
