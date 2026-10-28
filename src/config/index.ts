@@ -73,9 +73,6 @@ export async function resolveConfig(
           .filter((config) => !!config)
 
         workspaceDeps.forEach((dep) => globalDeps.add(dep))
-        for (const config of configs) {
-          config.configDeps.forEach((dep) => globalDeps.add(dep))
-        }
         return configs
       }),
     )

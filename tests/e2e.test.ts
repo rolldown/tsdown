@@ -810,6 +810,18 @@ test('multiple env files', async (context) => {
   )
 })
 
+test('empty env file path is ignored', async (context) => {
+  const { snapshot } = await testBuild({
+    context,
+    files: { 'index.ts': `export const foo = import.meta.env.TSDOWN_FOO` },
+    options: {
+      env: { TSDOWN_FOO: 'foo' },
+      envFile: '',
+    },
+  })
+  expect(snapshot).contains('const foo = "foo"')
+})
+
 test('env-prefix flag', async (context) => {
   const files = {
     'index.ts': `export const foo = import.meta.env.MYAPP_FOO

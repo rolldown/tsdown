@@ -129,7 +129,8 @@ export async function buildWithConfigs(
         configChunksByPkg[options.pkg.packageJsonPath].formats.size > 1
       return buildSingle(
         options,
-        configDeps,
+        // each watcher only needs its own config's deps (e.g. env files)
+        new Set([...configDeps, ...options.configDeps]),
         isDualFormat,
         clean,
         () => {

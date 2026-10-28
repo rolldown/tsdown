@@ -188,6 +188,7 @@ export async function resolveUserConfig(
   const envFromProcess = filterEnv(process.env, envPrefix)
   const envFromFiles: Record<string, string | undefined> = {}
   for (const file of toArray(envFile)) {
+    if (!file) continue
     const resolvedPath = path.resolve(cwd, file)
     const content = await readFile(resolvedPath, 'utf8').catch((error) => {
       if (error.code === 'ENOENT') return null
