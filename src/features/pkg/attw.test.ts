@@ -15,7 +15,6 @@ const resolutionKinds: ResolutionKind[] = [
   'bundler',
 ]
 
-// Each problem is paired with the resolution kinds it is visible from.
 function createCheckResult(
   problems: [Problem, ResolutionKind[]][],
 ): CheckResult {

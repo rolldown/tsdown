@@ -147,10 +147,7 @@ export async function attw(
 
   let errorMessage: string | undefined
   if (checkResult.types) {
-    // Match the attw CLI: a problem is kept only if it is visible from a
-    // resolution kind the profile still requires. File-based problems
-    // (e.g. `InternalResolutionError`) have no `resolutionKind` of their own,
-    // so `visibleProblems` is the only place that links them to a resolution.
+    // File-based problems have no `resolutionKind`; only `visibleProblems` ties them to a resolution.
     const ignoredResolutions = profiles[profile] ?? []
     const visibleProblems = new Set<number>()
     for (const entrypoint of Object.values(checkResult.entrypoints)) {
