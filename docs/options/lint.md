@@ -78,9 +78,9 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   attw: {
     // Resolution profile:
-    //   'strict'   - requires all resolutions (default)
+    //   'strict'   - requires all resolutions
     //   'node16'   - ignores node10 resolution failures
-    //   'esm-only' - ignores CJS resolution failures
+    //   'esm-only' - ignores node10 and CJS resolution failures (default)
     profile: 'node16',
 
     // Level: 'warn' (default) or 'error' (fails the build)
@@ -94,11 +94,11 @@ export default defineConfig({
 
 ### Profiles
 
-| Profile    | Description                                           |
-| ---------- | ----------------------------------------------------- |
-| `strict`   | Requires all resolutions to pass (default)            |
-| `node16`   | Ignores `node10` resolution failures                  |
-| `esm-only` | Ignores `node10` and `node16-cjs` resolution failures |
+| Profile    | Description                                                     |
+| ---------- | --------------------------------------------------------------- |
+| `strict`   | Requires all resolutions to pass                                |
+| `node16`   | Ignores `node10` resolution failures                            |
+| `esm-only` | Ignores `node10` and `node16-cjs` resolution failures (default) |
 
 ### Ignore Rules
 

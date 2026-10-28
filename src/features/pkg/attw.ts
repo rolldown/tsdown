@@ -37,9 +37,9 @@ export interface AttwOptions extends CheckPackageOptions {
    * The available profiles are:
    * - `strict`: requires all resolutions
    * - `node16`: ignores node10 resolution failures
-   * - `esm-only`: ignores CJS resolution failures
+   * - `esm-only`: ignores node10 and CJS resolution failures
    *
-   * @default 'strict'
+   * @default 'esm-only'
    */
   profile?: 'strict' | 'node16' | 'esm-only'
   /**

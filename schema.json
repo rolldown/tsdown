@@ -5122,8 +5122,8 @@
             { "const": "node16" },
             { "const": "esm-only" }
           ],
-          "description": "Profiles select a set of resolution modes to require/ignore. All are evaluated but failures outside\nof those required are ignored.\n\nThe available profiles are:\n- `strict`: requires all resolutions\n- `node16`: ignores node10 resolution failures\n- `esm-only`: ignores CJS resolution failures",
-          "default": "strict"
+          "description": "Profiles select a set of resolution modes to require/ignore. All are evaluated but failures outside\nof those required are ignored.\n\nThe available profiles are:\n- `strict`: requires all resolutions\n- `node16`: ignores node10 resolution failures\n- `esm-only`: ignores node10 and CJS resolution failures",
+          "default": "esm-only"
         },
         "level": {
           "anyOf": [{ "const": "warn" }, { "const": "error" }],

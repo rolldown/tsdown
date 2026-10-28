@@ -78,9 +78,9 @@ import { defineConfig } from 'tsdown'
 export default defineConfig({
   attw: {
     // 解析配置：
-    //   'strict'   - 要求所有解析方式通过（默认）
+    //   'strict'   - 要求所有解析方式通过
     //   'node16'   - 忽略 node10 解析失败
-    //   'esm-only' - 忽略 CJS 解析失败
+    //   'esm-only' - 忽略 node10 和 CJS 解析失败（默认）
     profile: 'node16',
 
     // 级别：'warn'（默认）或 'error'（导致构建失败）
@@ -94,11 +94,11 @@ export default defineConfig({
 
 ### 配置（Profiles）
 
-| 配置       | 说明                                   |
-| ---------- | -------------------------------------- |
-| `strict`   | 要求所有解析方式通过（默认）           |
-| `node16`   | 忽略 `node10` 解析失败                 |
-| `esm-only` | 忽略 `node10` 和 `node16-cjs` 解析失败 |
+| 配置       | 说明                                           |
+| ---------- | ---------------------------------------------- |
+| `strict`   | 要求所有解析方式通过                           |
+| `node16`   | 忽略 `node10` 解析失败                         |
+| `esm-only` | 忽略 `node10` 和 `node16-cjs` 解析失败（默认） |
 
 ### 忽略规则
 
