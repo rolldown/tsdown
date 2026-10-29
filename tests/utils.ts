@@ -1,3 +1,4 @@
+/* eslint-disable e18e/prefer-static-regex */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'

@@ -23,6 +23,11 @@ const debug = createDebug('tsdown:exe:download')
 
 const shasumsManifestCache = new Map<string, Promise<Map<string, string>>>()
 
+const RE_NEWLINE = /\r?\n/
+const RE_WHITESPACE = /\s/
+const RE_SHA256 = /^[a-f0-9]{64}$/i
+const RE_LEADING_ASTERISK = /^\*/
+
 interface ExtractCommand {
   command: string
   args: string[]
@@ -148,20 +153,20 @@ async function getShasumsManifest(
 
     const checksums = new Map<string, string>()
     const text = await response.text()
-    for (const line of text.split(/\r?\n/)) {
+    for (const line of text.split(RE_NEWLINE)) {
       const trimmedLine = line.trim()
       if (!trimmedLine) continue
 
-      const separatorIndex = trimmedLine.search(/\s/)
+      const separatorIndex = trimmedLine.search(RE_WHITESPACE)
       if (separatorIndex === -1) continue
 
       const checksum = trimmedLine.slice(0, separatorIndex)
-      if (!/^[a-f0-9]{64}$/i.test(checksum)) continue
+      if (!RE_SHA256.test(checksum)) continue
 
       const archiveName = trimmedLine
         .slice(separatorIndex)
         .trimStart()
-        .replace(/^\*/, '')
+        .replace(RE_LEADING_ASTERISK, '')
       if (!archiveName) continue
 
       checksums.set(archiveName, checksum.toLowerCase())

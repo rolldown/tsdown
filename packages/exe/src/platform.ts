@@ -4,6 +4,8 @@ import {
 } from 'tsdown/internal'
 import { isGreaterThanOrEqual, normalize, tryParse } from 'verkit'
 
+const RE_LEADING_V = /^v/
+
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
 
@@ -104,7 +106,7 @@ export async function resolveNodeVersion(
       throw new Error(`No matching Node.js release found for "${nodeVersion}".`)
     }
 
-    nodeVersion = release.version.replace(/^v/, '')
+    nodeVersion = release.version.replace(RE_LEADING_V, '')
   }
 
   const version = tryParse(nodeVersion)

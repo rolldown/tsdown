@@ -35,6 +35,10 @@ const RE_PACKAGE_SPECIFIER =
  */
 const RE_CSS_INLINE = /\.(?:css|less|sass|scss|styl|stylus)\?(?:.*&)?inline\b/
 
+const RE_BARE_SPECIFIER = /^[^.]/
+const RE_ANY = /./
+const RE_LEADING_AT = /^@/
+
 type ResolveFn = () => Promise<ResolvedId | null>
 
 export type NoExternalFn = (
@@ -194,7 +198,7 @@ export function DepsPlugin(
   return {
     name: 'tsdown:deps',
     resolveId: {
-      filter: [include(and(id(/^[^.]/), importerId(/./)))],
+      filter: [include(and(id(RE_BARE_SPECIFIER), importerId(RE_ANY)))],
       async handler(id, importer, extraOptions) {
         if (extraOptions.isEntry) return
         typeAssert(importer)
@@ -500,7 +504,7 @@ export function getTypesPackageName(id: string): string | undefined {
   const name = parsePackageSpecifier(id)[0]
   if (!name) return
 
-  return `@types/${name.replace(/^@/, '').replace('/', '__')}`
+  return `@types/${name.replace(RE_LEADING_AT, '').replace('/', '__')}`
 }
 
 async function resolveDepSubpath(id: string, resolve: ResolveFn) {

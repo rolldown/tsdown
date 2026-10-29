@@ -38,6 +38,8 @@ import type {
 
 const debug = createDebug('tsdown:rolldown')
 
+const RE_CSS_LANGS = /\.(?:css|less|sass|scss|styl|stylus)$/
+
 export async function getBuildOptions(
   config: ResolvedConfig,
   format: NormalizedFormat,
@@ -397,7 +399,7 @@ export function CssGuardPlugin(): Plugin {
     name: 'tsdown:css-guard',
     transform: {
       order: 'post',
-      filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
+      filter: { id: RE_CSS_LANGS },
       handler(_code, id) {
         throw new Error(
           `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +
