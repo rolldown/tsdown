@@ -21,12 +21,13 @@ import pkg from '../../package.json' with { type: 'json' }
 import { mergeUserOptions } from '../config/options.ts'
 import { importWithError, pkgExists, toArray } from '../utils/general.ts'
 import { createSuppressWarnings, LogLevels } from '../utils/logger.ts'
+import { warnCjsPlatform } from './cjs.ts'
 import { DepsPlugin } from './deps.ts'
 import { NodeProtocolPlugin } from './node-protocol.ts'
 import { resolveChunkAddon, resolveChunkFilename } from './output.ts'
 import { ReportPlugin } from './report.ts'
 import { ShebangPlugin } from './shebang.ts'
-import { getShims } from './shims.ts'
+import { ShimsPlugin } from './shims.ts'
 import { WatchPlugin } from './watch.ts'
 import type {
   DtsOptions,
@@ -36,6 +37,8 @@ import type {
 } from '../config/types.ts'
 
 const debug = createDebug('tsdown:rolldown')
+
+const RE_CSS_LANGS = /\.(?:css|less|sass|scss|styl|stylus)$/
 
 export async function getBuildOptions(
   config: ResolvedConfig,
@@ -53,6 +56,7 @@ export async function getBuildOptions(
     cjsDts,
     isDualFormat,
   )
+  if (!cjsDts) warnCjsPlatform(config, inputOptions)
 
   const outputOptions: OutputOptions = await resolveOutputOptions(
     inputOptions,
@@ -102,7 +106,6 @@ async function resolveInputOptions(
     platform,
     plugins: userPlugins,
     report,
-    shims,
     target,
     treeshake,
     tsconfig,
@@ -194,7 +197,7 @@ async function resolveInputOptions(
     plugins.push(...cssPostPlugins)
   }
 
-  let define: TransformOptions['define'] = {
+  const define: TransformOptions['define'] = {
     ...config.define,
     ...Object.keys(env).reduce((acc, key) => {
       const value = JSON.stringify(env[key])
@@ -204,14 +207,8 @@ async function resolveInputOptions(
     }, Object.create(null)),
   }
 
-  let inject: TransformOptions['inject']
-  if (shims && !cjsDts) {
-    const shims = getShims(config)
-    inject = shims.inject
-    define = { ...define, ...shims.define }
-    if (shims.plugin) {
-      plugins.push(shims.plugin)
-    }
+  if (!cjsDts) {
+    plugins.push(ShimsPlugin(config, format))
   }
 
   // `neverBundle: true` is handled by DepsPlugin instead of rolldown's
@@ -261,7 +258,6 @@ async function resolveInputOptions(
       transform: {
         target,
         define,
-        inject,
       },
       plugins,
       moduleTypes: {
@@ -322,6 +318,7 @@ async function resolveOutputOptions(
       preserveModulesRoot: unbundle ? config.root : undefined,
       postBanner: resolveChunkAddon(banner, format),
       postFooter: resolveChunkAddon(footer, format),
+      // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
       codeSplitting: config.exe ? false : undefined,
     },
     config.outputOptions,
@@ -402,7 +399,7 @@ export function CssGuardPlugin(): Plugin {
     name: 'tsdown:css-guard',
     transform: {
       order: 'post',
-      filter: { id: /\.(?:css|less|sass|scss|styl|stylus)$/ },
+      filter: { id: RE_CSS_LANGS },
       handler(_code, id) {
         throw new Error(
           `CSS file "${id}" was encountered but \`@tsdown/css\` is not installed. ` +

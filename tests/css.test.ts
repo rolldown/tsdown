@@ -582,6 +582,20 @@ describe('css', () => {
     expect(fileMap['index.mjs']).toContain('color')
   })
 
+  test('handle .css?inline from dependencies', async (context) => {
+    const { fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import css from 'my-lib/style.css?inline'; console.log(css);`,
+        'package.json': JSON.stringify({ dependencies: { 'my-lib': '*' } }),
+        'node_modules/my-lib/style.css': `.lib { color: red; }`,
+        'node_modules/my-lib/package.json': JSON.stringify({ name: 'my-lib' }),
+      },
+    })
+    expect(fileMap['index.mjs']).not.toContain('import ')
+    expect(fileMap['index.mjs']).toContain('.lib')
+  })
+
   test('handle .scss?inline', async (context) => {
     const { fileMap, outputFiles } = await testBuild({
       context,

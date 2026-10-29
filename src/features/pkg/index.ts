@@ -116,7 +116,7 @@ export async function bundleDone(
   ctx.resolve()
 }
 
-async function packTarball(
+export async function packTarball(
   packageJsonPath: string,
 ): Promise<Buffer<ArrayBuffer>> {
   const pkgDir = path.dirname(packageJsonPath)
@@ -250,7 +250,12 @@ async function pack(
 
   const output = await x(command, args, {
     nodePath: false,
-    nodeOptions: { cwd: dir },
+    nodeOptions: {
+      cwd: dir,
+      // `npm publish --dry-run` exports `npm_config_dry_run=true` to lifecycle scripts,
+      // which would make this nested pack print a file name without writing it.
+      env: { npm_config_dry_run: undefined },
+    },
   })
 
   // Get first file that ends with `.tgz` in the pack destination.

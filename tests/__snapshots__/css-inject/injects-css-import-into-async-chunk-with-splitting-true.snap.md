@@ -18,10 +18,9 @@ export {};
 ## index.mjs
 
 ```mjs
-//#region index.ts
+// index.ts
 const main = 1;
 import("./async-la_KkjCS.mjs");
-//#endregion
 export { main };
 
 ```

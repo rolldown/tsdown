@@ -6,5 +6,6 @@ export declare function DepsPlugin({ pkg, deps: { neverBundle, alwaysBundle: jsA
 export declare function NodeProtocolPlugin(_: "strip" | true): Plugin;
 export declare function ReportPlugin(_: ResolvedConfig, _?: boolean, _?: boolean): Plugin;
 export declare function ShebangPlugin(_: Logger, _: string, _?: string, _?: boolean): Plugin;
+export declare function ShimsPlugin(_: ResolvedConfig, _: NormalizedFormat): Plugin;
 export declare function WatchPlugin(_: Set<string>, { config, chunks }: TsdownBundle): Plugin;
 // #endregion

@@ -1,7 +1,7 @@
 {
   "name": "tsdown",
   "type": "module",
-  "version": "0.23.0",
+  "version": "0.23.4",
   "description": "The Elegant Bundler for Libraries",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -14,6 +14,10 @@
   "bugs": {
     "url": "https://github.com/rolldown/tsdown/issues"
   },
+  "sideEffects": [
+    "./dist/run.mjs",
+    "./tests/**"
+  ],
   "exports": {
     ".": {
       "dev": "./src/index.ts",
@@ -67,7 +71,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.4.1",
+      "version": "12.16.1",
       "onFail": "download"
     }
   },
@@ -79,6 +83,8 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --cache --write .",
+    "schema:generate": "node ./scripts/generate-schema.ts",
+    "schema:check": "node ./scripts/generate-schema.ts -c",
     "release": "node ./scripts/release.ts",
     "docs:dev": "pnpm -C docs run dev",
     "docs:build": "pnpm -C docs run build",
@@ -137,13 +143,13 @@
     "rolldown-plugin-dts": "catalog:prod",
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
-    "tree-kill": "catalog:prod",
+    "tinyps": "catalog:prod",
     "unconfig-core": "catalog:prod",
     "verkit": "catalog:prod"
   },
   "inlinedDependencies": {
-    "package-manager-detector": "1.8.0",
-    "pkg-types": "2.3.3"
+    "package-manager-detector": "1.9.0",
+    "pkg-types": "2.4.0"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "catalog:peer",
@@ -154,8 +160,8 @@
     "@tsdown/exe": "workspace:*",
     "@types/node": "catalog:dev",
     "@types/picomatch": "catalog:dev",
-    "@typescript/native-preview": "catalog:dev",
     "@unocss/eslint-plugin": "catalog:docs",
+    "@valibot/to-json-schema": "catalog:dev",
     "@vitejs/devtools": "catalog:peer",
     "@vitest/coverage-v8": "catalog:dev",
     "@vitest/ui": "catalog:dev",
@@ -178,12 +184,14 @@
     "tsnapi": "catalog:dev",
     "tsx": "catalog:dev",
     "typescript": "catalog:dev",
+    "typescript-next": "catalog:dev",
     "unocss": "catalog:docs",
     "unplugin-ast": "catalog:dev",
     "unplugin-raw": "catalog:dev",
     "unplugin-unused": "catalog:peer",
     "unplugin-vue": "catalog:dev",
     "unrun": "catalog:dev",
+    "valibot": "catalog:dev",
     "vite": "catalog:docs",
     "vitest": "catalog:dev",
     "vue": "catalog:docs"

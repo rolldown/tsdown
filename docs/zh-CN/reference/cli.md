@@ -205,7 +205,7 @@ tsdown --env.NODE_ENV=production
 
 ## `--env-file <file>`
 
-从文件加载环境变量。当与 `--env` 一起使用时，`--env` 中的变量优先生效。
+从文件加载环境变量。可以多次使用该标志加载多个文件：后面的文件会覆盖前面的，不存在的文件会被跳过。当与 `--env` 一起使用时，`--env` 中的变量优先生效。
 
 :::tip
 为防止敏感信息意外暴露，默认仅注入以 `TSDOWN_` 前缀开头的环境变量。您可以通过 [`--env-prefix`](#env-prefix) 标志自定义此行为。
@@ -213,6 +213,7 @@ tsdown --env.NODE_ENV=production
 
 ```bash
 tsdown --env-file .env.production
+tsdown --env-file .env --env-file .env.local
 ```
 
 ## `--env-prefix <prefix>` {#env-prefix}

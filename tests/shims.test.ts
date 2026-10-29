@@ -81,4 +81,18 @@ describe('shims', () => {
     expect(snapshot).contain('require("url").pathToFileURL(__filename).href')
     expect(snapshot).not.contain('import.meta')
   })
+
+  test('cjs with platform forced via inputOptions', async (context) => {
+    const { snapshot } = await testBuild({
+      context,
+      files: { 'index.ts': code },
+      options: {
+        format: 'cjs',
+        platform: 'browser',
+        inputOptions: { platform: 'browser' },
+      },
+    })
+    expect(snapshot).contain('require("url").pathToFileURL(__filename).href')
+    expect(snapshot).not.contain('import.meta')
+  })
 })

@@ -1,7 +1,7 @@
 {
   "name": "create-tsdown",
   "type": "module",
-  "version": "0.23.0",
+  "version": "0.23.4",
   "description": "Create a new tsdown project",
   "author": "Kevin Deng <sxzz@sxzz.moe>",
   "license": "MIT",
@@ -15,6 +15,9 @@
   "bugs": {
     "url": "https://github.com/rolldown/tsdown/issues"
   },
+  "sideEffects": [
+    "./dist/run.mjs"
+  ],
   "exports": {
     ".": {
       "dev": "./src/index.ts",

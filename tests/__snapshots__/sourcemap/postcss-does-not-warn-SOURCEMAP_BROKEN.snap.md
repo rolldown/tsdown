@@ -1,9 +1,8 @@
 ## index.mjs
 
 ```mjs
-//#region index.ts
+// index.ts
 const value = 42;
-//#endregion
 export { value };
 
 //# sourceMappingURL=index.mjs.map

@@ -8,10 +8,8 @@ fake-native-addon-binary-content
 
 ```mjs
 import { createRequire } from "node:module";
-//#endregion
-//#region index.ts
+// index.ts
 const native = (/* @__PURE__ */ (() => createRequire(import.meta.url))())("./assets/binding-BaUr1jMm.node");
-//#endregion
 export { native };
 
 ```

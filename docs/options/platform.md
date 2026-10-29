@@ -17,7 +17,7 @@ tsdown --platform neutral
 - **`neutral`:** A platform-agnostic target with no specific runtime assumptions. Use this if your code is intended to run in multiple environments or you want full control over runtime behavior. This is particularly useful for libraries or shared code that may be used in both Node.js and browser environments.
 
 > [!NOTE]
-> For the CJS format, the platform is always set to `'node'` and cannot be changed. [Why?](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545)
+> For the CJS format, the platform is always set to `'node'`, and tsdown warns if you set `'browser'`. [Why?](https://github.com/rolldown/rolldown/pull/4693#issuecomment-2912229545) Use `platform: 'neutral'` if your code isn't browser-only, or set `inputOptions: { platform: 'browser' }` to build CJS for the browser anyway.
 
 ### Example
 

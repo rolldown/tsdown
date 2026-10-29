@@ -1,7 +1,7 @@
 ## index.cjs
 
 ```cjs
-//#region index.ts
+// index.ts
 var cjs_on_node_w_o_shims_default = [
 	__dirname,
 	__filename,
@@ -10,7 +10,6 @@ var cjs_on_node_w_o_shims_default = [
 	__dirname,
 	{}.something
 ];
-//#endregion
 module.exports = cjs_on_node_w_o_shims_default;
 
 ```

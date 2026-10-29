@@ -1,17 +1,15 @@
 ## index.mjs
 
 ```mjs
-import { sub } from "./sub.mjs";
-export { sub };
+export { sub } from "./sub.mjs";
 
 ```
 
 ## sub.mjs
 
 ```mjs
-//#region src/sub.ts
+// src/sub.ts
 const sub = "Hello, World!";
-//#endregion
 export { sub };
 
 ```

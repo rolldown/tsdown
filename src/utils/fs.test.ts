@@ -12,74 +12,53 @@ import {
 } from './fs.ts'
 
 describe('lowestCommonAncestor', () => {
-  test('returns empty string for no paths', () => {
-    expect(lowestCommonAncestor()).toBe('')
-  })
-
-  test('returns dirname for single path', () => {
-    expect(lowestCommonAncestor('/foo/bar/baz.ts')).toBe(
+  test.each<[string, string[], string]>([
+    ['returns empty string for no paths', [], ''],
+    [
+      'returns dirname for single path',
+      ['/foo/bar/baz.ts'],
       path.dirname('/foo/bar/baz.ts'),
-    )
-  })
-
-  test('finds common ancestor of sibling files', () => {
-    expect(lowestCommonAncestor('/src/a.ts', '/src/b.ts')).toBe(
+    ],
+    [
+      'finds common ancestor of sibling files',
+      ['/src/a.ts', '/src/b.ts'],
       path.normalize('/src'),
-    )
-  })
-
-  test('finds common ancestor of nested paths', () => {
-    expect(lowestCommonAncestor('/src/utils/a.ts', '/src/config/b.ts')).toBe(
+    ],
+    [
+      'finds common ancestor of nested paths',
+      ['/src/utils/a.ts', '/src/config/b.ts'],
       path.normalize('/src'),
-    )
-  })
-
-  test('handles paths with no common ancestor beyond root', () => {
-    expect(lowestCommonAncestor('/foo/a.ts', '/bar/b.ts')).toBe(
+    ],
+    [
+      'handles paths with no common ancestor beyond root',
+      ['/foo/a.ts', '/bar/b.ts'],
       path.normalize('/'),
-    )
-  })
-
-  test('handles multiple paths', () => {
-    expect(
-      lowestCommonAncestor(
-        '/project/src/a.ts',
-        '/project/src/b.ts',
-        '/project/src/c.ts',
-      ),
-    ).toBe(path.normalize('/project/src'))
-  })
-
-  test('handles paths at different depths', () => {
-    expect(
-      lowestCommonAncestor('/project/src/a.ts', '/project/lib/deep/b.ts'),
-    ).toBe(path.normalize('/project'))
+    ],
+    [
+      'handles multiple paths',
+      ['/project/src/a.ts', '/project/src/b.ts', '/project/src/c.ts'],
+      path.normalize('/project/src'),
+    ],
+    [
+      'handles paths at different depths',
+      ['/project/src/a.ts', '/project/lib/deep/b.ts'],
+      path.normalize('/project'),
+    ],
+  ])('%s', (_, paths, expected) => {
+    expect(lowestCommonAncestor(...paths)).toBe(expected)
   })
 })
 
 describe('stripExtname', () => {
-  test('strips .ts extension', () => {
-    expect(stripExtname('index.ts')).toBe('index')
-  })
-
-  test('strips .js extension', () => {
-    expect(stripExtname('file.js')).toBe('file')
-  })
-
-  test('strips only last extension', () => {
-    expect(stripExtname('file.test.ts')).toBe('file.test')
-  })
-
-  test('returns path unchanged if no extension', () => {
-    expect(stripExtname('Makefile')).toBe('Makefile')
-  })
-
-  test('handles path with directory', () => {
-    expect(stripExtname('src/utils/index.ts')).toBe('src/utils/index')
-  })
-
-  test('handles dotfile', () => {
-    expect(stripExtname('.gitignore')).toBe('.gitignore')
+  test.each([
+    ['strips .ts extension', 'index.ts', 'index'],
+    ['strips .js extension', 'file.js', 'file'],
+    ['strips only last extension', 'file.test.ts', 'file.test'],
+    ['returns path unchanged if no extension', 'Makefile', 'Makefile'],
+    ['handles path with directory', 'src/utils/index.ts', 'src/utils/index'],
+    ['handles dotfile', '.gitignore', '.gitignore'],
+  ])('%s', (_, input, expected) => {
+    expect(stripExtname(input)).toBe(expected)
   })
 })
 

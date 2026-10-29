@@ -59,7 +59,7 @@ cli
   .option('--env.* <value>', 'Define compile-time env variables')
   .option(
     '--env-file <file>',
-    'Load environment variables from a file, when used together with --env, variables in --env take precedence',
+    'Load environment variables from a file, can be repeated',
   )
   .option(
     '--env-prefix <prefix>',

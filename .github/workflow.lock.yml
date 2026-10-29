@@ -92,7 +92,7 @@ packages:
         requested: c5b2d67aa2274e7b5a18224e8171550871fc7e4a
         foundAt: sxzz/workflows/.github/workflows/autofix.yml#jobs.autofix.steps[2].uses
     requested: main
-    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
+    resolved: e3b122062c0844efea9328bd56c06ac337d72bc7
   github:sxzz/workflows/.github/workflows/release-commit.yml:
     source: github
     owner: sxzz
@@ -105,7 +105,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release-commit.yml#jobs.release.steps[0].uses
     requested: main
-    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
+    resolved: e3b122062c0844efea9328bd56c06ac337d72bc7
   github:sxzz/workflows/.github/workflows/release.yml:
     source: github
     owner: sxzz
@@ -118,7 +118,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/release.yml#jobs.release.steps[0].uses
     requested: main
-    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
+    resolved: e3b122062c0844efea9328bd56c06ac337d72bc7
   github:sxzz/workflows/.github/workflows/unit-test.yml:
     source: github
     owner: sxzz
@@ -131,7 +131,7 @@ packages:
         requested: main
         foundAt: sxzz/workflows/.github/workflows/unit-test.yml#jobs.lint.steps[0].uses
     requested: main
-    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
+    resolved: e3b122062c0844efea9328bd56c06ac337d72bc7
   github:sxzz/workflows/setup-js:
     source: github
     owner: sxzz
@@ -150,4 +150,4 @@ packages:
         requested: 820762786026740c76f36085b0efc47a31fe5020
         foundAt: sxzz/workflows/setup-js#runs.steps[2].uses
     requested: main
-    resolved: ea00b206fd53ae8f6d75c72fb1f67b8673ab8959
+    resolved: e3b122062c0844efea9328bd56c06ac337d72bc7

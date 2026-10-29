@@ -2,7 +2,9 @@ import {
   NODE_SEA_MIN_VERSION,
   NODE_SEA_MIN_VERSION_PARSED,
 } from 'tsdown/internal'
-import { isGreaterOrEqual, normalize, tryParse } from 'verkit'
+import { isGreaterThanOrEqual, normalize, tryParse } from 'verkit'
+
+const RE_LEADING_V = /^v/
 
 export type ExePlatform = 'win' | 'darwin' | 'linux'
 export type ExeArch = 'x64' | 'arm64'
@@ -104,7 +106,7 @@ export async function resolveNodeVersion(
       throw new Error(`No matching Node.js release found for "${nodeVersion}".`)
     }
 
-    nodeVersion = release.version.replace(/^v/, '')
+    nodeVersion = release.version.replace(RE_LEADING_V, '')
   }
 
   const version = tryParse(nodeVersion)
@@ -115,7 +117,7 @@ export async function resolveNodeVersion(
     )
   }
 
-  if (!isGreaterOrEqual(version, NODE_SEA_MIN_VERSION_PARSED)) {
+  if (!isGreaterThanOrEqual(version, NODE_SEA_MIN_VERSION_PARSED)) {
     throw new Error(
       `Node.js ${version} does not support SEA (Single Executable Applications). ` +
         `Required minimum version is ${NODE_SEA_MIN_VERSION}. Please update the nodeVersion in your target configuration.`,

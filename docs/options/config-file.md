@@ -12,6 +12,21 @@ By default, `tsdown` will search for a configuration file by looking in the curr
 
 Additionally, you can define your configuration directly in the `tsdown` field of your `package.json` file.
 
+## JSON Schema
+
+When using `tsdown.config.json`, add the schema reference to enable editor autocomplete and validation:
+
+```json [tsdown.config.json]
+{
+  "$schema": "https://raw.githubusercontent.com/rolldown/tsdown/main/schema.json",
+  "entry": "src/index.ts",
+  "format": "esm",
+  "dts": true
+}
+```
+
+The schema describes JSON-compatible configuration options. TypeScript-only values such as functions, plugins, and callbacks are available in `tsdown.config.ts` instead.
+
 ## Writing a Config File
 
 The configuration file allows you to define and customize your build settings in a centralized and reusable way. Below is a simple example of a `tsdown` configuration file:

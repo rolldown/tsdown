@@ -2,10 +2,8 @@
 
 ```mjs
 import { createRequire } from "module";
-//#endregion
-//#region index.ts
+// index.ts
 const fn = (/* @__PURE__ */ (() => createRequire(import.meta.url))()).resolve;
-//#endregion
 export { fn };
 
 ```

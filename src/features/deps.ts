@@ -30,6 +30,15 @@ const debug = createDebug('tsdown:deps')
 const RE_PACKAGE_SPECIFIER =
   /^(?:@[a-z0-9-][a-z0-9-._]*\/)?[a-z0-9-][a-z0-9-._]*(?:\/|$)/
 
+/**
+ * `?inline` CSS is embedded as a string, so it can't stay an external import.
+ */
+const RE_CSS_INLINE = /\.(?:css|less|sass|scss|styl|stylus)\?(?:.*&)?inline\b/
+
+const RE_BARE_SPECIFIER = /^[^.]/
+const RE_ANY = /./
+const RE_LEADING_AT = /^@/
+
 type ResolveFn = () => Promise<ResolvedId | null>
 
 export type NoExternalFn = (
@@ -189,7 +198,7 @@ export function DepsPlugin(
   return {
     name: 'tsdown:deps',
     resolveId: {
-      filter: [include(and(id(/^[^.]/), importerId(/./)))],
+      filter: [include(and(id(RE_BARE_SPECIFIER), importerId(RE_ANY)))],
       async handler(id, importer, extraOptions) {
         if (extraOptions.isEntry) return
         typeAssert(importer)
@@ -208,6 +217,7 @@ export function DepsPlugin(
           shouldExternal = shouldExternal[0]
         }
         const nodeBuiltinModule = isBuiltin(id)
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         const moduleSideEffects = nodeBuiltinModule ? false : undefined
 
         debug('shouldExternal: %o = %o', id, shouldExternal)
@@ -362,6 +372,7 @@ export function DepsPlugin(
     if (alwaysBundle?.(id, importer)) {
       return 'no-external'
     }
+    if (RE_CSS_INLINE.test(id)) return false
 
     // `neverBundle: true`: imports that follow npm package naming
     // conventions are externalized as written, without resolving them
@@ -383,6 +394,7 @@ export function DepsPlugin(
       if (RE_PACKAGE_SPECIFIER.test(id)) {
         const resolvedDep =
           shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
       const resolved = await resolve()
@@ -395,6 +407,7 @@ export function DepsPlugin(
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
         const resolvedDep =
           shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
 
@@ -491,7 +504,7 @@ export function getTypesPackageName(id: string): string | undefined {
   const name = parsePackageSpecifier(id)[0]
   if (!name) return
 
-  return `@types/${name.replace(/^@/, '').replace('/', '__')}`
+  return `@types/${name.replace(RE_LEADING_AT, '').replace('/', '__')}`
 }
 
 async function resolveDepSubpath(id: string, resolve: ResolveFn) {

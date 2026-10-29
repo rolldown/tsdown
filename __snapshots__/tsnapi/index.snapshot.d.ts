@@ -145,7 +145,7 @@ export interface UserConfig {
   platform?: "node" | "neutral" | "browser";
   target?: string | string[] | false;
   env?: Record<string, any>;
-  envFile?: string;
+  envFile?: string | string[];
   envPrefix?: string | string[];
   define?: Record<string, string>;
   shims?: boolean;

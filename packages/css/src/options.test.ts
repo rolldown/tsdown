@@ -43,11 +43,6 @@ describe('resolveCssOptions', () => {
     expect(result.target).toBeUndefined()
   })
 
-  test('modules defaults to empty object', () => {
-    const result = resolveCssOptions()
-    expect(result.modules).toEqual({})
-  })
-
   test('modules=false disables CSS modules', () => {
     const result = resolveCssOptions({ modules: false })
     expect(result.modules).toBe(false)

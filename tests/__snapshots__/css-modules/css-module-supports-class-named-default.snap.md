@@ -1,10 +1,8 @@
 ## index.mjs
 
 ```mjs
-//#endregion
-//#region index.ts
+// index.ts
 console.log({ "default": "design-system-default" }.default);
-//#endregion
 export {};
 
 ```
