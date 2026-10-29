@@ -143,7 +143,7 @@
     "rolldown-plugin-dts": "catalog:prod",
     "tinyexec": "catalog:prod",
     "tinyglobby": "catalog:prod",
-    "tree-kill": "catalog:prod",
+    "tinyps": "catalog:prod",
     "unconfig-core": "catalog:prod",
     "verkit": "catalog:prod"
   },
