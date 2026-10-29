@@ -3570,66 +3570,7 @@
       "required": ["dts"],
       "additionalProperties": false
     },
-    "Omit_e1330183": {
-      "type": "object",
-      "properties": {
-        "stripInternal": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Do not emit declarations for code that has an"
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "TsgoOptions": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Path to a custom `tsgo` executable."
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "FileExtensionInfo": {
-      "type": "object",
-      "properties": {
-        "extension": { "type": "string" },
-        "isMixedContent": { "anyOf": [{ "const": false }, { "const": true }] },
-        "scriptKind": {
-          "anyOf": [
-            { "const": 0 },
-            { "const": 1 },
-            { "const": 2 },
-            { "const": 3 },
-            { "const": 4 },
-            { "const": 5 },
-            { "const": 6 },
-            { "const": 7 }
-          ]
-        }
-      },
-      "required": ["extension", "isMixedContent"],
-      "additionalProperties": false
-    },
-    "CustomLanguage": {
-      "type": "object",
-      "properties": {
-        "extensionPatterns": {
-          "type": "array",
-          "items": {},
-          "description": "Patterns that identify files written in this language."
-        },
-        "tsFileExtensionInfos": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/FileExtensionInfo" },
-          "description": "Extra file extensions passed to the TypeScript compiler."
-        }
-      },
-      "required": ["extensionPatterns"],
-      "additionalProperties": false
-    },
+    "Generator": {},
     "WatchOptions": {
       "type": "object",
       "properties": {
@@ -4705,14 +4646,7 @@
       "type": "object",
       "properties": {},
       "required": [],
-      "additionalProperties": {
-        "anyOf": [
-          { "const": false },
-          { "const": true },
-          { "$ref": "#/$defs/Record_519c04ca" },
-          { "type": "array", "items": { "$ref": "#/$defs/Record_519c04ca" } }
-        ]
-      }
+      "additionalProperties": { "anyOf": [{}, {}, {}, {}] }
     },
     "Record_ab245659": {
       "type": "object",
@@ -4857,29 +4791,157 @@
       "required": [],
       "additionalProperties": false
     },
+    "TscOptions": {
+      "type": "object",
+      "properties": {
+        "vue": {
+          "anyOf": [
+            { "const": false },
+            { "const": true },
+            { "$ref": "#/$defs/VueLanguageOptions" }
+          ],
+          "description": "Registers the built-in Vue language integration using `vue-tsc`.\n\nThis is a shortcut for a preconfigured {@link Options.customLanguages}\nentry and requires the `tsc` generator.",
+          "default": false
+        },
+        "build": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Uses TypeScript build mode (`tsc -b`) and follows project references.",
+          "default": false
+        },
+        "incremental": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Persists build-mode outputs, including `.tsbuildinfo`, to disk for reuse.\nWhen disabled, build outputs stay in memory."
+        },
+        "parallel": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Runs `tsc` or `vue-tsc` in a separate process.\nCustom languages supplied through {@link Options.customLanguages} are not\nsupported in the worker process.",
+          "default": false
+        },
+        "eager": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Loads every file listed by `tsconfig.json` into the TypeScript program.\n\nUseful when one config covers multiple packages or entry points.",
+          "default": false
+        },
+        "newContext": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Uses an isolated TypeScript cache instead of the shared global context.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Omit_e1330183": {
+      "type": "object",
+      "properties": {
+        "stripInternal": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Do not emit declarations for code that has an"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "TsgoOptions": {
+      "type": "object",
+      "properties": {
+        "runExternalCode": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Allows TypeScript to execute content mappers configured in tsconfig.\nCannot be combined with `tsgo.vfs` when content mappers are configured.",
+          "default": false
+        },
+        "moduleUrl": {
+          "type": "string",
+          "description": "A `file://` URL of the TypeScript module that provides the TypeScript Go API.\n\nUse `import.meta.resolve()` to select an npm alias or another compatible\nTypeScript module."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path passed to the TypeScript Go API as `tsserverPath`.\nWith the deprecated TypeScript 7.0 backend, the `tsgo` executable to run."
+        },
+        "vfs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Supplies Rolldown-transformed source code to the `tsgo` API through a\nvirtual filesystem.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "TsrsOptions": {
+      "type": "object",
+      "properties": {
+        "runExternalCode": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Allows tsrs to execute content mappers configured in tsconfig.\nCannot be combined with `tsrs.vfs` when content mappers are configured.",
+          "default": false
+        },
+        "moduleUrl": {
+          "type": "string",
+          "description": "A `file://` URL of the `tsrs` package module."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to a custom tsrs executable, passed to the API as `tsserverPath`."
+        },
+        "vfs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Supplies Rolldown-transformed source code to the tsrs API through a\nvirtual filesystem.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "FileExtensionInfo": {
+      "type": "object",
+      "properties": {
+        "extension": { "type": "string" },
+        "isMixedContent": { "anyOf": [{ "const": false }, { "const": true }] },
+        "scriptKind": {
+          "anyOf": [
+            { "const": 0 },
+            { "const": 1 },
+            { "const": 2 },
+            { "const": 3 },
+            { "const": 4 },
+            { "const": 5 },
+            { "const": 6 },
+            { "const": 7 }
+          ]
+        }
+      },
+      "required": ["extension", "isMixedContent"],
+      "additionalProperties": false
+    },
+    "CustomLanguage": {
+      "type": "object",
+      "properties": {
+        "extensionPatterns": {
+          "type": "array",
+          "items": {},
+          "description": "Patterns that identify files written in this language."
+        },
+        "tsFileExtensionInfos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/FileExtensionInfo" },
+          "description": "Extra file extensions passed to the TypeScript compiler."
+        }
+      },
+      "required": ["extensionPatterns"],
+      "additionalProperties": false
+    },
     "Options": {
       "type": "object",
       "properties": {
-        "oxc": {
-          "$ref": "#/$defs/Omit_e1330183",
-          "description": "Options for the `oxc` generator.\n\nThe top-level {@link GeneralOptions.sourcemapsourcemap} option controls\ndeclaration maps."
-        },
-        "tsgo": {
-          "$ref": "#/$defs/TsgoOptions",
-          "description": "**[Experimental]** Options for the `tsgo` generator.\n\nUsed when {@link GeneralOptions.generatorgenerator} is `'tsgo'` or\nTypeScript 7 is detected."
-        },
-        "customLanguages": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/CustomLanguage" },
-          "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`; `tsgo` does not support custom languages."
-        },
         "generator": {
           "anyOf": [
             { "const": "tsc" },
             { "const": "oxc" },
-            { "const": "tsgo" }
+            { "const": "tsgo" },
+            { "const": "tsrs" },
+            { "$ref": "#/$defs/Generator" }
           ],
-          "description": "The generator used to produce declaration files.\n\n- `'tsc'` supports the full TypeScript type system.\n- `'oxc'` is faster but requires code compatible with\n  [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations).\n- `'tsgo'` uses the experimental TypeScript Go compiler.\n\nWhen omitted, the plugin selects `'oxc'` for `isolatedDeclarations`,\n`'tsgo'` for TypeScript 7, and `'tsc'` otherwise. Volar-based custom\nlanguages require `'tsc'`."
+          "description": "The generator used to produce declaration files.\n\n- `'tsc'` supports the full TypeScript type system.\n- `'oxc'` is faster but requires code compatible with\n  [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations).\n- `'tsgo'` uses the experimental TypeScript Go API.\n- `'tsrs'` uses the highly experimental [tsrs](https://github.com/oxc-project/tsrs)\n  API, a Rust port of TypeScript Go. Only the latest `tsrs` release is\n  supported. It is never selected automatically.\n- A custom {@link Generator} implementation can be provided directly.\n\nWhen omitted, the plugin selects `'oxc'` for `isolatedDeclarations`,\n`'tsgo'` when TypeScript exposes the declaration emit API or is 7.0\n(deprecated CLI backend), and `'tsc'` otherwise. Volar-based custom languages require `'tsc'`."
         },
         "entry": {
           "anyOf": [
@@ -4908,19 +4970,19 @@
             { "const": false },
             { "const": true }
           ],
-          "description": "A `tsconfig.json` path, resolved relative to {@link cwd}.\n\nWhen omitted or `true`, the nearest config is discovered from {@link cwd}.\nSet to `false` to disable config loading."
+          "description": "A `tsconfig.json` path, resolved relative to {@link cwd}.\n\nWhen omitted or `true`, the nearest config is discovered from {@link cwd}.\nSet to `false` to disable config loading. The `tsgo` generator requires a\nconfig file, as does `tsrs`."
         },
         "tsconfigRaw": {
           "$ref": "#/$defs/Omit_89a7186e",
-          "description": "Raw `tsconfig.json` values merged over the loaded config."
+          "description": "Raw `tsconfig.json` values merged over the loaded config.\nThe plugin's current `tsgo` implementation does not apply these overrides\nto the TypeScript program."
         },
         "compilerOptions": {
           "$ref": "#/$defs/CompilerOptions",
-          "description": "Compiler options merged over those loaded from `tsconfig.json`."
+          "description": "Compiler options merged over those loaded from `tsconfig.json`.\nIn the plugin's current `tsgo` and `tsrs` implementations, these affect plugin behavior\nbut do not override the program's compiler options. Set those options in\nthe config file instead."
         },
         "sourcemap": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Emits declaration maps (`.d.ts.map`)."
+          "description": "Emits declaration maps (`.d.ts.map`).\nWith `tsgo` or `tsrs`, source mappings also require `compilerOptions.declarationMap`\nto be enabled in the on-disk config; `sourcemap: true` alone is insufficient."
         },
         "resolver": {
           "anyOf": [{ "const": "tsc" }, { "const": "oxc" }],
@@ -4941,14 +5003,55 @@
           "$ref": "#/$defs/Logger",
           "description": "Logger used for plugin messages."
         },
+        "emitJs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Generates declarations for JavaScript files with JSDoc types."
+        },
+        "tsc": {
+          "$ref": "#/$defs/TscOptions",
+          "description": "Options for the built-in `tsc` generator."
+        },
+        "oxc": {
+          "$ref": "#/$defs/Omit_e1330183",
+          "description": "Options for the `oxc` generator.\n\nThe top-level {@link Options.sourcemapsourcemap} option controls\ndeclaration maps."
+        },
+        "tsgo": {
+          "$ref": "#/$defs/TsgoOptions",
+          "description": "**[Experimental]** Options for the TypeScript Go generator."
+        },
+        "tsrs": {
+          "$ref": "#/$defs/TsrsOptions",
+          "description": "**[Highly experimental]** Options for the tsrs generator.\nOnly the latest `tsrs` release is supported."
+        },
+        "customLanguages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CustomLanguage" },
+          "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`. Non-Volar languages can use `tsgo` together\nwith {@link TsgoOptions.vfs`tsgo.vfs`}, or `tsrs` with\n{@link TsrsOptions.vfs`tsrs.vfs`}."
+        },
         "build": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Uses TypeScript build mode (`tsc -b`) and follows project references.",
-          "default": false
+          "description": "Deprecated: Use `tsc.build` instead.",
+          "deprecated": true
         },
         "incremental": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Persists build-mode outputs, including `.tsbuildinfo`, to disk for reuse.\nWhen disabled, build outputs stay in memory."
+          "description": "Deprecated: Use `tsc.incremental` instead.",
+          "deprecated": true
+        },
+        "parallel": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `tsc.parallel` instead.",
+          "deprecated": true
+        },
+        "eager": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `tsc.eager` instead.",
+          "deprecated": true
+        },
+        "newContext": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `tsc.newContext` instead.",
+          "deprecated": true
         },
         "vue": {
           "anyOf": [
@@ -4956,27 +5059,8 @@
             { "const": true },
             { "$ref": "#/$defs/VueLanguageOptions" }
           ],
-          "description": "Registers the built-in Vue language integration using `vue-tsc`.\n\nThis is a shortcut for a preconfigured {@link Options.customLanguages}\nentry and requires the `tsc` generator.",
-          "default": false
-        },
-        "parallel": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Runs `tsc` or `vue-tsc` in a separate process.",
-          "default": false
-        },
-        "eager": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Loads every file listed by `tsconfig.json` into the TypeScript program.\n\nUseful when one config covers multiple packages or entry points.",
-          "default": false
-        },
-        "newContext": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Uses an isolated TypeScript cache instead of the shared global context.",
-          "default": false
-        },
-        "emitJs": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Generates declarations for JavaScript files with JSDoc types."
+          "description": "Deprecated: Use `tsc.vue` instead.",
+          "deprecated": true
         }
       },
       "required": [],
