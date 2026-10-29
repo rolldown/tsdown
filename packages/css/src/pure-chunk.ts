@@ -3,6 +3,20 @@ import type { CssStyles } from './post.ts'
 import type { OutputAsset, OutputChunk } from 'rolldown'
 
 /**
+ * A chunk with no exports whose modules are all CSS.
+ */
+export function isPureCssChunk(
+  chunk: Pick<OutputChunk, 'exports' | 'moduleIds'>,
+  styles: CssStyles,
+): boolean {
+  return (
+    !chunk.exports.length &&
+    chunk.moduleIds.length > 0 &&
+    chunk.moduleIds.every((id) => styles.has(id))
+  )
+}
+
+/**
  * Detect and remove "pure CSS chunks" — JS chunks that exist only because
  * they imported CSS files. These chunks have no JS exports and all their
  * modules are CSS. Following Vite's implementation.
@@ -15,13 +29,7 @@ export function removePureCssChunks(
 
   // Pass 1: strict — all modules in the chunk are CSS
   for (const chunk of Object.values(bundle)) {
-    if (
-      chunk.type !== 'chunk' ||
-      chunk.exports.length ||
-      !chunk.moduleIds.length
-    )
-      continue
-    if (chunk.moduleIds.every((id) => styles.has(id))) {
+    if (chunk.type === 'chunk' && isPureCssChunk(chunk, styles)) {
       pureCssChunkNames.push(chunk.fileName)
     }
   }

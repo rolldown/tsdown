@@ -8,7 +8,7 @@ export const CSS_MODULE_RE: RegExp =
   /\.module\.(?:css|less|sass|scss|styl|stylus)(?:$|\?)/
 
 export function toCssFileName(jsFileName: string): string {
-  return jsFileName.replace(/(?:\.module)?(\.[cm]?js)$/, '.css')
+  return jsFileName.replace(/(?:\.module)?(?:\.css)?(\.[cm]?js)$/, '.css')
 }
 
 export function getCleanId(id: string): string {

@@ -17,6 +17,7 @@ import {
   disposeSassCompiler,
   getPreprocessorLangFromId,
 } from './preprocessors.ts'
+import { isPureCssChunk } from './pure-chunk.ts'
 import {
   CSS_LANGS_RE,
   CSS_MODULE_RE,
@@ -27,7 +28,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { Plugin } from 'rolldown'
+import type { Plugin, PreRenderedChunk } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -200,6 +201,25 @@ export function CssPlugin(
   const cssCollectPlugin: Plugin = {
     name: '@tsdown/css:collect',
 
+    // Pure CSS chunks are removed later, but their JS file names still take
+    // part in Rolldown's case-insensitive deduplication (e.g. `file.css`
+    // would push `File.tsx` to `File2.js`). Add a `.css` infix to avoid that.
+    outputOptions(options) {
+      const wrap = (pattern: typeof options.entryFileNames) =>
+        pattern &&
+        ((chunk: PreRenderedChunk) => {
+          const name = typeof pattern === 'function' ? pattern(chunk) : pattern
+          return isPureCssChunk(chunk, styles)
+            ? name.replace(/(\.[cm]?js)$/, '.css$1')
+            : name
+        })
+      return {
+        ...options,
+        entryFileNames: wrap(options.entryFileNames),
+        chunkFileNames: wrap(options.chunkFileNames),
+      }
+    },
+
     transform: {
       filter: { id: CSS_LANGS_RE },
       handler(code, id) {
@@ -257,20 +277,16 @@ export function CssPlugin(
         // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
         for (const chunk of chunks) {
-          if (
-            chunk.type !== 'chunk' ||
-            chunk.exports.length ||
-            !chunk.moduleIds.length
-          )
-            continue
+          if (chunk.type !== 'chunk') continue
           // Strict: all modules are CSS
-          if (chunk.moduleIds.every((id) => styles.has(id))) {
+          if (isPureCssChunk(chunk, styles)) {
             pureCssChunks.add(chunk.fileName)
             continue
           }
           // Relaxed: non-entry chunk has CSS modules and code is trivially empty
           // (e.g. a JS file whose only purpose is `import './foo.css'`)
           if (
+            !chunk.exports.length &&
             !chunk.isEntry &&
             !chunk.isDynamicEntry &&
             chunk.moduleIds.some((id) => styles.has(id)) &&

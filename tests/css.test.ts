@@ -27,6 +27,22 @@ describe('css', () => {
     expect(outputFiles).toEqual(['index.mjs', 'style.css'])
   })
 
+  test('unbundle with css file named like a js file', async (context) => {
+    const { outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `export { Card } from './Card.ts'`,
+        'Card.ts': `import './card.css'\nexport const Card = 1`,
+        'card.css': `.card { color: red }`,
+      },
+      options: {
+        unbundle: true,
+        format: 'esm',
+      },
+    })
+    expect(outputFiles).toEqual(['Card.mjs', 'card.css', 'index.mjs'])
+  })
+
   test('with dts', async (context) => {
     const { outputFiles } = await testBuild({
       context,
