@@ -1,7 +1,7 @@
 import process from 'node:process'
 import { Hookable } from 'hookable'
 import { exec } from 'tinyexec'
-import treeKill from 'tree-kill'
+import { killTree } from 'tinyps'
 import type { ResolvedConfig, RolldownChunk } from '../config/index.ts'
 import type { BuildOptions } from 'rolldown'
 
@@ -76,7 +76,7 @@ export function executeOnSuccess(
     })
     ab.signal.addEventListener('abort', () => {
       if (typeof p.pid === 'number') {
-        treeKill(p.pid)
+        killTree(p.pid).catch((error) => config.logger.error(error))
       }
     })
   } else {
