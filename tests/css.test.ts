@@ -467,6 +467,36 @@ describe('css', () => {
     expect(fileMap['index.mjs']).toContain('.foo')
   })
 
+  test('css: false leaves css to user plugins', async (context) => {
+    const { fileMap, outputFiles } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './foo.css'`,
+        'foo.css': `.foo { color: red; }`,
+      },
+      options: {
+        css: false,
+        plugins: [
+          {
+            name: 'css-to-js',
+            transform: {
+              filter: { id: /\.css$/ },
+              handler(code) {
+                return {
+                  code: `document.head.append(${JSON.stringify(code)})`,
+                  moduleType: 'js',
+                }
+              },
+            },
+          },
+        ],
+      },
+    })
+    expect(outputFiles).toEqual(['index.mjs'])
+    expect(fileMap['index.mjs']).toContain('document.head.append')
+    expect(fileMap['index.mjs']).toContain('.foo { color: red; }')
+  })
+
   describe('@import bundling', () => {
     test('diamond dependency graph', async (context) => {
       // From esbuild TestCSSAtImport

@@ -328,6 +328,26 @@ export function greet() {
 
 This is useful for component libraries where you want CSS to be automatically included when users import your components.
 
+> [!NOTE]
+> `css.inject` does **not** inject styles into the DOM at runtime (unlike tsup's `injectStyle` or the `inject` option of `rollup-plugin-postcss`). The CSS is still emitted as a separate file, and the preserved `import` is left for the consumer's bundler to handle. tsdown has no built-in DOM injection, since injecting styles from a library breaks SSR and takes control of the styles away from consumers. If you need the CSS inside your JS, import it with [`?inline`](#inline-css-inline) and insert the string yourself.
+
+## Disabling Built-in CSS Handling (`css: false`) {#css-false}
+
+Set `css: false` to turn off built-in CSS handling entirely. `tsdown` then neither processes CSS files nor requires `@tsdown/css`, and leaves CSS imports to your own plugins (for example, a plugin that injects styles into the DOM for a userscript):
+
+```ts
+import postcss from 'rollup-plugin-postcss'
+
+export default defineConfig({
+  css: false,
+  // rollup-plugin-postcss outputs JS but doesn't mark it as such
+  loader: { '.css': 'js' },
+  plugins: [postcss({ inject: true })],
+})
+```
+
+If the plugin returns JavaScript for `.css` files without setting `moduleType` (as `rollup-plugin-postcss` does), also map `.css` to `js` with the [`loader`](../reference/api/Interface.UserConfig.md#loader) option. Otherwise Rolldown still treats the result as CSS and fails.
+
 ## CSS Modules
 
 Files with the `.module.css` extension (and preprocessor variants like `.module.scss`, `.module.less`, etc.) are treated as [CSS modules](https://github.com/css-modules/css-modules). Class names are automatically scoped and exported as a JavaScript object:
@@ -500,6 +520,7 @@ All three are declared as optional peer dependencies of `@tsdown/css` and only l
 
 | Option                    | Type                          | Default                        | Description                                                 |
 | ------------------------- | ----------------------------- | ------------------------------ | ----------------------------------------------------------- |
+| `css`                     | `object \| false`             | `{}`                           | CSS options, or `false` to disable built-in CSS handling    |
 | `css.transformer`         | `'postcss' \| 'lightningcss'` | `'lightningcss'`               | CSS processing pipeline                                     |
 | `css.splitting`           | `boolean`                     | `false` (`true` if `unbundle`) | Enable CSS code splitting per chunk                         |
 | `css.fileName`            | `string`                      | `'style.css'`                  | File name for the merged CSS file (when `splitting: false`) |
@@ -508,5 +529,5 @@ All three are declared as optional peer dependencies of `@tsdown/css` and only l
 | `css.target`              | `string \| string[] \| false` | _from `target`_                | CSS-specific syntax lowering target                         |
 | `css.postcss`             | `string \| object`            | —                              | PostCSS config path or inline options                       |
 | `css.preprocessorOptions` | `object`                      | —                              | Options for CSS preprocessors                               |
-| `css.inject`              | `boolean`                     | `false`                        | Preserve CSS import statements in JS output                 |
+| `css.inject`              | `boolean`                     | `false`                        | Keep CSS import statements in JS output (no DOM injection)  |
 | `css.lightningcss`        | `object`                      | —                              | Options passed to Lightning CSS for syntax lowering         |

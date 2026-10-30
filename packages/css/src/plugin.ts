@@ -58,7 +58,11 @@ export function CssPlugin(
   { logger }: { logger: Logger },
 ): CssPluginResult {
   const cssConfig: CssPluginConfig = {
-    css: resolveCssOptions(config.css, config.target, config.unbundle),
+    css: resolveCssOptions(
+      config.css || undefined,
+      config.target,
+      config.unbundle,
+    ),
     cwd: config.cwd,
     target: config.target,
     sourceMap: Boolean(config.sourcemap),
