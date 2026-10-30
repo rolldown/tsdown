@@ -60,7 +60,7 @@ export interface UserConfig {
   report?: WithEnabled<ReportOptions>;
   globImport?: boolean;
   exports?: WithEnabled<ExportsOptions>;
-  css?: CssOptions;
+  css?: CssOptions | false;
   copy?: CopyOptions | CopyOptionsFn;
   hooks?: Partial<TsdownHooks> | ((_: Hookable<TsdownHooks>) => Awaitable<void>);
   exe?: WithEnabled<ExeOptions>;
