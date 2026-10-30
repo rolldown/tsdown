@@ -1,6 +1,6 @@
 import path from 'node:path'
 import type { CssStyles } from './post.ts'
-import type { OutputAsset, OutputChunk } from 'rolldown'
+import type { InternalModuleFormat, OutputAsset, OutputChunk } from 'rolldown'
 
 /**
  * Detect and remove "pure CSS chunks" — JS chunks that exist only because
@@ -10,6 +10,7 @@ import type { OutputAsset, OutputChunk } from 'rolldown'
 export function removePureCssChunks(
   bundle: Record<string, OutputChunk | OutputAsset>,
   styles: CssStyles,
+  outputFormat: InternalModuleFormat,
 ): void {
   const pureCssChunkNames: string[] = []
 
@@ -48,7 +49,10 @@ export function removePureCssChunks(
 
   if (!pureCssChunkNames.length) return
 
-  const replaceEmptyChunk = getEmptyChunkReplacer(pureCssChunkNames)
+  const replaceEmptyChunk = getEmptyChunkReplacer(
+    pureCssChunkNames,
+    outputFormat,
+  )
 
   for (const chunk of Object.values(bundle)) {
     if (chunk.type !== 'chunk') continue
@@ -74,24 +78,39 @@ export function removePureCssChunks(
 }
 
 /**
- * Create a replacer function that replaces import statements for pure CSS
- * chunks with block comments of the same length, preserving source map offsets.
+ * Create a replacer function that replaces import statements (ESM) or require
+ * calls (CJS) for pure CSS chunks with block comments of the same length,
+ * preserving source map offsets.
  */
 export function getEmptyChunkReplacer(
   pureCssChunkNames: string[],
+  outputFormat: InternalModuleFormat,
 ): (code: string) => string {
   const emptyChunkFiles = pureCssChunkNames
     .map((file) => escapeRegex(path.basename(file)))
     .join('|')
 
+  // For CJS, a minifier may chain require calls with the comma operator. In
+  // that case keep one comma if another require follows, or keep a semicolon
+  // to terminate the chain.
   const emptyChunkRE = new RegExp(
-    String.raw`\bimport\s*["'][^"']*(?:${emptyChunkFiles})["'];`,
+    outputFormat === 'es'
+      ? String.raw`\bimport\s*["'][^"']*(?:${emptyChunkFiles})["'];`
+      : String.raw`(\b|,\s*)require\(\s*["'\`][^"'\`]*(?:${emptyChunkFiles})["'\`]\)(;|,)`,
     'g',
   )
 
   return (code: string) =>
-    code.replace(emptyChunkRE, (m) => {
-      return `/* empty css ${''.padEnd(m.length - 15)}*/`
+    code.replace(emptyChunkRE, (m, p1: string, p2: string) => {
+      if (outputFormat === 'es') {
+        return `/* empty css ${''.padEnd(m.length - 15)}*/`
+      }
+      if (p2 === ';') {
+        // Ends with `;`: move it to the front and drop the leading `,`
+        return `${p2}/* empty css ${''.padEnd(m.length - 16)}*/`
+      }
+      // Ends with `,`: drop it but keep the leading `,` if any
+      return `${p1}/* empty css ${''.padEnd(m.length - 15 - p1.length)}*/`
     })
 }
 

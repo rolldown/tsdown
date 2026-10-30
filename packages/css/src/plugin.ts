@@ -27,7 +27,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { Plugin } from 'rolldown'
+import type { OutputOptions, Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -203,6 +203,17 @@ export function CssPlugin(
   // and converts CSS modules to JS exports.
   const cssCollectPlugin: Plugin = {
     name: '@tsdown/css:collect',
+
+    outputOptions(options) {
+      if (!options.preserveModules) return
+      return {
+        ...options,
+        entryFileNames: keepCssExtension(options.entryFileNames ?? '[name].js'),
+        chunkFileNames: keepCssExtension(
+          options.chunkFileNames ?? '[name]-[hash].js',
+        ),
+      }
+    },
 
     transform: {
       filter: { id: CSS_LANGS_RE },
@@ -506,6 +517,19 @@ async function processWithPostCSS(
     code: transformResult.code,
     map: transformResult.map ?? postcssResult.map,
     modules: postcssResult.modules,
+  }
+}
+
+type ChunkFileNames = NonNullable<OutputOptions['entryFileNames']>
+
+function keepCssExtension(fileNames: ChunkFileNames): ChunkFileNames {
+  return (chunk) => {
+    const template =
+      typeof fileNames === 'function' ? fileNames(chunk) : fileNames
+    const id = chunk.facadeModuleId && getCleanId(chunk.facadeModuleId)
+    if (!id || !CSS_LANGS_RE.test(id) || CSS_MODULE_RE.test(id)) return template
+    const ext = path.extname(id)
+    return template.replaceAll('[name]', `[name]${ext}`)
   }
 }
 

@@ -27,6 +27,42 @@ describe('css', () => {
     expect(outputFiles).toEqual(['index.mjs', 'style.css'])
   })
 
+  // #912
+  test('unbundle with css named like a js module', async (context) => {
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `export { Card } from './Card.ts'`,
+        'Card.ts': `import './card.css'\nexport const Card = 'card'`,
+        'card.css': `.card { color: red }`,
+      },
+      options: {
+        unbundle: true,
+        format: 'cjs',
+      },
+    })
+    expect(outputFiles).toEqual(['Card.cjs', 'card.css', 'index.cjs'])
+    expect(fileMap['Card.cjs']).not.toContain('require(')
+  })
+
+  test('unbundle with cjs and minify', async (context) => {
+    const { outputFiles, fileMap } = await testBuild({
+      context,
+      files: {
+        'index.ts': `import './a.css'\nimport './b.css'\nexport const a = 1`,
+        'a.css': `.a { color: red }`,
+        'b.css': `.b { color: blue }`,
+      },
+      options: {
+        unbundle: true,
+        format: 'cjs',
+        minify: true,
+      },
+    })
+    expect(outputFiles).toEqual(['a.css', 'b.css', 'index.cjs'])
+    expect(fileMap['index.cjs']).not.toContain('require(')
+  })
+
   test('with dts', async (context) => {
     const { outputFiles } = await testBuild({
       context,
