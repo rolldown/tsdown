@@ -328,6 +328,26 @@ export function greet() {
 
 这对于组件库非常有用，可以确保用户导入组件时自动包含对应的 CSS。
 
+> [!NOTE]
+> `css.inject` **不会**在运行时把样式注入 DOM（这一点与 tsup 的 `injectStyle` 和 `rollup-plugin-postcss` 的 `inject` 选项不同）。CSS 仍会输出为独立文件，保留下来的 `import` 交由使用者的打包工具处理。tsdown 不内置注入 DOM 的功能，因为由库自行注入样式会破坏 SSR，也会让使用者失去对样式的控制。如果需要把 CSS 放进 JS，可以通过 [`?inline`](#内联-css-inline) 导入，再自行插入页面。
+
+## 禁用内置 CSS 处理（`css: false`）{#css-false}
+
+设置 `css: false` 可以完全关闭内置的 CSS 处理。此时 `tsdown` 不会处理 CSS 文件，也不要求安装 `@tsdown/css`，CSS 导入交由你自己的插件处理（例如为用户脚本把样式注入 DOM 的插件）：
+
+```ts
+import postcss from 'rollup-plugin-postcss'
+
+export default defineConfig({
+  css: false,
+  // rollup-plugin-postcss 输出的是 JS，但没有标记模块类型
+  loader: { '.css': 'js' },
+  plugins: [postcss({ inject: true })],
+})
+```
+
+如果插件为 `.css` 文件返回 JavaScript 却没有设置 `moduleType`（`rollup-plugin-postcss` 就是如此），还需要通过 [`loader`](../reference/api/Interface.UserConfig.md#loader) 选项把 `.css` 映射为 `js`，否则 Rolldown 仍会把结果当作 CSS 处理并报错。
+
 ## CSS Modules
 
 扩展名为 `.module.css` 的文件（以及预处理器变体如 `.module.scss`、`.module.less` 等）会被视为 [CSS Modules](https://github.com/css-modules/css-modules)。类名会自动添加作用域，并作为 JavaScript 对象导出：
@@ -499,6 +519,7 @@ npm install -D postcss postcss-import postcss-modules
 
 | 选项                      | 类型                          | 默认值                            | 描述                                          |
 | ------------------------- | ----------------------------- | --------------------------------- | --------------------------------------------- |
+| `css`                     | `object \| false`             | `{}`                              | CSS 选项，或 `false` 禁用内置 CSS 处理        |
 | `css.transformer`         | `'postcss' \| 'lightningcss'` | `'lightningcss'`                  | CSS 处理管线                                  |
 | `css.splitting`           | `boolean`                     | `false`（`unbundle` 时为 `true`） | 启用按 chunk 的 CSS 代码分割                  |
 | `css.fileName`            | `string`                      | `'style.css'`                     | 合并 CSS 的文件名（当 `splitting: false` 时） |
@@ -507,5 +528,5 @@ npm install -D postcss postcss-import postcss-modules
 | `css.target`              | `string \| string[] \| false` | _继承 `target`_                   | CSS 专用语法降级目标                          |
 | `css.postcss`             | `string \| object`            | —                                 | PostCSS 配置路径或内联选项                    |
 | `css.preprocessorOptions` | `object`                      | —                                 | CSS 预处理器选项                              |
-| `css.inject`              | `boolean`                     | `false`                           | 在 JS 输出中保留 CSS 导入语句                 |
+| `css.inject`              | `boolean`                     | `false`                           | 在 JS 输出中保留 CSS 导入语句（不会注入 DOM） |
 | `css.lightningcss`        | `object`                      | —                                 | 传递给 Lightning CSS 的语法降级选项           |

@@ -133,6 +133,7 @@ export interface CssOptions {
   /**
    * When enabled, JS output preserves import statements pointing to emitted CSS files.
    * Consumers of the library will automatically import the CSS alongside the JS.
+   * Does not inject styles into the DOM.
    *
    * @default false
    */

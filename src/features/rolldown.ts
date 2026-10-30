@@ -164,13 +164,15 @@ async function resolveInputOptions(
       )
     }
 
-    if (pkgExists('@tsdown/css')) {
-      const { CssPlugin } = await import('@tsdown/css')
-      const cssPlugins = CssPlugin(config, { logger })
-      plugins.push(...cssPlugins.pre)
-      cssPostPlugins = cssPlugins.post
-    } else {
-      plugins.push(CssGuardPlugin())
+    if (config.css !== false) {
+      if (pkgExists('@tsdown/css')) {
+        const { CssPlugin } = await import('@tsdown/css')
+        const cssPlugins = CssPlugin(config, { logger })
+        plugins.push(...cssPlugins.pre)
+        cssPostPlugins = cssPlugins.post
+      } else {
+        plugins.push(CssGuardPlugin())
+      }
     }
 
     plugins.push(ShebangPlugin(logger, cwd, nameLabel, isDualFormat))

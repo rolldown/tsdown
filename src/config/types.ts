@@ -606,8 +606,11 @@ export interface UserConfig {
   /**
    * **[experimental]** CSS options.
    * Requires `@tsdown/css` to be installed.
+   *
+   * Set to `false` to disable built-in CSS handling, leaving CSS files to
+   * user plugins.
    */
-  css?: CssOptions
+  css?: CssOptions | false
 
   /**
    * Copy files to another directory.

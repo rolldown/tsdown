@@ -475,10 +475,10 @@ function exportMeta(
 function exportCss(
   exports: Record<string, any>,
   chunks: ChunksByFormat,
-  css: { splitting?: boolean } | undefined,
+  css: { splitting?: boolean } | false | undefined,
   pkgRoot: string,
 ) {
-  if (css?.splitting) return
+  if (css && css.splitting) return
 
   for (const chunksByFormat of Object.values(chunks)) {
     for (const chunk of chunksByFormat) {
