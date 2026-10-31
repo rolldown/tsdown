@@ -25,37 +25,7 @@ exports[`comprehensive transformation > should transform complex tsup config > w
 ]
 `;
 
-exports[`default values > should add clean: false when not present > code 1`] = `
-"export default {
-  entry: ['src/index.ts'],
-  format: 'cjs',
-  clean: false,
-  dts: false,
-  target: false,
-}"
-`;
-
-exports[`default values > should add dts: false when not present > code 1`] = `
-"export default {
-  entry: ['src/index.ts'],
-  format: 'cjs',
-  clean: false,
-  dts: false,
-  target: false,
-}"
-`;
-
-exports[`default values > should add format: "cjs" when not present > code 1`] = `
-"export default {
-  entry: ['src/index.ts'],
-  format: 'cjs',
-  clean: false,
-  dts: false,
-  target: false,
-}"
-`;
-
-exports[`default values > should add target: false when not present > code 1`] = `
+exports[`default values > should add format, clean, dts and target defaults when not present > code 1`] = `
 "export default {
   entry: ['src/index.ts'],
   format: 'cjs',

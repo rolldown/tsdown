@@ -298,7 +298,7 @@ describe('warning options', () => {
 })
 
 describe('default values', () => {
-  test('should add format: "cjs" when not present', () => {
+  test('should add format, clean, dts and target defaults when not present', () => {
     const input = `
       export default {
         entry: ['src/index.ts'],
@@ -306,6 +306,9 @@ describe('default values', () => {
     `
     const { code } = transform(input, 'tsup.config.ts')
     expect(code).toContain("format: 'cjs'")
+    expect(code).toContain('clean: false')
+    expect(code).toContain('dts: false')
+    expect(code).toContain('target: false')
   })
 
   test('should not add format when present', () => {
@@ -317,36 +320,6 @@ describe('default values', () => {
     const { code } = transform(input, 'tsup.config.ts')
     expect(code).contains("format: ['esm', 'cjs']")
     expect(code).not.toContain("format: 'cjs'")
-  })
-
-  test('should add clean: false when not present', () => {
-    const input = `
-      export default {
-        entry: ['src/index.ts'],
-      }
-    `
-    const { code } = transform(input, 'tsup.config.ts')
-    expect(code).toContain('clean: false')
-  })
-
-  test('should add dts: false when not present', () => {
-    const input = `
-      export default {
-        entry: ['src/index.ts'],
-      }
-    `
-    const { code } = transform(input, 'tsup.config.ts')
-    expect(code).toContain('dts: false')
-  })
-
-  test('should add target: false when not present', () => {
-    const input = `
-      export default {
-        entry: ['src/index.ts'],
-      }
-    `
-    const { code } = transform(input, 'tsup.config.ts')
-    expect(code).toContain('target: false')
   })
 })
 
