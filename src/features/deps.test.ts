@@ -1,4 +1,8 @@
+import { mkdtemp, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
+import { fsRemove } from '../utils/fs.ts'
 import {
   DepsPlugin,
   getTypesPackageName,
@@ -145,6 +149,51 @@ describe('DepsPlugin', () => {
       moduleSideEffects: undefined,
     })
     expect(resolve).toHaveBeenCalledTimes(1)
+  })
+
+  it('caches the exports check per build', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'tsdown-deps-cache-'))
+    const packageJsonPath = path.join(dir, 'package.json')
+    try {
+      await writeFile(packageJsonPath, JSON.stringify({ name: 'my-dep' }))
+
+      const plugin = DepsPlugin(
+        {
+          pkg: { dependencies: { 'my-dep': '^1.0.0' } },
+          deps: resolveDepsConfig({ deps: { resolveDepSubpath: true } }),
+        } as any,
+        { inlinedDeps: new Map() } as any,
+      )
+      const handler = (plugin.resolveId as any).handler
+      const buildStart = plugin.buildStart as () => void
+      const resolve = vi.fn(() =>
+        Promise.resolve({
+          id: '/project/node_modules/my-dep/sub/index.js',
+          packageJsonPath,
+        }),
+      )
+      const resolveSub = () =>
+        handler.call({ resolve }, 'my-dep/sub', '/project/src/index.ts', {})
+
+      await expect(resolveSub()).resolves.toMatchObject({
+        id: 'my-dep/sub/index.js',
+      })
+
+      // within the same build the first read wins
+      await writeFile(
+        packageJsonPath,
+        JSON.stringify({ name: 'my-dep', exports: './index.js' }),
+      )
+      await expect(resolveSub()).resolves.toMatchObject({
+        id: 'my-dep/sub/index.js',
+      })
+
+      // a rebuild in watch mode must pick up the new `exports` field
+      buildStart()
+      await expect(resolveSub()).resolves.toMatchObject({ id: 'my-dep/sub' })
+    } finally {
+      await fsRemove(dir)
+    }
   })
 })
 
