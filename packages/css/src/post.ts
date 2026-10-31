@@ -1,4 +1,5 @@
 import { transformWithLightningCSS } from './lightningcss.ts'
+import { deduplicateCssModuleRules } from './modules.ts'
 import { defaultCssBundleName, type ResolvedCssOptions } from './options.ts'
 import { removePureCssChunks } from './pure-chunk.ts'
 import { toCssFileName } from './utils.ts'
@@ -12,15 +13,36 @@ export function CssPostPlugin(
     'splitting' | 'fileName' | 'minify' | 'target' | 'lightningcss'
   >,
   styles: CssStyles,
+  composedModules: ReadonlySet<string>,
 ): Plugin {
   const collectedCSS: string[] = []
+  const collectedModuleIds: string[] = []
 
-  async function finalizeCss(css: string): Promise<string> {
-    if (!config.minify) return css
+  async function finalizeCss(
+    css: string,
+    moduleIds: string[],
+  ): Promise<string> {
+    const hasComposedModules = moduleIds.some((id) => composedModules.has(id))
+    if (!config.minify && !hasComposedModules) {
+      return css
+    }
+
+    let lightningcss = config.lightningcss
+    if (hasComposedModules) {
+      const { composeVisitors } = await import('lightningcss')
+      lightningcss = {
+        ...lightningcss,
+        // Only minification previously ran user visitors on the final asset.
+        visitor: composeVisitors([
+          config.minify ? (lightningcss?.visitor ?? {}) : {},
+          { StyleSheetExit: deduplicateCssModuleRules },
+        ]),
+      }
+    }
     const result = await transformWithLightningCSS(css, defaultCssBundleName, {
       target: config.target,
-      lightningcss: config.lightningcss,
-      minify: true,
+      lightningcss,
+      minify: config.minify,
     })
     let code = result.code
     if (code.length && !code.endsWith('\n')) {
@@ -41,6 +63,7 @@ export function CssPostPlugin(
         const code = styles.get(id)
         if (code) {
           chunkCSS += code
+          collectedModuleIds.push(id)
         }
       }
       if (!chunkCSS) return
@@ -71,7 +94,7 @@ export function CssPostPlugin(
             chunkCSS += '\n'
           }
 
-          chunkCSS = await finalizeCss(chunkCSS)
+          chunkCSS = await finalizeCss(chunkCSS, chunk.moduleIds)
 
           const cssAssetFileName = toCssFileName(chunk.fileName)
           this.emitFile({
@@ -83,7 +106,7 @@ export function CssPostPlugin(
       } else if (collectedCSS.length > 0) {
         let allCSS = collectedCSS.join('')
         if (allCSS) {
-          allCSS = await finalizeCss(allCSS)
+          allCSS = await finalizeCss(allCSS, collectedModuleIds)
           this.emitFile({
             type: 'asset',
             fileName: config.fileName,
@@ -92,6 +115,7 @@ export function CssPostPlugin(
           })
         }
         collectedCSS.length = 0
+        collectedModuleIds.length = 0
       }
 
       removePureCssChunks(bundle, styles)
