@@ -31,6 +31,7 @@ const RE_PACKAGE_SPECIFIER =
   /^(?:@[a-z0-9-][a-z0-9-._]*\/)?[a-z0-9-][a-z0-9-._]*(?:\/|$)/
 
 type ResolveFn = () => Promise<ResolvedId | null>
+type PkgJsonCache = Map<string, Promise<Record<string, any> | undefined>>
 
 export type NoExternalFn = (
   id: string,
@@ -185,14 +186,12 @@ export function DepsPlugin(
   tsdownBundle: TsdownBundle,
 ): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
-  // Keyed by package.json path. Every subpath import of a package reads the
-  // same file, so read it once per build.
-  const hasExportsCache: HasExportsCache = new Map()
+  const pkgJsonCache: PkgJsonCache = new Map()
 
   return {
     name: 'tsdown:deps',
     buildStart() {
-      hasExportsCache.clear()
+      pkgJsonCache.clear()
     },
     resolveId: {
       filter: [include(and(id(/^[^.]/), importerId(/./)))],
@@ -277,7 +276,7 @@ export function DepsPlugin(
           // inlined deps
           for (const id of chunk.moduleIds) {
             if (id === shimFile) continue
-            const parsed = await readBundledDepInfo(id)
+            const parsed = await readBundledDepInfo(id, pkgJsonCache)
             if (!parsed) continue
 
             deps.add(parsed.name)
@@ -390,7 +389,7 @@ export function DepsPlugin(
       if (RE_PACKAGE_SPECIFIER.test(id)) {
         const resolvedDep =
           shouldResolveDepSubpath &&
-          (await resolveDepSubpath(id, resolve, hasExportsCache))
+          (await resolveDepSubpath(id, resolve, pkgJsonCache))
         // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
@@ -404,7 +403,7 @@ export function DepsPlugin(
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
         const resolvedDep =
           shouldResolveDepSubpath &&
-          (await resolveDepSubpath(id, resolve, hasExportsCache))
+          (await resolveDepSubpath(id, resolve, pkgJsonCache))
         // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
@@ -482,20 +481,31 @@ export function parseNodeModulesPath(
   return [name, subpath, root]
 }
 
+function readPkgJson(
+  pkgJsonPath: string,
+  cache: PkgJsonCache,
+): Promise<Record<string, any> | undefined> {
+  let pkgJson = cache.get(pkgJsonPath)
+  if (!pkgJson) {
+    pkgJson = readFile(pkgJsonPath, 'utf8')
+      .then((content) => JSON.parse(content))
+      .catch(() => undefined)
+    cache.set(pkgJsonPath, pkgJson)
+  }
+  return pkgJson
+}
+
 async function readBundledDepInfo(
   moduleId: string,
+  pkgJsonCache: PkgJsonCache,
 ): Promise<{ name: string; pkgName: string; version: string } | undefined> {
   const parsed = parseNodeModulesPath(moduleId)
   if (!parsed) return
 
   const [name, , root] = parsed
 
-  try {
-    const json = JSON.parse(
-      await readFile(path.join(root, 'package.json'), 'utf8'),
-    )
-    return { name, pkgName: json.name, version: json.version }
-  } catch {}
+  const json = await readPkgJson(path.join(root, 'package.json'), pkgJsonCache)
+  return json && { name, pkgName: json.name, version: json.version }
 }
 
 export function getTypesPackageName(id: string): string | undefined {
@@ -505,23 +515,10 @@ export function getTypesPackageName(id: string): string | undefined {
   return `@types/${name.replace(/^@/, '').replace('/', '__')}`
 }
 
-// `undefined` when the package.json can't be read or parsed
-type HasExportsCache = Map<string, Promise<boolean | undefined>>
-
-async function readHasExports(
-  packageJsonPath: string,
-): Promise<boolean | undefined> {
-  try {
-    return !!JSON.parse(await readFile(packageJsonPath, 'utf8')).exports
-  } catch {
-    return undefined
-  }
-}
-
 async function resolveDepSubpath(
   id: string,
   resolve: ResolveFn,
-  hasExportsCache: HasExportsCache,
+  pkgJsonCache: PkgJsonCache,
 ) {
   const parts = id.split('/')
   // ignore scope
@@ -532,13 +529,8 @@ async function resolveDepSubpath(
   const resolved = await resolve()
   if (!resolved?.packageJsonPath) return
 
-  let hasExports = hasExportsCache.get(resolved.packageJsonPath)
-  if (!hasExports) {
-    hasExports = readHasExports(resolved.packageJsonPath)
-    hasExportsCache.set(resolved.packageJsonPath, hasExports)
-  }
-  // only rewrite packages that have a readable package.json without `exports`
-  if ((await hasExports) !== false) return
+  const pkgJson = await readPkgJson(resolved.packageJsonPath, pkgJsonCache)
+  if (!pkgJson || pkgJson.exports) return
 
   const parsed = parseNodeModulesPath(resolved.id)
   if (!parsed) return
