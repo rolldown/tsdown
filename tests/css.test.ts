@@ -1,3 +1,5 @@
+import { readdir, readFile } from 'node:fs/promises'
+import path from 'node:path'
 import { describe, expect, test, type TestContext } from 'vitest'
 import { testBuild } from './utils.ts'
 
@@ -25,6 +27,50 @@ describe('css', () => {
       },
     })
     expect(outputFiles).toEqual(['index.mjs', 'style.css'])
+  })
+
+  // #912
+  test('unbundle with css named like a js module', async (context) => {
+    const { outputDir } = await testBuild({
+      context,
+      snapshot: false,
+      files: {
+        'index.ts': `export { Card } from './Card.ts'`,
+        'Card.ts': `import './card.css'\nexport const Card = 'card'`,
+        'card.css': `.card { color: red }`,
+      },
+      options: {
+        unbundle: true,
+        format: 'cjs',
+      },
+    })
+    const outputFiles = await readdir(outputDir)
+    expect(outputFiles).toContain('card.css')
+    expect(outputFiles).not.toContain('card.cjs')
+    const card = outputFiles.find((file) => /^Card\d*\.cjs$/.test(file))
+    const code = await readFile(path.join(outputDir, card!), 'utf8')
+    expect(code).not.toContain('require(')
+  })
+
+  test('unbundle with cjs and minify', async (context) => {
+    const { outputDir } = await testBuild({
+      context,
+      snapshot: false,
+      files: {
+        'index.ts': `import './a.css'\nimport './b.css'\nexport const a = 1`,
+        'a.css': `.a { color: red }`,
+        'b.css': `.b { color: blue }`,
+      },
+      options: {
+        unbundle: true,
+        format: 'cjs',
+        minify: true,
+      },
+    })
+    const outputFiles = await readdir(outputDir)
+    expect(outputFiles.toSorted()).toEqual(['a.css', 'b.css', 'index.cjs'])
+    const code = await readFile(path.join(outputDir, 'index.cjs'), 'utf8')
+    expect(code).not.toContain('require(')
   })
 
   test('with dts', async (context) => {

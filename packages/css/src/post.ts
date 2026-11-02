@@ -52,7 +52,7 @@ export function CssPostPlugin(
       collectedCSS.push(chunkCSS)
     },
 
-    async generateBundle(_outputOptions, bundle) {
+    async generateBundle(outputOptions, bundle) {
       if (config.splitting) {
         // Emit CSS assets in generateBundle where chunk fileNames are resolved
         for (const chunk of Object.values(bundle)) {
@@ -94,7 +94,7 @@ export function CssPostPlugin(
         collectedCSS.length = 0
       }
 
-      removePureCssChunks(bundle, styles)
+      removePureCssChunks(bundle, styles, outputOptions.format)
     },
   }
 }
