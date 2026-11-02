@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import {
   DepsPlugin,
@@ -7,6 +9,11 @@ import {
   resolveDepsConfig,
 } from './deps.ts'
 import type { UserConfig } from '../config/types.ts'
+
+vi.mock('node:fs/promises', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('node:fs/promises')>()),
+  readFile: vi.fn(),
+}))
 
 describe('resolveDepsConfig', () => {
   it('disables dependency subpath resolution by default', () => {
@@ -145,6 +152,83 @@ describe('DepsPlugin', () => {
       moduleSideEffects: undefined,
     })
     expect(resolve).toHaveBeenCalledTimes(1)
+  })
+
+  describe('package.json cache', () => {
+    const moduleId = '/project/node_modules/my-dep/sub/index.js'
+    const readFileMock = vi.mocked(readFile)
+
+    async function setup() {
+      // tests/setup.ts already loaded deps.ts without the fs mock
+      vi.resetModules()
+      const { DepsPlugin } = await import('./deps.ts')
+      const inlinedDeps = new Map<string, Set<string>>()
+      const plugin = DepsPlugin(
+        {
+          pkg: { dependencies: { 'my-dep': '^1.0.0' } },
+          deps: resolveDepsConfig({
+            deps: { resolveDepSubpath: true, onlyBundle: false },
+          }),
+        } as any,
+        { inlinedDeps } as any,
+      )
+      const resolve = () =>
+        Promise.resolve({
+          id: moduleId,
+          packageJsonPath: path.join(
+            '/project/node_modules/my-dep',
+            'package.json',
+          ),
+        })
+      const resolveSub = () =>
+        (plugin.resolveId as any).handler.call(
+          { resolve },
+          'my-dep/sub',
+          '/project/src/index.ts',
+          {},
+        )
+      const generateBundle = () =>
+        (plugin.generateBundle as any).handler.call(
+          { getModuleIds: () => [moduleId], getModuleInfo: () => null },
+          {},
+          { 'index.mjs': { type: 'chunk', moduleIds: [moduleId] } },
+        )
+      return { plugin, inlinedDeps, resolveSub, generateBundle }
+    }
+
+    it('reads each package.json once per build', async () => {
+      readFileMock.mockReset()
+      readFileMock.mockResolvedValue(
+        JSON.stringify({ name: 'my-dep', version: '1.0.0' }),
+      )
+      const { plugin, inlinedDeps, resolveSub, generateBundle } = await setup()
+
+      const results = await Promise.all([resolveSub(), resolveSub()])
+      await generateBundle()
+      expect(results.map((result) => result.id)).toEqual([
+        'my-dep/sub/index.js',
+        'my-dep/sub/index.js',
+      ])
+      expect(inlinedDeps.get('my-dep')).toEqual(new Set(['1.0.0']))
+      expect(readFileMock).toHaveBeenCalledTimes(1)
+
+      readFileMock.mockResolvedValue(
+        JSON.stringify({ name: 'my-dep', exports: './index.js' }),
+      )
+      ;(plugin.buildStart as () => void)()
+      await expect(resolveSub()).resolves.toMatchObject({ id: 'my-dep/sub' })
+      expect(readFileMock).toHaveBeenCalledTimes(2)
+    })
+
+    it('ignores a malformed package.json', async () => {
+      readFileMock.mockReset()
+      readFileMock.mockResolvedValue('{')
+      const { inlinedDeps, resolveSub, generateBundle } = await setup()
+
+      await expect(resolveSub()).resolves.toMatchObject({ id: 'my-dep/sub' })
+      await generateBundle()
+      expect(inlinedDeps.size).toBe(0)
+    })
   })
 })
 

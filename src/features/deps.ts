@@ -40,6 +40,7 @@ const RE_ANY = /./
 const RE_LEADING_AT = /^@/
 
 type ResolveFn = () => Promise<ResolvedId | null>
+type PkgJsonCache = Map<string, Promise<Record<string, any> | undefined>>
 
 export type NoExternalFn = (
   id: string,
@@ -194,9 +195,13 @@ export function DepsPlugin(
   tsdownBundle: TsdownBundle,
 ): Plugin {
   const deps = pkg && Array.from(getProductionDeps(pkg))
+  const pkgJsonCache: PkgJsonCache = new Map()
 
   return {
     name: 'tsdown:deps',
+    buildStart() {
+      pkgJsonCache.clear()
+    },
     resolveId: {
       filter: [include(and(id(RE_BARE_SPECIFIER), importerId(RE_ANY)))],
       async handler(id, importer, extraOptions) {
@@ -280,7 +285,7 @@ export function DepsPlugin(
           // inlined deps
           for (const id of chunk.moduleIds) {
             if (id === shimFile) continue
-            const parsed = await readBundledDepInfo(id)
+            const parsed = await readBundledDepInfo(id, pkgJsonCache)
             if (!parsed) continue
 
             deps.add(parsed.name)
@@ -393,7 +398,8 @@ export function DepsPlugin(
       }
       if (RE_PACKAGE_SPECIFIER.test(id)) {
         const resolvedDep =
-          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+          shouldResolveDepSubpath &&
+          (await resolveDepSubpath(id, resolve, pkgJsonCache))
         // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
@@ -406,7 +412,8 @@ export function DepsPlugin(
     if (deps) {
       if (deps.includes(id) || deps.some((dep) => id.startsWith(`${dep}/`))) {
         const resolvedDep =
-          shouldResolveDepSubpath && (await resolveDepSubpath(id, resolve))
+          shouldResolveDepSubpath &&
+          (await resolveDepSubpath(id, resolve, pkgJsonCache))
         // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
         return resolvedDep ? [true, resolvedDep] : true
       }
@@ -484,20 +491,31 @@ export function parseNodeModulesPath(
   return [name, subpath, root]
 }
 
+function readPkgJson(
+  pkgJsonPath: string,
+  cache: PkgJsonCache,
+): Promise<Record<string, any> | undefined> {
+  let pkgJson = cache.get(pkgJsonPath)
+  if (!pkgJson) {
+    pkgJson = readFile(pkgJsonPath, 'utf8')
+      .then((content) => JSON.parse(content))
+      .catch(() => undefined)
+    cache.set(pkgJsonPath, pkgJson)
+  }
+  return pkgJson
+}
+
 async function readBundledDepInfo(
   moduleId: string,
+  pkgJsonCache: PkgJsonCache,
 ): Promise<{ name: string; pkgName: string; version: string } | undefined> {
   const parsed = parseNodeModulesPath(moduleId)
   if (!parsed) return
 
   const [name, , root] = parsed
 
-  try {
-    const json = JSON.parse(
-      await readFile(path.join(root, 'package.json'), 'utf8'),
-    )
-    return { name, pkgName: json.name, version: json.version }
-  } catch {}
+  const json = await readPkgJson(path.join(root, 'package.json'), pkgJsonCache)
+  return json && { name, pkgName: json.name, version: json.version }
 }
 
 export function getTypesPackageName(id: string): string | undefined {
@@ -507,7 +525,11 @@ export function getTypesPackageName(id: string): string | undefined {
   return `@types/${name.replace(RE_LEADING_AT, '').replace('/', '__')}`
 }
 
-async function resolveDepSubpath(id: string, resolve: ResolveFn) {
+async function resolveDepSubpath(
+  id: string,
+  resolve: ResolveFn,
+  pkgJsonCache: PkgJsonCache,
+) {
   const parts = id.split('/')
   // ignore scope
   if (parts[0][0] === '@') parts.shift()
@@ -517,15 +539,8 @@ async function resolveDepSubpath(id: string, resolve: ResolveFn) {
   const resolved = await resolve()
   if (!resolved?.packageJsonPath) return
 
-  let pkgJson: Record<string, any>
-  try {
-    pkgJson = JSON.parse(await readFile(resolved.packageJsonPath, 'utf8'))
-  } catch {
-    return
-  }
-
-  // no `exports` field
-  if (pkgJson.exports) return
+  const pkgJson = await readPkgJson(resolved.packageJsonPath, pkgJsonCache)
+  if (!pkgJson || pkgJson.exports) return
 
   const parsed = parseNodeModulesPath(resolved.id)
   if (!parsed) return
