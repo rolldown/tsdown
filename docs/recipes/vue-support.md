@@ -55,3 +55,6 @@ bun add -D unplugin-vue vue-tsc
 
 > [!TIP]
 > Set `platform: 'neutral'` to maximize compatibility for libraries that may be used in both browser and Node.js environments.
+
+> [!TIP]
+> To build `<style>` blocks, install `@tsdown/css`. See [CSS Support](../options/css.md) for details.

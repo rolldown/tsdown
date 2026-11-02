@@ -55,3 +55,6 @@ bun add -D unplugin-vue vue-tsc
 
 > [!TIP]
 > 建议将 `platform` 设置为 `'neutral'`，以最大化兼容性，方便您的库同时用于浏览器和 Node.js 环境。
+
+> [!TIP]
+> 如需构建 `<style>` 块，请安装 `@tsdown/css`。详情请参阅 [CSS 支持](../options/css.md)。
