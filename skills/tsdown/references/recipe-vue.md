@@ -40,7 +40,7 @@ export default defineConfig({
     Vue({ isProduction: true }),
   ],
   dts: {
-    vue: true,  // Enable Vue type generation
+    tsc: { vue: true }, // Enable Vue type generation
   },
 })
 ```
@@ -136,7 +136,7 @@ export default defineConfig({
     }),
   ],
   dts: {
-    vue: true,
+    tsc: { vue: true },
   },
   clean: true,
 })
@@ -157,7 +157,7 @@ export default defineConfig({
     neverBundle: ['vue'],
   },
   plugins: [Vue({ isProduction: true })],
-  dts: { vue: true },
+  dts: { tsc: { vue: true } },
 })
 ```
 
@@ -183,7 +183,7 @@ export default defineConfig({
     neverBundle: ['vue'],
   },
   plugins: [Vue({ isProduction: true })],
-  dts: { vue: true },
+  dts: { tsc: { vue: true } },
 })
 ```
 
@@ -260,7 +260,7 @@ export default defineConfig({
       dts: 'src/components.d.ts',
     }),
   ],
-  dts: { vue: true },
+  dts: { tsc: { vue: true } },
 })
 ```
 
@@ -287,7 +287,7 @@ export default defineConfig({
       jsxImportSource: 'vue',
     },
   },
-  dts: { vue: true },
+  dts: { tsc: { vue: true } },
 })
 ```
 
@@ -302,7 +302,7 @@ export default defineConfig({
     neverBundle: ['vue', /^@mycompany\//],
   },
   plugins: [Vue({ isProduction: true })],
-  dts: { vue: true },
+  dts: { tsc: { vue: true } },
 })
 ```
 
@@ -331,7 +331,7 @@ Vue({
 ## Tips
 
 1. **Always externalize Vue** - Don't bundle Vue itself
-2. **Enable vue: true in dts** - For proper type generation
+2. **Enable tsc.vue in dts** - For proper type generation
 3. **Use platform: 'neutral'** - Maximum compatibility
 4. **Install vue-tsc** - Required for type generation
 5. **Set isProduction: true** - Optimize for production
@@ -348,7 +348,7 @@ pnpm add -D vue-tsc
 
 Enable in config:
 ```ts
-dts: { vue: true }
+dts: { tsc: { vue: true } }
 ```
 
 ### Component Types Missing

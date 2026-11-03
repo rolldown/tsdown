@@ -22,7 +22,7 @@ export default defineConfig({
   entry: ['./src/index.ts'],
   platform: 'neutral',
   plugins: [Vue({ isProduction: true })],
-  dts: { vue: true },
+  dts: { tsc: { vue: true } },
 })
 ```
 
@@ -51,7 +51,7 @@ bun add -D unplugin-vue vue-tsc
 ## How It Works
 
 - **`unplugin-vue`** compiles `.vue` single-file components into JavaScript and extracts CSS, making them ready for bundling.
-- **`rolldown-plugin-dts`** (with `vue: true`) and **`vue-tsc`** work together to generate accurate TypeScript declaration files for your Vue components, ensuring consumers of your library get full type support.
+- **`rolldown-plugin-dts`** (with `tsc.vue: true`) and **`vue-tsc`** work together to generate accurate TypeScript declaration files for your Vue components, ensuring consumers of your library get full type support.
 
 > [!TIP]
 > Set `platform: 'neutral'` to maximize compatibility for libraries that may be used in both browser and Node.js environments.
