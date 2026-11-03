@@ -194,7 +194,7 @@ Enable Vue component type generation (requires `vue-tsc`):
 ```ts
 export default defineConfig({
   dts: {
-    vue: true,
+    tsc: { vue: true },
   },
 })
 ```

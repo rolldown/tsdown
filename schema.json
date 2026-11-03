@@ -1647,7 +1647,7 @@
                   "additionalProperties": false
                 }
               ],
-              "description": "Enables automatic generation of a chunk import map asset during build.\n\nThis map includes chunks with hashed filenames. Entry keys use their facade module ID. Common chunks\nuse their name; later chunks with the same name use their smallest original module ID.\nModules copied into a file by `experimentalInlineCommonChunks` remain in `moduleIds` but do not\naffect that file's key.\nKeeping these keys independent of content hashes reduces cascading cache invalidation when\na dependency changes.\n\nThe output defaults to `importmap.json` unless overridden via `fileName`. A base URL prefix\n(default `\"/\"`) can be applied to all paths. The resulting JSON is a valid import map and can be\ndirectly injected into HTML via `<script type=\"importmap\">`.",
+              "description": "Enables automatic generation of a chunk import map asset during build.\n\nThis map includes chunks with hashed filenames. Entry keys use their facade module ID. Common chunks\nuse their name; later chunks with the same name use the smallest module key among their original members.\nModule keys distinguish cwd-relative filesystem paths from verbatim non-path IDs.\nModules copied into a file by `experimentalInlineCommonChunks` remain in `moduleIds` but do not\naffect that file's key.\nKeeping these keys independent of content hashes reduces cascading cache invalidation when\na dependency changes.\n\nThe output defaults to `importmap.json` unless overridden via `fileName`. A base URL prefix\n(default `\"/\"`) can be applied to all paths. The resulting JSON is a valid import map and can be\ndirectly injected into HTML via `<script type=\"importmap\">`.",
               "default": false
             },
             "onDemandWrapping": {
@@ -1706,10 +1706,16 @@
         },
         "devtools": {
           "type": "object",
-          "properties": { "sessionId": { "type": "string" } },
+          "properties": {
+            "sessionId": { "type": "string" },
+            "mode": {
+              "anyOf": [{ "const": "full" }, { "const": "report" }],
+              "description": "`'full'` (default): write JSON-lines devtools logs.\n`'report'`: aggregate the same event stream in-memory and emit an agent-readable\nreport (`metrics.json` + markdown views + `history.jsonl`) instead.\nAny other value fails the build."
+            }
+          },
           "required": [],
           "additionalProperties": false,
-          "description": "Devtools integration options.\n\nWhen enabled, Rolldown writes JSON-lines devtools output under\n`node_modules/.rolldown/{session_id}/`, resolved against {@linkcode cwd}.\nConsumers can parse the output with `@rolldown/debug` after\n`await bundle.close()` resolves.\n\n`sessionId` replaces the generated session id. It must be one path segment: not empty, not\n`.` or `..`, and without `/`, `\\` or NUL. Rolldown does not check that it is unique: give each\nbundler that runs at the same time its own `sessionId`, or their devtools output mixes.\nThe name `unknown-session` is reserved regardless of case."
+          "description": "Devtools integration options.\n\nIn the default `'full'` mode, Rolldown writes JSON-lines devtools output under\n`node_modules/.rolldown/{session_id}/`, resolved against {@linkcode cwd}.\nConsumers can parse the output with `@rolldown/debug` after\n`await bundle.close()` resolves.\n\n`sessionId` replaces the generated session id. It must be one path segment: not empty, not\n`.` or `..`, and without `/`, `\\` or NUL. Rolldown does not check that it is unique: give each\nbundler that runs at the same time its own `sessionId`, or their devtools output mixes.\nThe name `unknown-session` is reserved regardless of case.\n\nIn `'report'` mode, Rolldown aggregates the same internal event stream in-memory and\nwrites a small, agent-readable report instead of the multi-GB `logs.json`: a canonical\n`metrics.json` (schema-versioned, with a build-over-build `delta`), `module-graph.json`\n(the full module graph with retained sizes), progressive markdown\nviews (`entry.md` + on-demand detail files), one `history.jsonl` line per build, and an\n`AGENTS.md` describing the directory contract.\n\nThe report goes to `node_modules/.rolldown/report/<output dir>`, resolved against\n{@linkcode cwd}. `<output dir>` is the output folder (`output.dir`, the folder of\n`output.file`, or `dist`) relative to `cwd`, so each build output keeps its own report and\nfinds its previous one for the delta. Each `..` of an output folder outside `cwd` is written\nas `__`. A bundler opens one report, so its first output picks the folder."
         },
         "preserveEntrySignatures": {
           "anyOf": [
@@ -2565,7 +2571,7 @@
       "properties": {
         "maxSize": {
           "type": "number",
-          "description": "Common chunks whose pre-render size (the sum of the transformed source sizes of their modules,\nin bytes) is strictly smaller than this value are candidates for inlining.\nUse `Infinity` to remove the size limit.\n\nA value greater than `0` requires `output.format: 'es'`, an explicit\n`preserveEntrySignatures: false` and code splitting, and it turns on\n{@linkcode OutputOptions.strictExecutionOrderstrictExecutionOrder} when that option is\nomitted. `output.strictExecutionOrder: false` is an error, `output.preserveModules`,\n`experimental.devMode` and `experimental.onDemandWrapping` must be off.",
+          "description": "Inline eligible automatic common chunks whose size is strictly smaller than this value.\nSize is the sum of their modules' transformed source sizes in bytes, before rendering,\nminification and compression.\n\nMust be a non-negative safe integer or `Infinity`. `0` disables inlining.\n`Infinity` removes the size limit.",
           "default": 0
         },
         "exclude": {
@@ -2573,7 +2579,7 @@
             { "type": "string" },
             { "type": "array", "items": { "type": "string" } }
           ],
-          "description": "A matcher for module ids, or an array of them: a string (matched as a regular expression), a\nRegExp, or a function, each applied like {@linkcode CodeSplittingGroup.testtest}. A common\nchunk is kept as a file when any of its modules matches any matcher."
+          "description": "A matcher for module ids, or an array of them: a string (matched as a regular expression), a\nRegExp, or a function, each applied like {@linkcode CodeSplittingGroup.testtest}. A common\nchunk is not inlined when any of its modules matches any matcher."
         }
       },
       "required": [],
@@ -2613,7 +2619,7 @@
         },
         "experimentalInlineCommonChunks": {
           "$ref": "#/$defs/ExperimentalInlineCommonChunksOptions",
-          "description": "Replace small automatic common chunks with factory copies in their consumers."
+          "description": "Inline small automatic common chunks into their consumers to reduce the chunk count.\nThis duplicates code and adds runtime overhead.\n\nSet `maxSize` above `0` to enable it. Requires {@linkcode OutputOptions.formatoutput.format: 'es'}\nand an explicit {@linkcode InputOptions.preserveEntrySignaturespreserveEntrySignatures: false}.\nRequires {@linkcode OutputOptions.strictExecutionOrderstrictExecutionOrder},\nwhich is enabled automatically when omitted.\nIncompatible with {@linkcode OutputOptions.preserveModulesoutput.preserveModules}.\n\nPlugins must support modules appearing in multiple output chunks. See the\n[Inline Common Chunks guide](https://rolldown.rs/in-depth/inline-common-chunks)\nfor behavior, tradeoffs and plugin compatibility."
         }
       },
       "required": [],
@@ -3570,66 +3576,7 @@
       "required": ["dts"],
       "additionalProperties": false
     },
-    "Omit_e1330183": {
-      "type": "object",
-      "properties": {
-        "stripInternal": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Do not emit declarations for code that has an"
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "TsgoOptions": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "string",
-          "description": "Path to a custom `tsgo` executable."
-        }
-      },
-      "required": [],
-      "additionalProperties": false
-    },
-    "FileExtensionInfo": {
-      "type": "object",
-      "properties": {
-        "extension": { "type": "string" },
-        "isMixedContent": { "anyOf": [{ "const": false }, { "const": true }] },
-        "scriptKind": {
-          "anyOf": [
-            { "const": 0 },
-            { "const": 1 },
-            { "const": 2 },
-            { "const": 3 },
-            { "const": 4 },
-            { "const": 5 },
-            { "const": 6 },
-            { "const": 7 }
-          ]
-        }
-      },
-      "required": ["extension", "isMixedContent"],
-      "additionalProperties": false
-    },
-    "CustomLanguage": {
-      "type": "object",
-      "properties": {
-        "extensionPatterns": {
-          "type": "array",
-          "items": {},
-          "description": "Patterns that identify files written in this language."
-        },
-        "tsFileExtensionInfos": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/FileExtensionInfo" },
-          "description": "Extra file extensions passed to the TypeScript compiler."
-        }
-      },
-      "required": ["extensionPatterns"],
-      "additionalProperties": false
-    },
+    "Generator": {},
     "WatchOptions": {
       "type": "object",
       "properties": {
@@ -4705,14 +4652,7 @@
       "type": "object",
       "properties": {},
       "required": [],
-      "additionalProperties": {
-        "anyOf": [
-          { "const": false },
-          { "const": true },
-          { "$ref": "#/$defs/Record_519c04ca" },
-          { "type": "array", "items": { "$ref": "#/$defs/Record_519c04ca" } }
-        ]
-      }
+      "additionalProperties": { "anyOf": [{}, {}, {}, {}] }
     },
     "Record_ab245659": {
       "type": "object",
@@ -4857,29 +4797,157 @@
       "required": [],
       "additionalProperties": false
     },
+    "TscOptions": {
+      "type": "object",
+      "properties": {
+        "vue": {
+          "anyOf": [
+            { "const": false },
+            { "const": true },
+            { "$ref": "#/$defs/VueLanguageOptions" }
+          ],
+          "description": "Registers the built-in Vue language integration using `vue-tsc`.\n\nThis is a shortcut for a preconfigured {@link Options.customLanguages}\nentry and requires the `tsc` generator.",
+          "default": false
+        },
+        "build": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Uses TypeScript build mode (`tsc -b`) and follows project references.",
+          "default": false
+        },
+        "incremental": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Persists build-mode outputs, including `.tsbuildinfo`, to disk for reuse.\nWhen disabled, build outputs stay in memory."
+        },
+        "parallel": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Runs `tsc` or `vue-tsc` in a separate process.\nCustom languages supplied through {@link Options.customLanguages} are not\nsupported in the worker process.",
+          "default": false
+        },
+        "eager": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Loads every file listed by `tsconfig.json` into the TypeScript program.\n\nUseful when one config covers multiple packages or entry points.",
+          "default": false
+        },
+        "newContext": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Uses an isolated TypeScript cache instead of the shared global context.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "Omit_e1330183": {
+      "type": "object",
+      "properties": {
+        "stripInternal": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Do not emit declarations for code that has an"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "TsgoOptions": {
+      "type": "object",
+      "properties": {
+        "runExternalCode": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Allows TypeScript to execute content mappers configured in tsconfig.\nCannot be combined with `tsgo.vfs` when content mappers are configured.",
+          "default": false
+        },
+        "moduleUrl": {
+          "type": "string",
+          "description": "A `file://` URL of the TypeScript module that provides the TypeScript Go API.\n\nUse `import.meta.resolve()` to select an npm alias or another compatible\nTypeScript module."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path passed to the TypeScript Go API as `tsserverPath`.\nWith the deprecated TypeScript 7.0 backend, the `tsgo` executable to run."
+        },
+        "vfs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Supplies Rolldown-transformed source code to the `tsgo` API through a\nvirtual filesystem.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "TsrsOptions": {
+      "type": "object",
+      "properties": {
+        "runExternalCode": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Allows tsrs to execute content mappers configured in tsconfig.\nCannot be combined with `tsrs.vfs` when content mappers are configured.",
+          "default": false
+        },
+        "moduleUrl": {
+          "type": "string",
+          "description": "A `file://` URL of the `tsrs` package module."
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to a custom tsrs executable, passed to the API as `tsserverPath`."
+        },
+        "vfs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Supplies Rolldown-transformed source code to the tsrs API through a\nvirtual filesystem.",
+          "default": false
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "FileExtensionInfo": {
+      "type": "object",
+      "properties": {
+        "extension": { "type": "string" },
+        "isMixedContent": { "anyOf": [{ "const": false }, { "const": true }] },
+        "scriptKind": {
+          "anyOf": [
+            { "const": 0 },
+            { "const": 1 },
+            { "const": 2 },
+            { "const": 3 },
+            { "const": 4 },
+            { "const": 5 },
+            { "const": 6 },
+            { "const": 7 }
+          ]
+        }
+      },
+      "required": ["extension", "isMixedContent"],
+      "additionalProperties": false
+    },
+    "CustomLanguage": {
+      "type": "object",
+      "properties": {
+        "extensionPatterns": {
+          "type": "array",
+          "items": {},
+          "description": "Patterns that identify files written in this language."
+        },
+        "tsFileExtensionInfos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/FileExtensionInfo" },
+          "description": "Extra file extensions passed to the TypeScript compiler."
+        }
+      },
+      "required": ["extensionPatterns"],
+      "additionalProperties": false
+    },
     "Options": {
       "type": "object",
       "properties": {
-        "oxc": {
-          "$ref": "#/$defs/Omit_e1330183",
-          "description": "Options for the `oxc` generator.\n\nThe top-level {@link GeneralOptions.sourcemapsourcemap} option controls\ndeclaration maps."
-        },
-        "tsgo": {
-          "$ref": "#/$defs/TsgoOptions",
-          "description": "**[Experimental]** Options for the `tsgo` generator.\n\nUsed when {@link GeneralOptions.generatorgenerator} is `'tsgo'` or\nTypeScript 7 is detected."
-        },
-        "customLanguages": {
-          "type": "array",
-          "items": { "$ref": "#/$defs/CustomLanguage" },
-          "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`; `tsgo` does not support custom languages."
-        },
         "generator": {
           "anyOf": [
             { "const": "tsc" },
             { "const": "oxc" },
-            { "const": "tsgo" }
+            { "const": "tsgo" },
+            { "const": "tsrs" },
+            { "$ref": "#/$defs/Generator" }
           ],
-          "description": "The generator used to produce declaration files.\n\n- `'tsc'` supports the full TypeScript type system.\n- `'oxc'` is faster but requires code compatible with\n  [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations).\n- `'tsgo'` uses the experimental TypeScript Go compiler.\n\nWhen omitted, the plugin selects `'oxc'` for `isolatedDeclarations`,\n`'tsgo'` for TypeScript 7, and `'tsc'` otherwise. Volar-based custom\nlanguages require `'tsc'`."
+          "description": "The generator used to produce declaration files.\n\n- `'tsc'` supports the full TypeScript type system.\n- `'oxc'` is faster but requires code compatible with\n  [`isolatedDeclarations`](https://www.typescriptlang.org/tsconfig/#isolatedDeclarations).\n- `'tsgo'` uses the experimental TypeScript Go API.\n- `'tsrs'` uses the highly experimental [tsrs](https://github.com/oxc-project/tsrs)\n  API, a Rust port of TypeScript Go. Only the latest `tsrs` release is\n  supported. It is never selected automatically.\n- A custom {@link Generator} implementation can be provided directly.\n\nWhen omitted, the plugin selects `'oxc'` for `isolatedDeclarations`,\n`'tsgo'` when TypeScript exposes the declaration emit API or is 7.0\n(deprecated CLI backend), and `'tsc'` otherwise. Volar-based custom languages require `'tsc'`."
         },
         "entry": {
           "anyOf": [
@@ -4908,19 +4976,19 @@
             { "const": false },
             { "const": true }
           ],
-          "description": "A `tsconfig.json` path, resolved relative to {@link cwd}.\n\nWhen omitted or `true`, the nearest config is discovered from {@link cwd}.\nSet to `false` to disable config loading."
+          "description": "A `tsconfig.json` path, resolved relative to {@link cwd}.\n\nWhen omitted or `true`, the nearest config is discovered from {@link cwd}.\nSet to `false` to disable config loading. The `tsgo` generator requires a\nconfig file, as does `tsrs`."
         },
         "tsconfigRaw": {
           "$ref": "#/$defs/Omit_89a7186e",
-          "description": "Raw `tsconfig.json` values merged over the loaded config."
+          "description": "Raw `tsconfig.json` values merged over the loaded config.\nThe plugin's current `tsgo` implementation does not apply these overrides\nto the TypeScript program."
         },
         "compilerOptions": {
           "$ref": "#/$defs/CompilerOptions",
-          "description": "Compiler options merged over those loaded from `tsconfig.json`."
+          "description": "Compiler options merged over those loaded from `tsconfig.json`.\nIn the plugin's current `tsgo` and `tsrs` implementations, these affect plugin behavior\nbut do not override the program's compiler options. Set those options in\nthe config file instead."
         },
         "sourcemap": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Emits declaration maps (`.d.ts.map`)."
+          "description": "Emits declaration maps (`.d.ts.map`).\nWith `tsgo` or `tsrs`, source mappings also require `compilerOptions.declarationMap`\nto be enabled in the on-disk config; `sourcemap: true` alone is insufficient."
         },
         "resolver": {
           "anyOf": [{ "const": "tsc" }, { "const": "oxc" }],
@@ -4941,14 +5009,55 @@
           "$ref": "#/$defs/Logger",
           "description": "Logger used for plugin messages."
         },
+        "emitJs": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Generates declarations for JavaScript files with JSDoc types."
+        },
+        "tsc": {
+          "$ref": "#/$defs/TscOptions",
+          "description": "Options for the built-in `tsc` generator."
+        },
+        "oxc": {
+          "$ref": "#/$defs/Omit_e1330183",
+          "description": "Options for the `oxc` generator.\n\nThe top-level {@link Options.sourcemapsourcemap} option controls\ndeclaration maps."
+        },
+        "tsgo": {
+          "$ref": "#/$defs/TsgoOptions",
+          "description": "**[Experimental]** Options for the TypeScript Go generator."
+        },
+        "tsrs": {
+          "$ref": "#/$defs/TsrsOptions",
+          "description": "**[Highly experimental]** Options for the tsrs generator.\nOnly the latest `tsrs` release is supported."
+        },
+        "customLanguages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CustomLanguage" },
+          "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`. Non-Volar languages can use `tsgo` together\nwith {@link TsgoOptions.vfs`tsgo.vfs`}, or `tsrs` with\n{@link TsrsOptions.vfs`tsrs.vfs`}."
+        },
         "build": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Uses TypeScript build mode (`tsc -b`) and follows project references.",
-          "default": false
+          "description": "Deprecated: Use `tsc.build` instead.",
+          "deprecated": true
         },
         "incremental": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Persists build-mode outputs, including `.tsbuildinfo`, to disk for reuse.\nWhen disabled, build outputs stay in memory."
+          "description": "Deprecated: Use `tsc.incremental` instead.",
+          "deprecated": true
+        },
+        "parallel": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `tsc.parallel` instead.",
+          "deprecated": true
+        },
+        "eager": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `tsc.eager` instead.",
+          "deprecated": true
+        },
+        "newContext": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `tsc.newContext` instead.",
+          "deprecated": true
         },
         "vue": {
           "anyOf": [
@@ -4956,27 +5065,8 @@
             { "const": true },
             { "$ref": "#/$defs/VueLanguageOptions" }
           ],
-          "description": "Registers the built-in Vue language integration using `vue-tsc`.\n\nThis is a shortcut for a preconfigured {@link Options.customLanguages}\nentry and requires the `tsc` generator.",
-          "default": false
-        },
-        "parallel": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Runs `tsc` or `vue-tsc` in a separate process.",
-          "default": false
-        },
-        "eager": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Loads every file listed by `tsconfig.json` into the TypeScript program.\n\nUseful when one config covers multiple packages or entry points.",
-          "default": false
-        },
-        "newContext": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Uses an isolated TypeScript cache instead of the shared global context.",
-          "default": false
-        },
-        "emitJs": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Generates declarations for JavaScript files with JSDoc types."
+          "description": "Deprecated: Use `tsc.vue` instead.",
+          "deprecated": true
         }
       },
       "required": [],
@@ -5094,7 +5184,11 @@
           "description": "Clean devtools stale sessions.",
           "default": true
         },
-        "sessionId": { "type": "string" }
+        "sessionId": { "type": "string" },
+        "mode": {
+          "anyOf": [{ "const": "full" }, { "const": "report" }],
+          "description": "`'full'` (default): write JSON-lines devtools logs.\n`'report'`: aggregate the same event stream in-memory and emit an agent-readable\nreport (`metrics.json` + markdown views + `history.jsonl`) instead.\nAny other value fails the build."
+        }
       },
       "required": [],
       "additionalProperties": false
