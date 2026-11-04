@@ -48,7 +48,8 @@
   "files": [
     "client.d.ts",
     "dist",
-    "esm-shims.js"
+    "esm-shims.js",
+    "skills"
   ],
   "publishConfig": {
     "access": "public",
@@ -86,6 +87,8 @@
     "schema:generate": "node ./scripts/generate-schema.ts",
     "schema:check": "node ./scripts/generate-schema.ts -c",
     "release": "node ./scripts/release.ts",
+    "prepack": "node ./scripts/skills-facade.ts prepack",
+    "postpack": "node ./scripts/skills-facade.ts postpack",
     "docs:dev": "pnpm -C docs run dev",
     "docs:build": "pnpm -C docs run build",
     "docs:preview": "pnpm -C docs run preview",

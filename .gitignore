@@ -11,6 +11,7 @@ temp
 .DS_Store
 .eslintcache
 tsdown-*.tgz
+.skills-backup
 
 docs/.vitepress/dist
 docs/.vitepress/cache
