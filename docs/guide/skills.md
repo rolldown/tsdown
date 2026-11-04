@@ -19,6 +19,14 @@ npx skills add rolldown/tsdown --skill tsdown-migrate   # migration skill only
 
 The source code of the skills is [here](https://github.com/rolldown/tsdown/tree/main/skills).
 
+### pnpm
+
+Since v12.11, pnpm can link [agent skills](https://pnpm.io/agent-skills) shipped by your dependencies. The `tsdown` package ships a small `tsdown` skill that points your agent to the full skill on GitHub for the installed version, so the package stays small. Approve it with:
+
+```bash
+pnpm approve
+```
+
 ## Example Prompts
 
 Once installed, you can ask agents to help with various tsdown tasks:

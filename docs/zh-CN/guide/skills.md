@@ -19,6 +19,14 @@ npx skills add rolldown/tsdown --skill tsdown-migrate   # 仅安装迁移 skill
 
 skills 的源码在[这里](https://github.com/rolldown/tsdown/tree/main/skills)。
 
+### pnpm
+
+从 v12.11 起，pnpm 可以链接依赖包自带的 [agent skills](https://pnpm.io/agent-skills)。`tsdown` 包内附带一个精简的 `tsdown` skill，它会引导 AI 读取 GitHub 上与已安装版本对应的完整 skill，从而保持包体积小巧。通过以下命令批准：
+
+```bash
+pnpm approve
+```
+
 ## 示例提示词
 
 安装后，你可以让 AI 帮助完成各种 tsdown 相关的任务：
