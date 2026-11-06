@@ -3,7 +3,6 @@
   "exclude": ["typescript"],
   "mode": "latest",
   "write": true,
-  "install": true,
   "recursive": true,
   "includeLocked": true,
   "ignorePaths": ["tests/temp"]
