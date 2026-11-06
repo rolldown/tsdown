@@ -10,3 +10,5 @@ tsdown --no-clean
 
 > [!NOTE]
 > By default, all files in the output directory will be removed before the build process begins. Make sure this behavior aligns with your project requirements to avoid accidentally deleting important files.
+>
+> Paths outside the project root are never cleaned, and tsdown does not delete files through symbolic links. If tsdown skips a matched path for this reason, it logs a warning.

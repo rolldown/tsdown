@@ -1,3 +1,4 @@
+import { realpath } from 'node:fs/promises'
 import path from 'node:path'
 import { createDebug } from 'obug'
 import { glob } from 'tinyglobby'
@@ -13,6 +14,7 @@ const RE_LAST_SLASH = /[/\\]$/
 
 export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
   const removes = new Set<string>()
+  const skipped = new Set<string>()
 
   for (const config of configs) {
     if (config.devtools && (config.devtools.clean ?? true)) {
@@ -33,12 +35,30 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
     })
 
     const normalizedOutDir = config.outDir.replace(RE_LAST_SLASH, '')
+    const realCwd = await realpath(config.cwd)
+    const realDirs = new Map<string, Promise<string | undefined>>()
     for (const file of files) {
       const normalizedFile = file.replace(RE_LAST_SLASH, '')
-      if (normalizedFile !== normalizedOutDir) {
-        removes.add(file)
+      if (normalizedFile === normalizedOutDir) continue
+      if (
+        !isInsideDir(normalizedFile, config.cwd) ||
+        !(await isRealPathInside(normalizedFile, realCwd, realDirs))
+      ) {
+        skipped.add(normalizedFile)
+        continue
       }
+      removes.add(file)
     }
+  }
+
+  if (skipped.size) {
+    const shown = [...skipped].slice(0, 5).map((file) => `  - ${file}`)
+    if (skipped.size > shown.length) {
+      shown.push(`  ...and ${skipped.size - shown.length} more`)
+    }
+    globalLogger.warn(
+      `Skipped cleaning ${skipped.size} path(s) outside the project root:\n${shown.join('\n')}`,
+    )
   }
   if (!removes.size) return
 
@@ -50,6 +70,38 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
     }),
   )
   debug('Removed %d files', removes.size)
+}
+
+/**
+ * Checks the real location of `file` without following `file` itself, so a
+ * symlink inside the root is removed as a link, but nothing is removed through
+ * a symlinked parent directory.
+ */
+async function isRealPathInside(
+  file: string,
+  realCwd: string,
+  realDirs: Map<string, Promise<string | undefined>>,
+): Promise<boolean> {
+  const dir = path.dirname(file)
+  let realDir = realDirs.get(dir)
+  if (!realDir) {
+    realDir = realpath(dir).catch(() => undefined)
+    realDirs.set(dir, realDir)
+  }
+  const resolved = await realDir
+  return (
+    !!resolved && isInsideDir(path.join(resolved, path.basename(file)), realCwd)
+  )
+}
+
+function isInsideDir(file: string, dir: string): boolean {
+  const relative = path.relative(dir, file)
+  return (
+    !!relative &&
+    relative !== '..' &&
+    !relative.startsWith(`..${path.sep}`) &&
+    !path.isAbsolute(relative)
+  )
 }
 
 export function resolveClean(

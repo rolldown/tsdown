@@ -397,6 +397,8 @@ export interface UserConfig {
    * Clean directories before build.
    *
    * Default to output directory.
+   *
+   * Paths outside the project root are never cleaned.
    * @default true
    */
   clean?: boolean | string[]

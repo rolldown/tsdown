@@ -57,6 +57,10 @@ export default defineConfig({
 - Preserving other files
 - Watch mode (faster rebuilds)
 
+### Paths Outside the Project Root
+
+tsdown never cleans paths outside the project root, and it does not delete files through symbolic links. A symbolic link inside the project root is removed as a link, and its target is kept. If tsdown skips a matched path for this reason, it logs a warning. The `outDir` directory itself is never removed, only its contents.
+
 ## Common Patterns
 
 ### Production Build
