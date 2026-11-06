@@ -227,6 +227,7 @@ export default defineConfig({
 
 | Option | Type | Description |
 |--------|------|-------------|
+| `entry` | `string \| string[]` | Globs filtering which entries emit declarations; non-entry files never do |
 | `sourcemap` | `boolean` | Generate declaration source maps |
 | `compilerOptions` | `object` | Override TypeScript compiler options |
 | `vue` | `boolean` | Enable Vue type generation (requires vue-tsc) |

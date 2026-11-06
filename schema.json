@@ -4954,20 +4954,15 @@
             { "type": "string" },
             { "type": "array", "items": { "type": "string" } }
           ],
-          "description": "Glob pattern(s) that select source files for declaration generation.\n\nPatterns are relative to {@link cwd} and may be negated with `!`. Matching\nfiles are emitted even when they are not Rolldown entry points."
+          "description": "Glob pattern(s) that filter which Rolldown entries emit declarations.\n\nPatterns are relative to {@link cwd} and may be negated with `!`. Only\nRolldown entries are matched; other files never emit declarations.\n\nCannot be combined with {@link dtsOnly}; set Rolldown's `input` instead."
         },
         "cwd": {
           "type": "string",
           "description": "Base directory for config discovery, glob matching, and relative paths."
         },
-        "dtsInput": {
+        "dtsOnly": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Treats entry files as existing declarations instead of source files.",
-          "default": false
-        },
-        "emitDtsOnly": {
-          "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Removes non-declaration chunks from the output.",
+          "description": "Builds declarations only. Each entry resolves to its declaration, so the\nbuild emits no JavaScript. Entries may be source files or existing\ndeclaration files.",
           "default": false
         },
         "tsconfig": {
@@ -5033,6 +5028,16 @@
           "type": "array",
           "items": { "$ref": "#/$defs/CustomLanguage" },
           "description": "Registers non-standard source languages such as Vue or Astro.\n\nIf a language is supported via {@link https://volarjs.dev Volar},\n{@link CustomLanguage.volarTypeScript} and\n{@link CustomLanguage.createVolarPlugins} are both required. Volar\nlanguages require `tsc`. Non-Volar languages can use `tsgo` together\nwith {@link TsgoOptions.vfs`tsgo.vfs`}, or `tsrs` with\n{@link TsrsOptions.vfs`tsrs.vfs`}."
+        },
+        "dtsInput": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `dtsOnly` instead.",
+          "deprecated": true
+        },
+        "emitDtsOnly": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Deprecated: Use `dtsOnly` instead.",
+          "deprecated": true
         },
         "build": {
           "anyOf": [{ "const": false }, { "const": true }],

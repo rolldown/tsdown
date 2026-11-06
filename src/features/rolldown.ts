@@ -132,6 +132,7 @@ async function resolveInputOptions(
   if (dts) {
     const { dts: dtsPlugin } = await import('rolldown-plugin-dts')
     const options: DtsOptions = {
+      cwd,
       tsconfig,
       logger,
       ...dts,
@@ -140,10 +141,13 @@ async function resolveInputOptions(
     if (format === 'es') {
       plugins.push(dtsPlugin(options))
     } else if (cjsDts) {
+      // `dtsOnly` cannot be combined with `entry`, so the entry filter is
+      // applied to `input` below instead.
+      const { entry: _, ...rest } = options
       plugins.push(
         dtsPlugin({
-          ...options,
-          emitDtsOnly: true,
+          ...rest,
+          dtsOnly: true,
           cjsDefault,
         }),
       )
@@ -248,7 +252,7 @@ async function resolveInputOptions(
 
   const inputOptions = await mergeUserOptions(
     {
-      input: entry,
+      input: cjsDts && dts ? filterDtsEntry(entry, cwd, dts) : entry,
       cwd,
       external,
       resolve: {
@@ -289,6 +293,35 @@ async function resolveInputOptions(
   )
 
   return inputOptions
+}
+
+/**
+ * Applies `dts.entry` to the entries of a declaration-only build, matching
+ * the way rolldown-plugin-dts filters entries in a regular build.
+ */
+function filterDtsEntry(
+  entry: Record<string, string>,
+  cwd: string,
+  { entry: patterns, cwd: dtsCwd = cwd }: DtsOptions,
+): Record<string, string> {
+  if (patterns === undefined) return entry
+
+  const includes: string[] = []
+  const ignores: string[] = []
+  for (const pattern of toArray(patterns)) {
+    if (pattern[0] === '!') ignores.push(pattern.slice(1))
+    else includes.push(pattern)
+  }
+
+  return Object.fromEntries(
+    Object.entries(entry).filter(([, file]) => {
+      const id = path.relative(dtsCwd, path.resolve(cwd, file))
+      return (
+        includes.some((p) => path.matchesGlob(id, p)) &&
+        ignores.every((p) => !path.matchesGlob(id, p))
+      )
+    }),
+  )
 }
 
 async function resolveOutputOptions(

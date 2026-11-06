@@ -181,7 +181,7 @@ Public plugin exports in `src/plugins.ts`: `DepsPlugin`, `NodeProtocolPlugin`, `
 
 ### Key Architectural Patterns
 
-1. **Multi-format builds:** Single config produces ESM + CJS + types. ES format handles types via dts plugin; CJS format has separate dts pass with `emitDtsOnly: true`
+1. **Multi-format builds:** Single config produces ESM + CJS + types. ES format handles types via dts plugin; CJS format has separate dts pass with `dtsOnly: true`
 
 2. **Package-aware building:** Detects package.json, auto-generates exports field, validates bundled dependencies, runs package linters
 
@@ -280,7 +280,7 @@ Entry points support:
 When `format: ['esm', 'cjs']`:
 
 1. First pass builds both formats with shared types from ESM build
-2. If CJS needs separate types, second pass runs with `emitDtsOnly: true`
+2. If CJS needs separate types, second pass runs with `dtsOnly: true`
 
 ### Package.json Integration
 
