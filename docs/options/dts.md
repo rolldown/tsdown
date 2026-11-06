@@ -98,3 +98,20 @@ If `isolatedDeclarations` is not enabled, `tsdown` will fall back to using the T
 ## Advanced Options
 
 `rolldown-plugin-dts` provides several advanced options to customize `.d.ts` generation. For a detailed explanation of these options, refer to the [plugin's documentation](https://github.com/sxzz/rolldown-plugin-dts#options).
+
+### Filtering Entries
+
+By default, every entry gets a declaration file. Use `dts.entry` to emit declarations only for some entries:
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  entry: ['src/index.ts', 'src/cli.ts'],
+  dts: {
+    entry: ['src/**/*.ts', '!src/cli.ts'],
+  },
+})
+```
+
+`dts.entry` only filters entries: a file that is not an entry never gets its own declaration file, even if it matches.

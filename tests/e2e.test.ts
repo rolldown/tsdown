@@ -109,6 +109,60 @@ test('cjs default', async (context) => {
   })
 })
 
+test('dts entry filter applies to cjs declarations', async (context) => {
+  const files = {
+    'index.ts': `export const index = 1`,
+    'internal.ts': `export const internal = 1`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      entry: ['index.ts', 'internal.ts'],
+      format: ['esm', 'cjs'],
+      dts: { entry: ['*.ts', '!internal.ts'] },
+    },
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "index.cjs",
+      "index.d.cts",
+      "index.d.mts",
+      "index.mjs",
+      "internal.cjs",
+      "internal.mjs",
+    ]
+  `)
+})
+
+test('dts entry filter is relative to cwd option', async (context) => {
+  const files = {
+    'pkg/index.ts': `export const index = 1`,
+    'pkg/internal.ts': `export const internal = 1`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: (cwd) => ({
+      cwd: path.join(cwd, 'pkg'),
+      entry: ['index.ts', 'internal.ts'],
+      format: ['esm', 'cjs'],
+      dts: { entry: ['*.ts', '!internal.ts'] },
+    }),
+    expectDir: '../pkg/dist',
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "index.cjs",
+      "index.d.cts",
+      "index.d.mts",
+      "index.mjs",
+      "internal.cjs",
+      "internal.mjs",
+    ]
+  `)
+})
+
 test('fixed extension', async (context) => {
   const files = {
     'index.ts': `export default 10`,

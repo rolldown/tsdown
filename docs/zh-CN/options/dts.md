@@ -98,3 +98,20 @@ export default defineConfig({
 ## 高级选项
 
 `rolldown-plugin-dts` 提供了多个高级选项用于自定义 `.d.ts` 文件的生成。详细说明请参阅 [插件文档](https://github.com/sxzz/rolldown-plugin-dts#options)。
+
+### 筛选入口
+
+默认情况下，每个入口都会生成声明文件。使用 `dts.entry` 可以只为部分入口生成声明文件：
+
+```ts [tsdown.config.ts]
+import { defineConfig } from 'tsdown'
+
+export default defineConfig({
+  entry: ['src/index.ts', 'src/cli.ts'],
+  dts: {
+    entry: ['src/**/*.ts', '!src/cli.ts'],
+  },
+})
+```
+
+`dts.entry` 只筛选入口：不是入口的文件即使匹配，也不会单独生成声明文件。
