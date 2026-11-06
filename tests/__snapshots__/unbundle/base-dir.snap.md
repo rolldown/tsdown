@@ -1,13 +1,13 @@
 ## index.mjs
 
 ```mjs
-import { version } from "./package.mjs";
+import { version } from "./package.json.mjs";
 import { bar } from "./utils/bar.mjs";
 export { bar, version };
 
 ```
 
-## package.mjs
+## package.json.mjs
 
 ```mjs
 // package.json

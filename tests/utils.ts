@@ -206,9 +206,14 @@ export async function testBuild({
   ) {
     delete resolvedOptions.entry
   }
-  await beforeBuild?.()
-  const bundle = await build(resolvedOptions)
-  restoreCwd()
+  let bundle: TsdownHandle
+  try {
+    await beforeBuild?.()
+    bundle = await build(resolvedOptions)
+  } finally {
+    // A failed build must not leak its cwd into the following tests
+    restoreCwd()
+  }
 
   const outputDir = path.resolve(workingDir, resolvedOptions.outDir!)
   let outputFiles: string[] = []

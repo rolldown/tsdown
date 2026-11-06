@@ -11,7 +11,7 @@ export { app_module_default as styles };
 ## index.mjs.map
 
 ```map
-{"version":3,"file":"index.mjs","names":[],"sources":["../app.module.css"],"sourcesContent":[".title { color: red }"],"mappings":""}
+{"version":3,"file":"index.mjs","names":[],"sources":[],"mappings":""}
 ```
 
 ## style.css

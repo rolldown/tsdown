@@ -1060,6 +1060,16 @@
           "anyOf": [{ "const": false }, { "const": true }],
           "description": "Whether to emit warnings when a missing export is replaced with an undefined binding.",
           "default": true
+        },
+        "deprecatedImportAssertion": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Whether to emit warnings when an import uses the legacy `assert` keyword instead of `with`.",
+          "default": true
+        },
+        "invalidImportAttribute": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Whether to emit warnings when the options of a dynamic import are not statically analyzable while `experimental.importAttributes` is on.",
+          "default": true
         }
       },
       "required": [],
@@ -1573,7 +1583,7 @@
         },
         "moduleTypes": {
           "$ref": "#/$defs/ModuleTypes",
-          "description": "Maps file patterns to module types, controlling how files are processed.\n\nThis is conceptually similar to [esbuild's `loader`](https://esbuild.github.io/api/#loader) option, allowing you to specify how each file extensions should be handled.\n\nSee [the In-Depth Guide](https://rolldown.rs/in-depth/module-types) for more details."
+          "description": "Maps file patterns to module types, controlling how files are processed.\n\nThis is conceptually similar to [esbuild's `loader`](https://esbuild.github.io/api/#loader) option, allowing you to specify how each file extensions should be handled.\n\nSee [the In-Depth Guide](https://rolldown.rs/in-depth/module-types) for more details.\n\nWith {@linkcode InputOptions.experimentalexperimental.importAttributes}, a `type` import\nattribute of `json`, `text` or `bytes` wins over this option."
         },
         "experimental": {
           "type": "object",
@@ -1678,6 +1688,11 @@
               "anyOf": [{ "const": false }, { "const": true }],
               "description": "Control whether to enable lazy barrel optimization.\n\nLazy barrel optimization avoids compiling unused re-export modules in side-effect-free barrel modules,\nsignificantly improving build performance for large codebases with many barrel modules.\n\nThis option is planned to be removed in the future. If you need to opt out, please open an issue\ndescribing your use case so we can address it before the option is gone.",
               "default": false
+            },
+            "importAttributes": {
+              "anyOf": [{ "const": false }, { "const": true }],
+              "description": "Make import attributes part of module identity, aligned with Rollup 5.\n\nA module imported with attributes, e.g. `import data from './data.json' with { type: 'json' }`,\ngets the id `<rawId>?attributes=<encoded attributes>`, so the same file imported with\ndifferent attributes becomes different modules. The `type` attribute also selects a\nbuilt-in module type: `json`, `text` or `bytes`.\n\nWithout this option, plugin hooks still have the `rawId` and `attributes` fields, but\n`attributes` is always `{}` and the attributes a `resolveId` hook returns are ignored. An\nexternal module keeps the attributes written in the source in both modes.",
+              "default": false
             }
           },
           "required": [],
@@ -1710,12 +1725,12 @@
             "sessionId": { "type": "string" },
             "mode": {
               "anyOf": [{ "const": "full" }, { "const": "report" }],
-              "description": "`'full'` (default): write JSON-lines devtools logs.\n`'report'`: aggregate the same event stream in-memory and emit an agent-readable\nreport (`metrics.json` + markdown views + `history.jsonl`) instead.\nAny other value fails the build."
+              "description": "`'full'` (default): write JSON-lines devtools logs.\n`'report'`: write a small build report to `node_modules/.rolldown/report/` instead.\nAny other value fails the build."
             }
           },
           "required": [],
           "additionalProperties": false,
-          "description": "Devtools integration options.\n\nIn the default `'full'` mode, Rolldown writes JSON-lines devtools output under\n`node_modules/.rolldown/{session_id}/`, resolved against {@linkcode cwd}.\nConsumers can parse the output with `@rolldown/debug` after\n`await bundle.close()` resolves.\n\n`sessionId` replaces the generated session id. It must be one path segment: not empty, not\n`.` or `..`, and without `/`, `\\` or NUL. Rolldown does not check that it is unique: give each\nbundler that runs at the same time its own `sessionId`, or their devtools output mixes.\nThe name `unknown-session` is reserved regardless of case.\n\nIn `'report'` mode, Rolldown aggregates the same internal event stream in-memory and\nwrites a small, agent-readable report instead of the multi-GB `logs.json`: a canonical\n`metrics.json` (schema-versioned, with a build-over-build `delta`), `module-graph.json`\n(the full module graph with retained sizes), progressive markdown\nviews (`entry.md` + on-demand detail files), one `history.jsonl` line per build, and an\n`AGENTS.md` describing the directory contract.\n\nThe report goes to `node_modules/.rolldown/report/<output dir>`, resolved against\n{@linkcode cwd}. `<output dir>` is the output folder (`output.dir`, the folder of\n`output.file`, or `dist`) relative to `cwd`, so each build output keeps its own report and\nfinds its previous one for the delta. Each `..` of an output folder outside `cwd` is written\nas `__`. A bundler opens one report, so its first output picks the folder."
+          "description": "Devtools integration options.\n\nIn the default `'full'` mode, Rolldown writes JSON-lines devtools output under\n`node_modules/.rolldown/{session_id}/`, resolved against {@linkcode cwd}.\nConsumers can parse the output with `@rolldown/debug` after\n`await bundle.close()` resolves.\n\n`sessionId` replaces the generated session id. It must be one path segment: not empty, not\n`.` or `..`, and without `/`, `\\` or NUL. Rolldown does not check that it is unique: give each\nbundler that runs at the same time its own `sessionId`, or their devtools output mixes.\nThe name `unknown-session` is reserved regardless of case.\n\nIn `'report'` mode, Rolldown writes a small build report instead of the multi-GB\n`logs.json`: Markdown views, `metrics.json` with a build-over-build `delta`,\n`module-graph.json`, `chunk-graph.json` and `history.jsonl`. The report goes to\n`node_modules/.rolldown/report/<output dir>`, resolved against {@linkcode cwd}, where\n`<output dir>` is the output folder relative to `cwd` (each `..` becomes `__`). Rolldown\nwrites it when the bundle closes. `watch()` and the dev engine write no report. See the\n[Build Report guide](/in-depth/build-report) for the files and how to compare builds."
         },
         "preserveEntrySignatures": {
           "anyOf": [
@@ -2774,7 +2789,7 @@
         },
         "entryFileNames": {
           "type": "string",
-          "description": "The pattern to use for chunks created from entry points, or a function that is called per entry chunk with {@linkcode PreRenderedChunk} to return such a pattern.\n\nPatterns support the following placeholders:\n- `[format]`: The rendering format defined in the output options. The value is any of {@linkcode InternalModuleFormat}.\n- `[hash]`: A hash based only on the content of the final generated chunk, including transformations in `renderChunk` and any referenced file hashes. You can also set a specific hash length via e.g. `[hash:10]`. By default, it will create a base-64 hash. If you need a reduced character set, see {@linkcode hashCharactersoutput.hashCharacters}.\n- `[name]`: The file name (without extension) of the entry point, unless the object form of input was used to define a different name.\n\nForward slashes (`/`) can be used to place files in sub-directories. This pattern will also be used for every file when setting the {@linkcode preserveModulesoutput.preserveModules} option.\n\nSee also {@linkcode assetFileNamesoutput.assetFileNames}, {@linkcode chunkFileNamesoutput.chunkFileNames}.",
+          "description": "The pattern to use for chunks created from entry points, or a function that is called per entry chunk with {@linkcode PreRenderedChunk} to return such a pattern.\n\nPatterns support the following placeholders:\n- `[format]`: The rendering format defined in the output options. The value is any of {@linkcode InternalModuleFormat}.\n- `[hash]`: A hash based only on the content of the final generated chunk, including transformations in `renderChunk` and any referenced file hashes. You can also set a specific hash length via e.g. `[hash:10]`. By default, it will create a base-64 hash. If you need a reduced character set, see {@linkcode hashCharactersoutput.hashCharacters}.\n- `[name]`: The file name (without extension) of the entry point, unless the object form of input was used to define a different name.\n\nForward slashes (`/`) can be used to place files in sub-directories. This pattern will also be used for every file when setting the {@linkcode preserveModulesoutput.preserveModules} option. Note that in this case, `[name]` will include the relative path from the output root and possibly the original file extension if it was not one of `.js`, `.jsx`, `.mjs`, `.cjs`, `.ts`, `.tsx`, `.mts`, or `.cts`.\n\nSee also {@linkcode assetFileNamesoutput.assetFileNames}, {@linkcode chunkFileNamesoutput.chunkFileNames}.",
           "default": "[name].js"
         },
         "chunkFileNames": {
@@ -2803,11 +2818,11 @@
         },
         "globals": {
           "$ref": "#/$defs/Record_519c04ca",
-          "description": "Specifies `id: variableName` pairs necessary for {@link InputOptions.externalexternal} imports in `umd` / `iife` {@link OutputOptions.formatformats}."
+          "description": "Specifies `id: variableName` pairs necessary for {@link InputOptions.externalexternal} imports in `umd` / `iife` {@link OutputOptions.formatformats}.\nThe `id` does not include import attributes."
         },
         "paths": {
           "$ref": "#/$defs/Record_519c04ca",
-          "description": "Maps {@link InputOptions.externalexternal} module IDs to paths.\n\nAllows customizing the path used when importing external dependencies.\nThis is particularly useful for loading dependencies from CDNs or custom locations.\n\n- Object form: Maps module IDs to their replacement paths\n- Function form: Takes a module ID and returns its replacement path"
+          "description": "Maps {@link InputOptions.externalexternal} module IDs to paths. The ID does not include\nimport attributes.\n\nAllows customizing the path used when importing external dependencies.\nThis is particularly useful for loading dependencies from CDNs or custom locations.\n\n- Object form: Maps module IDs to their replacement paths\n- Function form: Takes a module ID and returns its replacement path"
         },
         "generatedCode": {
           "$ref": "#/$defs/Partial_db616afe",
@@ -2826,7 +2841,7 @@
         },
         "dynamicImportInCjs": {
           "anyOf": [{ "const": false }, { "const": true }],
-          "description": "Whether to keep external dynamic imports as `import(...)` expressions in CommonJS output.\n\nIf set to `false`, external dynamic imports will be rewritten to use `require(...)` calls.\nThis may be necessary to support environments that do not support dynamic `import()` in CommonJS modules like old Node.js versions.",
+          "description": "Whether to keep external dynamic imports as `import(...)` expressions in CommonJS output.\n\nIf set to `false`, external dynamic imports will be rewritten to use `require(...)` calls.\nAn `import()` with a second argument, such as `{ with: { type: 'json' } }`, stays an\n`import()`, because `require()` cannot carry import attributes.\nThis may be necessary to support environments that do not support dynamic `import()` in CommonJS modules like old Node.js versions.",
           "default": true
         },
         "codeSplitting": {
@@ -5192,7 +5207,7 @@
         "sessionId": { "type": "string" },
         "mode": {
           "anyOf": [{ "const": "full" }, { "const": "report" }],
-          "description": "`'full'` (default): write JSON-lines devtools logs.\n`'report'`: aggregate the same event stream in-memory and emit an agent-readable\nreport (`metrics.json` + markdown views + `history.jsonl`) instead.\nAny other value fails the build."
+          "description": "`'full'` (default): write JSON-lines devtools logs.\n`'report'`: write a small build report to `node_modules/.rolldown/report/` instead.\nAny other value fails the build."
         }
       },
       "required": [],

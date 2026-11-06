@@ -1,7 +1,7 @@
 ## index.mjs
 
 ```mjs
-/* empty css       */
+/* empty css           */
 export {};
 
 ```
