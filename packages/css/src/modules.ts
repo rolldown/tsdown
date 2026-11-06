@@ -1,5 +1,40 @@
 import type { CSSModulesLocalsConvention } from './options.ts'
-import type { CSSModuleExports } from 'lightningcss'
+import type { CSSModuleExports, Rule, StyleSheet } from 'lightningcss'
+
+function canDeduplicateRule(rule: Rule): boolean {
+  switch (rule.type) {
+    case 'style':
+    case 'media':
+    case 'supports':
+    case 'container':
+    case 'scope':
+    case 'starting-style':
+      return rule.value.rules?.every(canDeduplicateRule) ?? true
+    case 'keyframes':
+      return true
+    default:
+      return false
+  }
+}
+
+export function deduplicateCssModuleRules(stylesheet: StyleSheet): StyleSheet {
+  const seen = new Set<string>()
+  const rules: Rule[] = []
+  for (const rule of stylesheet.rules.toReversed()) {
+    // Keep ordering-sensitive at-rules such as @layer, including nested ones.
+    if (canDeduplicateRule(rule)) {
+      const key = JSON.stringify(rule, (name, value) =>
+        name === 'loc' ? undefined : value,
+      )
+      if (seen.has(key)) continue
+      seen.add(key)
+    }
+    rules.push(rule)
+  }
+  // Keep the last occurrence so intervening overrides retain their priority.
+  stylesheet.rules = rules.toReversed()
+  return stylesheet
+}
 
 export function modulesToEsm(modules: Record<string, string>): string {
   const lines: string[] = []
