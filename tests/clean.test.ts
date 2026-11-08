@@ -1,7 +1,7 @@
 import { lstat, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
-import { describe, expect, test, type TestContext } from 'vitest'
+import { describe, expect, test, vi, type TestContext } from 'vitest'
 import { fsExists } from '../src/utils/fs.ts'
 import { getTestDir, testBuild } from './utils.ts'
 
@@ -190,6 +190,44 @@ describe('clean', () => {
       },
     })
 
+    expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
+  })
+
+  test('should warn through the configured logger when skipping paths', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const outsidePath = await createOutsideDir(context, testDir)
+    const warn = vi.fn()
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: [`../${path.basename(outsidePath)}`],
+        customLogger: {
+          level: 'info',
+          info: vi.fn(),
+          warn,
+          warnOnce: vi.fn(),
+          error: vi.fn(),
+          success: vi.fn(),
+          clearScreen: vi.fn(),
+        },
+      },
+      snapshot: false,
+    })
+
+    const messages = warn.mock.calls
+      .flat()
+      .filter((arg) => typeof arg === 'string')
+    expect(
+      messages.some((message) =>
+        message.includes('Skipped cleaning 2 path(s) outside the project root'),
+      ),
+    ).toBe(true)
     expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
   })
 

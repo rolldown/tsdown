@@ -14,7 +14,6 @@ const RE_LAST_SLASH = /[/\\]$/
 
 export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
   const removes = new Set<string>()
-  const skipped = new Set<string>()
 
   for (const config of configs) {
     if (config.devtools && (config.devtools.clean ?? true)) {
@@ -37,6 +36,7 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
     const normalizedOutDir = config.outDir.replace(RE_LAST_SLASH, '')
     const realCwd = await realpath(config.cwd)
     const realDirs = new Map<string, Promise<string | undefined>>()
+    const skipped = new Set<string>()
     for (const file of files) {
       const normalizedFile = file.replace(RE_LAST_SLASH, '')
       if (normalizedFile === normalizedOutDir) continue
@@ -49,17 +49,19 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
       }
       removes.add(file)
     }
+
+    if (skipped.size) {
+      const shown = [...skipped].slice(0, 5).map((file) => `  - ${file}`)
+      if (skipped.size > shown.length) {
+        shown.push(`  ...and ${skipped.size - shown.length} more`)
+      }
+      config.logger.warn(
+        config.nameLabel,
+        `Skipped cleaning ${skipped.size} path(s) outside the project root:\n${shown.join('\n')}`,
+      )
+    }
   }
 
-  if (skipped.size) {
-    const shown = [...skipped].slice(0, 5).map((file) => `  - ${file}`)
-    if (skipped.size > shown.length) {
-      shown.push(`  ...and ${skipped.size - shown.length} more`)
-    }
-    globalLogger.warn(
-      `Skipped cleaning ${skipped.size} path(s) outside the project root:\n${shown.join('\n')}`,
-    )
-  }
   if (!removes.size) return
 
   globalLogger.info(`Cleaning ${removes.size} files`)
