@@ -76,8 +76,8 @@ export async function cleanOutDir(configs: ResolvedConfig[]): Promise<void> {
 
 /**
  * Checks the real location of `file` without following `file` itself, so a
- * symlink inside the root is removed as a link, but nothing is removed through
- * a symlinked parent directory.
+ * symlink inside the root is removed as a link, and nothing is removed through
+ * a symlinked parent directory that resolves outside the root.
  */
 async function isRealPathInside(
   file: string,
