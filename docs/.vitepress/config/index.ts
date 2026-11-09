@@ -1,3 +1,5 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { transformerTwoslash } from '@shikijs/vitepress-twoslash'
 import { defineConfig } from 'vitepress'
@@ -13,6 +15,27 @@ export default defineConfig({
       label: 'Русский (community)',
       link: 'https://github.com/teplostanski/tsdown.ru',
     },
+  },
+
+  buildEnd(siteConfig) {
+    const assetsDir = path.resolve(siteConfig.outDir, 'assets')
+    if (!fs.existsSync(assetsDir)) return
+
+    for (const file of fs.readdirSync(assetsDir, { recursive: true })) {
+      const fullPath = path.join(assetsDir, String(file))
+      if (fs.statSync(fullPath).isFile() && fullPath.endsWith('.js')) {
+        const code = fs.readFileSync(fullPath, 'utf8')
+        if (code.includes('__vite__mapDeps') || code.includes('[]')) {
+          const fixed = code.replaceAll(
+            /(\[\]|__vite__mapDeps\([^)]*\))[a-f0-9]{32}/g,
+            '$1',
+          )
+          if (fixed !== code) {
+            fs.writeFileSync(fullPath, fixed)
+          }
+        }
+      }
+    }
   },
 
   lastUpdated: true,
