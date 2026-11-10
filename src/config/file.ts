@@ -28,9 +28,8 @@ export async function loadViteConfig(
   cwd: string,
   configLoader: InlineConfig['configLoader'],
 ): Promise<{ config: ViteUserConfig; deps?: Set<string> } | undefined> {
-  const loader = resolveConfigLoader(configLoader)
+  const { loader, parser } = createParser(configLoader)
   debug('Loading Vite config via loader: ', loader)
-  const parser = createParser(loader)
   const [result] = await createConfigCoreLoader<
     [exported: ViteUserConfigExport, deps: Set<string>]
   >({
@@ -95,10 +94,9 @@ export async function loadConfigFile(
     }
   }
 
-  const loader = resolveConfigLoader(inlineConfig.configLoader)
+  const { loader, parser } = createParser(inlineConfig.configLoader)
   debug('Using config loader:', loader)
 
-  const parser = createParser(loader)
   const sources = overrideConfig
     ? [
         {
@@ -171,14 +169,11 @@ const nativeTS = process.features.typescript || process.versions.deno
 const autoLoader: Parser =
   isBun || (nativeTS && isSupported) ? 'native' : 'unrun'
 
-function resolveConfigLoader(
-  configLoader: InlineConfig['configLoader'] = 'auto',
-): Parser {
-  return configLoader === 'auto' ? autoLoader : configLoader
-}
+function createParser(configLoader: InlineConfig['configLoader'] = 'auto') {
+  const isAuto = configLoader === 'auto'
+  const loader: Parser = isAuto ? autoLoader : configLoader
 
-function createParser(loader: Parser) {
-  return async (filepath: string) => {
+  const parser = async (filepath: string) => {
     const basename = path.basename(filepath)
     const isPkgJson = basename === 'package.json'
     const isJSON =
@@ -196,11 +191,12 @@ function createParser(loader: Parser) {
       case 'tsx':
         return tsxImport(filepath)
       case 'unrun':
-        return unrunImport(filepath)
+        return unrunImport(filepath, isAuto)
       default:
         throw new Error(`Unknown config loader: ${loader}`)
     }
   }
+  return { loader, parser }
 }
 
 async function nativeImport(
@@ -268,13 +264,16 @@ async function tsxImport(
 
 async function unrunImport(
   id: string,
+  isAuto: boolean,
 ): Promise<[module: unknown, deps: Set<string>]> {
   const { unrun } = await importWithError<typeof import('unrun')>(
     'unrun',
   ).catch((error) => {
-    if (nativeTS) throw error
+    // Only explain the fallback when the auto loader picked unrun because the
+    // runtime lacks native TypeScript support; an explicit choice needs no hint.
+    if (!isAuto || isBun || nativeTS) throw error
     throw new Error(
-      `Failed to import module "unrun". It is required to load the config file because the current runtime does not support TypeScript natively. Please install \`unrun\`, or set the --config-loader CLI flag to \`tsx\`.`,
+      `Failed to import module "unrun". The current runtime does not support TypeScript natively, so tsdown loads the config file with \`unrun\` by default. Please install \`unrun\`, or set the --config-loader CLI flag to another installed loader, such as \`tsx\`.`,
       { cause: error },
     )
   })
