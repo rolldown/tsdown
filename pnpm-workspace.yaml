@@ -15,12 +15,10 @@ overrides:
   '@docsearch/react': '-'
   esbuild: ^0.28.2
   rolldown: catalog:prod
-  # 1.108.0 win32-x64 binary is broken: https://github.com/sass/embedded-host-node/issues/457
-  sass-embedded: 1.107.1
   vite: catalog:docs
 
   # Vite 8.3.6 doesn't support rolldown 1.3 yet: https://github.com/rolldown/rolldown/releases/tag/v1.3.0
-  vite>rolldown: ~1.2.16
+  vite>rolldown: ~1.2.18
 allowBuilds:
   '@parcel/watcher': false
   better-sqlite3: false
@@ -30,7 +28,7 @@ allowBuilds:
 
 catalogs:
   create:
-    '@clack/prompts': ^1.8.1
+    '@clack/prompts': ^1.9.0
     giget: ^3.3.1
   dev:
     '@sxzz/eslint-config': ^8.9.2
@@ -53,7 +51,7 @@ catalogs:
     postcss-modules: ^9.0.1
     prettier: ^3.9.10
     rolldown-plugin-require-cjs: ^0.4.2
-    sass: ^1.108.0
+    sass: ^1.108.1
     tsnapi: ^1.6.1
     tsx: ^4.23.15
     typescript: ~6.0.3
@@ -69,16 +67,16 @@ catalogs:
     '@shikijs/vitepress-twoslash': ^4.6.0
     '@unocss/eslint-plugin': ^66.12.0
     '@vueuse/core': ^15.0.0
-    oxc-minify: ^0.157.0
+    oxc-minify: ^0.158.0
     typedoc: ^0.28.20
     typedoc-plugin-markdown: ^4.14.1
     typedoc-vitepress-theme: ^1.1.4
     unocss: ^66.12.0
-    vite: ^8.3.6
+    vite: ^8.3.7
     vitepress: ^2.0.0-alpha.21
     vitepress-plugin-group-icons: ^1.8.1
     vitepress-plugin-llms: ^1.14.0
-    void: ^1.6.2
+    void: ^1.7.0
     vue: ^3.5.45
     vue-tsc: ^3.3.14
   migrate:
@@ -102,10 +100,10 @@ catalogs:
     package-manager-detector: ^1.9.0
     picomatch: ^4.0.7
     postcss-load-config: ^6.0.1
-    rolldown: ~1.3.0
-    rolldown-plugin-dts: ^0.30.0
+    rolldown: ~1.3.1
+    rolldown-plugin-dts: ^0.30.1
     tinyexec: ^1.3.1
     tinyglobby: ^0.2.17
-    tinyps: ^0.5.1
+    tinyps: ^0.5.2
     unconfig-core: ^7.5.0
     verkit: ^0.5.0

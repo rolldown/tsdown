@@ -5023,6 +5023,11 @@
           "anyOf": [{ "const": false }, { "const": true }],
           "description": "Generates declarations for JavaScript files with JSDoc types."
         },
+        "typecheck": {
+          "anyOf": [{ "const": false }, { "const": true }],
+          "description": "Fails the build on type errors. Not supported by `oxc`.",
+          "default": false
+        },
         "tsc": {
           "$ref": "#/$defs/TscOptions",
           "description": "Options for the built-in `tsc` generator."
