@@ -269,7 +269,15 @@ async function tsxImport(
 async function unrunImport(
   id: string,
 ): Promise<[module: unknown, deps: Set<string>]> {
-  const { unrun } = await importWithError<typeof import('unrun')>('unrun')
+  const { unrun } = await importWithError<typeof import('unrun')>(
+    'unrun',
+  ).catch((error) => {
+    if (nativeTS) throw error
+    throw new Error(
+      `Failed to import module "unrun". It is required to load the config file because the current runtime does not support TypeScript natively. Please install \`unrun\`, or set the --config-loader CLI flag to \`tsx\`.`,
+      { cause: error },
+    )
+  })
   const { module, dependencies } = await unrun({
     path: pathToFileURL(id).href,
   })
