@@ -117,15 +117,17 @@ async function resolveObjectEntry(
               )
             }
 
-            return files.map((file) => [
-              slash(
-                key.replaceAll(
-                  '*',
-                  stripExtname(path.relative(valueGlobBase, file)),
+            return files
+              .toSorted()
+              .map((file) => [
+                slash(
+                  key.replaceAll(
+                    '*',
+                    stripExtname(path.relative(valueGlobBase, file)),
+                  ),
                 ),
-              ),
-              path.resolve(cwd, file),
-            ])
+                path.resolve(cwd, file),
+              ])
           },
         ),
       )
@@ -159,7 +161,9 @@ async function resolveArrayEntry(
         expandDirectories: false,
         absolute: true,
       })
-    ).map((file) => path.resolve(file))
+    )
+      .map((file) => path.resolve(file))
+      .toSorted()
   } else {
     resolvedEntries = stringEntries
   }
