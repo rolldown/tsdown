@@ -31,7 +31,9 @@ export async function resolveEntry(
   const [entryMap, computedRoot] = await toObjectEntry(entry, cwd, root)
   const entries = Object.values(entryMap)
   if (entries.length === 0) {
-    throw new Error(`${nameLabel} Cannot find entry: ${JSON.stringify(entry)}`)
+    throw new Error(
+      `${nameLabel} Cannot find entry: ${JSON.stringify(entry)} in ${cwd}`,
+    )
   }
   logger.info(
     nameLabel,
