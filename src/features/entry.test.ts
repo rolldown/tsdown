@@ -1,5 +1,6 @@
 import path from 'node:path'
-import { describe, expect, test } from 'vitest'
+import * as tinyglobby from 'tinyglobby'
+import { describe, expect, test, vi } from 'vitest'
 import { writeFixtures } from '../../tests/utils.ts'
 import { toObjectEntry } from './entry.ts'
 
@@ -28,6 +29,7 @@ describe('toObjectEntry', () => {
       bar: 'bar.ts',
       nonexistent: 'nonexistent',
     })
+    expect(Object.keys(result)).toEqual(['foo', 'bar', 'nonexistent'])
   })
 
   test('object entry', async (context) => {
@@ -35,13 +37,57 @@ describe('toObjectEntry', () => {
       'index.ts': '',
     })
     const [result] = await toObjectEntry(
-      { main: 'index.ts', nonexistent: 'nonexistent' },
+      { nonexistent: 'nonexistent', main: 'index.ts' },
       testDir,
     )
     expect(result).toEqual({
       main: 'index.ts',
       nonexistent: 'nonexistent',
     })
+    expect(Object.keys(result)).toEqual(['nonexistent', 'main'])
+  })
+
+  test('glob entry order is independent of filesystem traversal order', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/a/index.ts': '',
+      'src/b/index.ts': '',
+    })
+    const a = path.join(testDir, 'src/a/index.ts')
+    const b = path.join(testDir, 'src/b/index.ts')
+    const glob = vi
+      .spyOn(tinyglobby, 'glob')
+      .mockResolvedValueOnce([b, a])
+      .mockResolvedValueOnce([a, b])
+    context.onTestFinished(() => glob.mockRestore())
+
+    const [first] = await toObjectEntry('src/**/*.ts', testDir)
+    const [second] = await toObjectEntry('src/**/*.ts', testDir)
+
+    expect(Object.entries(first)).toEqual(Object.entries(second))
+    expect(Object.keys(first)).toEqual(['a/index', 'b/index'])
+  })
+
+  test('object glob entries are sorted within each key', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/a/index.ts': '',
+      'src/b/index.ts': '',
+    })
+    const glob = vi
+      .spyOn(tinyglobby, 'glob')
+      .mockResolvedValueOnce(['src/b/index.ts', 'src/a/index.ts'])
+      .mockResolvedValueOnce(['src/a/index.ts', 'src/b/index.ts'])
+    context.onTestFinished(() => glob.mockRestore())
+
+    const entry = {
+      z: 'z.ts',
+      'lib/*': 'src/**/*.ts',
+      a: 'a.ts',
+    }
+    const [first] = await toObjectEntry(entry, testDir)
+    const [second] = await toObjectEntry(entry, testDir)
+
+    expect(Object.entries(first)).toEqual(Object.entries(second))
+    expect(Object.keys(first)).toEqual(['z', 'lib/a/index', 'lib/b/index', 'a'])
   })
 
   test('object entry with globs', async (context) => {
