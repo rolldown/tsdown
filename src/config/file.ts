@@ -64,7 +64,16 @@ export async function loadViteConfig(
   }
 }
 
-const configPrefix = 'tsdown.config'
+export const configPrefix = 'tsdown.config'
+export const configExtensions: string[] = [
+  'ts',
+  'mts',
+  'cts',
+  'js',
+  'mjs',
+  'cjs',
+  'json',
+]
 
 export async function loadConfigFile(
   inlineConfig: InlineConfig,
@@ -108,7 +117,7 @@ export async function loadConfigFile(
     : [
         {
           files: [configPrefix],
-          extensions: ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json'],
+          extensions: configExtensions,
           parser,
         },
         { files: ['package.json'], parser },

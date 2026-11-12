@@ -119,6 +119,10 @@ export interface Workspace {
   /**
    * Workspace directories. Glob patterns are supported.
    * - `auto`: Automatically detect `package.json` files in the workspace.
+   *
+   * Matched directories that contain neither a `package.json` nor a
+   * `tsdown.config.*` file are skipped. Set {@link Workspace.config} to an
+   * explicit file path to keep every matched directory.
    * @default 'auto'
    */
   include?: 'auto' | (string & {}) | string[]
