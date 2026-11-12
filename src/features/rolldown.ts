@@ -273,7 +273,7 @@ async function resolveInputOptions(
       logLevel,
       onLog(level, log, defaultHandler) {
         // suppress mixed export warnings if cjsDefault is enabled
-        if (cjsDefault && log.code === 'MIXED_EXPORT') return
+        if (cjsDefault && log.code === 'MIXED_EXPORTS') return
         // suppress warnings matching the user's `suppressWarnings` patterns,
         // before `failOnWarn` can escalate them to build errors
         if (level === 'warn' && isSuppressed(log.message)) return
