@@ -27,7 +27,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { Plugin } from 'rolldown'
+import type { InternalModuleFormat, Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -256,7 +256,12 @@ export function CssPlugin(
     const injectPlugin: Plugin = {
       name: '@tsdown/css:inject',
 
-      generateBundle(_outputOptions, bundle) {
+      generateBundle(outputOptions, bundle) {
+        const format = outputOptions.format
+        const cssImport = (importPath: string) =>
+          format === 'cjs'
+            ? `require('${importPath}');\n`
+            : `import '${importPath}';\n`
         const chunks = Object.values(bundle)
         // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
@@ -294,14 +299,8 @@ export function CssPlugin(
             for (const imp of chunk.imports) {
               if (!pureCssChunks.has(imp)) continue
               const basename = path.basename(imp)
-              const escaped = basename.replaceAll(
-                /[.*+?^${}()|[\]\\]/g,
-                String.raw`\$&`,
-              )
               const cssBasename = toCssFileName(basename)
-              const importRE = new RegExp(
-                String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`,
-              )
+              const importRE = cssChunkImportRE(basename, format)
               chunk.code = chunk.code.replace(importRE, `$1${cssBasename}$2`)
             }
             // Direct CSS modules in this chunk need a prepended import
@@ -313,7 +312,7 @@ export function CssPlugin(
               )
               const importPath =
                 relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `import '${importPath}';\n${chunk.code}`
+              chunk.code = `${cssImport(importPath)}${chunk.code}`
               if (chunk.map) {
                 chunk.map.mappings = `;${chunk.map.mappings}`
               }
@@ -330,7 +329,7 @@ export function CssPlugin(
               )
               const importPath =
                 relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `import '${importPath}';\n${chunk.code}`
+              chunk.code = `${cssImport(importPath)}${chunk.code}`
               if (chunk.map) {
                 chunk.map.mappings = `;${chunk.map.mappings}`
               }
@@ -516,4 +515,21 @@ function isEmptyChunkCode(code: string): boolean {
     .replaceAll(/\bexport\s*\{\s*\};?/g, '')
     .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
     .trim()
+}
+
+/**
+ * Match the module request of a pure CSS chunk in generated code:
+ * `import "..."` for ESM output and `require("...")` for CommonJS output.
+ */
+function cssChunkImportRE(
+  fileName: string,
+  format: InternalModuleFormat,
+): RegExp {
+  const escaped = fileName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
+  if (format === 'cjs') {
+    return new RegExp(
+      String.raw`(\brequire\(\s*["'][^"']*)${escaped}(["']\s*\))`,
+    )
+  }
+  return new RegExp(String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`)
 }
