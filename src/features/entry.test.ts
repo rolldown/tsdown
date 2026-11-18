@@ -1,7 +1,21 @@
 import path from 'node:path'
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { writeFixtures } from '../../tests/utils.ts'
 import { toObjectEntry } from './entry.ts'
+
+vi.hoisted(() => {
+  vi.resetModules()
+})
+
+// tinyglobby's result order is not guaranteed, so force a reversed order.
+vi.mock('tinyglobby', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('tinyglobby')>()
+  return {
+    ...actual,
+    glob: async (...args: Parameters<typeof actual.glob>) =>
+      (await actual.glob(...args)).toReversed(),
+  }
+})
 
 describe('toObjectEntry', () => {
   test('string entry', async (context) => {
@@ -83,6 +97,19 @@ describe('toObjectEntry', () => {
       foo: path.join(testDir, 'src/foo.ts'),
       bar: path.join(testDir, 'src/bar.ts'),
     })
+  })
+
+  test('glob entries are sorted', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/b.ts': '',
+      'src/c.ts': '',
+      'src/a.ts': '',
+    })
+    const [arrayResult] = await toObjectEntry(['src/*.ts'], testDir)
+    expect(Object.keys(arrayResult)).toEqual(['a', 'b', 'c'])
+
+    const [objectResult] = await toObjectEntry({ '*': 'src/*.ts' }, testDir)
+    expect(Object.keys(objectResult)).toEqual(['a', 'b', 'c'])
   })
 
   test('nested directory structure', async (context) => {

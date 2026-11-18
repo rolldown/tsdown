@@ -55,6 +55,12 @@ export function toObjectEntry(
   return resolveArrayEntry(entry, cwd, root)
 }
 
+// tinyglobby does not return files in a stable order, so sort them to keep
+// the output deterministic between builds.
+function compareStrings(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0
+}
+
 export function isGlobEntry(entry: TsdownInputOption | undefined): boolean {
   if (!entry) return false
   if (typeof entry === 'string') return isDynamicPattern(entry)
@@ -87,10 +93,12 @@ async function resolveObjectEntry(
             }
 
             const patterns = toArray(value)
-            const files = await glob(patterns, {
-              cwd,
-              expandDirectories: false,
-            })
+            const files = (
+              await glob(patterns, {
+                cwd,
+                expandDirectories: false,
+              })
+            ).toSorted(compareStrings)
             if (!files.length) {
               throw new Error(
                 `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(
@@ -159,7 +167,9 @@ async function resolveArrayEntry(
         expandDirectories: false,
         absolute: true,
       })
-    ).map((file) => path.resolve(file))
+    )
+      .map((file) => path.resolve(file))
+      .toSorted(compareStrings)
   } else {
     resolvedEntries = stringEntries
   }
