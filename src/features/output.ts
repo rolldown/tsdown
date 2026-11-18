@@ -69,8 +69,12 @@ export function resolveChunkFilename(
 
   // Every chunk is a declaration in dts-only builds, but entry chunk names no
   // longer end with `.d`, so the extension can't be inferred from the name.
+  // User dts-only options only apply to the ESM pass, which has the dts plugin.
   const dtsOnly =
-    cjsDts || (!!dts && !!(dts.dtsOnly || dts.emitDtsOnly || dts.dtsInput))
+    cjsDts ||
+    (format === 'es' &&
+      !!dts &&
+      !!(dts.dtsOnly || dts.emitDtsOnly || dts.dtsInput))
 
   const suffix = format === 'iife' || format === 'umd' ? `.${format}` : ''
   return [
