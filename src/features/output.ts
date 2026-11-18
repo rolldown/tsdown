@@ -44,9 +44,10 @@ function resolveJsOutputExtension(
 }
 
 export function resolveChunkFilename(
-  { outExtensions, fixedExtension, pkg, hash }: ResolvedConfig,
+  { outExtensions, fixedExtension, pkg, hash, dts }: ResolvedConfig,
   inputOptions: InputOptions,
   format: NormalizedFormat,
+  cjsDts: boolean,
 ): [entry: ChunkFileName, chunk: ChunkFileName] {
   const packageType = getPackageType(pkg)
 
@@ -66,13 +67,19 @@ export function resolveChunkFilename(
 
   jsExtension ??= `.${resolveJsOutputExtension(packageType, format, fixedExtension)}`
 
+  // Every chunk is a declaration in dts-only builds, but entry chunk names no
+  // longer end with `.d`, so the extension can't be inferred from the name.
+  const dtsOnly =
+    cjsDts || (!!dts && !!(dts.dtsOnly || dts.emitDtsOnly || dts.dtsInput))
+
   const suffix = format === 'iife' || format === 'umd' ? `.${format}` : ''
   return [
-    createChunkFilename(`[name]${suffix}`, jsExtension, dtsExtension),
+    createChunkFilename(`[name]${suffix}`, jsExtension, dtsExtension, dtsOnly),
     createChunkFilename(
       `[name]${suffix}${hash ? '-[hash]' : ''}`,
       jsExtension,
       dtsExtension,
+      dtsOnly,
     ),
   ]
 }
@@ -82,8 +89,10 @@ function createChunkFilename(
   basename: string,
   jsExtension: string,
   dtsExtension?: string,
+  dtsOnly?: boolean,
 ): ChunkFileName {
   if (dtsExtension === undefined) return `${basename}${jsExtension}`
+  if (dtsOnly) return `${basename}${dtsExtension}`
   return (chunk: PreRenderedChunk) => {
     return `${basename}${chunk.name.endsWith('.d') ? dtsExtension : jsExtension}`
   }
