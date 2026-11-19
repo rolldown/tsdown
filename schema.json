@@ -155,7 +155,7 @@
             { "const": true },
             { "type": "array", "items": { "type": "string" } }
           ],
-          "description": "Clean directories before build.\n\nDefault to output directory.",
+          "description": "Clean directories before build.\n\nDefault to output directory.\n\nPaths outside the project root are never cleaned.",
           "default": true
         },
         "minify": {
@@ -523,7 +523,7 @@
               { "const": true },
               { "type": "array", "items": { "type": "string" } }
             ],
-            "description": "Clean directories before build.\n\nDefault to output directory.",
+            "description": "Clean directories before build.\n\nDefault to output directory.\n\nPaths outside the project root are never cleaned.",
             "default": true
           },
           "minify": {
