@@ -1228,6 +1228,64 @@ describe('css', () => {
       expect(jsFiles.length).toBeGreaterThanOrEqual(2)
       expect(cssFiles.length).toBeGreaterThanOrEqual(2)
     })
+
+    test('removes nested css wrapper chunks', async (context) => {
+      const { outputFiles, fileMap } = await testBuild({
+        context,
+        files: {
+          'a.ts': `import './outer'\nexport const a = 1`,
+          'b.ts': `import './outer'\nexport const b = 2`,
+          'c.ts': `import './inner'\nexport const c = 3`,
+          'outer.ts': `import './inner'`,
+          'inner.ts': `import './inner.css'`,
+          'inner.css': `.inner { color: red }`,
+        },
+        options: {
+          entry: ['a.ts', 'b.ts', 'c.ts'],
+          css: { inject: true },
+        },
+      })
+      expect(outputFiles).toEqual(['a.mjs', 'b.mjs', 'c.mjs', 'style.css'])
+      expect(fileMap['a.mjs']).toContain('import "./style.css"')
+    })
+
+    test.for([
+      ['esm', false],
+      ['esm', true],
+      ['cjs', false],
+      ['cjs', true],
+    ] as const)(
+      'keeps side effects of css wrapper chunks in %s with inject %s',
+      async ([format, inject], context) => {
+        const { fileMap } = await testBuild({
+          context,
+          files: {
+            'a.ts': `import './shared'\nexport const a = 1`,
+            'b.ts': `import './shared'\nexport const b = 2`,
+            'c.ts': `import './register'\nexport const c = 3`,
+            'shared.ts': `import 'polyfill'\nimport './register'\nimport './shared.css'`,
+            'register.ts': `globalThis.registered = true`,
+            'shared.css': `.shared { color: red }`,
+          },
+          options: {
+            entry: ['a.ts', 'b.ts', 'c.ts'],
+            format,
+            deps: { neverBundle: ['polyfill'] },
+            css: { inject },
+          },
+        })
+        const ext = format === 'esm' ? 'mjs' : 'cjs'
+        const findFile = (prefix: string) =>
+          Object.keys(fileMap).find(
+            (file) => file.startsWith(prefix) && file.endsWith(`.${ext}`),
+          )!
+        const shared = findFile('shared-')
+        const register = findFile('register-')
+        expect(fileMap[`a.${ext}`]).toContain(`./${shared}`)
+        expect(fileMap[shared]).toContain('polyfill')
+        expect(fileMap[shared]).toContain(`./${register}`)
+      },
+    )
   })
 
   describe('external imports', () => {
@@ -1549,7 +1607,7 @@ describe('css', () => {
       })
       expect(outputFiles).toContain('style.css')
       expect(outputFiles).toContain('index.mjs')
-      expect(fileMap['index.mjs']).toContain("import './style.css'")
+      expect(fileMap['index.mjs']).toContain('import "./style.css"')
       expect(fileMap['index.mjs']).not.toContain('empty css')
     })
 
@@ -1566,7 +1624,7 @@ describe('css', () => {
       })
       expect(outputFiles).toContain('index.css')
       expect(outputFiles).toContain('index.mjs')
-      expect(fileMap['index.mjs']).toContain("import './index.css'")
+      expect(fileMap['index.mjs']).toContain('import "./index.css"')
       expect(fileMap['index.mjs']).not.toContain('empty css')
     })
 
@@ -1583,7 +1641,7 @@ describe('css', () => {
         },
       })
       expect(outputFiles).toContain('style.css')
-      expect(fileMap['index.mjs']).toContain("import './style.css'")
+      expect(fileMap['index.mjs']).toContain('import "./style.css"')
       expect(fileMap['index.mjs']).not.toContain('empty css')
     })
 
@@ -1610,7 +1668,7 @@ describe('css', () => {
       expect(asyncJs).toBeTruthy()
 
       const asyncCode = fileMap[asyncJs!]
-      expect(asyncCode).toContain(`import './${asyncCss}'`)
+      expect(asyncCode).toContain(`import "./${asyncCss}"`)
       expect(asyncCode).not.toContain('empty css')
     })
 
@@ -1673,12 +1731,67 @@ describe('css', () => {
       const asyncACode = fileMap[asyncAJs!]
       const asyncBCode = fileMap[asyncBJs!]
 
-      expect(asyncACode).toContain(`import './${asyncAStyles}'`)
+      expect(asyncACode).toContain(`import "./${asyncAStyles}"`)
       expect(asyncACode).toContain(`import "./${sharedStyles}"`)
       expect(asyncACode).not.toContain('.mjs"')
 
       expect(asyncBCode).toContain(`import "./${sharedStyles}"`)
       expect(asyncBCode).not.toContain('.mjs"')
+    })
+
+    test.for([
+      ['esm', false],
+      ['esm', true],
+      ['cjs', false],
+      ['cjs', true],
+    ] as const)(
+      'keeps shebang and directives first in %s with minify %s',
+      async ([format, minify], context) => {
+        const { fileMap } = await testBuild({
+          context,
+          files: {
+            'index.ts': `#!/usr/bin/env node\n'use client'\nimport './foo.css'\nexport const a = 1`,
+            'foo.css': `body { color: red }`,
+          },
+          options: {
+            format,
+            minify,
+            css: { inject: true },
+          },
+        })
+        const code = fileMap[format === 'esm' ? 'index.mjs' : 'index.cjs']
+        const cssImport =
+          format === 'esm'
+            ? /import\s*["']\.\/style\.css["']/
+            : /require\(["']\.\/style\.css["']\)/
+        expect(code.startsWith('#!/usr/bin/env node\n')).toBe(true)
+        expect(code.search(cssImport)).toBeGreaterThan(
+          code.indexOf('use client'),
+        )
+      },
+    )
+
+    test('rewrites shared css-only chunk imports without splitting', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'a.ts': `import './shared'\nexport const a = 1`,
+          'b.ts': `import './shared'\nexport const b = 2`,
+          'shared.ts': `import './shared.css'`,
+          'shared.css': `.shared { color: red }`,
+        },
+        options: {
+          entry: ['a.ts', 'b.ts'],
+          css: { inject: true },
+        },
+      })
+      expect(Object.keys(fileMap).toSorted()).toEqual([
+        'a.mjs',
+        'b.mjs',
+        'style.css',
+      ])
+      expect(fileMap['a.mjs']).toContain('import "./style.css"')
+      expect(fileMap['b.mjs']).toContain('import "./style.css"')
     })
 
     test('uses require() for cjs output', async (context) => {
@@ -1695,8 +1808,8 @@ describe('css', () => {
       })
       expect(outputFiles).toContain('style.css')
       expect(outputFiles).toContain('index.cjs')
-      expect(fileMap['index.cjs']).toContain("require('./style.css')")
-      expect(fileMap['index.cjs']).not.toContain("import '")
+      expect(fileMap['index.cjs']).toContain('require("./style.css")')
+      expect(fileMap['index.cjs']).not.toContain('import ')
     })
 
     test.for(['iife', 'umd'] as const)(
@@ -1769,10 +1882,10 @@ describe('css', () => {
       const asyncACode = fileMap[asyncAJs!]
       const asyncBCode = fileMap[asyncBJs!]
 
-      expect(asyncACode).toContain(`require('./${asyncAStyles}')`)
+      expect(asyncACode).toContain(`require("./${asyncAStyles}")`)
       expect(asyncACode).toContain(`require("./${sharedStyles}")`)
       expect(asyncACode).not.toContain('.cjs"')
-      expect(asyncACode).not.toContain("import '")
+      expect(asyncACode).not.toContain('import ')
 
       expect(asyncBCode).toContain(`require("./${sharedStyles}")`)
       expect(asyncBCode).not.toContain('.cjs"')

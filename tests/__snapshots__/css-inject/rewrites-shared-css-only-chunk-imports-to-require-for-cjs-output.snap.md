@@ -1,15 +1,15 @@
-## async-a-D2jumwQx.cjs
+## async-a-BCHCFGT7.cjs
 
 ```cjs
-require('./async-a-D2jumwQx.css');
-require("./shared-BvRk9kiK.css");
+require("./async-a-BCHCFGT7.css");
+require("./shared-CRkVNR4g.css");
 // async-a.ts
 const a = 1;
 exports.a = a;
 
 ```
 
-## async-a-D2jumwQx.css
+## async-a-BCHCFGT7.css
 
 ```css
 .a {
@@ -18,10 +18,10 @@ exports.a = a;
 
 ```
 
-## async-b-CQRdM_jS.cjs
+## async-b-BWXziA1U.cjs
 
 ```cjs
-require("./shared-BvRk9kiK.css");
+require("./shared-CRkVNR4g.css");
 // async-b.ts
 const b = 2;
 exports.b = b;
@@ -33,14 +33,14 @@ exports.b = b;
 ```cjs
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 // index.ts
-const loadA = () => Promise.resolve().then(() => require("./async-a-D2jumwQx.cjs"));
-const loadB = () => Promise.resolve().then(() => require("./async-b-CQRdM_jS.cjs"));
+const loadA = () => Promise.resolve().then(() => require("./async-a-BCHCFGT7.cjs"));
+const loadB = () => Promise.resolve().then(() => require("./async-b-BWXziA1U.cjs"));
 exports.loadA = loadA;
 exports.loadB = loadB;
 
 ```
 
-## shared-BvRk9kiK.css
+## shared-CRkVNR4g.css
 
 ```css
 .shared {

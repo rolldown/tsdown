@@ -4,49 +4,66 @@ import type { CssStyles } from './post.ts'
 import type { InternalModuleFormat, OutputAsset, OutputChunk } from 'rolldown'
 
 /**
- * Detect and remove "pure CSS chunks" — JS chunks that exist only because
- * they imported CSS files. These chunks have no JS exports and all their
- * modules are CSS. Following Vite's implementation.
+ * Find "pure CSS chunks" — JS chunks that exist only because they imported
+ * CSS files. Following Vite's implementation.
+ */
+export function findPureCssChunks(
+  bundle: Record<string, OutputChunk | OutputAsset>,
+  styles: CssStyles,
+): Set<string> {
+  const chunks = Object.values(bundle).filter(
+    (chunk) => chunk.type === 'chunk' && !chunk.exports.length,
+  ) as OutputChunk[]
+  const pureCssChunks = new Set<string>()
+
+  // Strict: all modules in the chunk are CSS
+  for (const chunk of chunks) {
+    if (
+      chunk.moduleIds.length &&
+      chunk.moduleIds.every((id) => styles.has(id))
+    ) {
+      pureCssChunks.add(chunk.fileName)
+    }
+  }
+
+  // Relaxed: a non-entry wrapper around CSS (e.g. a JS file whose only
+  // purpose is `import './foo.css'`). Its JS modules render no code, and it
+  // only imports pure CSS chunks; anything else may be a side effect.
+  // Repeat until stable to catch wrappers of wrappers.
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const chunk of chunks) {
+      if (
+        pureCssChunks.has(chunk.fileName) ||
+        chunk.isEntry ||
+        chunk.isDynamicEntry
+      )
+        continue
+      if (
+        (chunk.imports.length ||
+          chunk.moduleIds.some((id) => styles.has(id))) &&
+        chunk.imports.every((file) => pureCssChunks.has(file)) &&
+        Object.values(chunk.modules).every((mod) => !mod.renderedLength)
+      ) {
+        pureCssChunks.add(chunk.fileName)
+        changed = true
+      }
+    }
+  }
+
+  return pureCssChunks
+}
+
+/**
+ * Remove pure CSS chunks and their imports from other chunks.
  */
 export function removePureCssChunks(
   bundle: Record<string, OutputChunk | OutputAsset>,
   styles: CssStyles,
   outputFormat: InternalModuleFormat,
 ): void {
-  const pureCssChunkNames: string[] = []
-
-  // Pass 1: strict — all modules in the chunk are CSS
-  for (const chunk of Object.values(bundle)) {
-    if (
-      chunk.type !== 'chunk' ||
-      chunk.exports.length ||
-      !chunk.moduleIds.length
-    )
-      continue
-    if (chunk.moduleIds.every((id) => styles.has(id))) {
-      pureCssChunkNames.push(chunk.fileName)
-    }
-  }
-
-  // Pass 2: relaxed — non-entry chunk contains CSS modules and its JS code is
-  // trivially empty (e.g. a wrapper like `import './foo.css'` with no logic).
-  const strictSet = new Set(pureCssChunkNames)
-  for (const chunk of Object.values(bundle)) {
-    if (
-      chunk.type !== 'chunk' ||
-      chunk.exports.length ||
-      chunk.isEntry ||
-      chunk.isDynamicEntry
-    )
-      continue
-    if (strictSet.has(chunk.fileName)) continue
-    if (
-      chunk.moduleIds.some((id) => styles.has(id)) &&
-      isEmptyChunkCode(chunk.code)
-    ) {
-      pureCssChunkNames.push(chunk.fileName)
-    }
-  }
+  const pureCssChunkNames = [...findPureCssChunks(bundle, styles)]
 
   if (!pureCssChunkNames.length) return
 
@@ -113,13 +130,4 @@ export function getEmptyChunkReplacer(
       // Ends with `,`: drop it but keep the leading `,` if any
       return `${p1}/* empty css ${''.padEnd(m.length - 15 - p1.length)}*/`
     })
-}
-
-function isEmptyChunkCode(code: string): boolean {
-  return !code
-    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
-    .replaceAll(/\/\/[^\n]*/g, '')
-    .replaceAll(/\bexport\s*\{\s*\};?/g, '')
-    .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
-    .trim()
 }

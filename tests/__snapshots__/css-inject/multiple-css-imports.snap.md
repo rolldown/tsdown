@@ -1,7 +1,7 @@
 ## index.mjs
 
 ```mjs
-import './style.css';
+import "./style.css";
 // index.ts
 const a = 1;
 export { a };

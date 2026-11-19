@@ -1,4 +1,4 @@
-## async-a-DxZaYA0i.css
+## async-a-Bq-F8wRV.css
 
 ```css
 .a {
@@ -7,21 +7,21 @@
 
 ```
 
-## async-a-DxZaYA0i.mjs
+## async-a-Bq-F8wRV.mjs
 
 ```mjs
-import './async-a-DxZaYA0i.css';
-import "./shared-la_KkjCS.css";
+import "./async-a-Bq-F8wRV.css";
+import "./shared-msdYkXJ-.css";
 // async-a.ts
 const a = 1;
 export { a };
 
 ```
 
-## async-b-CtX62dOP.mjs
+## async-b-rzSHf1er.mjs
 
 ```mjs
-import "./shared-la_KkjCS.css";
+import "./shared-msdYkXJ-.css";
 // async-b.ts
 const b = 2;
 export { b };
@@ -32,13 +32,13 @@ export { b };
 
 ```mjs
 // index.ts
-const loadA = () => import("./async-a-DxZaYA0i.mjs");
-const loadB = () => import("./async-b-CtX62dOP.mjs");
+const loadA = () => import("./async-a-Bq-F8wRV.mjs");
+const loadB = () => import("./async-b-rzSHf1er.mjs");
 export { loadA, loadB };
 
 ```
 
-## shared-la_KkjCS.css
+## shared-msdYkXJ-.css
 
 ```css
 .shared {

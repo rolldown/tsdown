@@ -22,7 +22,7 @@ describe('cssChunkImportRE', () => {
   ) =>
     code.replace(
       cssChunkImportRE('shared-a.b.cjs', format),
-      '$1shared-a.b.css$2',
+      '$1./shared-a.b.css$2',
     )
 
   test.each([
@@ -34,6 +34,12 @@ describe('cssChunkImportRE', () => {
     // ESM output only matches import statements, and vice versa
     ['require("./shared-a.b.cjs");', 'es', 'require("./shared-a.b.cjs");'],
     ['import "./shared-a.b.cjs";', 'cjs', 'import "./shared-a.b.cjs";'],
+    // Only matches the whole file name
+    [
+      'require("./my-shared-a.b.cjs");',
+      'cjs',
+      'require("./my-shared-a.b.cjs");',
+    ],
     // `.` in the file name is escaped
     ['require("./shared-aXb.cjs");', 'cjs', 'require("./shared-aXb.cjs");'],
   ] as const)('%s (%s)', (code, format, expected) => {
