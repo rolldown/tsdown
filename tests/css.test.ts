@@ -1780,6 +1780,30 @@ describe('css', () => {
       expect(css).toContain('.design-system-default')
     })
 
+    test.for(['lightningcss', 'postcss'] as const)(
+      'css module with ?inline is scoped with %s',
+      async (transformer, context) => {
+        const { fileMap } = await testBuild({
+          context,
+          files: {
+            'index.ts': `import styles from './app.module.css'\nimport css from './app.module.css?inline'\nconsole.log(styles.title, css)`,
+            'app.module.css': `.title { color: red }`,
+          },
+          options: {
+            css: {
+              transformer,
+              modules: { generateScopedName: 'mod_[local]' },
+            },
+          },
+        })
+
+        const js = fileMap['index.mjs']
+        expect(js).toMatch(/\.mod_title\s*\{/)
+        expect(js).not.toMatch(/(?<!_)\.title\s*\{/)
+        expect(fileMap['style.css']).toContain('.mod_title')
+      },
+    )
+
     async function testFunctionalLocalsConvention(
       context: TestContext,
       transformer: 'lightningcss' | 'postcss',

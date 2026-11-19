@@ -129,9 +129,8 @@ export function CssPlugin(
         const cleanId = getCleanId(id)
         if (shouldSkipTransform(id, cleanId)) return
 
-        const isInline = RE_INLINE.test(id)
         const isModule =
-          !isInline && cssConfig.css.modules !== false && CSS_MODULE_RE.test(id)
+          cssConfig.css.modules !== false && CSS_MODULE_RE.test(id)
 
         const deps: string[] = []
         let modules: Record<string, string> | undefined
