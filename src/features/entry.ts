@@ -1,4 +1,5 @@
 import path from 'node:path'
+import process from 'node:process'
 import picomatch from 'picomatch'
 import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
@@ -16,6 +17,7 @@ export async function resolveEntry(
   nameLabel?: string,
   root?: string,
 ): Promise<[entry: Record<string, string>, root: string]> {
+  const prefix = nameLabel ? `${nameLabel} ` : ''
   if (!entry || Object.keys(entry).length === 0) {
     const defaultEntry = path.resolve(cwd, 'src/index.ts')
 
@@ -23,7 +25,7 @@ export async function resolveEntry(
       entry = { index: defaultEntry }
     } else {
       throw new Error(
-        `${nameLabel} No input files, try "tsdown <your-file>" or create src/index.ts`,
+        `${prefix}No input files${formatCwd(cwd)}, try "tsdown <your-file>" or create src/index.ts`,
       )
     }
   }
@@ -31,13 +33,20 @@ export async function resolveEntry(
   const [entryMap, computedRoot] = await toObjectEntry(entry, cwd, root)
   const entries = Object.values(entryMap)
   if (entries.length === 0) {
-    throw new Error(`${nameLabel} Cannot find entry: ${JSON.stringify(entry)}`)
+    throw new Error(
+      `${prefix}Cannot find entry: ${JSON.stringify(entry)}${formatCwd(cwd)}`,
+    )
   }
   logger.info(
     nameLabel,
     `entry: ${color(entries.map((entry) => (path.isAbsolute(entry) ? path.relative(cwd, entry) : entry)).join(', '))}`,
   )
   return [entryMap, computedRoot]
+}
+
+function formatCwd(cwd: string): string {
+  const relative = path.relative(process.cwd(), cwd)
+  return relative ? ` in ${slash(relative)}` : ''
 }
 
 export function toObjectEntry(
@@ -93,9 +102,7 @@ async function resolveObjectEntry(
             })
             if (!files.length) {
               throw new Error(
-                `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(
-                  patterns,
-                )}`,
+                `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(patterns)}${formatCwd(cwd)}`,
               )
             }
 
