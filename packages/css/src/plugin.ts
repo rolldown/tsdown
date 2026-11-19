@@ -17,7 +17,7 @@ import {
   disposeSassCompiler,
   getPreprocessorLangFromId,
 } from './preprocessors.ts'
-import { isEmptyChunkCode } from './pure-chunk.ts'
+import { findPureCssChunks } from './pure-chunk.ts'
 import {
   CSS_LANGS_RE,
   CSS_MODULE_RE,
@@ -291,34 +291,9 @@ export function CssPlugin(
       // Runs BEFORE CssPostPlugin so it can see pure CSS chunks before they
       // are removed, and rewrite their imports to CSS asset paths.
       generateBundle({ format }, bundle) {
-        const chunks = Object.values(bundle)
-        // Identify pure CSS chunks and empty CSS wrapper chunks
-        const pureCssChunks = new Set<string>()
-        for (const chunk of chunks) {
-          if (
-            chunk.type !== 'chunk' ||
-            chunk.exports.length ||
-            !chunk.moduleIds.length
-          )
-            continue
-          // Strict: all modules are CSS
-          if (chunk.moduleIds.every((id) => styles.has(id))) {
-            pureCssChunks.add(chunk.fileName)
-            continue
-          }
-          // Relaxed: non-entry chunk has CSS modules and code is trivially empty
-          // (e.g. a JS file whose only purpose is `import './foo.css'`)
-          if (
-            !chunk.isEntry &&
-            !chunk.isDynamicEntry &&
-            chunk.moduleIds.some((id) => styles.has(id)) &&
-            isEmptyChunkCode(chunk.code)
-          ) {
-            pureCssChunks.add(chunk.fileName)
-          }
-        }
+        const pureCssChunks = findPureCssChunks(bundle, styles)
 
-        for (const chunk of chunks) {
+        for (const chunk of Object.values(bundle)) {
           if (chunk.type !== 'chunk') continue
           if (pureCssChunks.has(chunk.fileName)) continue
           // Without splitting, all CSS lives in one file, which a chunk with
