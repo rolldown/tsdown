@@ -269,6 +269,10 @@ async function buildSingle(
         case 'START': {
           debouncedPostBuild.cancel()
 
+          if (hasBuilt) {
+            await hooks.callHook('build:prepare', context)
+          }
+
           if (config.clean.length) {
             await cleanChunks(config.outDir, chunks)
           }
