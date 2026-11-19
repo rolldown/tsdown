@@ -17,6 +17,7 @@ export async function resolveEntry(
   nameLabel?: string,
   root?: string,
 ): Promise<[entry: Record<string, string>, root: string]> {
+  const prefix = nameLabel ? `${nameLabel} ` : ''
   if (!entry || Object.keys(entry).length === 0) {
     const defaultEntry = path.resolve(cwd, 'src/index.ts')
 
@@ -24,7 +25,7 @@ export async function resolveEntry(
       entry = { index: defaultEntry }
     } else {
       throw new Error(
-        `${errorPrefix(nameLabel)}No input files${formatCwd(cwd)}, try "tsdown <your-file>" or create src/index.ts`,
+        `${prefix}No input files${formatCwd(cwd)}, try "tsdown <your-file>" or create src/index.ts`,
       )
     }
   }
@@ -33,7 +34,7 @@ export async function resolveEntry(
   const entries = Object.values(entryMap)
   if (entries.length === 0) {
     throw new Error(
-      `${errorPrefix(nameLabel)}Cannot find entry: ${JSON.stringify(entry)}${formatCwd(cwd)}`,
+      `${prefix}Cannot find entry: ${JSON.stringify(entry)}${formatCwd(cwd)}`,
     )
   }
   logger.info(
@@ -43,12 +44,6 @@ export async function resolveEntry(
   return [entryMap, computedRoot]
 }
 
-function errorPrefix(nameLabel?: string): string {
-  return nameLabel ? `${nameLabel} ` : ''
-}
-
-// In workspace builds the name label may be inherited from the root config or
-// an ancestor package.json, so name the directory to point at the failing one.
 function formatCwd(cwd: string): string {
   const relative = path.relative(process.cwd(), cwd)
   return relative ? ` in ${slash(relative)}` : ''
@@ -107,9 +102,7 @@ async function resolveObjectEntry(
             })
             if (!files.length) {
               throw new Error(
-                `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(
-                  patterns,
-                )}`,
+                `Cannot find files for entry key "${key}" with patterns: ${JSON.stringify(patterns)}${formatCwd(cwd)}`,
               )
             }
 
