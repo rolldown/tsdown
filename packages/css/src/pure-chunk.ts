@@ -121,6 +121,7 @@ export function isEmptyChunkCode(code: string): boolean {
     .replaceAll(/\/\/[^\n]*/g, '')
     .replaceAll(/\bexport\s*\{\s*\};?/g, '')
     .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
-    .replaceAll(/\brequire\(\s*["'`][^"'`]*["'`]\s*\)[;,]?/g, '')
+    // CSS requires injected by `css.inject`; other requires may be side effects
+    .replaceAll(/\brequire\(\s*["'`][^"'`]*\.css["'`]\s*\)[;,]?/g, '')
     .trim()
 }

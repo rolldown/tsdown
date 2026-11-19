@@ -1736,6 +1736,30 @@ describe('css', () => {
       expect(fileMap['b.mjs']).toContain('import "./style.css"')
     })
 
+    test('keeps side-effect requires of css wrapper chunks', async (context) => {
+      const { fileMap } = await testBuild({
+        context,
+        files: {
+          'a.ts': `import './shared'\nexport const a = 1`,
+          'b.ts': `import './shared'\nexport const b = 2`,
+          'shared.ts': `import 'polyfill'\nimport './shared.css'`,
+          'shared.css': `.shared { color: red }`,
+        },
+        options: {
+          entry: ['a.ts', 'b.ts'],
+          format: 'cjs',
+          deps: { neverBundle: ['polyfill'] },
+          css: { inject: true },
+        },
+      })
+      const shared = Object.keys(fileMap).find((file) =>
+        file.startsWith('shared-'),
+      )
+      expect(shared).toBeTruthy()
+      expect(fileMap[shared!]).toContain('require("polyfill")')
+      expect(fileMap['a.cjs']).toContain(`require("./${shared}")`)
+    })
+
     test('uses require() for cjs output', async (context) => {
       const { outputFiles, fileMap } = await testBuild({
         context,
