@@ -1,4 +1,5 @@
 import path from 'node:path'
+import process from 'node:process'
 import picomatch from 'picomatch'
 import { glob, isDynamicPattern } from 'tinyglobby'
 import { fsExists, lowestCommonAncestor, stripExtname } from '../utils/fs.ts'
@@ -23,7 +24,7 @@ export async function resolveEntry(
       entry = { index: defaultEntry }
     } else {
       throw new Error(
-        `${nameLabel} No input files, try "tsdown <your-file>" or create src/index.ts`,
+        `${errorPrefix(nameLabel)}No input files${formatCwd(cwd)}, try "tsdown <your-file>" or create src/index.ts`,
       )
     }
   }
@@ -31,13 +32,26 @@ export async function resolveEntry(
   const [entryMap, computedRoot] = await toObjectEntry(entry, cwd, root)
   const entries = Object.values(entryMap)
   if (entries.length === 0) {
-    throw new Error(`${nameLabel} Cannot find entry: ${JSON.stringify(entry)}`)
+    throw new Error(
+      `${errorPrefix(nameLabel)}Cannot find entry: ${JSON.stringify(entry)}${formatCwd(cwd)}`,
+    )
   }
   logger.info(
     nameLabel,
     `entry: ${color(entries.map((entry) => (path.isAbsolute(entry) ? path.relative(cwd, entry) : entry)).join(', '))}`,
   )
   return [entryMap, computedRoot]
+}
+
+function errorPrefix(nameLabel?: string): string {
+  return nameLabel ? `${nameLabel} ` : ''
+}
+
+// In workspace builds the name label may be inherited from the root config or
+// an ancestor package.json, so name the directory to point at the failing one.
+function formatCwd(cwd: string): string {
+  const relative = path.relative(process.cwd(), cwd)
+  return relative ? ` in ${slash(relative)}` : ''
 }
 
 export function toObjectEntry(
