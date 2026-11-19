@@ -20,6 +20,7 @@ import {
 import {
   CSS_LANGS_RE,
   CSS_MODULE_RE,
+  cssChunkImportRE,
   getCleanId,
   RE_CSS,
   RE_CSS_INLINE,
@@ -27,7 +28,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { Plugin } from 'rolldown'
+import type { InternalModuleFormat, Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -55,7 +56,7 @@ function shouldSkipTransform(id: string, cleanId: string): boolean {
 
 export function CssPlugin(
   config: ResolvedConfig,
-  { logger }: { logger: Logger },
+  { logger, format }: { logger: Logger; format?: InternalModuleFormat },
 ): CssPluginResult {
   const cssConfig: CssPluginConfig = {
     css: resolveCssOptions(
@@ -249,13 +250,27 @@ export function CssPlugin(
 
   const postPlugins: Plugin[] = [cssCollectPlugin]
 
-  if (cssConfig.css.inject) {
+  let { inject } = cssConfig.css
+  // iife/umd scripts run without a module loader, so neither `import` nor a
+  // top-level `require()` works there; keep CSS as a plain asset.
+  if (inject && format && format !== 'es' && format !== 'cjs') {
+    logger.warn(
+      `[@tsdown/css] \`css.inject\` is not supported for the \`${format}\` format and is ignored. Load the emitted CSS file manually.`,
+    )
+    inject = false
+  }
+
+  if (inject) {
     // Inject plugin runs BEFORE CssPostPlugin so it can see pure CSS chunks
     // before they are removed, and rewrite their imports to CSS asset paths.
     const injectPlugin: Plugin = {
       name: '@tsdown/css:inject',
 
-      generateBundle(_outputOptions, bundle) {
+      generateBundle({ format }, bundle) {
+        const cssImport = (importPath: string) =>
+          format === 'es'
+            ? `import '${importPath}';\n`
+            : `require('${importPath}');\n`
         const chunks = Object.values(bundle)
         // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
@@ -293,14 +308,8 @@ export function CssPlugin(
             for (const imp of chunk.imports) {
               if (!pureCssChunks.has(imp)) continue
               const basename = path.basename(imp)
-              const escaped = basename.replaceAll(
-                /[.*+?^${}()|[\]\\]/g,
-                String.raw`\$&`,
-              )
               const cssBasename = toCssFileName(basename)
-              const importRE = new RegExp(
-                String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`,
-              )
+              const importRE = cssChunkImportRE(basename, format)
               chunk.code = chunk.code.replace(importRE, `$1${cssBasename}$2`)
             }
             // Direct CSS modules in this chunk need a prepended import
@@ -312,7 +321,7 @@ export function CssPlugin(
               )
               const importPath =
                 relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `import '${importPath}';\n${chunk.code}`
+              chunk.code = `${cssImport(importPath)}${chunk.code}`
               if (chunk.map) {
                 chunk.map.mappings = `;${chunk.map.mappings}`
               }
@@ -329,7 +338,7 @@ export function CssPlugin(
               )
               const importPath =
                 relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `import '${importPath}';\n${chunk.code}`
+              chunk.code = `${cssImport(importPath)}${chunk.code}`
               if (chunk.map) {
                 chunk.map.mappings = `;${chunk.map.mappings}`
               }

@@ -171,7 +171,7 @@ async function resolveInputOptions(
     if (config.css !== false) {
       if (pkgExists('@tsdown/css')) {
         const { CssPlugin } = await import('@tsdown/css')
-        const cssPlugins = CssPlugin(config, { logger })
+        const cssPlugins = CssPlugin(config, { logger, format })
         plugins.push(...cssPlugins.pre)
         cssPostPlugins = cssPlugins.post
       } else {

@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { escapeRegex } from './utils.ts'
 import type { CssStyles } from './post.ts'
 import type { InternalModuleFormat, OutputAsset, OutputChunk } from 'rolldown'
 
@@ -112,10 +113,6 @@ export function getEmptyChunkReplacer(
       // Ends with `,`: drop it but keep the leading `,` if any
       return `${p1}/* empty css ${''.padEnd(m.length - 15 - p1.length)}*/`
     })
-}
-
-function escapeRegex(str: string): string {
-  return str.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
 }
 
 function isEmptyChunkCode(code: string): boolean {
