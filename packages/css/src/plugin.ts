@@ -20,6 +20,7 @@ import {
 import {
   CSS_LANGS_RE,
   CSS_MODULE_RE,
+  cssChunkImportRE,
   getCleanId,
   RE_CSS,
   RE_CSS_INLINE,
@@ -27,7 +28,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { InternalModuleFormat, Plugin } from 'rolldown'
+import type { Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -259,9 +260,9 @@ export function CssPlugin(
       generateBundle(outputOptions, bundle) {
         const format = outputOptions.format
         const cssImport = (importPath: string) =>
-          format === 'cjs'
-            ? `require('${importPath}');\n`
-            : `import '${importPath}';\n`
+          format === 'es'
+            ? `import '${importPath}';\n`
+            : `require('${importPath}');\n`
         const chunks = Object.values(bundle)
         // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
@@ -515,21 +516,4 @@ function isEmptyChunkCode(code: string): boolean {
     .replaceAll(/\bexport\s*\{\s*\};?/g, '')
     .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
     .trim()
-}
-
-/**
- * Match the module request of a pure CSS chunk in generated code:
- * `import "..."` for ESM output and `require("...")` for CommonJS output.
- */
-function cssChunkImportRE(
-  fileName: string,
-  format: InternalModuleFormat,
-): RegExp {
-  const escaped = fileName.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
-  if (format === 'cjs') {
-    return new RegExp(
-      String.raw`(\brequire\(\s*["'][^"']*)${escaped}(["']\s*\))`,
-    )
-  }
-  return new RegExp(String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`)
 }
