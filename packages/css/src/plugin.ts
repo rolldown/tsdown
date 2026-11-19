@@ -28,7 +28,7 @@ import {
   toCssFileName,
 } from './utils.ts'
 import type { CSSModulesConfig } from 'lightningcss'
-import type { Plugin } from 'rolldown'
+import type { InternalModuleFormat, Plugin } from 'rolldown'
 import type { ResolvedConfig } from 'tsdown'
 import type { Logger } from 'tsdown/internal'
 
@@ -56,7 +56,7 @@ function shouldSkipTransform(id: string, cleanId: string): boolean {
 
 export function CssPlugin(
   config: ResolvedConfig,
-  { logger }: { logger: Logger },
+  { logger, format }: { logger: Logger; format?: InternalModuleFormat },
 ): CssPluginResult {
   const cssConfig: CssPluginConfig = {
     css: resolveCssOptions(
@@ -251,14 +251,23 @@ export function CssPlugin(
 
   const postPlugins: Plugin[] = [cssCollectPlugin]
 
-  if (cssConfig.css.inject) {
+  let { inject } = cssConfig.css
+  // iife/umd scripts run without a module loader, so neither `import` nor a
+  // top-level `require()` works there; keep CSS as a plain asset.
+  if (inject && format && format !== 'es' && format !== 'cjs') {
+    logger.warn(
+      `[@tsdown/css] \`css.inject\` is not supported for the \`${format}\` format and is ignored. Load the emitted CSS file manually.`,
+    )
+    inject = false
+  }
+
+  if (inject) {
     // Inject plugin runs BEFORE CssPostPlugin so it can see pure CSS chunks
     // before they are removed, and rewrite their imports to CSS asset paths.
     const injectPlugin: Plugin = {
       name: '@tsdown/css:inject',
 
-      generateBundle(outputOptions, bundle) {
-        const format = outputOptions.format
+      generateBundle({ format }, bundle) {
         const cssImport = (importPath: string) =>
           format === 'es'
             ? `import '${importPath}';\n`

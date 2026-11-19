@@ -1,6 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { describe, expect, test, type TestContext } from 'vitest'
+import { describe, expect, test, vi, type TestContext } from 'vitest'
 import { testBuild } from './utils.ts'
 
 describe('css', () => {
@@ -1698,6 +1698,34 @@ describe('css', () => {
       expect(fileMap['index.cjs']).toContain("require('./style.css')")
       expect(fileMap['index.cjs']).not.toContain("import '")
     })
+
+    test.for(['iife', 'umd'] as const)(
+      'is ignored for %s output',
+      async (format, context) => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const { outputFiles, fileMap } = await testBuild({
+          context,
+          files: {
+            'index.ts': `import './foo.css'\nexport const a = 1`,
+            'foo.css': `body { color: red }`,
+          },
+          options: {
+            format,
+            globalName: 'Lib',
+            logLevel: 'warn',
+            css: { inject: true },
+          },
+        })
+        expect(outputFiles).toEqual([`index.${format}.js`, 'style.css'])
+        expect(fileMap[`index.${format}.js`]).not.toContain('style.css')
+        expect(warn).toHaveBeenCalledWith(
+          expect.stringContaining(
+            `\`css.inject\` is not supported for the \`${format}\` format`,
+          ),
+        )
+        warn.mockRestore()
+      },
+    )
 
     test('rewrites shared css-only chunk imports to require() for cjs output', async (context) => {
       const { outputFiles, fileMap } = await testBuild({
