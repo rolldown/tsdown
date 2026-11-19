@@ -26,7 +26,8 @@ export function escapeRegex(str: string): string {
 }
 
 /**
- * Match the module request of a pure CSS chunk in generated code:
+ * Match the module request of a pure CSS chunk in generated code, capturing
+ * the parts around the path:
  * `import "..."` for ESM output and `require("...")` otherwise, consistent
  * with `getEmptyChunkReplacer`. Minifiers may emit template literals in
  * `require()` calls.
@@ -37,9 +38,9 @@ export function cssChunkImportRE(
 ): RegExp {
   const escaped = escapeRegex(fileName)
   if (format === 'es') {
-    return new RegExp(String.raw`(\bimport\s*["'][^"']*)${escaped}(["'];)`)
+    return new RegExp(String.raw`(\bimport\s*["'])[^"']*\/${escaped}(["'];)`)
   }
   return new RegExp(
-    String.raw`(\brequire\(\s*["'\`][^"'\`]*)${escaped}(["'\`]\s*\))`,
+    String.raw`(\brequire\(\s*["'\`])[^"'\`]*\/${escaped}(["'\`]\s*\))`,
   )
 }

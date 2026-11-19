@@ -17,6 +17,7 @@ import {
   disposeSassCompiler,
   getPreprocessorLangFromId,
 } from './preprocessors.ts'
+import { isEmptyChunkCode } from './pure-chunk.ts'
 import {
   CSS_LANGS_RE,
   CSS_MODULE_RE,
@@ -261,16 +262,35 @@ export function CssPlugin(
   }
 
   if (inject) {
-    // Inject plugin runs BEFORE CssPostPlugin so it can see pure CSS chunks
-    // before they are removed, and rewrite their imports to CSS asset paths.
+    const getCssFile = (chunkFileName: string) =>
+      cssConfig.css.splitting
+        ? toCssFileName(chunkFileName)
+        : cssConfig.css.fileName
+    let outputFormat: InternalModuleFormat
+
     const injectPlugin: Plugin = {
       name: '@tsdown/css:inject',
 
+      renderStart({ format }) {
+        outputFormat = format
+      },
+
+      // Rolldown places `intro` after the shebang and directives (e.g.
+      // `'use client'`) and keeps the sourcemap in sync.
+      intro(chunk) {
+        if (chunk.moduleIds.every((id) => !styles.has(id))) return ''
+        const importPath = getRelativeImport(
+          chunk.fileName,
+          getCssFile(chunk.fileName),
+        )
+        return outputFormat === 'es'
+          ? `import '${importPath}';`
+          : `require('${importPath}');`
+      },
+
+      // Runs BEFORE CssPostPlugin so it can see pure CSS chunks before they
+      // are removed, and rewrite their imports to CSS asset paths.
       generateBundle({ format }, bundle) {
-        const cssImport = (importPath: string) =>
-          format === 'es'
-            ? `import '${importPath}';\n`
-            : `require('${importPath}');\n`
         const chunks = Object.values(bundle)
         // Identify pure CSS chunks and empty CSS wrapper chunks
         const pureCssChunks = new Set<string>()
@@ -301,48 +321,29 @@ export function CssPlugin(
         for (const chunk of chunks) {
           if (chunk.type !== 'chunk') continue
           if (pureCssChunks.has(chunk.fileName)) continue
+          // Without splitting, all CSS lives in one file, which a chunk with
+          // its own CSS already imports via `intro`.
+          if (
+            !cssConfig.css.splitting &&
+            chunk.moduleIds.some((id) => styles.has(id))
+          )
+            continue
 
-          if (cssConfig.css.splitting) {
-            // Rewrite pure CSS chunk imports in-place: swap .mjs/.cjs/.js → .css
-            // This preserves import order and sourcemap line positions.
-            for (const imp of chunk.imports) {
-              if (!pureCssChunks.has(imp)) continue
-              const basename = path.basename(imp)
-              const cssBasename = toCssFileName(basename)
-              const importRE = cssChunkImportRE(basename, format)
-              chunk.code = chunk.code.replace(importRE, `$1${cssBasename}$2`)
-            }
-            // Direct CSS modules in this chunk need a prepended import
-            if (chunk.moduleIds.some((id) => styles.has(id))) {
-              const cssFile = toCssFileName(chunk.fileName)
-              const relativePath = path.posix.relative(
-                path.posix.dirname(chunk.fileName),
-                cssFile,
-              )
-              const importPath =
-                relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `${cssImport(importPath)}${chunk.code}`
-              if (chunk.map) {
-                chunk.map.mappings = `;${chunk.map.mappings}`
-              }
-            }
-          } else {
-            const hasCss =
-              chunk.moduleIds.some((id) => styles.has(id)) ||
-              chunk.imports.some((imp) => pureCssChunks.has(imp))
-            if (hasCss) {
-              const cssFile = cssConfig.css.fileName
-              const relativePath = path.posix.relative(
-                path.posix.dirname(chunk.fileName),
-                cssFile,
-              )
-              const importPath =
-                relativePath[0] === '.' ? relativePath : `./${relativePath}`
-              chunk.code = `${cssImport(importPath)}${chunk.code}`
-              if (chunk.map) {
-                chunk.map.mappings = `;${chunk.map.mappings}`
-              }
-            }
+          // Rewrite pure CSS chunk imports in-place to their CSS files. This
+          // preserves import order and sourcemap line positions.
+          for (const imp of chunk.imports) {
+            if (!pureCssChunks.has(imp)) continue
+            const importPath = getRelativeImport(
+              chunk.fileName,
+              getCssFile(imp),
+            )
+            chunk.code = chunk.code.replace(
+              cssChunkImportRE(path.basename(imp), format),
+              `$1${importPath}$2`,
+            )
+            // One import of the single CSS file is enough; CssPostPlugin
+            // removes the remaining imports of pure CSS chunks.
+            if (!cssConfig.css.splitting) break
           }
         }
       },
@@ -517,11 +518,7 @@ async function processWithPostCSS(
   }
 }
 
-function isEmptyChunkCode(code: string): boolean {
-  return !code
-    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
-    .replaceAll(/\/\/[^\n]*/g, '')
-    .replaceAll(/\bexport\s*\{\s*\};?/g, '')
-    .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
-    .trim()
+function getRelativeImport(from: string, to: string): string {
+  const relativePath = path.posix.relative(path.posix.dirname(from), to)
+  return relativePath[0] === '.' ? relativePath : `./${relativePath}`
 }

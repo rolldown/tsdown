@@ -1,7 +1,7 @@
 ## index.cjs
 
 ```cjs
-require('./style.css');
+require("./style.css");
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 // index.ts
 const a = 1;

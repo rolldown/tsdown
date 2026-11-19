@@ -10,7 +10,7 @@ body {
 ## index.mjs
 
 ```mjs
-import './index.css';
+import "./index.css";
 // index.ts
 const a = 1;
 export { a };

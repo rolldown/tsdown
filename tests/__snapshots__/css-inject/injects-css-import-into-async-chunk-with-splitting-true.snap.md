@@ -1,4 +1,4 @@
-## async-la_KkjCS.css
+## async-CM3av1ul.css
 
 ```css
 .async {
@@ -7,10 +7,10 @@
 
 ```
 
-## async-la_KkjCS.mjs
+## async-CM3av1ul.mjs
 
 ```mjs
-import './async-la_KkjCS.css';
+import "./async-CM3av1ul.css";
 export {};
 
 ```
@@ -20,7 +20,7 @@ export {};
 ```mjs
 // index.ts
 const main = 1;
-import("./async-la_KkjCS.mjs");
+import("./async-CM3av1ul.mjs");
 export { main };
 
 ```

@@ -115,11 +115,12 @@ export function getEmptyChunkReplacer(
     })
 }
 
-function isEmptyChunkCode(code: string): boolean {
+export function isEmptyChunkCode(code: string): boolean {
   return !code
     .replaceAll(/\/\*[\s\S]*?\*\//g, '')
     .replaceAll(/\/\/[^\n]*/g, '')
     .replaceAll(/\bexport\s*\{\s*\};?/g, '')
     .replaceAll(/\bimport\s*["'][^"']*["'];?/g, '')
+    .replaceAll(/\brequire\(\s*["'`][^"'`]*["'`]\s*\)[;,]?/g, '')
     .trim()
 }
