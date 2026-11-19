@@ -338,6 +338,7 @@ async function resolveOutputOptions(
     config,
     inputOptions,
     format,
+    cjsDts,
   )
   const outputOptions: OutputOptions = await mergeUserOptions(
     {
