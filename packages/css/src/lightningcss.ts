@@ -23,6 +23,7 @@ export interface TransformCssResult {
   code: string
   map?: string
   modules?: Record<string, string>
+  hasExternalComposes?: boolean
 }
 
 export interface BundleCssOptions {
@@ -77,6 +78,9 @@ export async function transformWithLightningCSS(
     modules: result.exports
       ? extractLightningCssModuleExports(result.exports)
       : undefined,
+    hasExternalComposes: Object.values(result.exports || {}).some(
+      ({ composes }) => composes.some(({ type }) => type === 'dependency'),
+    ),
   }
 }
 

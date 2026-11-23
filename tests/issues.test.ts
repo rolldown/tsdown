@@ -273,6 +273,31 @@ button {
     expect(fileMap['index.mjs']).toContain('mod_btn')
   })
 
+  test('#1133 composes CSS modules from Vue single-file components', async (context) => {
+    const Vue = (await import('unplugin-vue/rolldown')).default
+    const { outputDir } = await testBuild({
+      context,
+      snapshot: false,
+      files: {
+        'index.ts': `export { default as MyButton } from './components/MyButton.vue'`,
+        'components/MyButton.vue': `<template><button :class="$style.btn">Click</button></template>
+<style module>
+.btn { composes: reset from "../styles/reset.module.css"; color: red; }
+</style>`,
+        'styles/reset.module.css': `.reset { border: 0; }`,
+      },
+      options: {
+        plugins: [Vue({ isProduction: true })],
+        deps: { neverBundle: true },
+        css: { modules: { generateScopedName: 'mod_[local]' } },
+      },
+    })
+    const js = await readFile(path.join(outputDir, 'index.mjs'), 'utf8')
+    const css = await readFile(path.join(outputDir, 'style.css'), 'utf8')
+    expect(js).toContain('mod_btn mod_reset')
+    expect(css).toMatch(/\.mod_reset\s*\{\s*border: 0;/)
+  })
+
   test('#772', async (context) => {
     const { fileMap, outputFiles } = await testBuild({
       context,

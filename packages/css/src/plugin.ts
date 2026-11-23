@@ -402,19 +402,21 @@ async function processWithLightningCSS(
     })
   }
 
-  // Virtual modules (with query strings) can't use file-based bundling;
-  // ?inline is excluded because the underlying file is real.
-  if (id !== cleanId && !RE_INLINE.test(id)) {
-    return transformWithLightningCSS(code, cleanId, {
+  const isVirtual = id !== cleanId && !RE_INLINE.test(id)
+  if (isVirtual) {
+    const transformed = await transformWithLightningCSS(code, cleanId, {
       target: config.css.target,
       lightningcss: config.css.lightningcss,
       minify: config.css.minify,
       cssModules,
       sourceMap: config.sourceMap,
     })
+    if (!transformed.hasExternalComposes) return transformed
+    // Bundle from the supplied virtual source so Lightning CSS can resolve
+    // cross-file compositions instead of exporting their raw class names.
   }
 
-  if (RE_CSS.test(cleanId)) {
+  if (isVirtual || RE_CSS.test(cleanId)) {
     const bundleResult = await bundleWithLightningCSS(
       cleanId,
       {
