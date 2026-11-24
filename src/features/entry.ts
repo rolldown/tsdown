@@ -124,17 +124,21 @@ async function resolveObjectEntry(
               )
             }
 
-            return files
-              .toSorted()
-              .map((file) => [
+            // `files` are relative to `cwd`, while `valueGlobBase` may be
+            // absolute, so resolve both against `cwd` before comparing them
+            const globBase = path.resolve(cwd, valueGlobBase)
+            return files.toSorted().map((file) => {
+              const resolved = path.resolve(cwd, file)
+              return [
                 slash(
                   key.replaceAll(
                     '*',
-                    stripExtname(path.relative(valueGlobBase, file)),
+                    stripExtname(path.relative(globBase, resolved)),
                   ),
                 ),
-                path.resolve(cwd, file),
-              ])
+                resolved,
+              ]
+            })
           },
         ),
       )
