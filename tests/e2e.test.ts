@@ -198,6 +198,77 @@ test('custom extension', async (context) => {
   `)
 })
 
+test('custom dts extension with dtsOnly', async (context) => {
+  const files = {
+    'index.ts': `export { foo } from './foo'`,
+    'other.ts': `export { foo } from './foo'`,
+    'foo.ts': `export const foo: string = 'bar'`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      entry: ['index.ts', 'other.ts'],
+      dts: { dtsOnly: true },
+      outExtensions: () => ({ dts: '.d.ts' }),
+    },
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "foo-sv0bx34R.d.ts",
+      "index.d.ts",
+      "other.d.ts",
+    ]
+  `)
+})
+
+test('custom dts extension with cjs dts', async (context) => {
+  const files = {
+    'index.ts': `export default 10`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      format: 'cjs',
+      dts: true,
+      outExtensions: () => ({ js: '.cjs', dts: '.d.ts' }),
+    },
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "index.cjs",
+      "index.d.ts",
+    ]
+  `)
+})
+
+test('custom dts extension with dtsOnly and cjs format', async (context) => {
+  const files = {
+    'index.ts': `export default 10`,
+  }
+  const { outputFiles } = await testBuild({
+    context,
+    files,
+    options: {
+      format: ['esm', 'cjs', 'iife'],
+      dts: { dtsOnly: true },
+      outExtensions: ({ format }) => ({
+        js: format === 'cjs' ? '.cjs' : '.js',
+        dts: format === 'cjs' ? '.d.cts' : '.d.ts',
+      }),
+    },
+  })
+  expect(outputFiles).toMatchInlineSnapshot(`
+    [
+      "index.cjs",
+      "index.d.cts",
+      "index.d.ts",
+      "index.iife.js",
+    ]
+  `)
+})
+
 test('custom extension with empty string', async (context) => {
   const files = {
     'index.ts': `export default 10`,
