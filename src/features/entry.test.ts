@@ -2,6 +2,7 @@ import path from 'node:path'
 import * as tinyglobby from 'tinyglobby'
 import { describe, expect, test, vi } from 'vitest'
 import { writeFixtures } from '../../tests/utils.ts'
+import { slash } from '../utils/general.ts'
 import { toObjectEntry } from './entry.ts'
 
 describe('toObjectEntry', () => {
@@ -115,6 +116,21 @@ describe('toObjectEntry', () => {
       test: 'test/test.ts',
       test2: 'test/*.ts',
       'nested/a/b/c': path.join(testDir, 'nested/a/b/c.ts'),
+    })
+  })
+
+  test('object entry with absolute glob patterns', async (context) => {
+    const { testDir } = await writeFixtures(context, {
+      'src/foo.ts': '',
+      'src/nested/bar.ts': '',
+    })
+    const [result] = await toObjectEntry(
+      { 'lib/*': `${slash(testDir)}/src/**/*.ts` },
+      testDir,
+    )
+    expect(result).toEqual({
+      'lib/foo': path.join(testDir, 'src/foo.ts'),
+      'lib/nested/bar': path.join(testDir, 'src/nested/bar.ts'),
     })
   })
 
