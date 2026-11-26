@@ -1,8 +1,23 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { describe, expect, test } from 'vitest'
+import process from 'node:process'
+import { describe, expect, test, vi, type TestContext } from 'vitest'
 import { fsExists } from '../src/utils/fs.ts'
 import { getTestDir, testBuild } from './utils.ts'
+
+async function createOutsideDir(
+  context: TestContext,
+  testDir: string,
+): Promise<string> {
+  const outsidePath = `${testDir}-outside`
+  await rm(outsidePath, { recursive: true, force: true })
+  context.onTestFinished(() =>
+    rm(outsidePath, { recursive: true, force: true }),
+  )
+  await mkdir(outsidePath, { recursive: true })
+  await writeFile(path.join(outsidePath, 'keep.txt'), 'keep me')
+  return outsidePath
+}
 
 describe('clean', () => {
   test('should clean dist directory by default', async (context) => {
@@ -157,6 +172,180 @@ describe('clean', () => {
         },
       }),
     ).rejects.toThrow('Cannot clean the current working directory')
+  })
+
+  test('should not clean paths outside the project root', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const outsidePath = await createOutsideDir(context, testDir)
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: [`../${path.basename(outsidePath)}`],
+      },
+    })
+
+    expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
+  })
+
+  test('should warn through the configured logger when skipping paths', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const outsidePath = await createOutsideDir(context, testDir)
+    const warn = vi.fn()
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: [`../${path.basename(outsidePath)}`],
+        customLogger: {
+          level: 'info',
+          info: vi.fn(),
+          warn,
+          warnOnce: vi.fn(),
+          error: vi.fn(),
+          success: vi.fn(),
+          clearScreen: vi.fn(),
+        },
+      },
+      snapshot: false,
+    })
+
+    const messages = warn.mock.calls
+      .flat()
+      .filter((arg) => typeof arg === 'string')
+    expect(
+      messages.some((message) =>
+        message.includes('Skipped cleaning 2 path(s) outside the project root'),
+      ),
+    ).toBe(true)
+    expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
+  })
+
+  test('should not clean outDir outside the project root', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const outsidePath = await createOutsideDir(context, testDir)
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        outDir: `../${path.basename(outsidePath)}`,
+      },
+      snapshot: false,
+    })
+
+    expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
+  })
+
+  test('should not clean through a symlinked directory', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const outsidePath = await createOutsideDir(context, testDir)
+    await mkdir(path.join(testDir, 'temp'), { recursive: true })
+    await symlink(outsidePath, path.join(testDir, 'temp', 'link'), 'junction')
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: ['temp/*/keep.txt'],
+      },
+      snapshot: false,
+    })
+
+    expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
+  })
+
+  test('should not clean under a symlinked parent directory', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const outsidePath = await createOutsideDir(context, testDir)
+    await mkdir(path.join(outsidePath, 'session'), { recursive: true })
+    await writeFile(path.join(outsidePath, 'session', 'keep.txt'), 'keep me')
+    await mkdir(testDir, { recursive: true })
+    await symlink(outsidePath, path.join(testDir, 'cache'), 'junction')
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: ['cache/session/**'],
+      },
+      snapshot: false,
+    })
+
+    expect(await fsExists(path.join(outsidePath, 'session', 'keep.txt'))).toBe(
+      true,
+    )
+  })
+
+  test.skipIf(process.platform === 'win32')(
+    'should remove a symlink itself, not its target',
+    async (context) => {
+      const files = {
+        'index.ts': 'export const hello = "world"',
+      }
+
+      const testDir = getTestDir(context.task)
+      const outsidePath = await createOutsideDir(context, testDir)
+      const linkPath = path.join(testDir, 'temp', 'link')
+      await mkdir(path.dirname(linkPath), { recursive: true })
+      await symlink(path.join(outsidePath, 'keep.txt'), linkPath)
+
+      await testBuild({
+        context,
+        files,
+        options: {
+          clean: ['temp/link'],
+        },
+        snapshot: false,
+      })
+
+      await expect(lstat(linkPath)).rejects.toThrow()
+      expect(await fsExists(path.join(outsidePath, 'keep.txt'))).toBe(true)
+    },
+  )
+
+  test('should clean a directory whose name starts with ..', async (context) => {
+    const files = {
+      'index.ts': 'export const hello = "world"',
+    }
+
+    const testDir = getTestDir(context.task)
+    const dotDotPath = path.join(testDir, '..cache')
+    await mkdir(dotDotPath, { recursive: true })
+    await writeFile(path.join(dotDotPath, 'old.txt'), 'old')
+
+    await testBuild({
+      context,
+      files,
+      options: {
+        clean: ['..cache'],
+      },
+      snapshot: false,
+    })
+
+    expect(await fsExists(dotDotPath)).toBe(false)
   })
 
   test('should clean nested directories', async (context) => {
