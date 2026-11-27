@@ -71,6 +71,7 @@ export function CssPlugin(
   }
   const styles: CssStyles = new Map()
   const modulesMap = new Map<string, Record<string, string>>()
+  const composedModules = new Set<string>()
 
   // Pre-user plugin: compiles CSS (preprocessors, LightningCSS/PostCSS)
   // but does NOT convert to JS — allows user plugins (e.g. Vue scoped CSS)
@@ -81,6 +82,7 @@ export function CssPlugin(
     buildStart() {
       styles.clear()
       modulesMap.clear()
+      composedModules.clear()
     },
 
     closeBundle() {
@@ -189,6 +191,10 @@ export function CssPlugin(
             modulesConfig?.getJSON?.(cleanId, modules, cleanId)
           }
           modulesMap.set(id, modules)
+          // Composed exports contain space-separated class names.
+          if (Object.values(modules).some((name) => name.includes(' '))) {
+            composedModules.add(id)
+          }
         }
 
         // Return compiled CSS without converting to JS.
@@ -326,7 +332,7 @@ export function CssPlugin(
     postPlugins.push(injectPlugin)
   }
 
-  postPlugins.push(CssPostPlugin(cssConfig.css, styles))
+  postPlugins.push(CssPostPlugin(cssConfig.css, styles, composedModules))
 
   return {
     pre: [cssCompilePlugin],
